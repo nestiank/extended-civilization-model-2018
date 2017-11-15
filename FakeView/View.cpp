@@ -39,24 +39,36 @@ namespace FakeView
                 int py = dy * 3 + 1;
 
                 auto& c = m_screen->GetChar(px, py);
-                switch (point.Type)
+                if (point.Type2 == CivModel::TerrainType2::Mountain)
                 {
-                    case CivModel::TerrainType::Flatland:
-                        c.ch = 'F';
-                        c.color = 0b00000111;
-                        break;
-                    case CivModel::TerrainType::Grass:
-                        c.ch = 'G';
-                        c.color = 0b00000010;
-                        break;
-                    case CivModel::TerrainType::Hill:
-                        c.ch = 'H';
-                        c.color = 0b00001111;
-                        break;
-                    case CivModel::TerrainType::Tundra:
-                        c.ch = 'T';
-                        c.color = 0b00000110;
-                        break;
+                    c.ch = 'M';
+                    c.color = 0b01111000;
+                }
+                else
+                {
+                    switch (point.Type1)
+                    {
+                        case CivModel::TerrainType1::Flatland:
+                            c.ch = 'F';
+                            c.color = 0b00000111;
+                            break;
+                        case CivModel::TerrainType1::Grass:
+                            c.ch = 'G';
+                            c.color = 0b00000011;
+                            break;
+                        case CivModel::TerrainType1::Swamp:
+                            c.ch = 'S';
+                            c.color = 0b00000010;
+                            break;
+                        case CivModel::TerrainType1::Tundra:
+                            c.ch = 'T';
+                            c.color = 0b00000110;
+                            break;
+                    }
+                    if (point.Type2 == CivModel::TerrainType2::Hill)
+                    {
+                        c.color |= 0b00001000;
+                    }
                 }
             }
         }

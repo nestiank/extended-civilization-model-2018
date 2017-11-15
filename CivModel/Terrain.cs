@@ -1,10 +1,14 @@
-﻿using System;
+using System;
 
 namespace CivModel
 {
-    public enum TerrainType
+    public enum TerrainType1
     {
-        Grass, Flatland, Hill, Tundra
+        Grass, Flatland, Swamp, Tundra
+    }
+    public enum TerrainType2
+    {
+        None, Hill, Mountain
     }
 
     public struct Position
@@ -17,7 +21,9 @@ namespace CivModel
     {
         private struct Point_t
         {
-            public TerrainType Type;
+            public TerrainType1 Type1;
+            public TerrainType2 Type2;
+            public Unit PlacedUnit;
         }
         public struct Point
         {
@@ -26,7 +32,9 @@ namespace CivModel
 
             public Position Position { get; private set; }
 
-            public TerrainType Type => Terrain._points[Position.X, Position.Y].Type;
+            public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
+            public TerrainType2 Type2 => Terrain._points[Position.X, Position.Y].Type2;
+            public Unit PlacedUnit => Terrain._points[Position.X, Position.Y].PlacedUnit;
 
             public Point(Terrain terrain, Position pos)
             {
@@ -58,7 +66,8 @@ namespace CivModel
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    _points[y, x].Type = (TerrainType)random.Next(4);
+                    _points[y, x].Type1 = (TerrainType1)random.Next(4);
+                    _points[y, x].Type2 = (TerrainType2)random.Next(3);
                 }
             }
         }
