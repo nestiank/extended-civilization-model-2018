@@ -29,7 +29,9 @@ namespace FakeView
                     view->OnTick();
                     if (m_invalidated)
                     {
+                        std::system("cls");
                         view->Render();
+                        m_invalidated = false;
                     }
                 }
                 else

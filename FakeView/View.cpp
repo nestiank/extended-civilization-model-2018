@@ -73,18 +73,22 @@ namespace FakeView
         if (::GetAsyncKeyState(VK_UP))
         {
             --m_sighty;
+            m_screen->Invalidate();
         }
         if (::GetAsyncKeyState(VK_DOWN))
         {
             ++m_sighty;
+            m_screen->Invalidate();
         }
         if (::GetAsyncKeyState(VK_LEFT))
         {
             --m_sightx;
+            m_screen->Invalidate();
         }
         if (::GetAsyncKeyState(VK_RIGHT))
         {
             ++m_sightx;
+            m_screen->Invalidate();
         }
     }
 }
