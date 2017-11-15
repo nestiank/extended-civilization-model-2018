@@ -38,20 +38,24 @@ namespace FakeView
                 int px = dx * 3 + 1 - (y % 2);
                 int py = dy * 3 + 1;
 
-                m_screen->GotoXY(px, py);
+                auto& c = m_screen->GetChar(px, py);
                 switch (point.Type)
                 {
                     case CivModel::TerrainType::Flatland:
-                        _putch('F');
+                        c.ch = 'F';
+                        c.color = 0b00000111;
                         break;
                     case CivModel::TerrainType::Grass:
-                        _putch('G');
+                        c.ch = 'G';
+                        c.color = 0b00000010;
                         break;
                     case CivModel::TerrainType::Hill:
-                        _putch('H');
+                        c.ch = 'H';
+                        c.color = 0b00001111;
                         break;
                     case CivModel::TerrainType::Tundra:
-                        _putch('T');
+                        c.ch = 'T';
+                        c.color = 0b00000110;
                         break;
                 }
             }
@@ -62,33 +66,25 @@ namespace FakeView
     {
         switch (ch)
         {
-            case 27: // ESC
+            case 0x1b: // ESC
                 m_screen->Quit(0);
+                break;
+            case 0x148: // UP
+                --m_sighty;
+                break;
+            case 0x150: // DOWN
+                ++m_sighty;
+                break;
+            case 0x14b: // LEFT
+                --m_sightx;
+                break;
+            case 0x14d: // RIGHT
+                ++m_sightx;
                 break;
         }
     }
 
     void View::OnTick()
     {
-        if (::GetAsyncKeyState(VK_UP))
-        {
-            --m_sighty;
-            m_screen->Invalidate();
-        }
-        if (::GetAsyncKeyState(VK_DOWN))
-        {
-            ++m_sighty;
-            m_screen->Invalidate();
-        }
-        if (::GetAsyncKeyState(VK_LEFT))
-        {
-            --m_sightx;
-            m_screen->Invalidate();
-        }
-        if (::GetAsyncKeyState(VK_RIGHT))
-        {
-            ++m_sightx;
-            m_screen->Invalidate();
-        }
     }
 }

@@ -5,19 +5,22 @@ namespace FakeView
 {
     Screen::Screen()
     {
+        ClearBuffer();
     }
 
     int Screen::Loop(IView^ view)
     {
         std::system("mode con cols=120 lines=36");
+        std::system("cls");
         EnableCursor(false);
 
         DWORD prevTick = GetTickCount();
 
         while (!m_quit)
         {
-            std::system("cls");
+            ClearBuffer();
             view->Render();
+            DrawBuffer();
 
             while (!_kbhit())
             {
@@ -27,12 +30,10 @@ namespace FakeView
                     prevTick += 100;
 
                     view->OnTick();
-                    if (m_invalidated)
-                    {
-                        std::system("cls");
-                        view->Render();
-                        m_invalidated = false;
-                    }
+
+                    ClearBuffer();
+                    view->Render();
+                    DrawBuffer();
                 }
                 else
                 {
@@ -52,20 +53,34 @@ namespace FakeView
         return m_exitcode;
     }
 
+    void Screen::ClearBuffer()
+    {
+        for (auto& c : m_buffer)
+        {
+            c.ch = ' ';
+            c.color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+        }
+    }
+
+    void Screen::DrawBuffer()
+    {
+        GotoXY(0, 0);
+        for (const auto& c : m_buffer)
+        {
+            ::SetConsoleTextAttribute(::GetStdHandle(STD_OUTPUT_HANDLE), c.color);
+            _putch(c.ch);
+        }
+    }
+
     void Screen::Quit(int exitcode)
     {
         m_exitcode = exitcode;
         m_quit = true;
     }
 
-    void Screen::Invalidate()
-    {
-        m_invalidated = true;
-    }
-
     void Screen::GotoXY(int x, int y)
     {
-        COORD Cur = { x, y };
+        COORD Cur = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
         ::SetConsoleCursorPosition(::GetStdHandle(STD_OUTPUT_HANDLE), Cur);
     }
 
@@ -87,11 +102,12 @@ namespace FakeView
 
     Size Screen::GetSize()
     {
-        CONSOLE_SCREEN_BUFFER_INFO csbi;
+        /*CONSOLE_SCREEN_BUFFER_INFO csbi;
         ::GetConsoleScreenBufferInfo(::GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
         return {
             csbi.srWindow.Right - csbi.srWindow.Left + 1,
             csbi.srWindow.Bottom - csbi.srWindow.Top + 1
-        };
+        };*/
+        return { 120, 36 };
     }
 }
