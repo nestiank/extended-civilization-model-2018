@@ -35,7 +35,7 @@ namespace FakeView
 
                 auto point = m_game->Terrain->GetPoint(x, y);
 
-                int px = dx * 3 + 1- (y % 2);
+                int px = dx * 3 + 1 - (y % 2);
                 int py = dy * 3 + 1;
 
                 m_screen->GotoXY(px, py);
