@@ -168,6 +168,9 @@
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\CivPresenter\CivPresenter.csproj">
+      <Project>{fe79d521-a9b9-425c-84c6-2f89fd5a9879}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

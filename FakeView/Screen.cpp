@@ -8,7 +8,7 @@ namespace FakeView
         ClearBuffer();
     }
 
-    int Screen::Loop(IView^ view)
+    int Screen::Loop(IScreenClient^ view)
     {
         std::system("mode con cols=120 lines=36");
         std::system("cls");

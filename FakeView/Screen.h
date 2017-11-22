@@ -2,7 +2,7 @@
 
 namespace FakeView
 {
-    interface class IView
+    interface class IScreenClient
     {
         void Render();
         void OnKeyStroke(int ch);
@@ -26,18 +26,23 @@ namespace FakeView
     public:
         Screen();
 
-        int Loop(IView^ view);
+        int Loop(IScreenClient^ view);
 
         void Quit(int exitcode);
 
-        auto& GetBuffer()
-        {
-            return m_buffer;
-        }
-        auto& GetChar(int x, int y)
+        Character& GetChar(int x, int y)
         {
             auto sz = GetSize();
             return m_buffer.at(y * sz.width + x);
+        }
+        Character* TryGetChar(int x, int y)
+        {
+            auto sz = GetSize();
+            int idx = y * sz.width + x;
+            if (idx >= m_buffer.size())
+                return nullptr;
+
+            return &m_buffer[idx];
         }
 
         void GotoXY(int x, int y);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace CivModel
 {
@@ -15,6 +16,11 @@ namespace CivModel
     {
         public int X { get; set; }
         public int Y { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("({0},{1})", X, Y);
+        }
     }
 
     public class Terrain
@@ -38,13 +44,56 @@ namespace CivModel
 
             public Point(Terrain terrain, Position pos)
             {
-                if (pos.X < 0 || pos.X >= terrain.Width)
-                    throw new ArgumentOutOfRangeException();
-                if (pos.Y < 0 || pos.Y >= terrain.Height)
+                if (!terrain.IsValidPosition(pos))
                     throw new ArgumentOutOfRangeException();
 
                 _terrain = terrain;
                 Position = pos;
+            }
+
+            public override string ToString()
+            {
+                return Position.ToString();
+            }
+
+            public Point?[] Adjacents()
+            {
+                var ret = new Point?[6];
+                Position pos;
+
+                pos = new Position { X = Position.X - 1, Y = Position.Y };
+                if (Terrain.IsValidPosition(pos))
+                    ret[0] = new Point(Terrain, pos);
+
+                pos = new Position { X = Position.X, Y = Position.Y - 1 };
+                if (Terrain.IsValidPosition(pos))
+                    ret[2] = ret[1] = new Point(Terrain, pos);
+
+                pos = new Position { X = Position.X + 1, Y = Position.Y };
+                if (Terrain.IsValidPosition(pos))
+                    ret[3] = new Point(Terrain, pos);
+
+                pos = new Position { X = Position.X, Y = Position.Y + 1 };
+                if (Terrain.IsValidPosition(pos))
+                    ret[5] = ret[4] = new Point(Terrain, pos);
+
+                int correction = 1 - (Position.Y % 2) * 2;
+                int cidx = 1 - (Position.Y % 2);
+
+                if (ret[1 + cidx] != null)
+                {
+                    pos = ret[1 + cidx].Value.Position;
+                    pos.X += correction;
+                    ret[1 + cidx] = new Point(Terrain, pos);
+                }
+                if (ret[5 - cidx] != null)
+                {
+                    pos = ret[5 -cidx].Value.Position;
+                    pos.X += correction;
+                    ret[5 - cidx] = new Point(Terrain, pos);
+                }
+
+                return ret;
             }
         }
 
@@ -72,13 +121,49 @@ namespace CivModel
             }
         }
 
-        public Point GetPoint(int x, int y)
+        public Terrain.Point GetPoint(int x, int y)
         {
             return GetPoint(new Position { X = x, Y = y });
         }
-        public Point GetPoint(Position pos)
+        public Terrain.Point GetPoint(Position pos)
         {
-            return new Point(this, pos);
+            return new Terrain.Point(this, pos);
+        }
+
+        public void PlaceUnit(Unit unit)
+        {
+            var p = unit.PlacedPoint
+                ?? throw new ArgumentException("unit.PlacedPoint is null");
+
+            Unit prev = _points[p.Position.X, p.Position.Y].PlacedUnit;
+            if (prev != null)
+            {
+                prev.PlacedPoint = null;
+            }
+
+            _points[p.Position.X, p.Position.Y].PlacedUnit = unit;
+        }
+
+        public void UnplaceUnit(Unit unit, Point p)
+        {
+            if (unit.PlacedPoint != null)
+                throw new ArgumentException("unit.PlacedPoint is not null");
+            if (p.Terrain != this)
+                throw new ArgumentException("UnplacedUnit() call with wrong Terrain object");
+
+            if (_points[p.Position.X, p.Position.Y].PlacedUnit != unit)
+                throw new ArgumentException("unit is not on the specified point");
+
+            _points[p.Position.X, p.Position.Y].PlacedUnit = null;
+        }
+
+        public bool IsValidPosition(Position pos)
+        {
+            if (pos.X < 0 || pos.X >= Width)
+                return false;
+            if (pos.Y < 0 || pos.Y >= Height)
+                return false;
+            return true;
         }
     }
 }

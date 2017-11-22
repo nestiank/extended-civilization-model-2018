@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C9FD2F31-4C7A-461C-9095-D9AD5090B09B}</ProjectGuid>
+    <ProjectGuid>{FE79D521-A9B9-425C-84C6-2F89FD5A9879}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CivModel</RootNamespace>
-    <AssemblyName>CivModel</AssemblyName>
+    <RootNamespace>CivPresenter</RootNamespace>
+    <AssemblyName>CivPresenter</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,11 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="IView.cs" />
+    <Compile Include="Presenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Terrain.cs" />
-    <Compile Include="Unit.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CivModel\CivModel.csproj">
+      <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
+      <Name>CivModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
