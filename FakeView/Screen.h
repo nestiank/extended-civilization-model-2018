@@ -30,20 +30,8 @@ namespace FakeView
 
         void Quit(int exitcode);
 
-        Character& GetChar(int x, int y)
-        {
-            auto sz = GetSize();
-            return m_buffer.at(y * sz.width + x);
-        }
-        Character* TryGetChar(int x, int y)
-        {
-            auto sz = GetSize();
-            int idx = y * sz.width + x;
-            if (idx >= m_buffer.size())
-                return nullptr;
-
-            return &m_buffer[idx];
-        }
+        Character& GetChar(int x, int y);
+        Character* TryGetChar(int x, int y);
 
         void GotoXY(int x, int y);
         void EnableCursor(bool enable);

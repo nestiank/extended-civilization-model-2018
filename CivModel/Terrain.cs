@@ -56,6 +56,18 @@ namespace CivModel
                 return Position.ToString();
             }
 
+            /// <summary>
+            /// get adjacent points, in clockwise order.
+            /// </summary>
+            /// <remarks>
+            /// Get the array of the adjacent points in clockwise order.
+            /// If the position is invalid, the value is null.
+            /// A first element of the array is the left one.
+            ///   1   2
+            /// 0  pt  3
+            ///   5   4
+            /// </remarks>
+            /// <returns>an array of the adjacent points</returns>
             public Point?[] Adjacents()
             {
                 var ret = new Point?[6];

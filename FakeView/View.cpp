@@ -9,8 +9,10 @@ namespace FakeView
         : m_screen(screen)
     {
         ::MessageBoxW(nullptr,
-            L"move: arrow key\n"
-            L"quit: ESC",
+            L"move: m\n"
+            L"focus: f\n"
+            L"scroll screen / select: arrow key\n"
+            L"quit / cancel: ESC",
             L"info", MB_OK);
 
         m_presenter = gcnew CivPresenter::Presenter(this);
@@ -31,6 +33,11 @@ namespace FakeView
     {
         m_sightx += dx;
         m_sighty += dy;
+    }
+
+    void View::Shutdown()
+    {
+        m_screen->Quit(0);
     }
 
     void View::Render()
@@ -94,6 +101,47 @@ namespace FakeView
         }
     }
 
+    void View::OnKeyStroke(int ch)
+    {
+        switch (ch)
+        {
+            case 0x1b: // ESC
+                m_presenter->CommandCancel();
+                break;
+
+            case 0x148: // UP
+                m_presenter->CommandArrowKey(CivPresenter::Direction::Up);
+                break;
+            case 0x150: // DOWN
+                m_presenter->CommandArrowKey(CivPresenter::Direction::Down);
+                break;
+            case 0x14b: // LEFT
+                m_presenter->CommandArrowKey(CivPresenter::Direction::Left);
+                break;
+            case 0x14d: // RIGHT
+                m_presenter->CommandArrowKey(CivPresenter::Direction::Right);
+                break;
+
+            case 'f':
+            case 'F':
+                Refocus();
+                break;
+
+            case 'm':
+            case 'M':
+                m_presenter->CommandMove();
+                break;
+
+            case '\r':
+                m_presenter->CommandApply();
+                break;
+        }
+    }
+
+    void View::OnTick()
+    {
+    }
+
     void View::PrintTerrain(Character& c, CivModel::Terrain::Point point)
     {
         if (point.Type2 == CivModel::TerrainType2::Mountain)
@@ -146,46 +194,5 @@ namespace FakeView
             dx * 3 + 1 - (y % 2),
             dy * 3 + 1
         };
-    }
-
-    void View::OnKeyStroke(int ch)
-    {
-        switch (ch)
-        {
-            case 0x1b: // ESC
-                m_screen->Quit(0);
-                break;
-
-            case 0x148: // UP
-                m_presenter->CommandArrowKey(CivPresenter::Direction::Up);
-                break;
-            case 0x150: // DOWN
-                m_presenter->CommandArrowKey(CivPresenter::Direction::Down);
-                break;
-            case 0x14b: // LEFT
-                m_presenter->CommandArrowKey(CivPresenter::Direction::Left);
-                break;
-            case 0x14d: // RIGHT
-                m_presenter->CommandArrowKey(CivPresenter::Direction::Right);
-                break;
-
-            case 'f':
-            case 'F':
-                Refocus();
-                break;
-
-            case 'm':
-            case 'M':
-                m_presenter->CommandMove();
-                break;
-
-            case '\r':
-                m_presenter->CommandApply();
-                break;
-        }
-    }
-
-    void View::OnTick()
-    {
     }
 }

@@ -11,6 +11,7 @@ namespace FakeView
 
         virtual void Refocus();
         virtual void MoveSight(int dx, int dy);
+        virtual void Shutdown();
 
         virtual void Render();
         virtual void OnKeyStroke(int ch);

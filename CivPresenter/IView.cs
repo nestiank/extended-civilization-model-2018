@@ -16,5 +16,7 @@ namespace CivPresenter
     {
         void Refocus();
         void MoveSight(int dx, int dy);
+
+        void Shutdown();
     }
 }
