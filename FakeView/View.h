@@ -18,7 +18,9 @@ namespace FakeView
         virtual void OnTick();
 
     private:
-        void PrintTerrain(Character& c, CivModel::Terrain::Point point);
+        void PrintTerrain(int px, int py, CivModel::Terrain::Point point);
+        void PrintUnit(int px, int py, CivModel::Unit^ unit);
+        void PrintDistrict(int px, int py, CivModel::District^ district);
 
         std::pair<int, int> TerrainToScreen(int x, int y);
 

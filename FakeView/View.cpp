@@ -8,13 +8,14 @@ namespace FakeView
     View::View(Screen* screen)
         : m_screen(screen)
     {
+#ifndef _DEBUG
         ::MessageBoxW(nullptr,
             L"move: m\n"
             L"focus: f\n"
             L"scroll screen / select: arrow key\n"
             L"quit / cancel: ESC",
             L"info", MB_OK);
-
+#endif
         m_presenter = gcnew CivPresenter::Presenter(this);
     }
 
@@ -67,15 +68,10 @@ namespace FakeView
                 int px = dx * 3 + 1 - (y % 2);
                 int py = dy * 3 + 1;
 
-                auto& c = m_screen->GetChar(px, py);
+                PrintTerrain(px, py, point);
                 if (point.PlacedUnit)
                 {
-                    c.ch = 'U';
-                    c.color = 0b00111110;
-                }
-                else
-                {
-                    PrintTerrain(c, point);
+                    PrintUnit(px, py, point.PlacedUnit);
                 }
             }
         }
@@ -142,39 +138,64 @@ namespace FakeView
     {
     }
 
-    void View::PrintTerrain(Character& c, CivModel::Terrain::Point point)
+    void View::PrintTerrain(int px, int py, CivModel::Terrain::Point point)
     {
+        auto& c = m_screen->GetChar(px, py);
+
         if (point.Type2 == CivModel::TerrainType2::Mountain)
         {
-            c.ch = 'M';
-            c.color = 0b01111000;
+            c.ch = ' ';
+            c.color = 0b0111'0000;
         }
         else
         {
             switch (point.Type1)
             {
                 case CivModel::TerrainType1::Flatland:
-                    c.ch = 'F';
-                    c.color = 0b00000111;
+                    c.ch = ' ';
+                    c.color = 0b0011'0000;
                     break;
                 case CivModel::TerrainType1::Grass:
-                    c.ch = 'G';
-                    c.color = 0b00000011;
+                    c.ch = ' ';
+                    c.color = 0b0010'0000;
                     break;
                 case CivModel::TerrainType1::Swamp:
-                    c.ch = 'S';
-                    c.color = 0b00000010;
+                    c.ch = ' ';
+                    c.color = 0b0110'0000;
                     break;
                 case CivModel::TerrainType1::Tundra:
-                    c.ch = 'T';
-                    c.color = 0b00000110;
+                    c.ch = ' ';
+                    c.color = 0b0100'0000;
                     break;
             }
             if (point.Type2 == CivModel::TerrainType2::Hill)
             {
-                c.color |= 0b00001000;
+                c.color |= 0b1000'0000;
             }
         }
+    }
+
+    void View::PrintUnit(int px, int py, CivModel::Unit^ unit)
+    {
+        auto& c = m_screen->GetChar(px, py);
+        if (auto u = dynamic_cast<CivModel::Units::Pioneer^>(unit))
+        {
+            c.ch = 'P';
+            c.color &= 0xf0;
+            c.color |= 0b0000'1001;
+        }
+        else
+        {
+            System::Diagnostics::Debug::WriteLine(L"unqualified unit in PrintUnit()");
+            c.ch = 'U';
+            c.color &= 0xf0;
+            c.color |= 0b0000'1110;
+        }
+    }
+
+    void View::PrintDistrict(int px, int py, CivModel::District^ district)
+    {
+
     }
 
     std::pair<int, int> View::TerrainToScreen(int x, int y)

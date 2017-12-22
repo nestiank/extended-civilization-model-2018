@@ -29,7 +29,7 @@ namespace CivModel
         {
             public TerrainType1 Type1;
             public TerrainType2 Type2;
-            public Unit PlacedUnit;
+            public TileObject[] PlacedObjects;
         }
         public struct Point
         {
@@ -40,7 +40,8 @@ namespace CivModel
 
             public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
             public TerrainType2 Type2 => Terrain._points[Position.X, Position.Y].Type2;
-            public Unit PlacedUnit => Terrain._points[Position.X, Position.Y].PlacedUnit;
+            public Unit PlacedUnit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
+            public District District => (District)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.District];
 
             public Point(Terrain terrain, Position pos)
             {
@@ -127,6 +128,9 @@ namespace CivModel
             {
                 for (int x = 0; x < width; ++x)
                 {
+                    int len = Enum.GetNames(typeof(TileTag)).Length;
+                    _points[y, x].PlacedObjects = new TileObject[len];
+
                     _points[y, x].Type1 = (TerrainType1)random.Next(4);
                     _points[y, x].Type2 = (TerrainType2)random.Next(3);
                 }
@@ -142,31 +146,31 @@ namespace CivModel
             return new Terrain.Point(this, pos);
         }
 
-        public void PlaceUnit(Unit unit)
+        public void PlaceObject(TileObject obj)
         {
-            var p = unit.PlacedPoint
-                ?? throw new ArgumentException("unit.PlacedPoint is null");
+            var p = obj.PlacedPoint
+                ?? throw new ArgumentException("obj.PlacedPoint is null");
 
-            Unit prev = _points[p.Position.X, p.Position.Y].PlacedUnit;
+            TileObject prev = _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag];
             if (prev != null)
             {
                 prev.PlacedPoint = null;
             }
 
-            _points[p.Position.X, p.Position.Y].PlacedUnit = unit;
+            _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = obj;
         }
 
-        public void UnplaceUnit(Unit unit, Point p)
+        public void UnplaceObject(TileObject obj, Point p)
         {
-            if (unit.PlacedPoint != null)
-                throw new ArgumentException("unit.PlacedPoint is not null");
+            if (obj.PlacedPoint != null)
+                throw new ArgumentException("obj.PlacedPoint is not null");
             if (p.Terrain != this)
                 throw new ArgumentException("UnplacedUnit() call with wrong Terrain object");
 
-            if (_points[p.Position.X, p.Position.Y].PlacedUnit != unit)
-                throw new ArgumentException("unit is not on the specified point");
+            if (_points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] != obj)
+                throw new ArgumentException("obj is not on the specified point");
 
-            _points[p.Position.X, p.Position.Y].PlacedUnit = null;
+            _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = null;
         }
 
         public bool IsValidPosition(Position pos)

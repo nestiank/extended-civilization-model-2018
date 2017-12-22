@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CivModel;
+using CivModel.Units;
+using CivModel.Districts;
 
 namespace CivPresenter
 {
@@ -41,7 +43,7 @@ namespace CivPresenter
             _game = new Game(100, 100, new Player[] { new Player() });
             Player = Game.Players[0];
 
-            FocusedUnit = new Unit(Player);
+            FocusedUnit = new Pioneer(Player);
             FocusedUnit.PlacedPoint = Game.Terrain.GetPoint(50, 50);
 
             StateNormal();

@@ -27,6 +27,7 @@ namespace CivModel
         public IReadOnlyList<Player> Players => _players;
 
         public int TurnNumber { get; private set; }
+        public int PrettyTurnNumber => TurnNumber / Players.Count;
 
         public Player PlayerInTurn => Players[TurnNumber % Players.Count];
 
