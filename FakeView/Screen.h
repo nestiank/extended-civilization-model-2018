@@ -27,23 +27,28 @@ namespace FakeView
         Screen();
 
         int Loop(IScreenClient^ view);
+        void Invoke(System::Action^ fn);
 
         void Quit(int exitcode);
 
         Character& GetChar(int x, int y);
         Character* TryGetChar(int x, int y);
 
-        void GotoXY(int x, int y);
-        void EnableCursor(bool enable);
         Size GetSize();
 
+        void PrintString(int x, int y, unsigned char color, const std::string& str);
+
     private:
+        void GotoXY(int x, int y);
+        void EnableCursor(bool enable);
+
         void DrawBuffer();
         void ClearBuffer();
 
         int m_exitcode = -1;
         bool m_quit = false;
 
+        std::deque<gcroot<System::Action^>> m_invokee;
         std::array<Character, 120 * 36> m_buffer;
     };
 }

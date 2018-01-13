@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CivModel;
 using CivModel.Units;
-using CivModel.Districts;
+using CivModel.TileBuildings;
 
 namespace CivPresenter
 {
@@ -17,9 +17,7 @@ namespace CivPresenter
         private readonly Game _game;
         public Game Game => _game;
 
-        public Player Player { get; private set; }
-
-        public Unit FocusedUnit { get; private set; }
+        public Actor FocusedActor { get; private set; }
 
         private Terrain.Point?[] _moveAdjcents = null;
         private int _moveSelectedIndex = -1;
@@ -27,11 +25,13 @@ namespace CivPresenter
         public IReadOnlyList<Terrain.Point?> MoveAdjcents => _moveAdjcents;
         public int MoveSelectedIndex => _moveSelectedIndex;
 
-        private enum State
+        public enum States
         {
-            Normal, Move
+            Normal, Move, SpecialAct
         }
-        private State _state;
+        public States State { get; private set; }
+        public int StateParam { get; private set; }
+
         private Action OnApply;
         private Action OnCancel;
         private Action<Direction> OnArrowKey;
@@ -40,11 +40,12 @@ namespace CivPresenter
         {
             _view = view;
 
-            _game = new Game(100, 100, new Player[] { new Player() });
-            Player = Game.Players[0];
+            _game = new Game(width: 100, height: 100, numOfPlayer: 1);
 
-            FocusedUnit = new Pioneer(Player);
-            FocusedUnit.PlacedPoint = Game.Terrain.GetPoint(50, 50);
+            FocusedActor = new Pioneer(Game.Players[0]);
+            FocusedActor.PlacedPoint = Game.Terrain.GetPoint(50, 50);
+
+            _game.StartTurn();
 
             StateNormal();
         }
@@ -64,19 +65,35 @@ namespace CivPresenter
             OnArrowKey(direction);
         }
 
+        public void CommandRefocus()
+        {
+            View.Refocus();
+        }
+
         public void CommandMove()
         {
-            if (_state != State.Move)
+            if (State != States.Move)
                 StateMove();
+            else
+                OnCancel();
+        }
+
+        public void CommandSpecialAct(int index)
+        {
+            if (State != States.SpecialAct || StateParam != index)
+                StateSpeicalAct(index);
             else
                 OnCancel();
         }
 
         private void StateNormal()
         {
-            _state = State.Normal;
+            State = States.Normal;
 
-            OnApply = () => { };
+            OnApply = () => {
+                Game.EndTurn();
+                Game.StartTurn();
+            };
             OnCancel = () => {
                 View.Shutdown();
             };
@@ -103,15 +120,24 @@ namespace CivPresenter
 
         private void StateMove()
         {
-            _state = State.Move;
-            _moveAdjcents = FocusedUnit.PlacedPoint.Value.Adjacents();
+            if (FocusedActor.MoveAct == null)
+                return;
+
+            State = States.Move;
+            _moveAdjcents = FocusedActor.PlacedPoint.Value.Adjacents();
             _moveSelectedIndex = -1;
 
-            OnApply = () => {
-                if (_moveSelectedIndex != -1)
-                {
-                    FocusedUnit.PlacedPoint = _moveAdjcents[_moveSelectedIndex].Value;
+            for (int i = 0; i < _moveAdjcents.Length; ++i)
+            {
+                int ap = FocusedActor.MoveAct.GetRequiredAP(_moveAdjcents[i]);
+                if (ap == -1 || ap > FocusedActor.RemainAP)
+                    _moveAdjcents[i] = null;
+            }
 
+            OnApply = () => {
+                if (_moveSelectedIndex != -1 && _moveAdjcents[_moveSelectedIndex] != null)
+                {
+                    FocusedActor.MoveAct.Act(_moveAdjcents[_moveSelectedIndex]);
                     OnCancel();
                 }
             };
@@ -148,6 +174,16 @@ namespace CivPresenter
                 if (r != -1)
                     _moveSelectedIndex = r;
             };
+        }
+
+        private void StateSpeicalAct(int index)
+        {
+            if (FocusedActor.SpecialActs == null)
+                return;
+            if (index < 0 || index >= FocusedActor.SpecialActs.Count)
+                return;
+
+            FocusedActor.SpecialActs[index].Act(null);
         }
     }
 }

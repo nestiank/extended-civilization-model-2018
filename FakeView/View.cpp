@@ -8,20 +8,12 @@ namespace FakeView
     View::View(Screen* screen)
         : m_screen(screen)
     {
-#ifndef _DEBUG
-        ::MessageBoxW(nullptr,
-            L"move: m\n"
-            L"focus: f\n"
-            L"scroll screen / select: arrow key\n"
-            L"quit / cancel: ESC",
-            L"info", MB_OK);
-#endif
         m_presenter = gcnew CivPresenter::Presenter(this);
     }
 
     void View::Refocus()
     {
-        auto unit = m_presenter->FocusedUnit;
+        auto unit = m_presenter->FocusedActor;
         if (unit && unit->PlacedPoint.HasValue)
         {
             auto pos = unit->PlacedPoint.Value.Position;
@@ -69,9 +61,13 @@ namespace FakeView
                 int py = dy * 3 + 1;
 
                 PrintTerrain(px, py, point);
-                if (point.PlacedUnit)
+                if (point.TileBuilding)
                 {
-                    PrintUnit(px, py, point.PlacedUnit);
+                    PrintTileBuilding(px, py, point.TileBuilding);
+                }
+                else if (point.Unit)
+                {
+                    PrintUnit(px, py, point.Unit);
                 }
             }
         }
@@ -94,6 +90,21 @@ namespace FakeView
                     }
                 }
             }
+        }
+
+        switch (m_presenter->State)
+        {
+            case CivPresenter::Presenter::States::Normal:
+                m_screen->PrintString(0, scrsz.height - 1, 0b00000111,
+                    "Turn: " + std::to_string(m_presenter->Game->TurnNumber));
+                break;
+            case CivPresenter::Presenter::States::Move:
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Move");
+                break;
+            case CivPresenter::Presenter::States::SpecialAct:
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111,
+                    "SpecialAct: " + std::to_string(m_presenter->StateParam));
+                break;
         }
     }
 
@@ -120,12 +131,17 @@ namespace FakeView
 
             case 'f':
             case 'F':
-                Refocus();
+                m_presenter->CommandRefocus();
                 break;
 
             case 'm':
             case 'M':
                 m_presenter->CommandMove();
+                break;
+
+            case '1':
+            case '!':
+                m_presenter->CommandSpecialAct(0);
                 break;
 
             case '\r':
@@ -142,35 +158,32 @@ namespace FakeView
     {
         auto& c = m_screen->GetChar(px, py);
 
+        c.color = 0b0000'0111;
+
         if (point.Type2 == CivModel::TerrainType2::Mountain)
         {
-            c.ch = ' ';
-            c.color = 0b0111'0000;
+            c.ch = '^';
         }
         else
         {
             switch (point.Type1)
             {
                 case CivModel::TerrainType1::Flatland:
-                    c.ch = ' ';
-                    c.color = 0b0011'0000;
+                    c.ch = '-';
                     break;
                 case CivModel::TerrainType1::Grass:
-                    c.ch = ' ';
-                    c.color = 0b0010'0000;
+                    c.ch = '*';
                     break;
                 case CivModel::TerrainType1::Swamp:
-                    c.ch = ' ';
-                    c.color = 0b0110'0000;
+                    c.ch = '@';
                     break;
                 case CivModel::TerrainType1::Tundra:
-                    c.ch = ' ';
-                    c.color = 0b0100'0000;
+                    c.ch = '#';
                     break;
             }
             if (point.Type2 == CivModel::TerrainType2::Hill)
             {
-                c.color |= 0b1000'0000;
+                c.color |= 0b0000'1000;
             }
         }
     }
@@ -193,9 +206,20 @@ namespace FakeView
         }
     }
 
-    void View::PrintDistrict(int px, int py, CivModel::District^ district)
+    void View::PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding)
     {
-
+        auto& c = m_screen->GetChar(px, py);
+        if (auto b = dynamic_cast<CivModel::TileBuildings::CityCenter^>(tileBuilding))
+        {
+            c.color &= 0x0f;
+            c.color |= 0b0010'0000;
+        }
+        else
+        {
+            System::Diagnostics::Debug::WriteLine(L"unqualified tileBuilding in PrintTileBuilding()");
+            c.color &= 0x0f;
+            c.color |= 0b0111'0000;
+        }
     }
 
     std::pair<int, int> View::TerrainToScreen(int x, int y)

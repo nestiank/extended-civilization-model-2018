@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel
+namespace CivModel.TileBuildings
 {
-    public abstract class District : TileObject
+    public class CityCenter : TileBuilding
     {
         private readonly Player _owner;
-        public Player Owner => _owner;
+        public override Player Owner => _owner;
 
-        public District(Player owner) : base(TileTag.District)
+        public CityCenter(Player owner)
         {
             _owner = owner;
+            _owner.Cities.Add(this);
         }
     }
 }
