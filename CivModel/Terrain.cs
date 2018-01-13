@@ -40,8 +40,8 @@ namespace CivModel
 
             public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
             public TerrainType2 Type2 => Terrain._points[Position.X, Position.Y].Type2;
-            public Unit PlacedUnit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
-            public District District => (District)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.District];
+            public Unit Unit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
+            public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.TileBuilding];
 
             public Point(Terrain terrain, Position pos)
             {
@@ -146,6 +146,10 @@ namespace CivModel
             return new Terrain.Point(this, pos);
         }
 
+        /// <summary>
+        /// this function is used by the setter of <see cref="TileObject.PlacedPoint"/>.
+        /// In general case you should use <see cref="TileObject.PlacedPoint"/> instead.
+        /// </summary>
         public void PlaceObject(TileObject obj)
         {
             var p = obj.PlacedPoint
@@ -160,6 +164,10 @@ namespace CivModel
             _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = obj;
         }
 
+        /// <summary>
+        /// this function is used by the setter of <see cref="TileObject.PlacedPoint"/>.
+        /// In general case you should use <see cref="TileObject.PlacedPoint"/> instead.
+        /// </summary>
         public void UnplaceObject(TileObject obj, Point p)
         {
             if (obj.PlacedPoint != null)

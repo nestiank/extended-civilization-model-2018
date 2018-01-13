@@ -9,7 +9,7 @@ namespace CivModel
     public enum TileTag
     {
         Unit,
-        District
+        TileBuilding
     }
 
     public abstract class TileObject

@@ -6,3 +6,7 @@
 
 #include <cstdlib>
 #include <array>
+#include <string>
+#include <deque>
+
+#include <vcclr.h>

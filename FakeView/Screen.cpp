@@ -22,7 +22,7 @@ namespace FakeView
             view->Render();
             DrawBuffer();
 
-            while (!_kbhit())
+            while (!_kbhit() && m_invokee.empty())
             {
                 DWORD nowTick = GetTickCount();
                 if (nowTick - prevTick >= 100)
@@ -41,16 +41,30 @@ namespace FakeView
                 }
             }
 
-            int ch = _getch();
-            if (ch == 0 || ch == 0xe0)
+            if (_kbhit())
             {
-                ch = _getch() | 0x0100;
-            }
+                int ch = _getch();
+                if (ch == 0 || ch == 0xe0)
+                {
+                    ch = _getch() | 0x0100;
+                }
 
-            view->OnKeyStroke(ch);
+                view->OnKeyStroke(ch);
+            }
+            else //if (!m_invokee.empty())
+            {
+                System::Action^ act = m_invokee.front();
+                m_invokee.pop_front();
+                act();
+            }
         }
 
         return m_exitcode;
+    }
+
+    void Screen::Invoke(System::Action^ act)
+    {
+        m_invokee.push_back(act);
     }
 
     void Screen::ClearBuffer()
@@ -125,5 +139,20 @@ namespace FakeView
             csbi.srWindow.Bottom - csbi.srWindow.Top + 1
         };*/
         return { 120, 36 };
+    }
+
+    void Screen::PrintString(int x, int y, unsigned char color, const std::string& str)
+    {
+        auto scrsz = GetSize();
+        std::size_t bufidx = x + y * scrsz.width;
+        for (std::size_t idx = 0; idx < str.size(); ++idx)
+        {
+            if (bufidx >= m_buffer.size())
+                break;
+
+            m_buffer[bufidx].ch = str[idx];
+            m_buffer[bufidx].color = color;
+            ++bufidx;
+        }
     }
 }

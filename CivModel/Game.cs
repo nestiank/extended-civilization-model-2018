@@ -6,50 +6,68 @@ using System.Text;
 
 namespace CivModel
 {
-    public class GameFactory
-    {
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public List<Player> Players { get; set; }
-        
-        public Game Create()
-        {
-            return new Game(Width, Height, Players);
-        }
-    }
-
     public class Game
     {
+        public double GoldCoefficient => 1;
+        public double PopulationCoefficient => 1;
+        public double HappinessCoefficient => 1;
+        public double LaborCoefficient1 => 1;
+        public double LaborCoefficient2 => 0;
+
         private readonly Terrain _terrain;
         public Terrain Terrain => _terrain;
 
         private List<Player> _players = new List<Player>();
         public IReadOnlyList<Player> Players => _players;
 
-        public int TurnNumber { get; private set; }
-        public int PrettyTurnNumber => TurnNumber / Players.Count;
+        public int SubTurnNumber { get; private set; } = 0;
+        public int TurnNumber => SubTurnNumber / Players.Count;
 
-        public Player PlayerInTurn => Players[TurnNumber % Players.Count];
+        public bool IsInsideTurn { get; private set; } = false;
+        public Player PlayerInTurn => Players[SubTurnNumber % Players.Count];
 
-        public Game(int width, int height, IEnumerable<Player> players)
+        public Game(int width, int height, int numOfPlayer)
         {
-            _terrain = new Terrain(width, height);
-            _players.AddRange(players);
+            if (width <= 0)
+                throw new ArgumentException("width must be positive");
+            if (height <= 0)
+                throw new ArgumentException("width must be positive");
+            if (numOfPlayer <= 0)
+                throw new ArgumentException("width must be positive");
 
-            TurnNumber = 0;
-            StartTurn();
+            _terrain = new Terrain(width, height);
+            for (int i = 0; i < numOfPlayer; ++i)
+            {
+                _players.Add(new Player(this));
+            }
         }
 
         public void StartTurn()
         {
+            if (SubTurnNumber % Players.Count == 0)
+            {
+                foreach (Player p in Players)
+                {
+                    foreach (var unit in p.Units)
+                        unit.PreTurn();
+                    foreach (var city in p.Cities)
+                        city.PreTurn();
+
+                    p.PreTurn();
+                }
+            }
+
             foreach (Player p in Players)
             {
-                foreach (Unit unit in p.Units)
-                {
-                    unit.PreTurn();
-                }
-                p.PreTurn();
+                foreach (var unit in p.Units)
+                    unit.PrePlayerSubTurn(PlayerInTurn);
+                foreach (var city in p.Cities)
+                    city.PrePlayerSubTurn(PlayerInTurn);
+
+                p.PrePlayerSubTurn(PlayerInTurn);
             }
+
+            IsInsideTurn = true;
         }
 
         public void EndTurn()
@@ -57,13 +75,28 @@ namespace CivModel
             foreach (Player p in Players)
             {
                 p.PostTurn();
-                foreach (Unit unit in p.Units)
-                {
+
+                foreach (var unit in p.Units)
                     unit.PostTurn();
+                foreach (var city in p.Cities)
+                    city.PostTurn();
+            }
+
+            if ((SubTurnNumber + 1) % Players.Count == 0)
+            {
+                foreach (Player p in Players)
+                {
+                    p.PostPlayerSubTurn(PlayerInTurn);
+
+                    foreach (var unit in p.Units)
+                        unit.PostPlayerSubTurn(PlayerInTurn);
+                    foreach (var city in p.Cities)
+                        city.PostPlayerSubTurn(PlayerInTurn);
                 }
             }
 
-            ++TurnNumber;
+            ++SubTurnNumber;
+            IsInsideTurn = false;
         }
     }
 }

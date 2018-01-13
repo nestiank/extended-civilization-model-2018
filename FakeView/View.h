@@ -20,7 +20,7 @@ namespace FakeView
     private:
         void PrintTerrain(int px, int py, CivModel::Terrain::Point point);
         void PrintUnit(int px, int py, CivModel::Unit^ unit);
-        void PrintDistrict(int px, int py, CivModel::District^ district);
+        void PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding);
 
         std::pair<int, int> TerrainToScreen(int x, int y);
 

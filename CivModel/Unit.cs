@@ -6,27 +6,24 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
-    public abstract class Unit : TileObject
+    public abstract class Unit : Actor
     {
         private readonly Player _owner;
-        public Player Owner => _owner;
+        public override Player Owner => _owner;
 
-        public int MaxAction => 2;
-        public int RemainAction { get; private set; }
+        private readonly IActorAction _moveAct;
+        public override IActorAction MoveAct => _moveAct;
+
+        public override IActorAction AttackAct => null;
+
+        public override IReadOnlyList<IActorAction> SpecialActs => null;
 
         public Unit(Player owner) : base(TileTag.Unit)
         {
             _owner = owner;
-        }
+            _moveAct = new MoveActorAction(this);
 
-        public void PreTurn()
-        {
-            RemainAction = MaxAction;
-        }
-
-        public void PostTurn()
-        {
-
+            _owner.Units.Add(this);
         }
     }
 }

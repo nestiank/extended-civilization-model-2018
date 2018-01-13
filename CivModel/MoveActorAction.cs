@@ -1,0 +1,46 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CivModel
+{
+    public class MoveActorAction : IActorAction
+    {
+        public bool IsParametered => true;
+
+        private readonly Actor _owner;
+
+        public MoveActorAction(Actor owner)
+        {
+            _owner = owner;
+        }
+
+        public int GetRequiredAP(Terrain.Point? pt)
+        {
+            if (pt is Terrain.Point p1 && _owner.PlacedPoint is Terrain.Point p2)
+            {
+                return Math.Abs(p1.Position.X - p2.Position.X)
+                    + Math.Abs(p1.Position.Y - p2.Position.Y);
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        public void Act(Terrain.Point? pt)
+        {
+            int requiredAP = GetRequiredAP(pt);
+
+            if (requiredAP == -1)
+                throw new ArgumentException("parameter is invalid");
+            if (!_owner.PlacedPoint.HasValue)
+                throw new InvalidOperationException("Actor is not placed yet");
+
+            _owner.ConsumeAP(requiredAP);
+            _owner.PlacedPoint = pt;
+        }
+    }
+}
