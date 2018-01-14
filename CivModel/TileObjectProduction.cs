@@ -7,19 +7,16 @@ using CivModel.TileBuildings;
 
 namespace CivModel
 {
-    public class UnitProduction : Production
+    public class TileObjectProduction<T> : Production where T : TileObject
     {
-        private readonly Func<Unit> _supplier;
-
-        public UnitProduction(Player owner, double totalCost, double capacityPerTurn, Func<Unit> supplier)
+        public TileObjectProduction(Player owner, double totalCost, double capacityPerTurn)
             : base(owner, totalCost, capacityPerTurn)
         {
-            _supplier = supplier ?? throw new ArgumentNullException("Production ctor: supplier cannot be null");
         }
 
         public override bool IsPlacable(Terrain.Point point)
         {
-            if (point.Unit != null)
+            if (point.Unit == null)
                 if (point.TileBuilding is CityCenter city)
                     return city.Owner == Owner;
             return false;
@@ -30,7 +27,7 @@ namespace CivModel
             if (!IsPlacable(point))
                 throw new ArgumentException("Production.Place: point is invalid");
 
-            var unit = _supplier();
+            var unit = (Unit)Activator.CreateInstance(typeof(T), Owner);
             unit.PlacedPoint = point;
         }
     }

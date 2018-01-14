@@ -21,6 +21,25 @@ namespace CivModel
         {
             return string.Format("({0},{1})", X, Y);
         }
+
+        public static bool operator ==(Position lhs, Position rhs)
+        {
+            return lhs.X == rhs.X && lhs.Y == rhs.Y;
+        }
+        public static bool operator !=(Position lhs, Position rhs)
+        {
+            return !(lhs == rhs);
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is Position other)
+                return this == other;
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return X * 17 + Y;
+        }
     }
 
     public class Terrain
@@ -55,6 +74,28 @@ namespace CivModel
             public override string ToString()
             {
                 return Position.ToString();
+            }
+
+            public static bool operator ==(Point lhs, Point rhs)
+            {
+                return lhs.Terrain == rhs.Terrain && lhs.Position == rhs.Position;
+            }
+            public static bool operator !=(Point lhs, Point rhs)
+            {
+                return !(lhs == rhs);
+            }
+            public override bool Equals(object obj)
+            {
+                if (obj is Point other)
+                    return this == other;
+                return false;
+            }
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return Terrain.GetHashCode() * 17 + Position.GetHashCode();
+                }
             }
 
             /// <summary>

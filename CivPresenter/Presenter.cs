@@ -17,7 +17,10 @@ namespace CivPresenter
         private readonly Game _game;
         public Game Game => _game;
 
-        public Actor FocusedActor { get; private set; }
+        private Actor _selectedActor;
+        public Actor SelectedActor => _selectedActor?.PlacedPoint != null ? _selectedActor : null;
+
+        public Terrain.Point FocusedPoint { get; private set; }
 
         private Terrain.Point?[] _moveAdjcents = null;
         private int _moveSelectedIndex = -1;
@@ -25,9 +28,18 @@ namespace CivPresenter
         public IReadOnlyList<Terrain.Point?> MoveAdjcents => _moveAdjcents;
         public int MoveSelectedIndex => _moveSelectedIndex;
 
+        public int SelectedDeploy { get; private set; } = -1;
+        public int SelectedProduction { get; private set; } = -1;
+        public bool IsProductCancelling { get; private set; } = false;
+
+        public IReadOnlyList<IProductionFactory> AvailableProduction { get; private set; }
+
+        public Production DeployProduction { get; private set; }
+
         public enum States
         {
-            Normal, Move, SpecialAct
+            Normal, Move, SpecialAct,
+            ProductUI, ProductAdd, Deploy
         }
         public States State { get; private set; }
         public int StateParam { get; private set; }
@@ -35,6 +47,7 @@ namespace CivPresenter
         private Action OnApply;
         private Action OnCancel;
         private Action<Direction> OnArrowKey;
+        private Action<int> OnNumeric;
 
         public Presenter(IView view)
         {
@@ -42,10 +55,12 @@ namespace CivPresenter
 
             _game = new Game(width: 100, height: 100, numOfPlayer: 1);
 
-            FocusedActor = new Pioneer(Game.Players[0]);
-            FocusedActor.PlacedPoint = Game.Terrain.GetPoint(50, 50);
+            _selectedActor = new Pioneer(Game.Players[0]);
+            _selectedActor.PlacedPoint = Game.Terrain.GetPoint(50, 50);
 
             _game.StartTurn();
+
+            FocusedPoint = Game.Terrain.GetPoint(0, 0);
 
             StateNormal();
         }
@@ -65,9 +80,23 @@ namespace CivPresenter
             OnArrowKey(direction);
         }
 
+        public void CommandNumeric(int index)
+        {
+            OnNumeric(index);
+        }
+
         public void CommandRefocus()
         {
-            View.Refocus();
+            if (SelectedActor != null)
+                FocusedPoint = SelectedActor.PlacedPoint.Value;
+        }
+
+        public void CommandSelect()
+        {
+            if (FocusedPoint.Unit != null)
+            {
+                _selectedActor = FocusedPoint.Unit;
+            }
         }
 
         public void CommandMove()
@@ -78,12 +107,33 @@ namespace CivPresenter
                 OnCancel();
         }
 
-        public void CommandSpecialAct(int index)
+        public void CommandProductUI()
         {
-            if (State != States.SpecialAct || StateParam != index)
-                StateSpeicalAct(index);
+            if (State != States.ProductUI)
+                StateProductUI();
             else
                 OnCancel();
+        }
+
+        private void MoveSight(Direction direction)
+        {
+            var pos = FocusedPoint.Position;
+            switch (direction)
+            {
+                case Direction.Up:
+                    pos.Y = Math.Max(pos.Y - 1, 0);
+                    break;
+                case Direction.Down:
+                    pos.Y = Math.Min(pos.Y + 1, Game.Terrain.Height - 1);
+                    break;
+                case Direction.Left:
+                    pos.X = Math.Max(pos.X - 1, 0);
+                    break;
+                case Direction.Right:
+                    pos.X = Math.Min(pos.X + 1, Game.Terrain.Width - 1);
+                    break;
+            }
+            FocusedPoint = Game.Terrain.GetPoint(pos);
         }
 
         private void StateNormal()
@@ -98,52 +148,47 @@ namespace CivPresenter
                 View.Shutdown();
             };
             OnArrowKey = direction => {
-                int dx = 0, dy = 0;
-                switch (direction)
-                {
-                    case Direction.Up:
-                        dy = -1;
-                        break;
-                    case Direction.Down:
-                        dy = 1;
-                        break;
-                    case Direction.Left:
-                        dx = -1;
-                        break;
-                    case Direction.Right:
-                        dx = 1;
-                        break;
-                }
-                View.MoveSight(dx, dy);
+                MoveSight(direction);
+            };
+            OnNumeric = index => {
+                if (State != States.SpecialAct || StateParam != index)
+                    StateSpeicalAct(index);
+                else
+                    OnCancel();
             };
         }
 
         private void StateMove()
         {
-            if (FocusedActor.MoveAct == null)
+            if (SelectedActor?.MoveAct == null)
                 return;
 
             State = States.Move;
-            _moveAdjcents = FocusedActor.PlacedPoint.Value.Adjacents();
+
+            _moveAdjcents = SelectedActor.PlacedPoint.Value.Adjacents();
             _moveSelectedIndex = -1;
 
             for (int i = 0; i < _moveAdjcents.Length; ++i)
             {
-                int ap = FocusedActor.MoveAct.GetRequiredAP(_moveAdjcents[i]);
-                if (ap == -1 || ap > FocusedActor.RemainAP)
+                int ap = SelectedActor.MoveAct.GetRequiredAP(_moveAdjcents[i]);
+                if (ap == -1 || ap > SelectedActor.RemainAP)
                     _moveAdjcents[i] = null;
             }
 
+            Action clear = () => {
+                _moveAdjcents = null;
+                _moveSelectedIndex = -1;
+            };
             OnApply = () => {
                 if (_moveSelectedIndex != -1 && _moveAdjcents[_moveSelectedIndex] != null)
                 {
-                    FocusedActor.MoveAct.Act(_moveAdjcents[_moveSelectedIndex]);
+                    SelectedActor.MoveAct.Act(_moveAdjcents[_moveSelectedIndex]);
+                    CommandRefocus();
                     OnCancel();
                 }
             };
             OnCancel = () => {
-                _moveAdjcents = null;
-                _moveSelectedIndex = -1;
+                clear();
                 StateNormal();
             };
             OnArrowKey = direction => {
@@ -174,16 +219,189 @@ namespace CivPresenter
                 if (r != -1)
                     _moveSelectedIndex = r;
             };
+            OnNumeric = index => {
+            };
         }
 
         private void StateSpeicalAct(int index)
         {
-            if (FocusedActor.SpecialActs == null)
+            if (SelectedActor?.SpecialActs == null)
                 return;
-            if (index < 0 || index >= FocusedActor.SpecialActs.Count)
+            if (index < 0 || index >= SelectedActor.SpecialActs.Count)
                 return;
 
-            FocusedActor.SpecialActs[index].Act(null);
+            SelectedActor.SpecialActs[index].Act(null);
+        }
+
+        private void StateProductUI()
+        {
+            State = States.ProductUI;
+
+            SelectedDeploy = -1;
+            SelectedProduction = -1;
+            IsProductCancelling = false;
+
+            Action clear = () => {
+                SelectedDeploy = -1;
+                SelectedProduction = -1;
+                IsProductCancelling = false;
+            };
+            OnApply = () => {
+                if (IsProductCancelling)
+                {
+                    var node = Game.PlayerInTurn.Production.First;
+                    for (int i = 0; i < SelectedProduction; ++i)
+                        node = node.Next;
+                    Game.PlayerInTurn.Production.Remove(node);
+
+                    IsProductCancelling = false;
+                    SelectedProduction = -1;
+                }
+                else if (SelectedDeploy != -1)
+                {
+                    var node = Game.PlayerInTurn.Deployment.First;
+                    for (int i = 0; i < SelectedDeploy; ++i)
+                        node = node.Next;
+                    clear();
+                    StateDeploy(node);
+                }
+                else if (SelectedProduction != -1)
+                {
+                    IsProductCancelling = true;
+                }
+                else
+                {
+                    clear();
+                    StateProductAdd();
+                }
+            };
+            OnCancel = () => {
+                if (IsProductCancelling)
+                {
+                    IsProductCancelling = false;
+                }
+                else
+                {
+                    clear();
+                    StateNormal();
+                }
+            };
+            OnArrowKey = direction => {
+                if (IsProductCancelling)
+                    return;
+
+                switch (direction)
+                {
+                    case Direction.Up:
+                        if (SelectedProduction >= 0)
+                        {
+                            if (--SelectedProduction == -1)
+                            {
+                                if (Game.PlayerInTurn.Deployment.Count != 0)
+                                    SelectedDeploy = 0;
+                            }
+                        }
+                        else if (SelectedDeploy >= 0)
+                        {
+                            --SelectedDeploy;
+                        }
+                        break;
+                    case Direction.Down:
+                        if (SelectedProduction == -1)
+                        {
+                            if (++SelectedDeploy >= Game.PlayerInTurn.Deployment.Count)
+                            {
+                                SelectedDeploy = -1;
+                                if (Game.PlayerInTurn.Production.Count != 0)
+                                    SelectedProduction = 0;
+                            }
+                        }
+                        else if (SelectedProduction + 1 < Game.PlayerInTurn.Production.Count)
+                        {
+                            ++SelectedProduction;
+                        }
+                        break;
+                }
+            };
+            OnNumeric = index => {
+                if (IsProductCancelling)
+                    return;
+
+                if (index < Game.PlayerInTurn.Deployment.Count)
+                {
+                    SelectedDeploy = index;
+                    SelectedProduction = 0;
+                }
+            };
+        }
+
+        private void StateProductAdd()
+        {
+            State = States.ProductAdd;
+
+            AvailableProduction = Game.PlayerInTurn.GetAvailableProduction();
+            SelectedProduction = -1;
+
+            Action clear = () => {
+                AvailableProduction = null;
+            };
+            OnApply = () => {
+                if (SelectedProduction != -1)
+                {
+                    var production = AvailableProduction[SelectedProduction].Create(Game.PlayerInTurn);
+                    Game.PlayerInTurn.Production.AddLast(production);
+                }
+                OnCancel();
+            };
+            OnCancel = () => {
+                clear();
+                StateProductUI();
+            };
+            OnArrowKey = direction => {
+                switch (direction)
+                {
+                    case Direction.Up:
+                        if (SelectedProduction >= 0)
+                            --SelectedProduction;
+                        break;
+                    case Direction.Down:
+                        if (SelectedProduction + 1 < AvailableProduction.Count)
+                            ++SelectedProduction;
+                        break;
+                }
+            };
+            OnNumeric = index => {
+                if (index < AvailableProduction.Count)
+                    SelectedProduction = index;
+            };
+        }
+
+        private void StateDeploy(LinkedListNode<Production> node)
+        {
+            State = States.Deploy;
+
+            DeployProduction = node.Value;
+
+            Action clear = () => {
+                DeployProduction = null;
+            };
+            OnApply = () => {
+                if (DeployProduction.IsPlacable(FocusedPoint))
+                {
+                    Game.PlayerInTurn.Deployment.Remove(node);
+                    DeployProduction.Place(FocusedPoint);
+                    OnCancel();
+                }
+            };
+            OnCancel = () => {
+                clear();
+                StateNormal();
+            };
+            OnArrowKey = direction => {
+                MoveSight(direction);
+            };
+            OnNumeric = index => {
+            };
         }
     }
 }

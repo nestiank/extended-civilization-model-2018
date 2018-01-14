@@ -21,13 +21,16 @@ namespace CivModel
         {
             if (pt is Terrain.Point p1 && _owner.PlacedPoint is Terrain.Point p2)
             {
-                return Math.Abs(p1.Position.X - p2.Position.X)
-                    + Math.Abs(p1.Position.Y - p2.Position.Y);
+                foreach (var p in p1.Adjacents())
+                {
+                    if (p == p2)
+                    {
+                        return 1;
+                    }
+                }
             }
-            else
-            {
-                return -1;
-            }
+
+            return -1;
         }
 
         public void Act(Terrain.Point? pt)

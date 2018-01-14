@@ -13,9 +13,7 @@ namespace CivModel
 
         private readonly IActorAction _moveAct;
         public override IActorAction MoveAct => _moveAct;
-
         public override IActorAction AttackAct => null;
-
         public override IReadOnlyList<IActorAction> SpecialActs => null;
 
         public Unit(Player owner) : base(TileTag.Unit)

@@ -11,23 +11,6 @@ namespace FakeView
         m_presenter = gcnew CivPresenter::Presenter(this);
     }
 
-    void View::Refocus()
-    {
-        auto unit = m_presenter->FocusedActor;
-        if (unit && unit->PlacedPoint.HasValue)
-        {
-            auto pos = unit->PlacedPoint.Value.Position;
-            m_sightx = pos.X;
-            m_sighty = pos.Y;
-        }
-    }
-
-    void View::MoveSight(int dx, int dy)
-    {
-        m_sightx += dx;
-        m_sighty += dy;
-    }
-
     void View::Shutdown()
     {
         m_screen->Quit(0);
@@ -35,13 +18,29 @@ namespace FakeView
 
     void View::Render()
     {
+        switch (m_presenter->State)
+        {
+            case CivPresenter::Presenter::States::ProductUI:
+                RenderProductUI();
+                break;
+            case CivPresenter::Presenter::States::ProductAdd:
+                RenderProductAdd();
+                break;
+            default:
+                RenderNormal();
+                break;
+        }
+    }
+
+    void View::RenderNormal()
+    {
         auto scrsz = m_screen->GetSize();
 
         int sx = scrsz.width / 3;
         int sy = scrsz.height / 3;
 
-        int bx = m_sightx - (sx / 2);
-        int by = m_sighty - (sy / 2);
+        int bx = m_presenter->FocusedPoint.Position.X - (sx / 2);
+        int by = m_presenter->FocusedPoint.Position.Y - (sy / 2);
 
         for (int dy = 0; dy < sy; ++dy)
         {
@@ -65,7 +64,7 @@ namespace FakeView
                 {
                     PrintTileBuilding(px, py, point.TileBuilding);
                 }
-                else if (point.Unit)
+                if (point.Unit)
                 {
                     PrintUnit(px, py, point.Unit);
                 }
@@ -83,18 +82,20 @@ namespace FakeView
                     auto pc = m_screen->TryGetChar(pt.first, pt.second);
                     if (pc)
                     {
-                        pc->color = 0b00010110;
+                        pc->color = 0b0001'0110;
 
                         if (i == m_presenter->MoveSelectedIndex)
-                            pc->color |= 0b10001000;
+                            pc->color |= 0b1000'1000;
                     }
                 }
             }
         }
 
+        auto ptcenter = TerrainToScreen(bx + (sx / 2), by + (sy / 2));
         switch (m_presenter->State)
         {
             case CivPresenter::Presenter::States::Normal:
+                m_screen->GetChar(ptcenter.first, ptcenter.second).color |= 0b1000'1000;
                 m_screen->PrintString(0, scrsz.height - 1, 0b00000111,
                     "Turn: " + std::to_string(m_presenter->Game->TurnNumber));
                 break;
@@ -105,6 +106,133 @@ namespace FakeView
                 m_screen->PrintString(0, scrsz.height - 1, 0b00001111,
                     "SpecialAct: " + std::to_string(m_presenter->StateParam));
                 break;
+            case CivPresenter::Presenter::States::Deploy:
+                m_screen->GetChar(ptcenter.first, ptcenter.second).color |= 0b1000'1000;
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Deploy");
+                break;
+        }
+    }
+
+    void View::RenderProductUI()
+    {
+        auto scrsz = m_screen->GetSize();
+
+        int y = 0;
+        m_screen->PrintString(0, y, 0b00001111, "Production UI");
+
+        auto player = m_presenter->Game->PlayerInTurn;
+
+        unsigned color = 0b0000'0111;
+        if (m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
+            color = 0b1111'0000;
+        y = 2;
+        m_screen->PrintString(0, y, color, "Add Production");
+
+        int idx = 0;
+        y = 3;
+        for (auto node = player->Deployment->First; node != nullptr; node = node->Next)
+        {
+            if (y >= scrsz.height)
+                return;
+
+            std::string msg;
+            if (auto product = dynamic_cast<CivModel::TileObjectProduction<CivModel::Units::Pioneer^>^>(node->Value))
+            {
+                msg = "Pioneer";
+            }
+            else
+            {
+                System::Diagnostics::Debug::WriteLine(L"unqualified production in RenderProductUI()");
+                msg = "????";
+            }
+
+            msg += " (completed)";
+
+            unsigned char color = 0b0000'0111;
+            if (m_presenter->SelectedDeploy == idx)
+                color = 0b1111'0000;
+
+            m_screen->PrintString(0, y, color, msg);
+
+            ++idx;
+            ++y;
+        }
+
+        idx = 0;
+        for (auto node = player->Production->First; node != nullptr; node = node->Next)
+        {
+            if (y >= scrsz.height)
+                return;
+
+            std::string msg;
+            if (auto product = dynamic_cast<CivModel::TileObjectProduction<CivModel::Units::Pioneer^>^>(node->Value))
+            {
+                msg = "Pioneer";
+            }
+            else
+            {
+                System::Diagnostics::Debug::WriteLine(L"unqualified production in RenderProductUI()");
+                msg = "????";
+            }
+
+            msg += " " + std::to_string(node->Value->LaborInputed) + " / " + std::to_string(node->Value->TotalCost);
+            msg += " (+" + std::to_string(node->Value->CapacityPerTurn) + ")";
+
+            unsigned char color = 0b0000'0111;
+            if (m_presenter->SelectedProduction == idx)
+                color = 0b1111'0000;
+
+            m_screen->PrintString(0, y, color, msg);
+
+            ++idx;
+            ++y;
+        }
+
+        if (m_presenter->IsProductCancelling)
+        {
+            m_screen->PrintString(0, scrsz.height - 1, 0b0000'1111, "press Enter again to cancel production");
+        }
+    }
+
+    void View::RenderProductAdd()
+    {
+        auto scrsz = m_screen->GetSize();
+
+        int y = 0;
+        m_screen->PrintString(0, y, 0b00001111, "Add Production");
+
+        unsigned color = 0b0000'0111;
+        if (m_presenter->SelectedProduction == -1)
+            color = 0b1111'0000;
+        y = 2;
+        m_screen->PrintString(0, y, color, "Cancel");
+
+        y = 3;
+        for (int idx = 0; idx < m_presenter->AvailableProduction->Count; ++idx)
+        {
+            if (y >= scrsz.height)
+                return;
+
+            auto value = m_presenter->AvailableProduction[idx];
+
+            std::string msg;
+            if (auto product = dynamic_cast<CivModel::Units::PioneerProductionFactory^>(value))
+            {
+                msg = "Pioneer";
+            }
+            else
+            {
+                System::Diagnostics::Debug::WriteLine(L"unqualified production in RenderProductUI()");
+                msg = "????";
+            }
+
+            unsigned char color = 0b0000'1111;
+            if (m_presenter->SelectedProduction == idx)
+                color = ~color;
+
+            m_screen->PrintString(0, y, color, msg);
+
+            ++y;
         }
     }
 
@@ -134,18 +262,51 @@ namespace FakeView
                 m_presenter->CommandRefocus();
                 break;
 
+            case 's':
+            case 'S':
+                m_presenter->CommandSelect();
+                break;
+
             case 'm':
             case 'M':
                 m_presenter->CommandMove();
                 break;
 
-            case '1':
-            case '!':
-                m_presenter->CommandSpecialAct(0);
+            case 'p':
+            case 'P':
+                m_presenter->CommandProductUI();
                 break;
 
             case '\r':
                 m_presenter->CommandApply();
+                break;
+
+            case '1':
+                m_presenter->CommandNumeric(0);
+                break;
+            case '2':
+                m_presenter->CommandNumeric(1);
+                break;
+            case '3':
+                m_presenter->CommandNumeric(2);
+                break;
+            case '4':
+                m_presenter->CommandNumeric(3);
+                break;
+            case '5':
+                m_presenter->CommandNumeric(4);
+                break;
+            case '6':
+                m_presenter->CommandNumeric(5);
+                break;
+            case '7':
+                m_presenter->CommandNumeric(6);
+                break;
+            case '8':
+                m_presenter->CommandNumeric(7);
+                break;
+            case '9':
+                m_presenter->CommandNumeric(8);
                 break;
         }
     }
@@ -229,8 +390,8 @@ namespace FakeView
         int sx = scrsz.width / 3;
         int sy = scrsz.height / 3;
 
-        int bx = m_sightx - (sx / 2);
-        int by = m_sighty - (sy / 2);
+        int bx = m_presenter->FocusedPoint.Position.X - (sx / 2);
+        int by = m_presenter->FocusedPoint.Position.Y - (sy / 2);
 
         int dx = x - bx;
         int dy = y - by;

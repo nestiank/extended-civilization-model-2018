@@ -57,4 +57,19 @@ namespace CivModel.Units
             }
         }
     }
+
+    public class PioneerProductionFactory : IProductionFactory
+    {
+        private static Lazy<PioneerProductionFactory> _instance
+            = new Lazy<PioneerProductionFactory>(() => new PioneerProductionFactory());
+        public static PioneerProductionFactory Instance => _instance.Value;
+
+        private PioneerProductionFactory()
+        {
+        }
+        public Production Create(Player owner)
+        {
+            return new TileObjectProduction<Pioneer>(owner, 5, 2);
+        }
+    }
 }

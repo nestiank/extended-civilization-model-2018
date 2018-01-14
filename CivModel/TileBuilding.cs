@@ -12,7 +12,6 @@ namespace CivModel
 
         public override IActorAction MoveAct => null;
         public override IActorAction AttackAct => null;
-
         public override IReadOnlyList<IActorAction> SpecialActs => null;
 
         public TileBuilding() : base(TileTag.TileBuilding)

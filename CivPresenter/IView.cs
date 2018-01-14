@@ -14,9 +14,6 @@ namespace CivPresenter
 
     public interface IView
     {
-        void Refocus();
-        void MoveSight(int dx, int dy);
-
         void Shutdown();
     }
 }
