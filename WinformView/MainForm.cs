@@ -39,7 +39,7 @@ namespace WinformView
 
         public void Refocus()
         {
-            var unit = presenter_.FocusedActor;
+            var unit = presenter_.SelectedActor;
             if (unit != null && unit.PlacedPoint.HasValue)
             {
                 var pos = unit.PlacedPoint.Value.Position;

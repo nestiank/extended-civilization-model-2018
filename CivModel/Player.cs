@@ -43,6 +43,11 @@ namespace CivModel
             _game = game;
         }
 
+        public IReadOnlyList<IProductionFactory> GetAvailableProduction()
+        {
+            return Cities.SelectMany(city => city.AvailableProduction).Distinct().ToArray();
+        }
+
         public void PreTurn()
         {
         }
@@ -75,9 +80,10 @@ namespace CivModel
                 labor -= node.Value.InputLabor(labor);
                 if (node.Value.Completed)
                 {
+                    var tmp = node;
                     node = node.Next;
-                    Production.Remove(node);
-                    Deployment.AddLast(node.Value);
+                    Production.Remove(tmp);
+                    Deployment.AddLast(tmp.Value);
                 }
                 else
                 {

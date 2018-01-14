@@ -9,8 +9,6 @@ namespace FakeView
     public:
         explicit View(Screen* screen);
 
-        virtual void Refocus();
-        virtual void MoveSight(int dx, int dy);
         virtual void Shutdown();
 
         virtual void Render();
@@ -18,6 +16,10 @@ namespace FakeView
         virtual void OnTick();
 
     private:
+        void RenderNormal();
+        void RenderProductUI();
+        void RenderProductAdd();
+
         void PrintTerrain(int px, int py, CivModel::Terrain::Point point);
         void PrintUnit(int px, int py, CivModel::Unit^ unit);
         void PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding);
@@ -25,9 +27,6 @@ namespace FakeView
         std::pair<int, int> TerrainToScreen(int x, int y);
 
         CivPresenter::Presenter^ m_presenter;
-
-        int m_sightx = 0;
-        int m_sighty = 0;
 
         Screen* m_screen;
     };

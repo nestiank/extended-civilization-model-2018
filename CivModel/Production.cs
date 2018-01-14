@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
+    public interface IProductionFactory
+    {
+        Production Create(Player owner);
+    }
+
     public abstract class Production
     {
         private readonly Player _owner;
@@ -48,7 +53,7 @@ namespace CivModel
 
             LaborInputed += labor;
             if (LaborInputed >= TotalCost)
-                Completed = false;
+                Completed = true;
 
             return labor;
         }

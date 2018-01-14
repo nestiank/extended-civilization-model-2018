@@ -17,7 +17,6 @@ namespace CivModel
 
         public abstract IActorAction MoveAct { get; }
         public abstract IActorAction AttackAct { get; }
-
         public abstract IReadOnlyList<IActorAction> SpecialActs { get; }
 
         public Actor(TileTag tag) : base(tag) { }
