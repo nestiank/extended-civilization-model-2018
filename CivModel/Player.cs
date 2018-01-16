@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.TileBuildings;
+using CivModel.Common;
 
 namespace CivModel
 {
@@ -15,7 +15,7 @@ namespace CivModel
         public double Happiness { get; private set; } = 100;
         public double HappinessIncome => 0;
 
-        public double Labor => Game.LaborCoefficient1 * (Game.LaborCoefficient2 + Happiness);
+        public double Labor => Game.LaborCoefficient * (Game.LaborHappinessConstant + Happiness);
 
         private double _taxRate = 1;
         public double TaxRate
@@ -34,6 +34,12 @@ namespace CivModel
 
         public LinkedList<Production> Production { get; } = new LinkedList<Production>();
         public LinkedList<Production> Deployment { get; } = new LinkedList<Production>();
+
+        /// <summary>
+        /// This property is updated by <see cref="EstimateLaborInputing"/>.
+        /// You must call that function before use this property.
+        /// </summary>
+        public double EstimatedUsedLabor { get; private set; }
 
         private readonly Game _game;
         public Game Game => _game;
@@ -69,6 +75,24 @@ namespace CivModel
 
         public void PostPlayerSubTurn(Player playerInTurn)
         {
+        }
+
+        /// <summary>
+        /// Update <see cref="Production.EstimatedLaborInputing"/> property of all productions
+        /// and <see cref="EstimatedUsedLabor"/> property  of this player.
+        /// </summary>
+        public void EstimateLaborInputing()
+        {
+            var labor = Labor;
+
+            EstimatedUsedLabor = 0;
+            foreach (var production in Production)
+            {
+                var input = production.GetAvailableInputLabor(labor);
+                production.EstimatedLaborInputing = input;
+                EstimatedUsedLabor += input;
+                labor -= input;
+            }
         }
 
         private void productionProcess()

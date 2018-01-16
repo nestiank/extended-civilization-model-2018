@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Units;
 
-namespace CivModel.TileBuildings
+namespace CivModel.Common
 {
     public class CityCenter : TileBuilding
     {

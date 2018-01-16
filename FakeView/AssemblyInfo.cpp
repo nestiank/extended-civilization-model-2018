@@ -7,29 +7,29 @@ using namespace System::Runtime::InteropServices;
 using namespace System::Security::Permissions;
 
 //
-// ¾î¼Àºí¸®¿¡ ´ëÇÑ ÀÏ¹İ Á¤º¸´Â ´ÙÀ½ Æ¯¼º ÁıÇÕÀ» ÅëÇØ 
-// Á¦¾îµË´Ï´Ù. ¾î¼Àºí¸®¿Í °ü·ÃµÈ Á¤º¸¸¦ ¼öÁ¤ÇÏ·Á¸é
-// ÀÌ·¯ÇÑ Æ¯¼º °ªÀ» º¯°æÇÏ¼¼¿ä.
+// ì–´ì…ˆë¸”ë¦¬ì— ëŒ€í•œ ì¼ë°˜ ì •ë³´ëŠ” ë‹¤ìŒ íŠ¹ì„± ì§‘í•©ì„ í†µí•´ 
+// ì œì–´ë©ë‹ˆë‹¤. ì–´ì…ˆë¸”ë¦¬ì™€ ê´€ë ¨ëœ ì •ë³´ë¥¼ ìˆ˜ì •í•˜ë ¤ë©´
+// ì´ëŸ¬í•œ íŠ¹ì„± ê°’ì„ ë³€ê²½í•˜ì„¸ìš”.
 //
 [assembly:AssemblyTitleAttribute(L"FakeView")];
 [assembly:AssemblyDescriptionAttribute(L"")];
 [assembly:AssemblyConfigurationAttribute(L"")];
 [assembly:AssemblyCompanyAttribute(L"")];
 [assembly:AssemblyProductAttribute(L"FakeView")];
-[assembly:AssemblyCopyrightAttribute(L"Copyright (c)  2017")];
+[assembly:AssemblyCopyrightAttribute(L"Copyright (c) CAT&DOG (https://catdog.korea.ac.kr/) 2018")];
 [assembly:AssemblyTrademarkAttribute(L"")];
 [assembly:AssemblyCultureAttribute(L"")];
 
 //
-// ¾î¼Àºí¸®ÀÇ ¹öÀü Á¤º¸´Â ´ÙÀ½ ³× °¡Áö °ªÀ¸·Î ±¸¼ºµË´Ï´Ù.
+// ì–´ì…ˆë¸”ë¦¬ì˜ ë²„ì „ ì •ë³´ëŠ” ë‹¤ìŒ ë„¤ ê°€ì§€ ê°’ìœ¼ë¡œ êµ¬ì„±ë©ë‹ˆë‹¤.
 //
-//      ÁÖ ¹öÀü
-//      ºÎ ¹öÀü 
-//      ºôµå ¹øÈ£
-//      ¼öÁ¤ ¹öÀü
+//      ì£¼ ë²„ì „
+//      ë¶€ ë²„ì „ 
+//      ë¹Œë“œ ë²ˆí˜¸
+//      ìˆ˜ì • ë²„ì „
 //
-// ¸ğµç °ªÀ» ÁöÁ¤ÇÏ°Å³ª ¾Æ·¡¿Í °°ÀÌ '*'¸¦ »ç¿ëÇÏ¿© ºôµå ¹øÈ£ ¹× ¼öÁ¤ ¹öÀüÀÌ ÀÚµ¿À¸·Î
-// ÁöÁ¤µÇµµ·Ï ÇÒ ¼ö ÀÖ½À´Ï´Ù.
+// ëª¨ë“  ê°’ì„ ì§€ì •í•˜ê±°ë‚˜ ì•„ë˜ì™€ ê°™ì´ '*'ë¥¼ ì‚¬ìš©í•˜ì—¬ ë¹Œë“œ ë²ˆí˜¸ ë° ìˆ˜ì • ë²„ì „ì´ ìë™ìœ¼ë¡œ
+// ì§€ì •ë˜ë„ë¡ í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
 
 [assembly:AssemblyVersionAttribute("1.0.*")];
 
