@@ -11,8 +11,8 @@ namespace CivModel
         public double GoldCoefficient => 1;
         public double PopulationCoefficient => 1;
         public double HappinessCoefficient => 1;
-        public double LaborCoefficient1 => 1;
-        public double LaborCoefficient2 => 0;
+        public double LaborCoefficient => 0.1;
+        public double LaborHappinessConstant => 0;
 
         private readonly Terrain _terrain;
         public Terrain Terrain => _terrain;

@@ -24,7 +24,7 @@ namespace CivModel
         public void ConsumeAP(int amount)
         {
             if (amount > RemainAP)
-                throw new ArgumentException("Actor.ConsumeAP(): amount is bigger than RemainAP");
+                throw new ArgumentException("amount is bigger than RemainAP", "amount");
 
             RemainAP -= amount;
         }

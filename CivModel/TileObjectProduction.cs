@@ -3,23 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.TileBuildings;
+using CivModel.Common;
 
 namespace CivModel
 {
-    public class TileObjectProduction<T> : Production where T : TileObject
+    public interface ITileObjectProductionFactory : IProductionFactory
     {
-        public TileObjectProduction(Player owner, double totalCost, double capacityPerTurn)
-            : base(owner, totalCost, capacityPerTurn)
+        bool IsPlacable(TileObjectProduction production, Terrain.Point point);
+        TileObject CreateTileObject(Player owner);
+    }
+
+    public class TileObjectProduction : Production
+    {
+        private readonly ITileObjectProductionFactory _factory;
+
+        public TileObjectProduction(
+            ITileObjectProductionFactory factory, Player owner,
+            double totalCost, double capacityPerTurn)
+            : base(factory, owner, totalCost, capacityPerTurn)
         {
+            _factory = factory;
         }
 
         public override bool IsPlacable(Terrain.Point point)
         {
-            if (point.Unit == null)
-                if (point.TileBuilding is CityCenter city)
-                    return city.Owner == Owner;
-            return false;
+            return _factory.IsPlacable(this, point);
         }
 
         public override void Place(Terrain.Point point)
@@ -27,8 +35,8 @@ namespace CivModel
             if (!IsPlacable(point))
                 throw new ArgumentException("Production.Place: point is invalid");
 
-            var unit = (Unit)Activator.CreateInstance(typeof(T), Owner);
-            unit.PlacedPoint = point;
+            var obj = _factory.CreateTileObject(Owner);
+            obj.PlacedPoint = point;
         }
     }
 }

@@ -13,6 +13,9 @@ namespace CivModel
 
     public abstract class Production
     {
+        private readonly IProductionFactory _factory;
+        public IProductionFactory Factory => _factory;
+
         private readonly Player _owner;
         public Player Owner => _owner;
 
@@ -22,20 +25,41 @@ namespace CivModel
         public double CapacityPerTurn { get; private set; }
         public double LaborInputed { get; private set; } = 0;
 
+        /// <summary>
+        /// This property is updated by <see cref="Player.EstimateLaborInputing"/>.
+        /// You must call that function before use this property.
+        /// </summary>
+        public double EstimatedLaborInputing { get; set; }
+
         public bool Completed { get; private set; } = false;
 
-        public Production(Player owner, double totalCost, double capacityPerTurn)
+        public Production(
+            IProductionFactory factory, Player owner,
+            double totalCost, double capacityPerTurn)
         {
-            if (owner == null)
-                throw new ArgumentNullException("Production ctor: owner is null");
             if (totalCost < 0)
-                throw new ArgumentException("Production ctor: TotalCost must be positive");
+                throw new ArgumentException("totalCost must be positive", "totalCost");
             if (capacityPerTurn < 0 || capacityPerTurn > totalCost)
-                throw new ArgumentException("Production ctor: CapacityPerTurn must be positive and less than TotalCost");
+                throw new ArgumentException("CapacityPerTurn must be in [0, TotalCost]", "CapacityPerTurn");
 
-            _owner = owner;
+            _factory = factory ?? throw new ArgumentNullException("factory");
+            _owner = owner ?? throw new ArgumentNullException("owner");
             _totalCost = totalCost;
             CapacityPerTurn = capacityPerTurn;
+        }
+
+        /// <summary>
+        /// check how much labor is inputed into this production in this turn
+        /// </summary>
+        /// <param name="labor">labor amount which you want to put</param>
+        /// <returns>maximum labor amount possible to put, less than <paramref name="labor"/></returns>
+        public double GetAvailableInputLabor(double labor)
+        {
+            if (Completed)
+                throw new InvalidOperationException("Production.InputLabor(): production is already done");
+
+            double capacity = Math.Min(CapacityPerTurn, TotalCost - LaborInputed);
+            return Math.Min(labor, capacity);
         }
 
         /// <summary>
@@ -45,11 +69,7 @@ namespace CivModel
         /// <returns>labor amount which is really used. it can be different from the parameter.</returns>
         public double InputLabor(double labor)
         {
-            if (Completed)
-                throw new InvalidOperationException("Production.InputLabor(): production is already done");
-
-            double capacity = Math.Min(CapacityPerTurn, TotalCost - LaborInputed);
-            labor = Math.Min(labor, capacity);
+            labor = GetAvailableInputLabor(labor);
 
             LaborInputed += labor;
             if (LaborInputed >= TotalCost)

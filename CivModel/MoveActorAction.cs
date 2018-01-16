@@ -21,11 +21,14 @@ namespace CivModel
         {
             if (pt is Terrain.Point p1 && _owner.PlacedPoint is Terrain.Point p2)
             {
-                foreach (var p in p1.Adjacents())
+                if (p1.Unit == null)
                 {
-                    if (p == p2)
+                    foreach (var p in p1.Adjacents())
                     {
-                        return 1;
+                        if (p == p2)
+                        {
+                            return 1;
+                        }
                     }
                 }
             }

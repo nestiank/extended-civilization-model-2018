@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.TileBuildings;
 
-namespace CivModel.Units
+namespace CivModel.Common
 {
     public class Pioneer : Unit
     {
@@ -58,18 +57,27 @@ namespace CivModel.Units
         }
     }
 
-    public class PioneerProductionFactory : IProductionFactory
+    public class PioneerProductionFactory : ITileObjectProductionFactory
     {
         private static Lazy<PioneerProductionFactory> _instance
             = new Lazy<PioneerProductionFactory>(() => new PioneerProductionFactory());
         public static PioneerProductionFactory Instance => _instance.Value;
-
         private PioneerProductionFactory()
         {
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction<Pioneer>(owner, 5, 2);
+            return new TileObjectProduction(this, owner, 5, 2);
+        }
+        public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
+        {
+            return point.Unit == null
+                && point.TileBuilding is CityCenter
+                && point.TileBuilding.Owner == production.Owner;
+        }
+        public TileObject CreateTileObject(Player owner)
+        {
+            return new Pioneer(owner);
         }
     }
 }

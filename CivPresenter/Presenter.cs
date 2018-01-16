@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CivModel;
-using CivModel.Units;
-using CivModel.TileBuildings;
+using CivModel.Common;
 
 namespace CivPresenter
 {
@@ -30,7 +29,7 @@ namespace CivPresenter
 
         public int SelectedDeploy { get; private set; } = -1;
         public int SelectedProduction { get; private set; } = -1;
-        public bool IsProductCancelling { get; private set; } = false;
+        public bool IsProductManipulating { get; private set; } = false;
 
         public IReadOnlyList<IProductionFactory> AvailableProduction { get; private set; }
 
@@ -48,6 +47,7 @@ namespace CivPresenter
         private Action OnCancel;
         private Action<Direction> OnArrowKey;
         private Action<int> OnNumeric;
+        private Action OnRemove;
 
         public Presenter(IView view)
         {
@@ -83,6 +83,11 @@ namespace CivPresenter
         public void CommandNumeric(int index)
         {
             OnNumeric(index);
+        }
+
+        public void CommandRemove()
+        {
+            OnRemove();
         }
 
         public void CommandRefocus()
@@ -156,6 +161,7 @@ namespace CivPresenter
                 else
                     OnCancel();
             };
+            OnRemove = () => { };
         }
 
         private void StateMove()
@@ -219,8 +225,8 @@ namespace CivPresenter
                 if (r != -1)
                     _moveSelectedIndex = r;
             };
-            OnNumeric = index => {
-            };
+            OnNumeric = index => { };
+            OnRemove = () => { };
         }
 
         private void StateSpeicalAct(int index)
@@ -239,23 +245,19 @@ namespace CivPresenter
 
             SelectedDeploy = -1;
             SelectedProduction = -1;
-            IsProductCancelling = false;
+            IsProductManipulating = false;
+
+            Game.PlayerInTurn.EstimateLaborInputing();
 
             Action clear = () => {
                 SelectedDeploy = -1;
                 SelectedProduction = -1;
-                IsProductCancelling = false;
+                IsProductManipulating = false;
             };
             OnApply = () => {
-                if (IsProductCancelling)
+                if (IsProductManipulating)
                 {
-                    var node = Game.PlayerInTurn.Production.First;
-                    for (int i = 0; i < SelectedProduction; ++i)
-                        node = node.Next;
-                    Game.PlayerInTurn.Production.Remove(node);
-
-                    IsProductCancelling = false;
-                    SelectedProduction = -1;
+                    IsProductManipulating = false;
                 }
                 else if (SelectedDeploy != -1)
                 {
@@ -267,7 +269,7 @@ namespace CivPresenter
                 }
                 else if (SelectedProduction != -1)
                 {
-                    IsProductCancelling = true;
+                    IsProductManipulating = true;
                 }
                 else
                 {
@@ -276,9 +278,9 @@ namespace CivPresenter
                 }
             };
             OnCancel = () => {
-                if (IsProductCancelling)
+                if (IsProductManipulating)
                 {
-                    IsProductCancelling = false;
+                    IsProductManipulating = false;
                 }
                 else
                 {
@@ -287,50 +289,92 @@ namespace CivPresenter
                 }
             };
             OnArrowKey = direction => {
-                if (IsProductCancelling)
-                    return;
-
-                switch (direction)
+                if (IsProductManipulating)
                 {
-                    case Direction.Up:
-                        if (SelectedProduction >= 0)
-                        {
-                            if (--SelectedProduction == -1)
+                    switch (direction)
+                    {
+                        case Direction.Up:
+                            if (SelectedProduction > 0)
                             {
-                                if (Game.PlayerInTurn.Deployment.Count != 0)
-                                    SelectedDeploy = 0;
+                                var node = Game.PlayerInTurn.Production.First;
+                                for (int i = 0; i < SelectedProduction; ++i)
+                                    node = node.Next;
+                                var prev = node.Previous;
+                                Game.PlayerInTurn.Production.Remove(node);
+                                Game.PlayerInTurn.Production.AddBefore(prev, node.Value);
+                                Game.PlayerInTurn.EstimateLaborInputing();
                             }
-                        }
-                        else if (SelectedDeploy >= 0)
-                        {
-                            --SelectedDeploy;
-                        }
-                        break;
-                    case Direction.Down:
-                        if (SelectedProduction == -1)
-                        {
-                            if (++SelectedDeploy >= Game.PlayerInTurn.Deployment.Count)
+                            break;
+                        case Direction.Down:
+                            if (SelectedProduction + 1 < Game.PlayerInTurn.Production.Count)
                             {
-                                SelectedDeploy = -1;
-                                if (Game.PlayerInTurn.Production.Count != 0)
-                                    SelectedProduction = 0;
+                                var node = Game.PlayerInTurn.Production.First;
+                                for (int i = 0; i < SelectedProduction; ++i)
+                                    node = node.Next;
+                                var next = node.Next;
+                                Game.PlayerInTurn.Production.Remove(node);
+                                Game.PlayerInTurn.Production.AddAfter(next, node.Value);
+                                Game.PlayerInTurn.EstimateLaborInputing();
                             }
-                        }
-                        else if (SelectedProduction + 1 < Game.PlayerInTurn.Production.Count)
-                        {
-                            ++SelectedProduction;
-                        }
-                        break;
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (direction)
+                    {
+                        case Direction.Up:
+                            if (SelectedProduction >= 0)
+                            {
+                                if (--SelectedProduction == -1)
+                                {
+                                    if (Game.PlayerInTurn.Deployment.Count != 0)
+                                        SelectedDeploy = 0;
+                                }
+                            }
+                            else if (SelectedDeploy >= 0)
+                            {
+                                --SelectedDeploy;
+                            }
+                            break;
+                        case Direction.Down:
+                            if (SelectedProduction == -1)
+                            {
+                                if (++SelectedDeploy >= Game.PlayerInTurn.Deployment.Count)
+                                {
+                                    SelectedDeploy = -1;
+                                    if (Game.PlayerInTurn.Production.Count != 0)
+                                        SelectedProduction = 0;
+                                }
+                            }
+                            else if (SelectedProduction + 1 < Game.PlayerInTurn.Production.Count)
+                            {
+                                ++SelectedProduction;
+                            }
+                            break;
+                    }
                 }
             };
             OnNumeric = index => {
-                if (IsProductCancelling)
+                if (IsProductManipulating)
                     return;
 
                 if (index < Game.PlayerInTurn.Deployment.Count)
                 {
                     SelectedDeploy = index;
                     SelectedProduction = 0;
+                }
+            };
+            OnRemove = () => {
+                if (IsProductManipulating)
+                {
+                    var node = Game.PlayerInTurn.Production.First;
+                    for (int i = 0; i < SelectedProduction; ++i)
+                        node = node.Next;
+                    Game.PlayerInTurn.Production.Remove(node);
+
+                    IsProductManipulating = false;
+                    SelectedProduction = -1;
                 }
             };
         }
@@ -340,7 +384,10 @@ namespace CivPresenter
             State = States.ProductAdd;
 
             AvailableProduction = Game.PlayerInTurn.GetAvailableProduction();
-            SelectedProduction = -1;
+            if (AvailableProduction.Count == 0)
+                SelectedProduction = -1;
+            else
+                SelectedProduction = 0;
 
             Action clear = () => {
                 AvailableProduction = null;
@@ -374,6 +421,7 @@ namespace CivPresenter
                 if (index < AvailableProduction.Count)
                     SelectedProduction = index;
             };
+            OnRemove = () => { };
         }
 
         private void StateDeploy(LinkedListNode<Production> node)
@@ -400,8 +448,8 @@ namespace CivPresenter
             OnArrowKey = direction => {
                 MoveSight(direction);
             };
-            OnNumeric = index => {
-            };
+            OnNumeric = index => { };
+            OnRemove = () => { };
         }
     }
 }

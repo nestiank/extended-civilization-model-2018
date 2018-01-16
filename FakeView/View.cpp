@@ -71,6 +71,16 @@ namespace FakeView
             }
         }
 
+        if (m_presenter->SelectedActor != nullptr)
+        {
+            auto pos = m_presenter->SelectedActor->PlacedPoint.Value.Position;
+            auto pt = TerrainToScreen(pos.X, pos.Y);
+            if (auto pc = m_screen->TryGetChar(pt.first, pt.second))
+            {
+                pc->color |= 0b1000'1000;
+            }
+        }
+
         if (m_presenter->MoveAdjcents)
         {
             for (int i = 0; i < m_presenter->MoveAdjcents->Count; ++i)
@@ -79,8 +89,7 @@ namespace FakeView
                 {
                     auto pos = m_presenter->MoveAdjcents[i].Value.Position;
                     auto pt = TerrainToScreen(pos.X, pos.Y);
-                    auto pc = m_screen->TryGetChar(pt.first, pt.second);
-                    if (pc)
+                    if (auto pc = m_screen->TryGetChar(pt.first, pt.second))
                     {
                         pc->color = 0b0001'0110;
 
@@ -118,25 +127,31 @@ namespace FakeView
         auto scrsz = m_screen->GetSize();
 
         int y = 0;
-        m_screen->PrintString(0, y, 0b00001111, "Production UI");
+        m_screen->PrintString(0, y, 0b0000'1111, "Production UI");
 
         auto player = m_presenter->Game->PlayerInTurn;
+        if ((y = 2) >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Total Labor: " + std::to_string(player->Labor)
+            + " (Used: " + std::to_string(player->EstimatedUsedLabor) + ")");
 
         unsigned color = 0b0000'0111;
         if (m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
             color = 0b1111'0000;
-        y = 2;
+        if ((y = 4) >= scrsz.height)
+            return;
         m_screen->PrintString(0, y, color, "Add Production");
 
         int idx = 0;
-        y = 3;
+        y = 5;
         for (auto node = player->Deployment->First; node != nullptr; node = node->Next)
         {
             if (y >= scrsz.height)
                 return;
 
             std::string msg;
-            if (auto product = dynamic_cast<CivModel::TileObjectProduction<CivModel::Units::Pioneer^>^>(node->Value))
+            if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(node->Value->Factory))
             {
                 msg = "Pioneer";
             }
@@ -165,7 +180,7 @@ namespace FakeView
                 return;
 
             std::string msg;
-            if (auto product = dynamic_cast<CivModel::TileObjectProduction<CivModel::Units::Pioneer^>^>(node->Value))
+            if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(node->Value->Factory))
             {
                 msg = "Pioneer";
             }
@@ -176,7 +191,8 @@ namespace FakeView
             }
 
             msg += " " + std::to_string(node->Value->LaborInputed) + " / " + std::to_string(node->Value->TotalCost);
-            msg += " (+" + std::to_string(node->Value->CapacityPerTurn) + ")";
+            msg += " (+" + std::to_string(node->Value->EstimatedLaborInputing);
+            msg += " / " + std::to_string(node->Value->CapacityPerTurn) + ")";
 
             unsigned char color = 0b0000'0111;
             if (m_presenter->SelectedProduction == idx)
@@ -188,7 +204,7 @@ namespace FakeView
             ++y;
         }
 
-        if (m_presenter->IsProductCancelling)
+        if (m_presenter->IsProductManipulating)
         {
             m_screen->PrintString(0, scrsz.height - 1, 0b0000'1111, "press Enter again to cancel production");
         }
@@ -216,7 +232,7 @@ namespace FakeView
             auto value = m_presenter->AvailableProduction[idx];
 
             std::string msg;
-            if (auto product = dynamic_cast<CivModel::Units::PioneerProductionFactory^>(value))
+            if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(value))
             {
                 msg = "Pioneer";
             }
@@ -352,7 +368,7 @@ namespace FakeView
     void View::PrintUnit(int px, int py, CivModel::Unit^ unit)
     {
         auto& c = m_screen->GetChar(px, py);
-        if (auto u = dynamic_cast<CivModel::Units::Pioneer^>(unit))
+        if (auto u = dynamic_cast<CivModel::Common::Pioneer^>(unit))
         {
             c.ch = 'P';
             c.color &= 0xf0;
@@ -370,7 +386,7 @@ namespace FakeView
     void View::PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding)
     {
         auto& c = m_screen->GetChar(px, py);
-        if (auto b = dynamic_cast<CivModel::TileBuildings::CityCenter^>(tileBuilding))
+        if (auto b = dynamic_cast<CivModel::Common::CityCenter^>(tileBuilding))
         {
             c.color &= 0x0f;
             c.color |= 0b0010'0000;
