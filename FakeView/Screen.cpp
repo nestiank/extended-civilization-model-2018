@@ -10,7 +10,7 @@ namespace FakeView
 
     int Screen::Loop(IScreenClient^ view)
     {
-        std::system("mode con cols=120 lines=36");
+        std::system("mode con cols=150 lines=45");
         std::system("cls");
         EnableCursor(false);
 
@@ -138,7 +138,7 @@ namespace FakeView
             csbi.srWindow.Right - csbi.srWindow.Left + 1,
             csbi.srWindow.Bottom - csbi.srWindow.Top + 1
         };*/
-        return { 120, 36 };
+        return { 150, 45 };
     }
 
     void Screen::PrintString(int x, int y, unsigned char color, const std::string& str)

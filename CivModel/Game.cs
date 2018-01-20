@@ -37,29 +37,11 @@ namespace CivModel
             if (numOfPlayer <= 0)
                 throw new ArgumentException("width must be positive");
 
-            _terrain = new Terrain(width, height);
+            _terrain = new Terrain();
 
             for (int i = 0; i < numOfPlayer; ++i)
             {
                 _players.Add(new Player(this));
-            }
-
-            var random = new Random();
-            foreach (var player in Players)
-            {
-                Terrain.Point pt;
-                do
-                {
-                    int x = random.Next((int)Math.Floor(Terrain.Width * 0.1),
-                        (int)Math.Ceiling(Terrain.Width * 0.9));
-                    int y = random.Next((int)Math.Floor(Terrain.Height * 0.1),
-                        (int)Math.Ceiling(Terrain.Height * 0.9));
-
-                    pt = Terrain.GetPoint(x, y);
-                } while (pt.Unit != null);
-
-                var pionner = new Pioneer(player);
-                pionner.PlacedPoint = pt;
             }
         }
 

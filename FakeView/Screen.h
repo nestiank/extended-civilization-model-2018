@@ -50,6 +50,6 @@ namespace FakeView
         bool m_quit = false;
 
         std::deque<gcroot<System::Action^>> m_invokee;
-        std::array<Character, 120 * 36> m_buffer;
+        std::array<Character, 150 * 45> m_buffer;
     };
 }

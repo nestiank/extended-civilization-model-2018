@@ -15,8 +15,11 @@ namespace CivModel
 
             public Position Position { get; private set; }
 
-            public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
-            public TerrainType2 Type2 => Terrain._points[Position.X, Position.Y].Type2;
+            public TerrainType Type
+            {
+                get => Terrain._points[Position.X, Position.Y].Type;
+                set => Terrain._points[Position.X, Position.Y].Type = value;
+            }
             public Unit Unit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
             public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.TileBuilding];
 

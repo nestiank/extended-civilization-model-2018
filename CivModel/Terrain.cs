@@ -1,23 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 
 namespace CivModel
 {
-    public enum TerrainType1
+    public enum TerrainType
     {
-        Grass, Flatland, Swamp, Tundra
-    }
-    public enum TerrainType2
-    {
-        None, Hill, Mountain
+        Plain, Ocean, Mount, Forest, Swamp, Tundra, Ice,
     }
 
     public partial class Terrain
     {
         private struct Point_t
         {
-            public TerrainType1 Type1;
-            public TerrainType2 Type2;
+            public TerrainType Type;
             public TileObject[] PlacedObjects;
         }
 
@@ -31,19 +28,59 @@ namespace CivModel
         {
             _width = width;
             _height = height;
+            _points = new Point_t[_height, _width];
 
-            _points = new Point_t[height, width];
-
-            var random = new Random();
-            for (int y = 0; y < height; ++y)
+            for (int y = 0; y < _height; ++y)
             {
-                for (int x = 0; x < width; ++x)
+                for (int x = 0; x < _width; ++x)
                 {
-                    int len = Enum.GetNames(typeof(TileTag)).Length;
-                    _points[y, x].PlacedObjects = new TileObject[len];
+                    _points[y, x].Type = TerrainType.Plain;
+                }
+            }
+        }
 
-                    _points[y, x].Type1 = (TerrainType1)random.Next(4);
-                    _points[y, x].Type2 = (TerrainType2)random.Next(3);
+        public Terrain()
+        {
+            using (var file = File.OpenText("map.txt"))
+            {
+                int[] wh = file.ReadLine().Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
+                _width = wh[0];
+                _height = wh[1];
+                _points = new Point_t[_height, _width];
+
+                for (int x = 0; x < _width; ++x)
+                {
+                    string line = file.ReadLine();
+                    for (int y = 0; y < _height; ++y)
+                    {
+                        if (y >= line.Length)
+                            throw new InvalidDataException();
+
+                        int len = Enum.GetNames(typeof(TileTag)).Length;
+                        _points[y, x].PlacedObjects = new TileObject[len];
+
+                        int idx = "POMFSTI".IndexOf(line[y]);
+                        if (idx == -1)
+                            throw new InvalidDataException();
+
+                        _points[y, x].Type = (TerrainType)idx;
+                    }
+                }
+            }
+        }
+
+        public void Save()
+        {
+            using (var file = File.CreateText("map.txt"))
+            {
+                file.WriteLine(Width + " " + Height);
+                for (int x = 0; x < _width; ++x)
+                {
+                    for (int y = 0; y < _height; ++y)
+                    {
+                        file.Write("POMFSTI"[(int)_points[y, x].Type]);
+                    }
+                    file.WriteLine();
                 }
             }
         }

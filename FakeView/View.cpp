@@ -73,14 +73,6 @@ namespace FakeView
                 int py = dy * 3 + 1;
 
                 PrintTerrain(px, py, point);
-                if (point.TileBuilding)
-                {
-                    PrintTileBuilding(px, py, point.TileBuilding);
-                }
-                if (point.Unit)
-                {
-                    PrintUnit(px, py, point.Unit);
-                }
 
                 if (m_presenter->RunningAction != nullptr)
                 {
@@ -287,6 +279,41 @@ namespace FakeView
     {
         switch (ch)
         {
+            case '<':
+            case ',':
+                m_presenter->Game->Terrain->Save();
+                ::MessageBox(nullptr, L"Saved", L"OK", MB_OK);
+                break;
+
+            case 'P':
+            case 'p':
+                m_presenter->FocusedPoint.Type = (CivModel::TerrainType)0;
+                break;
+            case 'O':
+            case 'o':
+                m_presenter->FocusedPoint.Type = (CivModel::TerrainType)1;
+                break;
+            case 'M':
+            case 'm':
+                m_presenter->FocusedPoint.Type = (CivModel::TerrainType)2;
+                break;
+            case 'F':
+            case 'f':
+                m_presenter->FocusedPoint.Type = (CivModel::TerrainType)3;
+                break;
+            case 'S':
+            case 's':
+                m_presenter->FocusedPoint.Type = (CivModel::TerrainType)4;
+                break;
+            case 'T':
+            case 't':
+                m_presenter->FocusedPoint.Type = (CivModel::TerrainType)5;
+                break;
+            case 'I':
+            case 'i':
+                m_presenter->FocusedPoint.Type = (CivModel::TerrainType)6;
+                break;
+
             case 0x1b: // ESC
                 m_presenter->CommandCancel();
                 break;
@@ -303,78 +330,6 @@ namespace FakeView
             case 0x14d: // RIGHT
                 m_presenter->CommandArrowKey(CivPresenter::Direction::Right);
                 break;
-
-            case 'f':
-            case 'F':
-                m_presenter->CommandRefocus();
-                break;
-
-            case 's':
-            case 'S':
-                m_presenter->CommandSelect();
-                break;
-
-            case 'd':
-            case 'D':
-                m_presenter->CommandRemove();
-                break;
-
-            case 'm':
-            case 'M':
-                m_presenter->CommandMove();
-                break;
-
-            case 'z':
-            case 'Z':
-                m_presenter->CommandSkip();
-                break;
-
-            case 'q':
-            case 'Q':
-                m_presenter->CommandMovingAttack();
-                break;
-
-            case 'w':
-            case 'W':
-                m_presenter->CommandHoldingAttack();
-                break;
-
-            case 'p':
-            case 'P':
-                m_presenter->CommandProductUI();
-                break;
-
-            case '\r':
-                m_presenter->CommandApply();
-                break;
-
-            case '1':
-                m_presenter->CommandNumeric(0);
-                break;
-            case '2':
-                m_presenter->CommandNumeric(1);
-                break;
-            case '3':
-                m_presenter->CommandNumeric(2);
-                break;
-            case '4':
-                m_presenter->CommandNumeric(3);
-                break;
-            case '5':
-                m_presenter->CommandNumeric(4);
-                break;
-            case '6':
-                m_presenter->CommandNumeric(5);
-                break;
-            case '7':
-                m_presenter->CommandNumeric(6);
-                break;
-            case '8':
-                m_presenter->CommandNumeric(7);
-                break;
-            case '9':
-                m_presenter->CommandNumeric(8);
-                break;
         }
     }
 
@@ -385,35 +340,8 @@ namespace FakeView
     void View::PrintTerrain(int px, int py, CivModel::Terrain::Point point)
     {
         auto& c = m_screen->GetChar(px, py);
-
         c.color = 0b0000'0111;
-
-        if (point.Type2 == CivModel::TerrainType2::Mountain)
-        {
-            c.ch = '^';
-        }
-        else
-        {
-            switch (point.Type1)
-            {
-                case CivModel::TerrainType1::Flatland:
-                    c.ch = '-';
-                    break;
-                case CivModel::TerrainType1::Grass:
-                    c.ch = '*';
-                    break;
-                case CivModel::TerrainType1::Swamp:
-                    c.ch = '@';
-                    break;
-                case CivModel::TerrainType1::Tundra:
-                    c.ch = '#';
-                    break;
-            }
-            if (point.Type2 == CivModel::TerrainType2::Hill)
-            {
-                c.color |= 0b0000'1000;
-            }
-        }
+        c.ch = "POMFSTI"[(int)point.Type];
     }
 
     void View::PrintUnit(int px, int py, CivModel::Unit^ unit)

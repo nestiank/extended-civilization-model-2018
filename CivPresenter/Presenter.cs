@@ -58,7 +58,7 @@ namespace CivPresenter
         {
             _view = view;
 
-            _game = new Game(width: 10, height: 10, numOfPlayer: 2);
+            _game = new Game(width: 100, height: 100, numOfPlayer: 2);
 
             // fallback point
             // ProceedTurn() would set FocusedPoint if any unit/city exists.
