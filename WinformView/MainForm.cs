@@ -169,6 +169,43 @@ namespace WinformView
                     MessageBox.Show("Saved");
                     break;
 
+                case Keys.Left:
+                    if (selectedTile_.HasValue)
+                    {
+                        var pos = selectedTile_.Value.Position;
+                        pos.X -= 1;
+                        if (presenter_.Game.Terrain.IsValidPosition(pos))
+                            selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
+                    }
+                    break;
+                case Keys.Right:
+                    if (selectedTile_.HasValue)
+                    {
+                        var pos = selectedTile_.Value.Position;
+                        pos.X += 1;
+                        if (presenter_.Game.Terrain.IsValidPosition(pos))
+                            selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
+                    }
+                    break;
+                case Keys.Up:
+                    if (selectedTile_.HasValue)
+                    {
+                        var pos = selectedTile_.Value.Position;
+                        pos.Y += 1;
+                        if (presenter_.Game.Terrain.IsValidPosition(pos))
+                            selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
+                    }
+                    break;
+                case Keys.Down:
+                    if (selectedTile_.HasValue)
+                    {
+                        var pos = selectedTile_.Value.Position;
+                        pos.Y += 1;
+                        if (presenter_.Game.Terrain.IsValidPosition(pos))
+                            selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
+                    }
+                    break;
+
                 case Keys.P:
                     foo(0);
                     break;
@@ -200,24 +237,7 @@ namespace WinformView
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (GetAsyncKeyState((int)Keys.Left) != 0)
-            {
-                sightDx_ -= 3;
-            }
-            if (GetAsyncKeyState((int)Keys.Right) != 0)
-            {
-                sightDx_ += 3;
-            }
-            if (GetAsyncKeyState((int)Keys.Up) != 0)
-            {
-                sightDy_ -= 3;
-            }
-            if (GetAsyncKeyState((int)Keys.Down) != 0)
-            {
-                sightDy_ += 3;
-            }
-
-            SyncSight();
+            Invalidate();
         }
 
         private void SyncSight()
