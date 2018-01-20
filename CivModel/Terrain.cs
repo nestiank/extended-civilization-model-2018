@@ -3,15 +3,25 @@ using System.Collections.Generic;
 
 namespace CivModel
 {
+    /// <summary>
+    /// The type of a tile of <see cref="Terrain"/>. It is independent to <see cref="TerrainType2"/>.
+    /// </summary>
     public enum TerrainType1
     {
         Grass, Flatland, Swamp, Tundra
     }
+
+    /// <summary>
+    /// The type of a tile of <see cref="Terrain"/>. It is independent to <see cref="TerrainType1"/>.
+    /// </summary>
     public enum TerrainType2
     {
         None, Hill, Mountain
     }
 
+    /// <summary>
+    /// Represents a terrain of a game.
+    /// </summary>
     public partial class Terrain
     {
         private struct Point_t
@@ -23,12 +33,35 @@ namespace CivModel
 
         private Point_t[,] _points;
 
-        public readonly int _width, _height;
+        /// <summary>
+        /// The width of this terrain.
+        /// </summary>
         public int Width => _width;
-        public int Height => _height;
+        private readonly int _width;
 
+        /// <summary>
+        /// The height of this terrain.
+        /// </summary>
+        public int Height => _height;
+        private readonly int _height;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Terrain"/> class.
+        /// </summary>
+        /// <param name="width">The width of a terrain.</param>
+        /// <param name="height">The height of a terrain.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="width"/> is not positive
+        /// or
+        /// <paramref name="height"/> is not positive
+        /// </exception>
         public Terrain(int width, int height)
         {
+            if (width <= 0)
+                throw new ArgumentOutOfRangeException("width", width, "width is not positive");
+            if (height <= 0)
+                throw new ArgumentOutOfRangeException("height", height, "height is not positive");
+
             _width = width;
             _height = height;
 
@@ -48,13 +81,39 @@ namespace CivModel
             }
         }
 
-        public Terrain.Point GetPoint(int x, int y)
+        /// <summary>
+        /// Gets the <see cref="Point"/> from physical coordinates.
+        /// </summary>
+        /// <param name="x">X in physical coordinate.</param>
+        /// <param name="y">Y in physical coordinate.</param>
+        /// <returns>the <see cref="Point"/> object</returns>
+        /// <exception cref="ArgumentException">coordinate is invalid.</exception>
+        public Point GetPoint(int x, int y)
         {
-            return GetPoint(new Position { X = x, Y = y });
+            return GetPoint(Position.FromPhysical(x, y));
         }
-        public Terrain.Point GetPoint(Position pos)
+
+        /// <summary>
+        /// Gets the <see cref="Point"/> from logical coordinates.
+        /// </summary>
+        /// <param name="a">A in logical coordinate.</param>
+        /// <param name="b">B in logical coordinate.</param>
+        /// <param name="c">C in logical coordinate.</param>
+        /// <returns>the <see cref="Point"/> object</returns>
+        /// <exception cref="ArgumentException">coordinate is invalid.</exception>
+        public Point GetPoint(int a, int b, int c)
         {
-            return new Terrain.Point(this, pos);
+            return GetPoint(Position.FromLogical(a, b, c));
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Point"/> from <see cref="Position"/>
+        /// </summary>
+        /// <param name="pos">The <see cref="Position"/> object.</param>
+        /// <returns>the <see cref="Point"/> objec</returns>
+        public Point GetPoint(Position pos)
+        {
+            return new Point(this, pos);
         }
 
         /// <summary>
@@ -90,6 +149,13 @@ namespace CivModel
             _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = null;
         }
 
+        /// <summary>
+        /// Determines whether the specified position is vaild.
+        /// </summary>
+        /// <param name="pos">The <see cref="Position"/> object.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified position is valid; otherwise, <c>false</c>.
+        /// </returns>
         public bool IsValidPosition(Position pos)
         {
             if (pos.X < 0 || pos.X >= Width)

@@ -6,13 +6,26 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
+    /// <summary>
+    /// A pionner unit who can make city.
+    /// </summary>
+    /// <seealso cref="CivModel.Unit" />
     public class Pioneer : Unit
     {
         public override int MaxAP => 2;
 
-        private readonly IActorAction[] _specialActs = new IActorAction[1];
+        /// <summary>
+        /// The list of special actions.
+        /// <see cref="Pionner"/> have one special action "pionnering".
+        /// </summary>
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Pioneer"/> class.
+        /// </summary>
+        /// <param name="owner">The <see cref="Player"/> who owns this unit.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public Pioneer(Player owner) : base(owner)
         {
             _specialActs[0] = new PioneerAction(this);

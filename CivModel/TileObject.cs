@@ -6,18 +6,29 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
+    /// <summary>
+    /// The value indicating the kind of <see cref="TileObject"/>.
+    /// </summary>
     public enum TileTag
     {
         Unit,
         TileBuilding
     }
 
+    /// <summary>
+    /// Represents an object which can be placed on <see cref="Terrain.Point"/>.
+    /// </summary>
     public abstract class TileObject
     {
-        public readonly TileTag _tileTag;
+        /// <summary>
+        /// The value indicating the kind of this object.
+        /// </summary>
         public TileTag TileTag => _tileTag;
+        private readonly TileTag _tileTag;
 
-        private Terrain.Point? _placedPoint;
+        /// <summary>
+        /// The placed point of this object. <c>null</c> if not placed.
+        /// </summary>
         public Terrain.Point? PlacedPoint
         {
             get => _placedPoint;
@@ -37,7 +48,12 @@ namespace CivModel
                 }
             }
         }
+        private Terrain.Point? _placedPoint;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TileObject"/> class.
+        /// </summary>
+        /// <param name="tileTag">The <see cref="TileTag"/> of a object.</param>
         public TileObject(TileTag tileTag)
         {
             _tileTag = tileTag;

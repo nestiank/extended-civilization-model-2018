@@ -8,11 +8,20 @@ namespace CivModel
 {
     public partial class Terrain
     {
+        /// <summary>
+        /// Represents one tile of a <see cref="Terrain"/>.
+        /// </summary>
         public struct Point
         {
-            public readonly Terrain _terrain;
+            /// <summary>
+            /// The <see cref="Terrain"/> object.
+            /// </summary>
             public Terrain Terrain => _terrain;
+            private readonly Terrain _terrain;
 
+            /// <summary>
+            /// The <see cref="Position"/> where this tile is.
+            /// </summary>
             public Position Position { get; private set; }
 
             public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
@@ -20,10 +29,16 @@ namespace CivModel
             public Unit Unit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
             public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.TileBuilding];
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Point"/> struct.
+            /// </summary>
+            /// <param name="terrain">The terrain object.</param>
+            /// <param name="pos">The position where a tile will be.</param>
+            /// <exception cref="ArgumentException"><paramref name="pos"/> is invalid.</exception>
             public Point(Terrain terrain, Position pos)
             {
                 if (!terrain.IsValidPosition(pos))
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentException("pos", "pos is invalid");
 
                 _terrain = terrain;
                 Position = pos;

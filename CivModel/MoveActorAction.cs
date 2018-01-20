@@ -6,16 +6,25 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
+    /// <summary>
+    /// Represents an movement action.
+    /// </summary>
+    /// <seealso cref="CivModel.IActorAction" />
     public class MoveActorAction : IActorAction
     {
-        private readonly Actor _owner;
         public Actor Owner => _owner;
+        private readonly Actor _owner;
 
         public bool IsParametered => true;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoveActorAction"/> class.
+        /// </summary>
+        /// <param name="owner">The <see cref="Actor"/> who will own the action.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public MoveActorAction(Actor owner)
         {
-            _owner = owner;
+            _owner = owner ?? throw new ArgumentNullException("owner");
         }
 
         public int GetRequiredAP(Terrain.Point? pt)
@@ -39,7 +48,7 @@ namespace CivModel
             if (requiredAP == -1 || !_owner.CanConsumeAP(requiredAP))
                 throw new ArgumentException("parameter is invalid");
             if (!_owner.PlacedPoint.HasValue)
-                throw new InvalidOperationException("Actor is not placed yet");
+                throw new InvalidOperationException("Owner of this action is not placed yet");
 
             _owner.ConsumeAP(requiredAP);
             _owner.PlacedPoint = pt;

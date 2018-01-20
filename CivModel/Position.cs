@@ -6,20 +6,56 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
+    /// <summary>
+    /// Represents the coordinate for <see cref="Terrain"/>.
+    /// The coordinate system is documented in "docs/Coordinate System.pptx".
+    /// </summary>
     public struct Position
     {
+        /// <summary>
+        /// X in physical coordinate system.
+        /// </summary>
         public int X { get; set; }
+
+        /// <summary>
+        /// Y in physical coordinate system.
+        /// </summary>
         public int Y { get; set; }
 
+        /// <summary>
+        /// A in logical coordinate system.
+        /// </summary>
         public int A => -B - C;
+
+        /// <summary>
+        /// B in logical coordinate system.
+        /// </summary>
         public int B => X - (Y + Math.Sign(Y)) / 2;
+
+        /// <summary>
+        /// C in logical coordinate system.
+        /// </summary>
         public int C => Y;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Position"/> structure from the physical coordinates.
+        /// </summary>
+        /// <param name="x">X in physical coordinate system.</param>
+        /// <param name="y">Y in physical coordinate system.</param>
+        /// <returns>the created <see cref="Position"/></returns>
         public static Position FromPhysical(int x, int y)
         {
             return new Position { X = x, Y = y };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Position"/> structure from the logical coordinates.
+        /// </summary>
+        /// <param name="a">A in logical coordinate system.</param>
+        /// <param name="b">B in logical coordinate system.</param>
+        /// <param name="c">C in logical coordinate system.</param>
+        /// <returns>the created <see cref="Position"/></returns>
+        /// <exception cref="ArgumentException">logical coordinate is invalid</exception>
         public static Position FromLogical(int a, int b, int c)
         {
             if (a + b + c != 0)
@@ -52,10 +88,22 @@ namespace CivModel
             return FromLogical(lhs * rhs.A, lhs * rhs.B, lhs * rhs.C);
         }
 
+        /// <summary>
+        /// Get norm of this position. It is equal to <c>(|A| + |B| + |C|) / 2</c>
+        /// </summary>
+        /// <returns></returns>
         public int Norm()
         {
             return (Math.Abs(A) + Math.Abs(B) + Math.Abs(C)) / 2;
         }
+
+        /// <summary>
+        /// Get the distance between two <see cref="Position"/>.
+        /// It is equal to <c>(<paramref name="lhs"/> - <paramref name="rhs"/>).<see cref="Norm"/>()</c>.
+        /// </summary>
+        /// <param name="lhs">left hand side parameter</param>
+        /// <param name="rhs">right hand side parameter</param>
+        /// <returns></returns>
         public static int Distance(Position lhs, Position rhs)
         {
             return (lhs - rhs).Norm();

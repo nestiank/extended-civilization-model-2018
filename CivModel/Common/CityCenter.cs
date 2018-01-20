@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
+    /// <summary>
+    /// Represents a city as <see cref="TileBuilding"/>.
+    /// </summary>
+    /// <seealso cref="CivModel.TileBuilding" />
     public class CityCenter : TileBuilding
     {
         public override double MaxHP => 9;
@@ -14,12 +18,21 @@ namespace CivModel.Common
         public override double AttackPower => 15;
         public override double DefencePower => 21;
 
-        private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
+        private readonly IActorAction _holdingAttackAct;
 
-        private List<IProductionFactory> _availableProduction = new List<IProductionFactory>();
+        /// <summary>
+        /// The list of available production from this city.
+        /// </summary>
+        /// <seealso cref="Player.GetAvailableProduction"/>
         public IReadOnlyList<IProductionFactory> AvailableProduction => _availableProduction;
+        private List<IProductionFactory> _availableProduction = new List<IProductionFactory>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CityCenter"/> class.
+        /// </summary>
+        /// <param name="owner">The player who owns this city.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public CityCenter(Player owner) : base(owner)
         {
             Owner.AddCityToList(this);
@@ -28,17 +41,17 @@ namespace CivModel.Common
             _availableProduction.Add(PioneerProductionFactory.Instance);
         }
 
-        protected override void OnChangeOwner(Player newOwner)
+        protected override void OnBeforeChangeOwner(Player newOwner)
         {
-            base.OnChangeOwner(newOwner);
+            base.OnBeforeChangeOwner(newOwner);
             Owner.RemoveCityFromList(this);
             newOwner.AddCityToList(this);
         }
 
-        protected override void OnDestroy()
+        protected override void OnBeforeDestroy()
         {
             Owner.RemoveCityFromList(this);
-            base.OnDestroy();
+            base.OnBeforeDestroy();
         }
 
         protected override void OnDie(Player opposite)

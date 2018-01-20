@@ -6,15 +6,28 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
+    /// <summary>
+    /// Represents an attack action.
+    /// </summary>
+    /// <seealso cref="CivModel.IActorAction" />
     public class AttackActorAction : IActorAction
     {
-        private readonly Actor _owner;
         public Actor Owner => _owner;
+        private readonly Actor _owner;
 
         public bool IsParametered => true;
 
         private readonly bool _isMoving;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AttackActorAction"/> class.
+        /// </summary>
+        /// <param name="owner">The <see cref="Actor"/> who will own the action.</param>
+        /// <param name="isMoving">
+        ///   <c>true</c> if this action is <strong>moving attack</strong>.
+        ///   <c>false</c> if this action is <strong>holding attack</strong>.
+        /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public AttackActorAction(Actor owner, bool isMoving)
         {
             _owner = owner ?? throw new ArgumentNullException("owner");
