@@ -40,10 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttackActorAction.cs" />
     <Compile Include="IActorAction.cs" />
     <Compile Include="ITurnObserver.cs" />
     <Compile Include="MoveActorAction.cs" />
+    <Compile Include="Position.cs" />
     <Compile Include="Production.cs" />
+    <Compile Include="Terrain.Point.cs" />
     <Compile Include="TileBuilding.cs" />
     <Compile Include="Common\CityCenter.cs" />
     <Compile Include="Game.cs" />
@@ -55,6 +58,10 @@
     <Compile Include="Unit.cs" />
     <Compile Include="TileObjectProduction.cs" />
     <Compile Include="Common\Pioneer.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="docs\Coordinate System.pptx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

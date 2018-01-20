@@ -29,17 +29,26 @@ namespace CivModel
             }
         }
 
-        public List<Unit> Units { get; } = new List<Unit>();
-        public List<CityCenter> Cities { get; } = new List<CityCenter>();
+        private readonly List<Unit> _units = new List<Unit>();
+        public IReadOnlyList<Unit> Units => _units;
+
+        private readonly List<CityCenter> _cities = new List<CityCenter>();
+        public IReadOnlyList<CityCenter> Cities => _cities;
 
         public LinkedList<Production> Production { get; } = new LinkedList<Production>();
         public LinkedList<Production> Deployment { get; } = new LinkedList<Production>();
+
+        private readonly List<IProductionFactory> _additionalAvailableProduction = new List<IProductionFactory>();
+        public List<IProductionFactory> AdditionalAvailableProduction => _additionalAvailableProduction;
 
         /// <summary>
         /// This property is updated by <see cref="EstimateLaborInputing"/>.
         /// You must call that function before use this property.
         /// </summary>
         public double EstimatedUsedLabor { get; private set; }
+
+        private bool _beforeLandingCity = true;
+        public bool IsDefeated => !_beforeLandingCity && Cities.Count == 0;
 
         private readonly Game _game;
         public Game Game => _game;
@@ -49,9 +58,47 @@ namespace CivModel
             _game = game;
         }
 
+        /// <summary>
+        /// this function is used by <see cref="Unit"/> class
+        /// </summary>
+        /// <param name="unit">unit to add</param>
+        internal void AddUnitToList(Unit unit)
+        {
+            _units.Add(unit);
+        }
+
+        /// <summary>
+        /// this function is used by <see cref="Unit"/> class
+        /// </summary>
+        /// <param name="unit">unit to remove</param>
+        internal void RemoveUnitFromList(Unit unit)
+        {
+            _units.Remove(unit);
+        }
+
+        /// <summary>
+        /// this function is used by <see cref="CityCenter"/> class
+        /// </summary>
+        /// <param name="city">city to add</param>
+        internal void AddCityToList(CityCenter city)
+        {
+            _beforeLandingCity = false;
+            _cities.Add(city);
+        }
+
+        /// <summary>
+        /// this function is used by <see cref="CityCenter"/> class
+        /// </summary>
+        /// <param name="city">city to remove</param>
+        internal void RemoveCityFromList(CityCenter city)
+        {
+            _cities.Remove(city);
+        }
+
         public IReadOnlyList<IProductionFactory> GetAvailableProduction()
         {
-            return Cities.SelectMany(city => city.AvailableProduction).Distinct().ToArray();
+            return Cities.SelectMany(city => city.AvailableProduction).Distinct()
+                .Union(AdditionalAvailableProduction).ToArray();
         }
 
         public void PreTurn()

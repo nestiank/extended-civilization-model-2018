@@ -8,20 +8,26 @@ namespace CivModel
 {
     public abstract class Unit : Actor
     {
-        private readonly Player _owner;
-        public override Player Owner => _owner;
-
         private readonly IActorAction _moveAct;
         public override IActorAction MoveAct => _moveAct;
-        public override IActorAction AttackAct => null;
-        public override IReadOnlyList<IActorAction> SpecialActs => null;
 
-        public Unit(Player owner) : base(TileTag.Unit)
+        public Unit(Player owner) : base(owner, TileTag.Unit)
         {
-            _owner = owner;
+            Owner.AddUnitToList(this);
             _moveAct = new MoveActorAction(this);
+        }
 
-            _owner.Units.Add(this);
+        protected override void OnChangeOwner(Player newOwner)
+        {
+            base.OnChangeOwner(newOwner);
+            Owner.RemoveUnitFromList(this);
+            newOwner.AddUnitToList(this);
+        }
+
+        protected override void OnDestroy()
+        {
+            Owner.RemoveUnitFromList(this);
+            base.OnDestroy();
         }
     }
 }

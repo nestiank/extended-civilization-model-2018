@@ -155,4 +155,32 @@ namespace FakeView
             ++bufidx;
         }
     }
+
+    void Screen::PrintStringEx(int x, int y, unsigned char color, const std::string& str)
+    {
+        auto scrsz = GetSize();
+        std::size_t bufidx = x + y * scrsz.width;
+        for (std::size_t idx = 0; idx < str.size(); ++idx)
+        {
+            if (bufidx >= m_buffer.size())
+                break;
+
+            if (str[idx] != '%')
+            {
+            print:
+                m_buffer[bufidx].ch = str[idx];
+                m_buffer[bufidx].color = color;
+                ++bufidx;
+            }
+            else
+            {
+                if (idx + 2 >= str.size())
+                    goto print;
+                if (str[++idx] != 'c')
+                    goto print;
+
+                color = static_cast<unsigned char>(str[++idx]);
+            }
+        }
+    }
 }

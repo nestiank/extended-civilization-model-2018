@@ -11,10 +11,8 @@ namespace CivModel
         public override int MaxAP => 0;
 
         public override IActorAction MoveAct => null;
-        public override IActorAction AttackAct => null;
-        public override IReadOnlyList<IActorAction> SpecialActs => null;
 
-        public TileBuilding() : base(TileTag.TileBuilding)
+        public TileBuilding(Player owner) : base(owner, TileTag.TileBuilding)
         {
         }
     }

@@ -106,6 +106,17 @@ namespace WinformView
                         e.Graphics.FillPolygon(Brushes.LightGreen, polygon);
 
                     e.Graphics.DrawPolygon(Pens.White, polygon);
+
+                    using (var font = new Font("Arial", 7))
+                    {
+                        var rect = new RectangleF(px, py, blockSize_ * 2, blockSize_ * 2);
+                        var format = new StringFormat();
+                        format.Alignment = StringAlignment.Center;
+                        format.LineAlignment = StringAlignment.Center;
+
+                        var str = point.Position.A + "," + point.Position.B + "," + point.Position.C;
+                        e.Graphics.DrawString(str, font, Brushes.Black, rect, format);
+                    }
                 }
             }
         }
