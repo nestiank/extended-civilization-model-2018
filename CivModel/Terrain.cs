@@ -48,18 +48,18 @@ namespace CivModel
                 _height = wh[1];
                 _points = new Point_t[_height, _width];
 
-                for (int x = 0; x < _width; ++x)
+                for (int y = 0; y < _height; ++y)
                 {
                     string line = file.ReadLine();
-                    for (int y = 0; y < _height; ++y)
+                    for (int x = 0; x < _width; ++x)
                     {
-                        if (y >= line.Length)
+                        if (x >= line.Length)
                             throw new InvalidDataException();
 
                         int len = Enum.GetNames(typeof(TileTag)).Length;
                         _points[y, x].PlacedObjects = new TileObject[len];
 
-                        int idx = "POMFSTI".IndexOf(line[y]);
+                        int idx = "POMFSTI".IndexOf(line[x]);
                         if (idx == -1)
                             throw new InvalidDataException();
 
@@ -74,9 +74,9 @@ namespace CivModel
             using (var file = File.CreateText("map.txt"))
             {
                 file.WriteLine(Width + " " + Height);
-                for (int x = 0; x < _width; ++x)
+                for (int y = 0; y < _height; ++y)
                 {
-                    for (int y = 0; y < _height; ++y)
+                    for (int x = 0; x < _width; ++x)
                     {
                         file.Write("POMFSTI"[(int)_points[y, x].Type]);
                     }

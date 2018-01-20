@@ -17,11 +17,11 @@ namespace CivModel
 
             public TerrainType Type
             {
-                get => Terrain._points[Position.X, Position.Y].Type;
-                set => Terrain._points[Position.X, Position.Y].Type = value;
+                get => Terrain._points[Position.Y, Position.X].Type;
+                set => Terrain._points[Position.Y, Position.X].Type = value;
             }
-            public Unit Unit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
-            public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.TileBuilding];
+            public Unit Unit => (Unit)Terrain._points[Position.Y, Position.X].PlacedObjects[(int)TileTag.Unit];
+            public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.Y, Position.X].PlacedObjects[(int)TileTag.TileBuilding];
 
             public Point(Terrain terrain, Position pos)
             {
