@@ -20,8 +20,10 @@ namespace CivModel.Common
 
         private class PioneerAction : IActorAction
         {
-            public bool IsParametered => false;
             private readonly Pioneer _owner;
+            public Actor Owner => _owner;
+
+            public bool IsParametered => false;
 
             public PioneerAction(Pioneer owner)
             {
@@ -38,7 +40,7 @@ namespace CivModel.Common
                 if (_owner.PlacedPoint.Value.TileBuilding != null)
                     return -1;
 
-                return 0;
+                return 1;
             }
 
             public void Act(Terrain.Point? pt)
@@ -49,9 +51,10 @@ namespace CivModel.Common
                     throw new InvalidOperationException("Actor is not placed yet");
 
                 var ownerpt = _owner.PlacedPoint.Value;
-                _owner.PlacedPoint = null;
+                var player = Owner.Owner;
+                Owner.Destroy();
 
-                var city = new CityCenter(_owner.Owner);
+                var city = new CityCenter(player);
                 city.PlacedPoint = ownerpt;
             }
         }

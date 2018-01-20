@@ -29,7 +29,7 @@ namespace CivModel
         /// This property is updated by <see cref="Player.EstimateLaborInputing"/>.
         /// You must call that function before use this property.
         /// </summary>
-        public double EstimatedLaborInputing { get; set; }
+        public double EstimatedLaborInputing { get; internal set; }
 
         public bool Completed { get; private set; } = false;
 

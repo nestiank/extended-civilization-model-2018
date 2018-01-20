@@ -12,143 +12,13 @@ namespace CivModel
         None, Hill, Mountain
     }
 
-    public struct Position
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("({0},{1})", X, Y);
-        }
-
-        public static bool operator ==(Position lhs, Position rhs)
-        {
-            return lhs.X == rhs.X && lhs.Y == rhs.Y;
-        }
-        public static bool operator !=(Position lhs, Position rhs)
-        {
-            return !(lhs == rhs);
-        }
-        public override bool Equals(object obj)
-        {
-            if (obj is Position other)
-                return this == other;
-            return false;
-        }
-        public override int GetHashCode()
-        {
-            return X * 17 + Y;
-        }
-    }
-
-    public class Terrain
+    public partial class Terrain
     {
         private struct Point_t
         {
             public TerrainType1 Type1;
             public TerrainType2 Type2;
             public TileObject[] PlacedObjects;
-        }
-        public struct Point
-        {
-            public readonly Terrain _terrain;
-            public Terrain Terrain => _terrain;
-
-            public Position Position { get; private set; }
-
-            public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
-            public TerrainType2 Type2 => Terrain._points[Position.X, Position.Y].Type2;
-            public Unit Unit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
-            public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.TileBuilding];
-
-            public Point(Terrain terrain, Position pos)
-            {
-                if (!terrain.IsValidPosition(pos))
-                    throw new ArgumentOutOfRangeException();
-
-                _terrain = terrain;
-                Position = pos;
-            }
-
-            public override string ToString()
-            {
-                return Position.ToString();
-            }
-
-            public static bool operator ==(Point lhs, Point rhs)
-            {
-                return lhs.Terrain == rhs.Terrain && lhs.Position == rhs.Position;
-            }
-            public static bool operator !=(Point lhs, Point rhs)
-            {
-                return !(lhs == rhs);
-            }
-            public override bool Equals(object obj)
-            {
-                if (obj is Point other)
-                    return this == other;
-                return false;
-            }
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return Terrain.GetHashCode() * 17 + Position.GetHashCode();
-                }
-            }
-
-            /// <summary>
-            /// get adjacent points, in clockwise order.
-            /// </summary>
-            /// <remarks>
-            /// Get the array of the adjacent points in clockwise order.
-            /// If the position is invalid, the value is null.
-            /// A first element of the array is the left one.
-            ///   1   2
-            /// 0  pt  3
-            ///   5   4
-            /// </remarks>
-            /// <returns>an array of the adjacent points</returns>
-            public Point?[] Adjacents()
-            {
-                var ret = new Point?[6];
-                Position pos;
-
-                pos = new Position { X = Position.X - 1, Y = Position.Y };
-                if (Terrain.IsValidPosition(pos))
-                    ret[0] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X, Y = Position.Y - 1 };
-                if (Terrain.IsValidPosition(pos))
-                    ret[2] = ret[1] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X + 1, Y = Position.Y };
-                if (Terrain.IsValidPosition(pos))
-                    ret[3] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X, Y = Position.Y + 1 };
-                if (Terrain.IsValidPosition(pos))
-                    ret[5] = ret[4] = new Point(Terrain, pos);
-
-                int correction = 1 - (Position.Y % 2) * 2;
-                int cidx = 1 - (Position.Y % 2);
-
-                if (ret[1 + cidx] != null)
-                {
-                    pos = ret[1 + cidx].Value.Position;
-                    pos.X += correction;
-                    ret[1 + cidx] = new Point(Terrain, pos);
-                }
-                if (ret[5 - cidx] != null)
-                {
-                    pos = ret[5 -cidx].Value.Position;
-                    pos.X += correction;
-                    ret[5 - cidx] = new Point(Terrain, pos);
-                }
-
-                return ret;
-            }
         }
 
         private Point_t[,] _points;
@@ -191,16 +61,14 @@ namespace CivModel
         /// this function is used by the setter of <see cref="TileObject.PlacedPoint"/>.
         /// In general case you should use <see cref="TileObject.PlacedPoint"/> instead.
         /// </summary>
-        public void PlaceObject(TileObject obj)
+        internal void PlaceObject(TileObject obj)
         {
             var p = obj.PlacedPoint
                 ?? throw new ArgumentException("obj.PlacedPoint is null");
 
             TileObject prev = _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag];
             if (prev != null)
-            {
-                prev.PlacedPoint = null;
-            }
+                throw new InvalidOperationException("PlaceObject() is called while another object exists");
 
             _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = obj;
         }
@@ -209,7 +77,7 @@ namespace CivModel
         /// this function is used by the setter of <see cref="TileObject.PlacedPoint"/>.
         /// In general case you should use <see cref="TileObject.PlacedPoint"/> instead.
         /// </summary>
-        public void UnplaceObject(TileObject obj, Point p)
+        internal void UnplaceObject(TileObject obj, Point p)
         {
             if (obj.PlacedPoint != null)
                 throw new ArgumentException("obj.PlacedPoint is not null");

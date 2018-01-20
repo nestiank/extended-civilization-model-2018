@@ -21,11 +21,12 @@ namespace CivPresenter
 
         public Terrain.Point FocusedPoint { get; private set; }
 
-        private Terrain.Point?[] _moveAdjcents = null;
-        private int _moveSelectedIndex = -1;
+        private Unit[] _standbyUnits = null;
+        private int _standbyUnitIndex = -1;
 
-        public IReadOnlyList<Terrain.Point?> MoveAdjcents => _moveAdjcents;
-        public int MoveSelectedIndex => _moveSelectedIndex;
+        public bool IsThereTodos { get; private set; }
+
+        public IReadOnlyActorAction RunningAction { get; private set; }
 
         public int SelectedDeploy { get; private set; } = -1;
         public int SelectedProduction { get; private set; } = -1;
@@ -37,30 +38,32 @@ namespace CivPresenter
 
         public enum States
         {
-            Normal, Move, SpecialAct,
-            ProductUI, ProductAdd, Deploy
+            Normal, Move, MovingAttack, HoldingAttack, SpecialAct,
+            ProductUI, ProductAdd, Deploy,
+            Victory, Defeated
         }
         public States State { get; private set; }
-        public int StateParam { get; private set; }
+        public int StateParam { get; private set; } = -1;
+
+        private bool[] _victoryNotified = null;
 
         private Action OnApply;
         private Action OnCancel;
         private Action<Direction> OnArrowKey;
         private Action<int> OnNumeric;
         private Action OnRemove;
+        private Action OnSkip;
 
         public Presenter(IView view)
         {
             _view = view;
 
-            _game = new Game(width: 100, height: 100, numOfPlayer: 1);
+            _game = new Game(width: 10, height: 10, numOfPlayer: 2);
 
-            _selectedActor = new Pioneer(Game.Players[0]);
-            _selectedActor.PlacedPoint = Game.Terrain.GetPoint(50, 50);
-
-            _game.StartTurn();
-
+            // fallback point
+            // ProceedTurn() would set FocusedPoint if any unit/city exists.
             FocusedPoint = Game.Terrain.GetPoint(0, 0);
+            ProceedTurn();
 
             StateNormal();
         }
@@ -90,34 +93,139 @@ namespace CivPresenter
             OnRemove();
         }
 
+        public void CommandSkip()
+        {
+            OnSkip();
+        }
+
         public void CommandRefocus()
         {
-            if (SelectedActor != null)
-                FocusedPoint = SelectedActor.PlacedPoint.Value;
+            Refocus();
         }
 
         public void CommandSelect()
         {
-            if (FocusedPoint.Unit != null)
+            if (FocusedPoint.Unit != null && FocusedPoint.Unit.Owner == Game.PlayerInTurn)
             {
-                _selectedActor = FocusedPoint.Unit;
+                SelectUnit(FocusedPoint.Unit);
             }
         }
 
         public void CommandMove()
         {
-            if (State != States.Move)
+            if (State == States.Normal)
                 StateMove();
+            else
+                OnCancel();
+        }
+
+        public void CommandMovingAttack()
+        {
+            if (State == States.Normal)
+                StateMovingAttack();
+            else
+                OnCancel();
+        }
+
+        public void CommandHoldingAttack()
+        {
+            if (State == States.Normal)
+                StateHoldingAttack();
             else
                 OnCancel();
         }
 
         public void CommandProductUI()
         {
-            if (State != States.ProductUI)
+            if (State == States.Normal)
                 StateProductUI();
             else
                 OnCancel();
+        }
+
+        private void ProceedTurn()
+        {
+            if (Game.IsInsideTurn)
+                Game.EndTurn();
+            Game.StartTurn();
+
+            SelectNextUnit();
+            if (_selectedActor == null)
+            {
+                if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityCenter city)
+                {
+                    if (city.PlacedPoint is Terrain.Point pt)
+                        FocusedPoint = pt;
+                }
+            }
+
+            StateNormal();
+        }
+
+        private void SelectNextUnit()
+        {
+            int tryNumber = (_standbyUnitIndex == -1) ? 1 : 2;
+
+            for (int j = 0; j < tryNumber; ++j)
+            {
+                if (_standbyUnitIndex == -1)
+                {
+                    _standbyUnits = Game.PlayerInTurn.Units.ToArray();
+                }
+
+                int idx = _standbyUnitIndex + 1;
+                for (; idx < _standbyUnits.Length; ++idx)
+                {
+                    var unit = _standbyUnits[idx];
+                    if (unit.RemainAP > 0 && !unit.SkipFlag && unit.PlacedPoint.HasValue)
+                    {
+                        _standbyUnitIndex = idx;
+                        _selectedActor = _standbyUnits[idx];
+                        IsThereTodos = true;
+                        Refocus();
+                        return;
+                    }
+                }
+
+                _selectedActor = null;
+                _standbyUnitIndex = -1;
+                IsThereTodos = false;
+            }
+        }
+
+        private void SelectUnit(Unit unit)
+        {
+            var units = Game.PlayerInTurn.Units.ToArray();
+            int idx = Array.IndexOf(units, unit);
+
+            if (idx == -1)
+                return;
+
+            _selectedActor = unit;
+            unit.SkipFlag = false;
+
+            _standbyUnits = units;
+            _standbyUnitIndex = idx;
+            IsThereTodos = true;
+            Refocus();
+        }
+
+        private bool CheckVictory()
+        {
+            var survivors = Game.Players.Where(player => !player.IsDefeated);
+            if (survivors.Count() <= 1)
+            {
+                _victoryNotified = new bool[Game.Players.Count];
+                StateNormal();
+                return true;
+            }
+            return false;
+        }
+
+        private void Refocus()
+        {
+            if (SelectedActor != null)
+                FocusedPoint = SelectedActor.PlacedPoint.Value;
         }
 
         private void MoveSight(Direction direction)
@@ -143,14 +251,48 @@ namespace CivPresenter
 
         private void StateNormal()
         {
+            if (_victoryNotified != null)
+            {
+                int idx = 0;
+                for (; idx < Game.Players.Count; ++idx)
+                {
+                    if (Game.Players[idx] == Game.PlayerInTurn)
+                        break;
+                }
+
+                if (!_victoryNotified[idx])
+                {
+                    if (Game.PlayerInTurn.IsDefeated)
+                        StateDefeated();
+                    else
+                        StateVictory();
+
+                    _victoryNotified[idx] = true;
+                    return;
+                }
+            }
+
             State = States.Normal;
 
             OnApply = () => {
-                Game.EndTurn();
-                Game.StartTurn();
+                if (!IsThereTodos)
+                {
+                    ProceedTurn();
+                }
+                else
+                {
+                    SelectNextUnit();
+                }
             };
             OnCancel = () => {
-                View.Shutdown();
+                if (SelectedActor != null)
+                {
+                    _selectedActor = null;
+                }
+                else
+                {
+                    View.Shutdown();
+                }
             };
             OnArrowKey = direction => {
                 MoveSight(direction);
@@ -162,71 +304,76 @@ namespace CivPresenter
                     OnCancel();
             };
             OnRemove = () => { };
+            OnSkip = () => {
+                if (SelectedActor != null)
+                {
+                    SelectedActor.SkipFlag = !SelectedActor.SkipFlag;
+                    SelectNextUnit();
+                }
+            };
         }
 
         private void StateMove()
         {
-            if (SelectedActor?.MoveAct == null)
-                return;
-
-            State = States.Move;
-
-            _moveAdjcents = SelectedActor.PlacedPoint.Value.Adjacents();
-            _moveSelectedIndex = -1;
-
-            for (int i = 0; i < _moveAdjcents.Length; ++i)
+            if (SelectedActor?.MoveAct is IActorAction action)
             {
-                int ap = SelectedActor.MoveAct.GetRequiredAP(_moveAdjcents[i]);
-                if (ap == -1 || ap > SelectedActor.RemainAP)
-                    _moveAdjcents[i] = null;
-            }
+                State = States.Move;
 
-            Action clear = () => {
-                _moveAdjcents = null;
-                _moveSelectedIndex = -1;
-            };
-            OnApply = () => {
-                if (_moveSelectedIndex != -1 && _moveAdjcents[_moveSelectedIndex] != null)
-                {
-                    SelectedActor.MoveAct.Act(_moveAdjcents[_moveSelectedIndex]);
+                Action onFinished = () => {
+                    StateNormal();
+                };
+                Action onApplyFinished = () => {
                     CommandRefocus();
-                    OnCancel();
-                }
-            };
-            OnCancel = () => {
-                clear();
-                StateNormal();
-            };
-            OnArrowKey = direction => {
-                // table[index + 1, (int)direction]
-                //  == index after move
-                // table[0,*] is for an initial state, or index == -1
-                // @ref CivModel.Terrain.Point.Adjacents
-                //   1   2
-                // 0  -1  3
-                //   5   4
-                var table = new int[7, 4] {
-                    { 1, 5, 0, 3 },
-                    { 1, 5, -1, 3 },
-                    { -1, 5, 0, 2 },
-                    { -1, 4, 1, 3 },
-                    { 2, 4, 0, -1 },
-                    { 2, -1, 5, 3 },
-                    { 1, -1, 0, 4 }
+                    onFinished();
+                };
+                Action onCancelFinished = () => {
+                    onFinished();
                 };
 
-                int r = _moveSelectedIndex;
-                do
-                {
-                    r = table[r + 1, (int)direction];
-                }
-                while (!(r == -1 || _moveAdjcents[r] != null));
+                StateParameteredAction(action, onApplyFinished, onCancelFinished);
+            }
+        }
 
-                if (r != -1)
-                    _moveSelectedIndex = r;
-            };
-            OnNumeric = index => { };
-            OnRemove = () => { };
+        private void StateMovingAttack()
+        {
+            if (SelectedActor?.MovingAttackAct is IActorAction action)
+            {
+                State = States.MovingAttack;
+
+                Action onFinished = () => {
+                    StateNormal();
+                };
+                Action onApplyFinished = () => {
+                    CommandRefocus();
+                    onFinished();
+                };
+                Action onCancelFinished = () => {
+                    onFinished();
+                };
+
+                StateParameteredAction(action, onApplyFinished, onCancelFinished);
+            }
+        }
+
+        private void StateHoldingAttack()
+        {
+            if (SelectedActor?.HoldingAttackAct is IActorAction action)
+            {
+                State = States.HoldingAttack;
+
+                Action onFinished = () => {
+                    StateNormal();
+                };
+                Action onApplyFinished = () => {
+                    CommandRefocus();
+                    onFinished();
+                };
+                Action onCancelFinished = () => {
+                    onFinished();
+                };
+
+                StateParameteredAction(action, onApplyFinished, onCancelFinished);
+            }
         }
 
         private void StateSpeicalAct(int index)
@@ -236,7 +383,68 @@ namespace CivPresenter
             if (index < 0 || index >= SelectedActor.SpecialActs.Count)
                 return;
 
-            SelectedActor.SpecialActs[index].Act(null);
+            var action = SelectedActor.SpecialActs[index];
+            if (action.IsParametered)
+            {
+                State = States.SpecialAct;
+                StateParam = index;
+
+                Action onFinished = () => {
+                    StateParam = -1;
+                    StateNormal();
+                };
+
+                StateParameteredAction(action, onFinished, onFinished);
+            }
+            else
+            {
+                DoUnparameteredAction(action);
+            }
+        }
+
+        private void StateParameteredAction(IActorAction action, Action onApplyFinished, Action onCancelFinished)
+        {
+            if (!action.IsParametered)
+                throw new ArgumentException("action is not parametered", "action");
+
+            RunningAction = action;
+
+            Action clear = () => {
+                RunningAction = null;
+            };
+            OnApply = () => {
+                if (action.IsActable(FocusedPoint))
+                {
+                    action.Act(FocusedPoint);
+                    clear();
+
+                    if (!CheckVictory())
+                    {
+                        onApplyFinished();
+                    }
+                }
+            };
+            OnCancel = () => {
+                clear();
+                onCancelFinished();
+            };
+            OnArrowKey = direction => {
+                MoveSight(direction);
+            };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+        }
+
+        private void DoUnparameteredAction(IActorAction action)
+        {
+            if (action.IsParametered)
+                throw new ArgumentException("action is parametered", "action");
+
+            if (action.IsActable(null))
+                action.Act(null);
+
+            CheckVictory();
         }
 
         private void StateProductUI()
@@ -303,6 +511,7 @@ namespace CivPresenter
                                 Game.PlayerInTurn.Production.Remove(node);
                                 Game.PlayerInTurn.Production.AddBefore(prev, node.Value);
                                 Game.PlayerInTurn.EstimateLaborInputing();
+                                --SelectedProduction;
                             }
                             break;
                         case Direction.Down:
@@ -315,6 +524,7 @@ namespace CivPresenter
                                 Game.PlayerInTurn.Production.Remove(node);
                                 Game.PlayerInTurn.Production.AddAfter(next, node.Value);
                                 Game.PlayerInTurn.EstimateLaborInputing();
+                                ++SelectedProduction;
                             }
                             break;
                     }
@@ -377,6 +587,7 @@ namespace CivPresenter
                     SelectedProduction = -1;
                 }
             };
+            OnSkip = () => { };
         }
 
         private void StateProductAdd()
@@ -422,6 +633,7 @@ namespace CivPresenter
                     SelectedProduction = index;
             };
             OnRemove = () => { };
+            OnSkip = () => { };
         }
 
         private void StateDeploy(LinkedListNode<Production> node)
@@ -450,6 +662,39 @@ namespace CivPresenter
             };
             OnNumeric = index => { };
             OnRemove = () => { };
+            OnSkip = () => { };
+        }
+
+        private void StateVictory()
+        {
+            State = States.Victory;
+
+            OnApply = () => {
+                OnCancel();
+            };
+            OnCancel = () => {
+                StateNormal();
+            };
+            OnArrowKey = direction => { };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+        }
+
+        private void StateDefeated()
+        {
+            State = States.Defeated;
+
+            OnApply = () => {
+                OnCancel();
+            };
+            OnCancel = () => {
+                StateNormal();
+            };
+            OnArrowKey = direction => { };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
         }
     }
 }

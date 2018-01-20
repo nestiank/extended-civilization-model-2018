@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
-    public interface IActorAction
+    public interface IReadOnlyActorAction
     {
+        /// <summary>
+        /// the <see cref="Actor"/> object which has this action.
+        /// </summary>
+        Actor Owner { get; }
+
+        /// <summary>
+        /// Whether the action has a target parameter or not.
+        /// </summary>
         bool IsParametered { get; }
 
         /// <summary>
@@ -19,7 +27,19 @@ namespace CivModel
         /// required AP to act. <c>-1</c> if the action is invalid.
         /// </returns>
         int GetRequiredAP(Terrain.Point? pt);
+    }
 
+    public interface IActorAction : IReadOnlyActorAction
+    {
         void Act(Terrain.Point? pt);
+    }
+
+    public static class ActorAction
+    {
+        public static bool IsActable(this IReadOnlyActorAction action, Terrain.Point? pt)
+        {
+            int requiredAP = action.GetRequiredAP(pt);
+            return requiredAP != -1 && action.Owner.CanConsumeAP(requiredAP);
+        }
     }
 }

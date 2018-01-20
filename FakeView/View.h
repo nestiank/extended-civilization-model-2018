@@ -19,10 +19,16 @@ namespace FakeView
         void RenderNormal();
         void RenderProductUI();
         void RenderProductAdd();
+        void RenderVictory();
+        void RenderDefeated();
 
         void PrintTerrain(int px, int py, CivModel::Terrain::Point point);
         void PrintUnit(int px, int py, CivModel::Unit^ unit);
         void PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding);
+
+        unsigned char GetPlayerColor(CivModel::Player^ player);
+
+        std::string GetFactoryDescription(CivModel::IProductionFactory^ factory);
 
         std::pair<int, int> TerrainToScreen(int x, int y);
 
