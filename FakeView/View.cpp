@@ -313,6 +313,10 @@ namespace FakeView
             case 'i':
                 m_presenter->FocusedPoint.Type = (CivModel::TerrainType)6;
                 break;
+            case 'H':
+            case 'h':
+                m_presenter->FocusedPoint.Type = (CivModel::TerrainType)7;
+                break;
 
             case 0x1b: // ESC
                 m_presenter->CommandCancel();
@@ -341,7 +345,7 @@ namespace FakeView
     {
         auto& c = m_screen->GetChar(px, py);
         c.color = 0b0000'0111;
-        c.ch = "POMFSTI"[(int)point.Type];
+        c.ch = "POMFSTIH"[(int)point.Type];
     }
 
     void View::PrintUnit(int px, int py, CivModel::Unit^ unit)

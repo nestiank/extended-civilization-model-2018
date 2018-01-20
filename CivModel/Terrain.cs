@@ -7,7 +7,7 @@ namespace CivModel
 {
     public enum TerrainType
     {
-        Plain, Ocean, Mount, Forest, Swamp, Tundra, Ice,
+        Plain, Ocean, Mount, Forest, Swamp, Tundra, Ice, Hill
     }
 
     public partial class Terrain
@@ -59,7 +59,7 @@ namespace CivModel
                         int len = Enum.GetNames(typeof(TileTag)).Length;
                         _points[y, x].PlacedObjects = new TileObject[len];
 
-                        int idx = "POMFSTI".IndexOf(line[x]);
+                        int idx = "POMFSTIH".IndexOf(line[x]);
                         if (idx == -1)
                             throw new InvalidDataException();
 
@@ -78,7 +78,7 @@ namespace CivModel
                 {
                     for (int x = 0; x < _width; ++x)
                     {
-                        file.Write("POMFSTI"[(int)_points[y, x].Type]);
+                        file.Write("POMFSTIH"[(int)_points[y, x].Type]);
                     }
                     file.WriteLine();
                 }
