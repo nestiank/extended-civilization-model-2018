@@ -191,7 +191,7 @@ namespace WinformView
                     if (selectedTile_.HasValue)
                     {
                         var pos = selectedTile_.Value.Position;
-                        pos.Y += 1;
+                        pos.Y -= 1;
                         if (presenter_.Game.Terrain.IsValidPosition(pos))
                             selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
                     }
