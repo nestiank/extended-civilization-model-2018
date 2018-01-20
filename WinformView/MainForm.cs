@@ -202,19 +202,19 @@ namespace WinformView
         {
             if (GetAsyncKeyState((int)Keys.Left) != 0)
             {
-                --sightDx_;
+                sightDx_ -= 3;
             }
             if (GetAsyncKeyState((int)Keys.Right) != 0)
             {
-                ++sightDx_;
+                sightDx_ += 3;
             }
             if (GetAsyncKeyState((int)Keys.Up) != 0)
             {
-                --sightDy_;
+                sightDy_ -= 3;
             }
             if (GetAsyncKeyState((int)Keys.Down) != 0)
             {
-                ++sightDy_;
+                sightDy_ += 3;
             }
 
             SyncSight();
@@ -222,24 +222,24 @@ namespace WinformView
 
         private void SyncSight()
         {
-            while (-sightDx_ * 2 > blockSize_ * (float)Math.Sqrt(3))
+            while (-sightDx_ > blockSize_ * (float)Math.Sqrt(3) / 2)
             {
-                sightDx_ = -sightDx_ - 1;
+                sightDx_ += (int)Math.Floor(blockSize_ * (float)Math.Sqrt(3));
                 presenter_.CommandArrowKey(Direction.Left);
             }
-            while (sightDx_ * 2 >= blockSize_ * (float)Math.Sqrt(3))
+            while (sightDx_ > blockSize_ * (float)Math.Sqrt(3) / 2)
             {
-                sightDx_ = -sightDx_ + 1;
+                sightDx_ -= (int)Math.Floor(blockSize_ * (float)Math.Sqrt(3));
                 presenter_.CommandArrowKey(Direction.Right);
             }
-            while (-sightDy_ * 2 > blockSize_ * 1.5f)
+            while (-sightDy_ > blockSize_ * 0.75f)
             {
-                sightDy_ = -sightDy_ - 1;
+                sightDy_ += (int)Math.Floor(blockSize_ * 1.5f);
                 presenter_.CommandArrowKey(Direction.Up);
             }
-            while (sightDy_ * 2 >= blockSize_ * 1.5f)
+            while (sightDy_ * 2 > blockSize_ * 0.75f)
             {
-                sightDy_ = -sightDy_ + 1;
+                sightDy_ -= (int)Math.Floor(blockSize_ * 1.5f);
                 presenter_.CommandArrowKey(Direction.Down);
             }
 
