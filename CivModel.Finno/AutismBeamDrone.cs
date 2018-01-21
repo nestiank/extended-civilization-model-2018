@@ -10,8 +10,21 @@ namespace CivModel.Common
     {
         public override int MaxAP => 4;
 
+        public override double MaxHP => 35;
+
+        public override double AttackPower => 20;
+        public override double DefencePower => 5;
+
+        private readonly IActorAction _holdingAttackAct;
+        public override IActorAction HoldingAttackAct => _holdingAttackAct;
+
+        private readonly IActorAction _movingAttackAct;
+        public override IActorAction MovingAttackAct => _movingAttackAct;
+
         public AutismBeamDrone(Player owner) : base(owner)
         {
+            _holdingAttackAct = new AttackActorAction(this, false);
+            _movingAttackAct = new AttackActorAction(this, true);
         }
     }
 
@@ -25,7 +38,7 @@ namespace CivModel.Common
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 7, 3);
+            return new TileObjectProduction(this, owner, 75, 30);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
