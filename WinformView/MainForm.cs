@@ -89,7 +89,7 @@ namespace WinformView
                     {
                         tbl = new int[] {
                                 (int)0xffdeb887,
-                                (int)0xff0000ff,
+                                (int)0xff1c6ba0,
                                 (int)0xff000000,
                                 (int)0xff00ff00,
                                 (int)0xff007f00,
@@ -206,6 +206,61 @@ namespace WinformView
                     }
                     break;
 
+                case Keys.D1:
+                    if (selectedTile_.HasValue)
+                    {
+                        string kind = Microsoft.VisualBasic.Interaction.InputBox("타일 종류");
+                        string[] tbl = { "P", "O", "M", "F", "S", "T", "I", "H" };
+                        int idx = Array.IndexOf(tbl, kind);
+                        if (idx != -1)
+                        {
+                            try
+                            {
+                                string strn = Microsoft.VisualBasic.Interaction.InputBox("몇개");
+                                int n = Convert.ToInt32(strn);
+                                var pos = selectedTile_.Value.Position;
+                                do
+                                {
+                                    var pt = presenter_.Game.Terrain.GetPoint(pos);
+                                    pt.Type = (TerrainType)idx;
+                                    pos.X += 1;
+                                }
+                                while (--n > 0 && presenter_.Game.Terrain.IsValidPosition(pos));
+                            }
+                            catch (Exception ex) when (ex is FormatException || ex is OverflowException)
+                            {
+                                MessageBox.Show("invalid input");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("invalid tile type");
+                        }
+                    }
+                    break;
+                case Keys.D2:
+                    if (selectedTile_.HasValue)
+                    {
+                        string kind = Microsoft.VisualBasic.Interaction.InputBox("타일 종류");
+                        string[] tbl = { "P", "O", "M", "F", "S", "T", "I", "H" };
+                        int idx = Array.IndexOf(tbl, kind);
+                        if (idx != -1)
+                        {
+                            if (MessageBox.Show("채우기 고고혓?", "ㄱㄱ?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                            {
+                                var type = selectedTile_.Value.Type;
+                                if (type == (TerrainType)idx)
+                                    break;
+                                RecursiveFill(type, (TerrainType)idx, selectedTile_.Value);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("invalid tile type");
+                        }
+                    }
+                    break;
+
                 case Keys.P:
                     foo(0);
                     break;
@@ -233,6 +288,15 @@ namespace WinformView
             }
 
             Invalidate();
+        }
+        private void RecursiveFill(TerrainType origin, TerrainType newType, Terrain.Point pt)
+        {
+            if (pt.Type != origin)
+                return;
+            pt.Type = newType;
+            foreach (var sub in pt.Adjacents())
+                if (sub.HasValue)
+                    RecursiveFill(origin, newType, sub.Value);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
