@@ -114,6 +114,8 @@ namespace CivPresenter
 
         private bool[] _victoryNotified = null;
 
+        public string SaveFile { get; set; }
+
         private Action OnApply;
         private Action OnCancel;
         private Action<Direction> OnArrowKey;
@@ -126,11 +128,15 @@ namespace CivPresenter
         /// </summary>
         /// <param name="view">The <see cref="IView"/> object.</param>
         /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
-        public Presenter(IView view)
+        public Presenter(IView view, string saveFile = null)
         {
             _view = view ?? throw new ArgumentNullException("view");
 
-            _game = new Game(width: 10, height: 10, numOfPlayer: 2);
+            SaveFile = saveFile;
+            if (saveFile == null)
+                _game = new Game(width: 128, height: 80, numOfPlayer: 2);
+            else
+                _game = new Game(saveFile);
 
             // fallback point
             // ProceedTurn() would set FocusedPoint if any unit/city exists.
@@ -207,6 +213,11 @@ namespace CivPresenter
             {
                 SelectUnit(FocusedPoint.Unit);
             }
+        }
+
+        public void CommandSave()
+        {
+            Game.Save(SaveFile);
         }
 
         /// <summary>

@@ -8,7 +8,17 @@ namespace FakeView
     View::View(Screen* screen)
         : m_screen(screen)
     {
-        m_presenter = gcnew CivPresenter::Presenter(this);
+        m_presenter = nullptr;
+        if (System::IO::File::Exists(L"map.txt"))
+        {
+            if (MessageBox(nullptr, L"Save file is found. Do you want to load it?", L"Save file is found", MB_YESNO)
+                == IDYES)
+            {
+                m_presenter = gcnew CivPresenter::Presenter(this, L"map.txt");
+            }
+        }
+        if (!m_presenter)
+            m_presenter = gcnew CivPresenter::Presenter(this, nullptr);
         
         // test code
         m_presenter->Game->PlayerInTurn->AdditionalAvailableProduction->Add(

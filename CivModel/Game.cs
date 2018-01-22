@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Linq;
+using System.IO;
 using CivModel.Common;
 
 namespace CivModel
@@ -122,6 +124,66 @@ namespace CivModel
 
                 var pionner = new Pioneer(player);
                 pionner.PlacedPoint = pt;
+            }
+        }
+
+        public Game(string saveFile)
+        {
+            int numOfPlayer;
+            using (var file = File.OpenText(saveFile))
+            {
+                int[] ints;
+                try
+                {
+                    ints = file.ReadLine().Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
+                }
+                catch (Exception e) when (e is FormatException || e is OverflowException)
+                {
+                    throw new InvalidDataException("save file is invalid");
+                }
+                if (ints.Length != 3 || ints.Count(x => x <= 0) != 0)
+                    throw new InvalidDataException("save file is invalid");
+
+                numOfPlayer = ints[0];
+                _terrain = new Terrain(ints[1], ints[2]);
+
+                for (int y = 0; y < Terrain.Height; ++y)
+                {
+                    string line = file.ReadLine();
+                    for (int x = 0; x < Terrain.Width; ++x)
+                    {
+                        if (x >= line.Length)
+                            throw new InvalidDataException("save file is invalid");
+
+                        int idx = "POMFSTIH".IndexOf(line[x]);
+                        if (idx == -1)
+                            throw new InvalidDataException("save file is invalid");
+
+                        var point = Terrain.GetPoint(x, y);
+                        point.Type = (TerrainType)idx;
+                    }
+                }
+            }
+
+            for (int i = 0; i < numOfPlayer; ++i)
+            {
+                _players.Add(new Player(this));
+            }
+        }
+
+        public void Save(string saveFile)
+        {
+            using (var file = File.CreateText(saveFile))
+            {
+                file.WriteLine(Players.Count + " " + Terrain.Width + " " + Terrain.Height);
+                for (int y = 0; y < Terrain.Height; ++y)
+                {
+                    for (int x = 0; x < Terrain.Width; ++x)
+                    {
+                        file.Write("POMFSTIH"[(int)Terrain.GetPoint(x, y).Type]);
+                    }
+                    file.WriteLine();
+                }
             }
         }
 
