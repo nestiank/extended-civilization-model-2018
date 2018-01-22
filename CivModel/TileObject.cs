@@ -11,7 +11,13 @@ namespace CivModel
     /// </summary>
     public enum TileTag
     {
+        /// <summary>
+        /// Tag for <see cref="Unit"/> object
+        /// </summary>
         Unit,
+        /// <summary>
+        /// Tag for <see cref="TileBuilding"/> object
+        /// </summary>
         TileBuilding
     }
 

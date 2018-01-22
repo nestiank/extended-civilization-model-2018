@@ -46,7 +46,7 @@ namespace CivModel
         /// <summary>
         /// The tax rate of this player. It affects <see cref="GoldIncome"/>.
         /// </summary>
-        /// <exception cref="ArgumentException"><see cref="TexRate"/> is not in [0, 1]</exception>
+        /// <exception cref="ArgumentException"><see cref="TaxRate"/> is not in [0, 1]</exception>
         public double TaxRate
         {
             get => _taxRate;
@@ -175,10 +175,16 @@ namespace CivModel
                 .Union(AdditionalAvailableProduction).ToArray();
         }
 
+        /// <summary>
+        /// Called before a turn.
+        /// </summary>
         public void PreTurn()
         {
         }
 
+        /// <summary>
+        /// Called after a turn.
+        /// </summary>
         public void PostTurn()
         {
             var dg = GoldIncome;
@@ -190,10 +196,18 @@ namespace CivModel
             Happiness = Math.Min(100, Happiness + dh);
         }
 
+        /// <summary>
+        /// Called before a sub turn.
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public void PrePlayerSubTurn(Player playerInTurn)
         {
         }
 
+        /// <summary>
+        /// Called after a sub turn.
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public void PostPlayerSubTurn(Player playerInTurn)
         {
         }

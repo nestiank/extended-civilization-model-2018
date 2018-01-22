@@ -74,7 +74,7 @@ namespace CivModel
         /// <param name="totalCost"><see cref="TotalCost"/> of the production</param>
         /// <param name="capacityPerTurn"><see cref="CapacityPerTurn"/> of the production.</param>
         /// <exception cref="ArgumentException">totalCost is not positive</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref cref="capacityPerTurn"/> is not in [0, <see cref="TotalCost"/>]</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacityPerTurn"/> is not in [0, <see cref="TotalCost"/>]</exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="factory"/> is <c>null</c>
         /// or

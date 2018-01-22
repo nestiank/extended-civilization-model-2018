@@ -11,7 +11,18 @@ namespace CivModel
     /// </summary>
     public enum BattleResult
     {
-        Draw, Victory, Defeated
+        /// <summary>
+        /// Indicating that battle result is draw.
+        /// </summary>
+        Draw,
+        /// <summary>
+        /// Indicating that battle result is victory.
+        /// </summary>
+        Victory,
+        /// <summary>
+        /// Indicating that battle result is defeated.
+        /// </summary>
+        Defeated
     }
 
     /// <summary>
@@ -145,7 +156,7 @@ namespace CivModel
         /// </summary>
         /// <remarks>
         /// <strong>postcondition</strong>:
-        /// <c><see cref="PlacedPoint"/> == null &amp;&amp; <see cref="Owner"/> == null</c>
+        /// <c><see cref="TileObject.PlacedPoint"/> == null &amp;&amp; <see cref="Owner"/> == null</c>
         /// </remarks>
         public void Destroy()
         {
@@ -276,6 +287,9 @@ namespace CivModel
             Destroy();
         }
 
+        /// <summary>
+        /// Called before a turn.
+        /// </summary>
         public virtual void PreTurn()
         {
             RemainAP = MaxAP;
@@ -284,14 +298,25 @@ namespace CivModel
             RemainHP = Math.Min(MaxHP, RemainHP + MaxHealPerTurn);
         }
 
+        /// <summary>
+        /// Called after a turn.
+        /// </summary>
         public virtual void PostTurn()
         {
         }
 
+        /// <summary>
+        /// Called before a sub turn.
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public virtual void PrePlayerSubTurn(Player playerInTurn)
         {
         }
 
+        /// <summary>
+        /// Called after a sub turn.
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public virtual void PostPlayerSubTurn(Player playerInTurn)
         {
         }

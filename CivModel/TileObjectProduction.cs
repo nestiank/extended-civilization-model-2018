@@ -46,10 +46,10 @@ namespace CivModel
         /// </summary>
         /// <param name="factory">The factory object of this production kind.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the production.</param>
-        /// <param name="totalCost"><see cref="TotalCost"/> of the production</param>
-        /// <param name="capacityPerTurn"><see cref="CapacityPerTurn"/> of the production.</param>
+        /// <param name="totalCost"><see cref="Production.TotalCost"/> of the production</param>
+        /// <param name="capacityPerTurn"><see cref="Production.CapacityPerTurn"/> of the production.</param>
         /// <exception cref="ArgumentException">totalCost is not positive</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref cref="capacityPerTurn"/> is not in [0, <see cref="TotalCost"/>]</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacityPerTurn"/> is not in [0, <see cref="Production.TotalCost"/>]</exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="factory"/> is <c>null</c>
         /// or
@@ -63,11 +63,24 @@ namespace CivModel
             _factory = factory;
         }
 
+        /// <summary>
+        /// Determines whether the production result is placable at the specified point.
+        /// </summary>
+        /// <param name="point">The point to test to place the production result.</param>
+        /// <returns>
+        ///   <c>true</c> if the production is placable; otherwise, <c>false</c>.
+        /// </returns>
         public override bool IsPlacable(Terrain.Point point)
         {
             return _factory.IsPlacable(this, point);
         }
 
+        /// <summary>
+        /// Places the production result at the specified point.
+        /// </summary>
+        /// <param name="point">The point to place the production result.</param>
+        /// <exception cref="InvalidOperationException">production is not completed yet</exception>
+        /// <exception cref="ArgumentException">point is invalid</exception>
         public override void Place(Terrain.Point point)
         {
             if (!Completed)

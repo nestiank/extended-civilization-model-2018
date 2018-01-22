@@ -12,12 +12,30 @@ namespace CivModel.Common
     /// <seealso cref="CivModel.TileBuilding" />
     public class CityCenter : TileBuilding
     {
+        /// <summary>
+        /// The maximum HP. <c>0</c> if this actor is not a combattant.
+        /// </summary>
         public override double MaxHP => 9;
+
+        /// <summary>
+        /// The maximum heal per turn.
+        /// </summary>
+        /// <seealso cref="Actor.RemainHP" />
         public override double MaxHealPerTurn => 15;
 
+        /// <summary>
+        /// The attack power.
+        /// </summary>
         public override double AttackPower => 15;
+
+        /// <summary>
+        /// The defence power.
+        /// </summary>
         public override double DefencePower => 21;
 
+        /// <summary>
+        /// The action performing movement. <c>null</c> if this actor cannot do.
+        /// </summary>
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
         private readonly IActorAction _holdingAttackAct;
 
@@ -41,6 +59,10 @@ namespace CivModel.Common
             _availableProduction.Add(PioneerProductionFactory.Instance);
         }
 
+        /// <summary>
+        /// Called before [change owner], by <see cref="Actor.ChangeOwner" />.
+        /// </summary>
+        /// <param name="newOwner">The new owner.</param>
         protected override void OnBeforeChangeOwner(Player newOwner)
         {
             base.OnBeforeChangeOwner(newOwner);
@@ -48,12 +70,20 @@ namespace CivModel.Common
             newOwner.AddCityToList(this);
         }
 
+        /// <summary>
+        /// Called before [destroy], by <see cref="Actor.Destroy" />
+        /// </summary>
         protected override void OnBeforeDestroy()
         {
             Owner.RemoveCityFromList(this);
             base.OnBeforeDestroy();
         }
 
+        /// <summary>
+        /// Called when [die] by <see cref="Actor.Die(Player)" />.
+        /// The default implementation calls <see cref="Actor.Destroy" />.
+        /// </summary>
+        /// <param name="opposite">The opposite who caused the dying of this actor. If not exists, <c>null</c>.</param>
         protected override void OnDie(Player opposite)
         {
             // do not call base.OnDie(opposite) if opposite != null

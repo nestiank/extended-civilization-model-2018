@@ -8,41 +8,107 @@ using CivModel.Common;
 
 namespace CivPresenter
 {
+    /// <summary>
+    /// Represents a presenter.
+    /// </summary>
+    /// <remarks>
+    /// The presenter works like a Finite State Machine.
+    /// <see cref="Presenter.State"/> is changed by Command~~~ operations.
+    /// </remarks>
     public class Presenter
     {
-        private readonly IView _view;
+        /// <summary>
+        /// The <see cref="IView"/> object
+        /// </summary>
         public IView View => _view;
+        private readonly IView _view;
 
-        private readonly Game _game;
+        /// <summary>
+        /// The <see cref="Game"/> object
+        /// </summary>
         public Game Game => _game;
+        private readonly Game _game;
 
-        private Actor _selectedActor;
+        /// <summary>
+        /// The selected <see cref="Actor"/>.
+        /// </summary>
         public Actor SelectedActor => _selectedActor?.PlacedPoint != null ? _selectedActor : null;
+        private Actor _selectedActor;
 
+        /// <summary>
+        /// The focused <see cref="Terrain.Point"/>.
+        /// </summary>
         public Terrain.Point FocusedPoint { get; private set; }
 
         private Unit[] _standbyUnits = null;
         private int _standbyUnitIndex = -1;
 
+        /// <summary>
+        /// Whether there is something to do in this turn.
+        /// If this value is <c>false</c>, user can go to the next turn
+        /// </summary>
         public bool IsThereTodos { get; private set; }
 
+        /// <summary>
+        /// The <see cref="IReadOnlyActorAction"/> object used now.
+        /// <c>null</c> if no action is being done.
+        /// </summary>
         public IReadOnlyActorAction RunningAction { get; private set; }
 
+        /// <summary>
+        /// Index of the selected deploy to <see cref="Player.Deployment"/> list.
+        /// <c>-1</c> if there is no selected deploy.
+        /// If <see cref="SelectedProduction"/> is not <c>-1</c>, this value is <c>-1</c>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/></c>
+        /// </summary>
         public int SelectedDeploy { get; private set; } = -1;
+
+        /// <summary>
+        /// Index of the selected production to <see cref="Player.Production"/> list.
+        /// <c>-1</c> if there is no selected production.
+        /// If <see cref="SelectedDeploy"/> is not <c>-1</c>, this value is <c>-1</c>
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/> || <see cref="State"/> == <see cref="States.ProductAdd"/></c>
+        /// </summary>
         public int SelectedProduction { get; private set; } = -1;
+
+        /// <summary>
+        /// Whether user is manipulating a production.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/></c>
+        /// </summary>
         public bool IsProductManipulating { get; private set; } = false;
 
+        /// <summary>
+        /// The list of the available production, retrieved by <see cref="Player.GetAvailableProduction"/>
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductAdd"/></c>
+        /// </summary>
         public IReadOnlyList<IProductionFactory> AvailableProduction { get; private set; }
 
+        /// <summary>
+        /// The production to deploy.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.Deploy"/></c>
+        /// </summary>
         public Production DeployProduction { get; private set; }
 
+        /// <summary>
+        /// Indicates the state of <see cref="Presenter"/>.
+        /// </summary>
         public enum States
         {
             Normal, Move, MovingAttack, HoldingAttack, SpecialAct,
             ProductUI, ProductAdd, Deploy,
             Victory, Defeated
         }
+
+        /// <summary>
+        /// The state of <see cref="Presenter"/>.
+        /// </summary>
         public States State { get; private set; }
+
+        /// <summary>
+        /// The parameter of this <see cref="State"/>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.SpecialAct"/></c>,
+        /// and the value is the number of a special action.
+        /// </summary>
         public int StateParam { get; private set; } = -1;
 
         private bool[] _victoryNotified = null;
@@ -54,9 +120,14 @@ namespace CivPresenter
         private Action OnRemove;
         private Action OnSkip;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Presenter"/> class.
+        /// </summary>
+        /// <param name="view">The <see cref="IView"/> object.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
         public Presenter(IView view)
         {
-            _view = view;
+            _view = view ?? throw new ArgumentNullException("view");
 
             _game = new Game(width: 10, height: 10, numOfPlayer: 2);
 
@@ -68,41 +139,67 @@ namespace CivPresenter
             StateNormal();
         }
 
+        /// <summary>
+        /// Gives the command [apply].
+        /// </summary>
         public void CommandApply()
         {
             OnApply();
         }
 
+        /// <summary>
+        /// Gives the command [cancel].
+        /// </summary>
         public void CommandCancel()
         {
             OnCancel();
         }
 
+        /// <summary>
+        /// Gives the command [arrow key].
+        /// </summary>
+        /// <param name="direction">The direction.</param>
         public void CommandArrowKey(Direction direction)
         {
             OnArrowKey(direction);
         }
 
+        /// <summary>
+        /// Gives the command [numeric].
+        /// </summary>
+        /// <param name="index">The index.</param>
         public void CommandNumeric(int index)
         {
             OnNumeric(index);
         }
 
+        /// <summary>
+        /// Gives the command [remove].
+        /// </summary>
         public void CommandRemove()
         {
             OnRemove();
         }
 
+        /// <summary>
+        /// Gives the command [skip].
+        /// </summary>
         public void CommandSkip()
         {
             OnSkip();
         }
 
+        /// <summary>
+        /// Gives the command [refocus].
+        /// </summary>
         public void CommandRefocus()
         {
             Refocus();
         }
 
+        /// <summary>
+        /// Gives the command [select].
+        /// </summary>
         public void CommandSelect()
         {
             if (FocusedPoint.Unit != null && FocusedPoint.Unit.Owner == Game.PlayerInTurn)
@@ -111,6 +208,9 @@ namespace CivPresenter
             }
         }
 
+        /// <summary>
+        /// Gives the command [move].
+        /// </summary>
         public void CommandMove()
         {
             if (State == States.Normal)
@@ -119,6 +219,9 @@ namespace CivPresenter
                 OnCancel();
         }
 
+        /// <summary>
+        /// Gives the command [moving attack].
+        /// </summary>
         public void CommandMovingAttack()
         {
             if (State == States.Normal)
@@ -127,6 +230,9 @@ namespace CivPresenter
                 OnCancel();
         }
 
+        /// <summary>
+        /// Gives the command [holding attack].
+        /// </summary>
         public void CommandHoldingAttack()
         {
             if (State == States.Normal)
@@ -135,6 +241,9 @@ namespace CivPresenter
                 OnCancel();
         }
 
+        /// <summary>
+        /// Gives the command [product UI].
+        /// </summary>
         public void CommandProductUI()
         {
             if (State == States.Normal)

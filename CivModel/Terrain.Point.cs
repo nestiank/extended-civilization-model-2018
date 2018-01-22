@@ -24,9 +24,24 @@ namespace CivModel
             /// </summary>
             public Position Position { get; private set; }
 
+            /// <summary>
+            /// <see cref="TerrainType1"/> of the tile.
+            /// </summary>
             public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
+
+            /// <summary>
+            /// <see cref="TerrainType1"/> of the tile.
+            /// </summary>
             public TerrainType2 Type2 => Terrain._points[Position.X, Position.Y].Type2;
+
+            /// <summary>
+            /// The <see cref="Unit"/> placed at the tile.
+            /// </summary>
             public Unit Unit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
+
+            /// <summary>
+            /// The <see cref="TileBuilding"/> placed at the tile.
+            /// </summary>
             public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.TileBuilding];
 
             /// <summary>
@@ -44,25 +59,63 @@ namespace CivModel
                 Position = pos;
             }
 
+            /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String" /> that represents this instance.
+            /// </returns>
             public override string ToString()
             {
                 return Position.ToString();
             }
 
+            /// <summary>
+            /// Implements the operator ==.
+            /// </summary>
+            /// <param name="lhs">The LHS.</param>
+            /// <param name="rhs">The RHS.</param>
+            /// <returns>
+            /// The result of the operator.
+            /// </returns>
             public static bool operator ==(Point lhs, Point rhs)
             {
                 return lhs.Terrain == rhs.Terrain && lhs.Position == rhs.Position;
             }
+
+            /// <summary>
+            /// Implements the operator !=.
+            /// </summary>
+            /// <param name="lhs">The LHS.</param>
+            /// <param name="rhs">The RHS.</param>
+            /// <returns>
+            /// The result of the operator.
+            /// </returns>
             public static bool operator !=(Point lhs, Point rhs)
             {
                 return !(lhs == rhs);
             }
+
+            /// <summary>
+            /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+            /// </summary>
+            /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+            /// <returns>
+            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            /// </returns>
             public override bool Equals(object obj)
             {
                 if (obj is Point other)
                     return this == other;
                 return false;
             }
+
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
             public override int GetHashCode()
             {
                 unchecked

@@ -29,6 +29,10 @@ namespace CivModel
             _moveAct = new MoveActorAction(this);
         }
 
+        /// <summary>
+        /// Called before [change owner], by <see cref="Actor.ChangeOwner" />.
+        /// </summary>
+        /// <param name="newOwner">The new owner.</param>
         protected override void OnBeforeChangeOwner(Player newOwner)
         {
             base.OnBeforeChangeOwner(newOwner);
@@ -36,6 +40,9 @@ namespace CivModel
             newOwner.AddUnitToList(this);
         }
 
+        /// <summary>
+        /// Called before [destroy], by <see cref="Actor.Destroy" />
+        /// </summary>
         protected override void OnBeforeDestroy()
         {
             Owner.RemoveUnitFromList(this);
