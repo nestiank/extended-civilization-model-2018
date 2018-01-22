@@ -27,22 +27,22 @@ namespace CivModel
             /// <summary>
             /// <see cref="TerrainType1"/> of the tile.
             /// </summary>
-            public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
+            public TerrainType1 Type1 => Terrain._points[Position.Y, Position.X].Type1;
 
             /// <summary>
             /// <see cref="TerrainType1"/> of the tile.
             /// </summary>
-            public TerrainType2 Type2 => Terrain._points[Position.X, Position.Y].Type2;
+            public TerrainType2 Type2 => Terrain._points[Position.Y, Position.X].Type2;
 
             /// <summary>
             /// The <see cref="Unit"/> placed at the tile.
             /// </summary>
-            public Unit Unit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
+            public Unit Unit => (Unit)Terrain._points[Position.Y, Position.X].PlacedObjects[(int)TileTag.Unit];
 
             /// <summary>
             /// The <see cref="TileBuilding"/> placed at the tile.
             /// </summary>
-            public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.TileBuilding];
+            public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.Y, Position.X].PlacedObjects[(int)TileTag.TileBuilding];
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Point"/> struct.

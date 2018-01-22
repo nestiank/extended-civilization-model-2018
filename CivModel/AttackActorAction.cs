@@ -83,7 +83,6 @@ namespace CivModel
 
             _owner.ConsumeAP(requiredAP);
             var result = _owner.AttackTo(targetObject);
-            _owner.ConsumeAllAP();
 
             if (_isMoving && result == BattleResult.Victory)
             {
