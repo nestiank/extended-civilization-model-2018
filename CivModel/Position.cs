@@ -133,7 +133,7 @@ namespace CivModel
         /// <summary>
         /// Get norm of this position. It is equal to <c>(|A| + |B| + |C|) / 2</c>
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The norm of this position.</returns>
         public int Norm()
         {
             return (Math.Abs(A) + Math.Abs(B) + Math.Abs(C)) / 2;
@@ -145,7 +145,7 @@ namespace CivModel
         /// </summary>
         /// <param name="lhs">left hand side parameter</param>
         /// <param name="rhs">right hand side parameter</param>
-        /// <returns></returns>
+        /// <returns>The distance between two <see cref="Position"/>.</returns>
         public static int Distance(Position lhs, Position rhs)
         {
             return (lhs - rhs).Norm();

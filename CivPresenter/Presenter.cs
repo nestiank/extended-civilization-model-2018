@@ -15,7 +15,7 @@ namespace CivPresenter
     /// The presenter works like a Finite State Machine.
     /// <see cref="Presenter.State"/> is changed by Command~~~ operations.
     /// </remarks>
-    public class Presenter
+    public partial class Presenter
     {
         /// <summary>
         /// The <see cref="IView"/> object
@@ -91,16 +91,6 @@ namespace CivPresenter
         public Production DeployProduction { get; private set; }
 
         /// <summary>
-        /// Indicates the state of <see cref="Presenter"/>.
-        /// </summary>
-        public enum States
-        {
-            Normal, Move, MovingAttack, HoldingAttack, SpecialAct,
-            ProductUI, ProductAdd, Deploy,
-            Victory, Defeated
-        }
-
-        /// <summary>
         /// The state of <see cref="Presenter"/>.
         /// </summary>
         public States State { get; private set; }
@@ -114,6 +104,11 @@ namespace CivPresenter
 
         private bool[] _victoryNotified = null;
 
+        /// <summary>
+        /// The path of the save file.
+        /// </summary>
+        public string SaveFile { get; set; }
+
         private Action OnApply;
         private Action OnCancel;
         private Action<Direction> OnArrowKey;
@@ -125,12 +120,22 @@ namespace CivPresenter
         /// Initializes a new instance of the <see cref="Presenter"/> class.
         /// </summary>
         /// <param name="view">The <see cref="IView"/> object.</param>
+        /// <param name="saveFile">The path of the save file to load. If <c>null</c>, create a new game.</param>
         /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
-        public Presenter(IView view)
+        /// <remarks>
+        /// If <paramref name="saveFile"/> is not <c>null</c>, <see cref="Game.Game(string)"/> constructor is called.
+        /// See the <strong>exceptions</strong> and <strong>remarks</strong> parts of
+        /// the documentation of <see cref="Game.Game(string)"/> constructor.
+        /// </remarks>
+        public Presenter(IView view, string saveFile = null)
         {
             _view = view ?? throw new ArgumentNullException("view");
 
-            _game = new Game(width: 10, height: 10, numOfPlayer: 2);
+            SaveFile = saveFile;
+            if (saveFile == null)
+                _game = new Game(width: 128, height: 80, numOfPlayer: 2);
+            else
+                _game = new Game(saveFile);
 
             // fallback point
             // ProceedTurn() would set FocusedPoint if any unit/city exists.
@@ -167,6 +172,8 @@ namespace CivPresenter
 
         /// <summary>
         /// Gives the command [numeric].
+        /// This method may introduce <see cref="States.SpecialAct"/> state
+        ///  if called when <see cref="States.Normal"/> state.
         /// </summary>
         /// <param name="index">The index.</param>
         public void CommandNumeric(int index)
@@ -210,7 +217,16 @@ namespace CivPresenter
         }
 
         /// <summary>
+        /// Gives the command [save].
+        /// </summary>
+        public void CommandSave()
+        {
+            Game.Save(SaveFile);
+        }
+
+        /// <summary>
         /// Gives the command [move].
+        /// This method may introduce <see cref="States.Move"/> state.
         /// </summary>
         public void CommandMove()
         {
@@ -222,6 +238,7 @@ namespace CivPresenter
 
         /// <summary>
         /// Gives the command [moving attack].
+        /// This method may introduce <see cref="States.MovingAttack"/> state.
         /// </summary>
         public void CommandMovingAttack()
         {
@@ -233,6 +250,7 @@ namespace CivPresenter
 
         /// <summary>
         /// Gives the command [holding attack].
+        /// This method may introduce <see cref="States.HoldingAttack"/> state.
         /// </summary>
         public void CommandHoldingAttack()
         {
@@ -244,6 +262,7 @@ namespace CivPresenter
 
         /// <summary>
         /// Gives the command [product UI].
+        /// This method may introduce <see cref="States.ProductUI"/> state.
         /// </summary>
         public void CommandProductUI()
         {
