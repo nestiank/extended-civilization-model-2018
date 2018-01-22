@@ -9,6 +9,7 @@ namespace FakeView
     public:
         explicit View(Screen* screen);
 
+        virtual void Refocus();
         virtual void Shutdown();
 
         virtual void Render();

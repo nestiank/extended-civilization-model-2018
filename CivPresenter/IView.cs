@@ -36,6 +36,11 @@ namespace CivPresenter
     public interface IView
     {
         /// <summary>
+        /// Called when view should refocus on <see cref="Presenter.FocusedPoint"/>
+        /// </summary>
+        void Refocus();
+
+        /// <summary>
         /// Called when the game should be shutdown.
         /// </summary>
         void Shutdown();

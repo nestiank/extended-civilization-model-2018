@@ -37,8 +37,9 @@ namespace CivPresenter
 
         /// <summary>
         /// The focused <see cref="Terrain.Point"/>.
+        /// This point can be changed by [arrow key] command, or View's calling setter.
         /// </summary>
-        public Terrain.Point FocusedPoint { get; private set; }
+        public Terrain.Point FocusedPoint { get; set; }
 
         private Unit[] _standbyUnits = null;
         private int _standbyUnitIndex = -1;
@@ -335,6 +336,7 @@ namespace CivPresenter
         {
             if (SelectedActor != null)
                 FocusedPoint = SelectedActor.PlacedPoint.Value;
+            View.Refocus();
         }
 
         private void MoveSight(Direction direction)
@@ -432,7 +434,7 @@ namespace CivPresenter
                     StateNormal();
                 };
                 Action onApplyFinished = () => {
-                    CommandRefocus();
+                    Refocus();
                     onFinished();
                 };
                 Action onCancelFinished = () => {
@@ -453,7 +455,7 @@ namespace CivPresenter
                     StateNormal();
                 };
                 Action onApplyFinished = () => {
-                    CommandRefocus();
+                    Refocus();
                     onFinished();
                 };
                 Action onCancelFinished = () => {
@@ -474,7 +476,7 @@ namespace CivPresenter
                     StateNormal();
                 };
                 Action onApplyFinished = () => {
-                    CommandRefocus();
+                    Refocus();
                     onFinished();
                 };
                 Action onCancelFinished = () => {

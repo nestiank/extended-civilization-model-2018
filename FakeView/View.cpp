@@ -15,6 +15,11 @@ namespace FakeView
             CivModel::Common::JediKnightProductionFactory::Instance);
     }
 
+    void View::Refocus()
+    {
+        // do nothing
+    }
+
     void View::Shutdown()
     {
         m_screen->Quit(0);
