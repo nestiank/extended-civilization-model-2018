@@ -4,19 +4,11 @@ using System.Collections.Generic;
 namespace CivModel
 {
     /// <summary>
-    /// The type of a tile of <see cref="Terrain"/>. It is independent to <see cref="TerrainType2"/>.
+    /// The type of a tile of <see cref="Terrain"/>.
     /// </summary>
-    public enum TerrainType1
+    public enum TerrainType
     {
-        Grass, Flatland, Swamp, Tundra
-    }
-
-    /// <summary>
-    /// The type of a tile of <see cref="Terrain"/>. It is independent to <see cref="TerrainType1"/>.
-    /// </summary>
-    public enum TerrainType2
-    {
-        None, Hill, Mountain
+        Plain, Ocean, Mount, Forest, Swamp, Tundra, Ice, Hill
     }
 
     /// <summary>
@@ -26,8 +18,7 @@ namespace CivModel
     {
         private struct Point_t
         {
-            public TerrainType1 Type1;
-            public TerrainType2 Type2;
+            public TerrainType Type;
             public TileObject[] PlacedObjects;
         }
 
@@ -75,8 +66,8 @@ namespace CivModel
                     int len = Enum.GetNames(typeof(TileTag)).Length;
                     _points[y, x].PlacedObjects = new TileObject[len];
 
-                    _points[y, x].Type1 = (TerrainType1)random.Next(4);
-                    _points[y, x].Type2 = (TerrainType2)random.Next(3);
+                    len = Enum.GetNames(typeof(TerrainType)).Length;
+                    _points[y, x].Type = (TerrainType)random.Next(len);
                 }
             }
         }
@@ -125,11 +116,11 @@ namespace CivModel
             var p = obj.PlacedPoint
                 ?? throw new ArgumentException("obj.PlacedPoint is null");
 
-            TileObject prev = _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag];
+            TileObject prev = p.GetTileObject(obj.TileTag);
             if (prev != null)
                 throw new InvalidOperationException("PlaceObject() is called while another object exists");
 
-            _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = obj;
+            p.SetTileObject(obj);
         }
 
         /// <summary>
@@ -143,10 +134,10 @@ namespace CivModel
             if (p.Terrain != this)
                 throw new ArgumentException("UnplacedUnit() call with wrong Terrain object");
 
-            if (_points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] != obj)
+            if (p.GetTileObject(obj.TileTag) != obj)
                 throw new ArgumentException("obj is not on the specified point");
 
-            _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = null;
+            p.UnsetTileObject(obj.TileTag);
         }
 
         /// <summary>

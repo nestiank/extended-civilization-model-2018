@@ -385,34 +385,34 @@ namespace FakeView
     void View::PrintTerrain(int px, int py, CivModel::Terrain::Point point)
     {
         auto& c = m_screen->GetChar(px, py);
-
         c.color = 0b0000'0111;
 
-        if (point.Type2 == CivModel::TerrainType2::Mountain)
+        switch (point.Type)
         {
-            c.ch = '^';
-        }
-        else
-        {
-            switch (point.Type1)
-            {
-                case CivModel::TerrainType1::Flatland:
-                    c.ch = '-';
-                    break;
-                case CivModel::TerrainType1::Grass:
-                    c.ch = '*';
-                    break;
-                case CivModel::TerrainType1::Swamp:
-                    c.ch = '@';
-                    break;
-                case CivModel::TerrainType1::Tundra:
-                    c.ch = '#';
-                    break;
-            }
-            if (point.Type2 == CivModel::TerrainType2::Hill)
-            {
-                c.color |= 0b0000'1000;
-            }
+            case CivModel::TerrainType::Plain:
+                c.ch = '-';
+                break;
+            case CivModel::TerrainType::Ocean:
+                c.ch = '*';
+                break;
+            case CivModel::TerrainType::Mount:
+                c.ch = '^';
+                break;
+            case CivModel::TerrainType::Forest:
+                c.ch = '#';
+                break;
+            case CivModel::TerrainType::Swamp:
+                c.ch = '@';
+                break;
+            case CivModel::TerrainType::Tundra:
+                c.ch = '%';
+                break;
+            case CivModel::TerrainType::Ice:
+                c.ch = '$';
+                break;
+            case CivModel::TerrainType::Hill:
+                c.ch = '&';
+                break;
         }
     }
 

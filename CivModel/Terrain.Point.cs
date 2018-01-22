@@ -25,24 +25,47 @@ namespace CivModel
             public Position Position { get; private set; }
 
             /// <summary>
-            /// <see cref="TerrainType1"/> of the tile.
+            /// <see cref="TerrainType"/> of the tile.
             /// </summary>
-            public TerrainType1 Type1 => Terrain._points[Position.Y, Position.X].Type1;
-
-            /// <summary>
-            /// <see cref="TerrainType1"/> of the tile.
-            /// </summary>
-            public TerrainType2 Type2 => Terrain._points[Position.Y, Position.X].Type2;
+            public TerrainType Type
+            {
+                get => Terrain._points[Position.Y, Position.X].Type;
+                set => Terrain._points[Position.Y, Position.X].Type = value;
+            }
 
             /// <summary>
             /// The <see cref="Unit"/> placed at the tile.
             /// </summary>
-            public Unit Unit => (Unit)Terrain._points[Position.Y, Position.X].PlacedObjects[(int)TileTag.Unit];
+            public Unit Unit => (Unit)GetTileObject(TileTag.Unit);
 
             /// <summary>
             /// The <see cref="TileBuilding"/> placed at the tile.
             /// </summary>
-            public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.Y, Position.X].PlacedObjects[(int)TileTag.TileBuilding];
+            public TileBuilding TileBuilding => (TileBuilding)GetTileObject(TileTag.TileBuilding);
+
+            /// <summary>
+            /// this function is used internally by <see cref="Terrain"/> class and getters of <see cref="Terrain.Point"/>.
+            /// </summary>
+            internal TileObject GetTileObject(TileTag tag)
+            {
+                return Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag];
+            }
+
+            /// <summary>
+            /// this function is used internally by <see cref="Terrain"/> class.
+            /// </summary>
+            internal void SetTileObject(TileObject obj)
+            {
+                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)obj.TileTag] = obj;
+            }
+
+            /// <summary>
+            /// this function is used internally by <see cref="Terrain"/> class.
+            /// </summary>
+            internal void UnsetTileObject(TileTag tag)
+            {
+                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag] = null;
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Point"/> struct.
