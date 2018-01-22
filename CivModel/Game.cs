@@ -174,11 +174,46 @@ namespace CivModel
                         point.Type = (TerrainType)idx;
                     }
                 }
-            }
 
-            for (int i = 0; i < numOfPlayer; ++i)
-            {
-                _players.Add(new Player(this));
+                for (int i = 0; i < numOfPlayer; ++i)
+                {
+                    _players.Add(new Player(this));
+                }
+
+                while (!file.EndOfStream)
+                {
+                    string line = file.ReadLine();
+                    if (line == "")
+                        continue;
+                    try
+                    {
+                        ints = line.Split(',').Select(str => Convert.ToInt32(str)).ToArray();
+                    }
+                    catch (Exception e) when (e is FormatException || e is OverflowException)
+                    {
+                        throw new InvalidDataException("save file is invalid");
+                    }
+
+                    if (ints.Length != 4)
+                        throw new InvalidDataException("save file is invalid");
+                    if (ints[0] < 0 || ints[0] >= numOfPlayer)
+                        throw new InvalidDataException("save file is invalid");
+
+                    var pos = Position.FromPhysical(ints[1], ints[2]);
+                    if (!Terrain.IsValidPosition(pos))
+                        throw new InvalidDataException("save file is invalid");
+                    var pt = Terrain.GetPoint(pos);
+
+                    if (ints[3] == 0)
+                    {
+                        var city = new CityCenter(Players[ints[0]]);
+                        city.PlacedPoint = pt;
+                    }
+                    else
+                    {
+                        throw new InvalidDataException();
+                    }
+                }
             }
         }
 
@@ -198,6 +233,17 @@ namespace CivModel
                         file.Write("POMFSTIH"[(int)Terrain.GetPoint(x, y).Type]);
                     }
                     file.WriteLine();
+                }
+
+                for (int i = 0; i < Players.Count; ++i)
+                {
+                    foreach (var city in Players[i].Cities)
+                    {
+                        if (city.PlacedPoint?.Position is Position pos)
+                        {
+                            file.WriteLine(i + "," + pos.X + "," + pos.Y + ",0");
+                        }
+                    }
                 }
             }
         }

@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using CivPresenter;
 using CivModel;
+using CivModel.Common;
 
 namespace WinformView
 {
@@ -59,6 +60,13 @@ namespace WinformView
             }
             if (presenter_ == null)
                 presenter_ = new Presenter(this);
+
+            RefreshTitle();
+        }
+
+        private void RefreshTitle()
+        {
+            Text = "WinformView - Player " + presenter_.Game.PlayerNumberInTurn;
         }
 
         private void MainForm_Paint(object sender, PaintEventArgs e)
@@ -106,17 +114,29 @@ namespace WinformView
                         tbl = new int[] {
                                 (int)0xffdeb887,
                                 (int)0xff1c6ba0,
-                                (int)0xff000000,
+                                (int)0xff303030,
                                 (int)0xff00ff00,
                                 (int)0xff007f00,
                                 (int)0xff7f7f7f,
-                                (int)0xffffffff,
+                                (int)0xffe5e5e0,
                                 (int)0xffffa500,
                             };
                     }
 
                     e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(tbl[(int)point.Type])), polygon);
                     e.Graphics.DrawPolygon(Pens.AntiqueWhite, polygon);
+
+                    if (point.TileBuilding is CityCenter)
+                    {
+                        unchecked
+                        {
+                            var brush = new SolidBrush(Color.FromArgb((int)0xffff00ff));
+                            float cx = px + ax;
+                            float cy = py + 2 * ay;
+                            float radius = blockSize_ * 0.25f;
+                            e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
+                        }
+                    }
 
                     if (selectedPoint_ is Point ptm && IsInPolygon(polygon, new PointF(ptm.X, ptm.Y)))
                     {
@@ -157,7 +177,6 @@ namespace WinformView
             return true;
         }
 
-
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             Action<int> foo = i => {
@@ -172,12 +191,29 @@ namespace WinformView
             {
                 case Keys.Enter:
                     presenter_.CommandApply();
+                    RefreshTitle();
                     Invalidate();
                     break;
 
                 case Keys.Escape:
                     presenter_.CommandCancel();
                     Invalidate();
+                    break;
+
+                case Keys.C:
+                    if (selectedTile_.HasValue)
+                    {
+                        if (selectedTile_.Value.TileBuilding is CityCenter)
+                        {
+                            selectedTile_.Value.TileBuilding.PlacedPoint = null;
+                        }
+                        else
+                        {
+                            var city = new CityCenter(presenter_.Game.PlayerInTurn);
+                            city.PlacedPoint = selectedTile_.Value;
+                        }
+                        Invalidate();
+                    }
                     break;
 
                 case Keys.Oemcomma:
