@@ -37,6 +37,7 @@ namespace FakeView
         Size GetSize();
 
         void PrintString(int x, int y, unsigned char color, const std::string& str);
+        void PrintStringEx(int x, int y, unsigned char color, const std::string& str);
 
     private:
         void GotoXY(int x, int y);

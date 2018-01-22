@@ -3,162 +3,56 @@ using System.Collections.Generic;
 
 namespace CivModel
 {
-    public enum TerrainType1
+    /// <summary>
+    /// The type of a tile of <see cref="Terrain"/>.
+    /// </summary>
+    public enum TerrainType
     {
-        Grass, Flatland, Swamp, Tundra
-    }
-    public enum TerrainType2
-    {
-        None, Hill, Mountain
-    }
-
-    public struct Position
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("({0},{1})", X, Y);
-        }
-
-        public static bool operator ==(Position lhs, Position rhs)
-        {
-            return lhs.X == rhs.X && lhs.Y == rhs.Y;
-        }
-        public static bool operator !=(Position lhs, Position rhs)
-        {
-            return !(lhs == rhs);
-        }
-        public override bool Equals(object obj)
-        {
-            if (obj is Position other)
-                return this == other;
-            return false;
-        }
-        public override int GetHashCode()
-        {
-            return X * 17 + Y;
-        }
+        Plain, Ocean, Mount, Forest, Swamp, Tundra, Ice, Hill
     }
 
-    public class Terrain
+    /// <summary>
+    /// Represents a terrain of a game.
+    /// </summary>
+    public partial class Terrain
     {
         private struct Point_t
         {
-            public TerrainType1 Type1;
-            public TerrainType2 Type2;
+            public TerrainType Type;
             public TileObject[] PlacedObjects;
-        }
-        public struct Point
-        {
-            public readonly Terrain _terrain;
-            public Terrain Terrain => _terrain;
-
-            public Position Position { get; private set; }
-
-            public TerrainType1 Type1 => Terrain._points[Position.X, Position.Y].Type1;
-            public TerrainType2 Type2 => Terrain._points[Position.X, Position.Y].Type2;
-            public Unit Unit => (Unit)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.Unit];
-            public TileBuilding TileBuilding => (TileBuilding)Terrain._points[Position.X, Position.Y].PlacedObjects[(int)TileTag.TileBuilding];
-
-            public Point(Terrain terrain, Position pos)
-            {
-                if (!terrain.IsValidPosition(pos))
-                    throw new ArgumentOutOfRangeException();
-
-                _terrain = terrain;
-                Position = pos;
-            }
-
-            public override string ToString()
-            {
-                return Position.ToString();
-            }
-
-            public static bool operator ==(Point lhs, Point rhs)
-            {
-                return lhs.Terrain == rhs.Terrain && lhs.Position == rhs.Position;
-            }
-            public static bool operator !=(Point lhs, Point rhs)
-            {
-                return !(lhs == rhs);
-            }
-            public override bool Equals(object obj)
-            {
-                if (obj is Point other)
-                    return this == other;
-                return false;
-            }
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return Terrain.GetHashCode() * 17 + Position.GetHashCode();
-                }
-            }
-
-            /// <summary>
-            /// get adjacent points, in clockwise order.
-            /// </summary>
-            /// <remarks>
-            /// Get the array of the adjacent points in clockwise order.
-            /// If the position is invalid, the value is null.
-            /// A first element of the array is the left one.
-            ///   1   2
-            /// 0  pt  3
-            ///   5   4
-            /// </remarks>
-            /// <returns>an array of the adjacent points</returns>
-            public Point?[] Adjacents()
-            {
-                var ret = new Point?[6];
-                Position pos;
-
-                pos = new Position { X = Position.X - 1, Y = Position.Y };
-                if (Terrain.IsValidPosition(pos))
-                    ret[0] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X, Y = Position.Y - 1 };
-                if (Terrain.IsValidPosition(pos))
-                    ret[2] = ret[1] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X + 1, Y = Position.Y };
-                if (Terrain.IsValidPosition(pos))
-                    ret[3] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X, Y = Position.Y + 1 };
-                if (Terrain.IsValidPosition(pos))
-                    ret[5] = ret[4] = new Point(Terrain, pos);
-
-                int correction = 1 - (Position.Y % 2) * 2;
-                int cidx = 1 - (Position.Y % 2);
-
-                if (ret[1 + cidx] != null)
-                {
-                    pos = ret[1 + cidx].Value.Position;
-                    pos.X += correction;
-                    ret[1 + cidx] = new Point(Terrain, pos);
-                }
-                if (ret[5 - cidx] != null)
-                {
-                    pos = ret[5 -cidx].Value.Position;
-                    pos.X += correction;
-                    ret[5 - cidx] = new Point(Terrain, pos);
-                }
-
-                return ret;
-            }
         }
 
         private Point_t[,] _points;
 
-        public readonly int _width, _height;
+        /// <summary>
+        /// The width of this terrain.
+        /// </summary>
         public int Width => _width;
-        public int Height => _height;
+        private readonly int _width;
 
+        /// <summary>
+        /// The height of this terrain.
+        /// </summary>
+        public int Height => _height;
+        private readonly int _height;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Terrain"/> class.
+        /// </summary>
+        /// <param name="width">The width of a terrain.</param>
+        /// <param name="height">The height of a terrain.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="width"/> is not positive
+        /// or
+        /// <paramref name="height"/> is not positive
+        /// </exception>
         public Terrain(int width, int height)
         {
+            if (width <= 0)
+                throw new ArgumentOutOfRangeException("width", width, "width is not positive");
+            if (height <= 0)
+                throw new ArgumentOutOfRangeException("height", height, "height is not positive");
+
             _width = width;
             _height = height;
 
@@ -172,56 +66,87 @@ namespace CivModel
                     int len = Enum.GetNames(typeof(TileTag)).Length;
                     _points[y, x].PlacedObjects = new TileObject[len];
 
-                    _points[y, x].Type1 = (TerrainType1)random.Next(4);
-                    _points[y, x].Type2 = (TerrainType2)random.Next(3);
+                    len = Enum.GetNames(typeof(TerrainType)).Length;
+                    _points[y, x].Type = (TerrainType)random.Next(len);
                 }
             }
         }
 
-        public Terrain.Point GetPoint(int x, int y)
+        /// <summary>
+        /// Gets the <see cref="Point"/> from physical coordinates.
+        /// </summary>
+        /// <param name="x">X in physical coordinate.</param>
+        /// <param name="y">Y in physical coordinate.</param>
+        /// <returns>the <see cref="Point"/> object</returns>
+        /// <exception cref="ArgumentException">coordinate is invalid.</exception>
+        public Point GetPoint(int x, int y)
         {
-            return GetPoint(new Position { X = x, Y = y });
+            return GetPoint(Position.FromPhysical(x, y));
         }
-        public Terrain.Point GetPoint(Position pos)
+
+        /// <summary>
+        /// Gets the <see cref="Point"/> from logical coordinates.
+        /// </summary>
+        /// <param name="a">A in logical coordinate.</param>
+        /// <param name="b">B in logical coordinate.</param>
+        /// <param name="c">C in logical coordinate.</param>
+        /// <returns>the <see cref="Point"/> object</returns>
+        /// <exception cref="ArgumentException">coordinate is invalid.</exception>
+        public Point GetPoint(int a, int b, int c)
         {
-            return new Terrain.Point(this, pos);
+            return GetPoint(Position.FromLogical(a, b, c));
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Point"/> from <see cref="Position"/>
+        /// </summary>
+        /// <param name="pos">The <see cref="Position"/> object.</param>
+        /// <returns>the <see cref="Point"/> objec</returns>
+        public Point GetPoint(Position pos)
+        {
+            return new Point(this, pos);
         }
 
         /// <summary>
         /// this function is used by the setter of <see cref="TileObject.PlacedPoint"/>.
         /// In general case you should use <see cref="TileObject.PlacedPoint"/> instead.
         /// </summary>
-        public void PlaceObject(TileObject obj)
+        internal void PlaceObject(TileObject obj)
         {
             var p = obj.PlacedPoint
                 ?? throw new ArgumentException("obj.PlacedPoint is null");
 
-            TileObject prev = _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag];
+            TileObject prev = p.GetTileObject(obj.TileTag);
             if (prev != null)
-            {
-                prev.PlacedPoint = null;
-            }
+                throw new InvalidOperationException("PlaceObject() is called while another object exists");
 
-            _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = obj;
+            p.SetTileObject(obj);
         }
 
         /// <summary>
         /// this function is used by the setter of <see cref="TileObject.PlacedPoint"/>.
         /// In general case you should use <see cref="TileObject.PlacedPoint"/> instead.
         /// </summary>
-        public void UnplaceObject(TileObject obj, Point p)
+        internal void UnplaceObject(TileObject obj, Point p)
         {
             if (obj.PlacedPoint != null)
                 throw new ArgumentException("obj.PlacedPoint is not null");
             if (p.Terrain != this)
                 throw new ArgumentException("UnplacedUnit() call with wrong Terrain object");
 
-            if (_points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] != obj)
+            if (p.GetTileObject(obj.TileTag) != obj)
                 throw new ArgumentException("obj is not on the specified point");
 
-            _points[p.Position.X, p.Position.Y].PlacedObjects[(int)obj.TileTag] = null;
+            p.UnsetTileObject(obj.TileTag);
         }
 
+        /// <summary>
+        /// Determines whether the specified position is vaild.
+        /// </summary>
+        /// <param name="pos">The <see cref="Position"/> object.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified position is valid; otherwise, <c>false</c>.
+        /// </returns>
         public bool IsValidPosition(Position pos)
         {
             if (pos.X < 0 || pos.X >= Width)

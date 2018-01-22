@@ -9,6 +9,15 @@ namespace FakeView
         : m_screen(screen)
     {
         m_presenter = gcnew CivPresenter::Presenter(this);
+        
+        // test code
+        m_presenter->Game->PlayerInTurn->AdditionalAvailableProduction->Add(
+            CivModel::Common::JediKnightProductionFactory::Instance);
+    }
+
+    void View::Refocus()
+    {
+        // do nothing
     }
 
     void View::Shutdown()
@@ -26,6 +35,12 @@ namespace FakeView
             case CivPresenter::Presenter::States::ProductAdd:
                 RenderProductAdd();
                 break;
+            case CivPresenter::Presenter::States::Victory:
+                RenderVictory();
+                break;
+            case CivPresenter::Presenter::States::Defeated:
+                RenderDefeated();
+                break;
             default:
                 RenderNormal();
                 break;
@@ -35,6 +50,9 @@ namespace FakeView
     void View::RenderNormal()
     {
         auto scrsz = m_screen->GetSize();
+
+        m_screen->PrintString(0, 0, 0b0000'1111,
+            "Player " + std::to_string(m_presenter->Game->PlayerNumberInTurn));
 
         int sx = scrsz.width / 3;
         int sy = scrsz.height / 3;
@@ -68,55 +86,89 @@ namespace FakeView
                 {
                     PrintUnit(px, py, point.Unit);
                 }
-            }
-        }
 
-        if (m_presenter->SelectedActor != nullptr)
-        {
-            auto pos = m_presenter->SelectedActor->PlacedPoint.Value.Position;
-            auto pt = TerrainToScreen(pos.X, pos.Y);
-            if (auto pc = m_screen->TryGetChar(pt.first, pt.second))
-            {
-                pc->color |= 0b1000'1000;
-            }
-        }
-
-        if (m_presenter->MoveAdjcents)
-        {
-            for (int i = 0; i < m_presenter->MoveAdjcents->Count; ++i)
-            {
-                if (m_presenter->MoveAdjcents[i].HasValue)
+                if (m_presenter->RunningAction != nullptr)
                 {
-                    auto pos = m_presenter->MoveAdjcents[i].Value.Position;
-                    auto pt = TerrainToScreen(pos.X, pos.Y);
-                    if (auto pc = m_screen->TryGetChar(pt.first, pt.second))
+                    if (CivModel::ActorAction::IsActable(m_presenter->RunningAction, point))
                     {
-                        pc->color = 0b0001'0110;
-
-                        if (i == m_presenter->MoveSelectedIndex)
-                            pc->color |= 0b1000'1000;
+                        auto& c = m_screen->GetChar(px, py);
+                        c.color |= 0b0001'0110;
                     }
                 }
             }
         }
 
-        auto ptcenter = TerrainToScreen(bx + (sx / 2), by + (sy / 2));
+        if (m_presenter->SelectedActor)
+        {
+            auto point = m_presenter->SelectedActor->PlacedPoint.Value;
+            auto pos = point.Position;
+            auto pt = TerrainToScreen(pos.X, pos.Y);
+            if (auto pc = m_screen->TryGetChar(pt.first, pt.second))
+            {
+                pc->color ^= 0b1111'1111;
+            }
+        }
+
+        auto posCenter = CivModel::Position::FromPhysical(bx + (sx / 2), by + (sy / 2));
+        auto ptCenter = TerrainToScreen(posCenter.X, posCenter.Y);
+        auto& chCenter = m_screen->GetChar(ptCenter.first, ptCenter.second);
+
+        if (m_presenter->SelectedActor == nullptr ||
+            m_presenter->SelectedActor->PlacedPoint.Value.Position != posCenter)
+        {
+            chCenter.color ^= 0b0111'0111;
+        }
+        if (m_presenter->RunningAction != nullptr)
+        {
+            auto pt = m_presenter->Game->Terrain->GetPoint(posCenter);
+            if (!CivModel::ActorAction::IsActable(m_presenter->RunningAction, pt))
+            {
+                chCenter.color ^= 0b0111'0111;
+                chCenter.color |= 0b1100'1110;
+            }
+        }
+
         switch (m_presenter->State)
         {
             case CivPresenter::Presenter::States::Normal:
-                m_screen->GetChar(ptcenter.first, ptcenter.second).color |= 0b1000'1000;
-                m_screen->PrintString(0, scrsz.height - 1, 0b00000111,
-                    "Turn: " + std::to_string(m_presenter->Game->TurnNumber));
+            {
+                std::string msg = "Turn: " + std::to_string(m_presenter->Game->TurnNumber);
+                if (m_presenter->IsThereTodos)
+                {
+                    msg += " %c\x0f""waiting for command %c\x07(";
+                    msg += "%c\x0f""m%c\x07: move ";
+                    msg += "%c\x0f""q%c\x07: moving attack ";
+                    msg += "%c\x0f""w%c\x07: holding attack ";
+                    msg += "%c\x0f""1-9%c\x07 : special acts ";
+                    msg += "%c\x0f""p%c\x07: production ";
+                    msg += "%c\x0f""z%c\x07: skip)";
+                }
+                else
+                {
+                    msg += " %c\x0fpress Enter for the next turn";
+                }
+                m_screen->PrintStringEx(0, scrsz.height - 1, 0b00000111, msg);
                 break;
+            }
+
             case CivPresenter::Presenter::States::Move:
                 m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Move");
                 break;
+
+            case CivPresenter::Presenter::States::MovingAttack:
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Moving Attack");
+                break;
+
+            case CivPresenter::Presenter::States::HoldingAttack:
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Holding Attack");
+                break;
+
             case CivPresenter::Presenter::States::SpecialAct:
                 m_screen->PrintString(0, scrsz.height - 1, 0b00001111,
                     "SpecialAct: " + std::to_string(m_presenter->StateParam));
                 break;
+
             case CivPresenter::Presenter::States::Deploy:
-                m_screen->GetChar(ptcenter.first, ptcenter.second).color |= 0b1000'1000;
                 m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Deploy");
                 break;
         }
@@ -150,17 +202,7 @@ namespace FakeView
             if (y >= scrsz.height)
                 return;
 
-            std::string msg;
-            if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(node->Value->Factory))
-            {
-                msg = "Pioneer";
-            }
-            else
-            {
-                System::Diagnostics::Debug::WriteLine(L"unqualified production in RenderProductUI()");
-                msg = "????";
-            }
-
+            std::string msg = GetFactoryDescription(node->Value->Factory);
             msg += " (completed)";
 
             unsigned char color = 0b0000'0111;
@@ -179,17 +221,7 @@ namespace FakeView
             if (y >= scrsz.height)
                 return;
 
-            std::string msg;
-            if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(node->Value->Factory))
-            {
-                msg = "Pioneer";
-            }
-            else
-            {
-                System::Diagnostics::Debug::WriteLine(L"unqualified production in RenderProductUI()");
-                msg = "????";
-            }
-
+            std::string msg = GetFactoryDescription(node->Value->Factory);
             msg += " " + std::to_string(node->Value->LaborInputed) + " / " + std::to_string(node->Value->TotalCost);
             msg += " (+" + std::to_string(node->Value->EstimatedLaborInputing);
             msg += " / " + std::to_string(node->Value->CapacityPerTurn) + ")";
@@ -206,7 +238,10 @@ namespace FakeView
 
         if (m_presenter->IsProductManipulating)
         {
-            m_screen->PrintString(0, scrsz.height - 1, 0b0000'1111, "press Enter again to cancel production");
+            m_screen->PrintStringEx(0, scrsz.height - 1, 0x0f,
+                "d%c\x07: cancel production %c\x0f"
+                "Up/Down%c\x07: change production order %c\x0f"
+                "ESC/Enter%c\x07: cancel selection");
         }
     }
 
@@ -231,25 +266,26 @@ namespace FakeView
 
             auto value = m_presenter->AvailableProduction[idx];
 
-            std::string msg;
-            if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(value))
-            {
-                msg = "Pioneer";
-            }
-            else
-            {
-                System::Diagnostics::Debug::WriteLine(L"unqualified production in RenderProductUI()");
-                msg = "????";
-            }
-
             unsigned char color = 0b0000'1111;
             if (m_presenter->SelectedProduction == idx)
                 color = ~color;
 
-            m_screen->PrintString(0, y, color, msg);
+            m_screen->PrintString(0, y, color, GetFactoryDescription(value));
 
             ++y;
         }
+    }
+
+    void View::RenderVictory()
+    {
+        for (int y = 10; y <= 20; ++y)
+            m_screen->PrintString(10, y, 0b1101'1010, "YOU ARE WINNER");
+    }
+
+    void View::RenderDefeated()
+    {
+        for (int y = 10; y <= 20; ++y)
+            m_screen->PrintString(10, y, 0b1000'1111, "YOU ARE LOSER");
     }
 
     void View::OnKeyStroke(int ch)
@@ -283,9 +319,29 @@ namespace FakeView
                 m_presenter->CommandSelect();
                 break;
 
+            case 'd':
+            case 'D':
+                m_presenter->CommandRemove();
+                break;
+
             case 'm':
             case 'M':
                 m_presenter->CommandMove();
+                break;
+
+            case 'z':
+            case 'Z':
+                m_presenter->CommandSkip();
+                break;
+
+            case 'q':
+            case 'Q':
+                m_presenter->CommandMovingAttack();
+                break;
+
+            case 'w':
+            case 'W':
+                m_presenter->CommandHoldingAttack();
                 break;
 
             case 'p':
@@ -334,68 +390,99 @@ namespace FakeView
     void View::PrintTerrain(int px, int py, CivModel::Terrain::Point point)
     {
         auto& c = m_screen->GetChar(px, py);
-
         c.color = 0b0000'0111;
 
-        if (point.Type2 == CivModel::TerrainType2::Mountain)
+        switch (point.Type)
         {
-            c.ch = '^';
-        }
-        else
-        {
-            switch (point.Type1)
-            {
-                case CivModel::TerrainType1::Flatland:
-                    c.ch = '-';
-                    break;
-                case CivModel::TerrainType1::Grass:
-                    c.ch = '*';
-                    break;
-                case CivModel::TerrainType1::Swamp:
-                    c.ch = '@';
-                    break;
-                case CivModel::TerrainType1::Tundra:
-                    c.ch = '#';
-                    break;
-            }
-            if (point.Type2 == CivModel::TerrainType2::Hill)
-            {
-                c.color |= 0b0000'1000;
-            }
+            case CivModel::TerrainType::Plain:
+                c.ch = '-';
+                break;
+            case CivModel::TerrainType::Ocean:
+                c.ch = '*';
+                break;
+            case CivModel::TerrainType::Mount:
+                c.ch = '^';
+                break;
+            case CivModel::TerrainType::Forest:
+                c.ch = '#';
+                break;
+            case CivModel::TerrainType::Swamp:
+                c.ch = '@';
+                break;
+            case CivModel::TerrainType::Tundra:
+                c.ch = '%';
+                break;
+            case CivModel::TerrainType::Ice:
+                c.ch = '$';
+                break;
+            case CivModel::TerrainType::Hill:
+                c.ch = '&';
+                break;
         }
     }
 
     void View::PrintUnit(int px, int py, CivModel::Unit^ unit)
     {
         auto& c = m_screen->GetChar(px, py);
+        c.color &= 0xf0;
+        c.color |= 0x08 | GetPlayerColor(unit->Owner);
+
         if (auto u = dynamic_cast<CivModel::Common::Pioneer^>(unit))
         {
             c.ch = 'P';
-            c.color &= 0xf0;
-            c.color |= 0b0000'1001;
+        }
+        else if (auto u = dynamic_cast<CivModel::Common::JediKnight^>(unit))
+        {
+            c.ch = 'J';
         }
         else
         {
             System::Diagnostics::Debug::WriteLine(L"unqualified unit in PrintUnit()");
             c.ch = 'U';
-            c.color &= 0xf0;
-            c.color |= 0b0000'1110;
         }
     }
 
     void View::PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding)
     {
         auto& c = m_screen->GetChar(px, py);
+        c.color &= 0x0f;
+        c.color |= GetPlayerColor(tileBuilding->Owner) << 4;
         if (auto b = dynamic_cast<CivModel::Common::CityCenter^>(tileBuilding))
         {
-            c.color &= 0x0f;
-            c.color |= 0b0010'0000;
+            // do nothing
         }
         else
         {
             System::Diagnostics::Debug::WriteLine(L"unqualified tileBuilding in PrintTileBuilding()");
-            c.color &= 0x0f;
-            c.color |= 0b0111'0000;
+        }
+    }
+
+    unsigned char View::GetPlayerColor(CivModel::Player^ player)
+    {
+        auto players = m_presenter->Game->Players;
+        int playerIndex = 0;
+        for (; playerIndex < players->Count; ++playerIndex)
+        {
+            if (players[playerIndex] == player)
+                break;
+        }
+        return static_cast<unsigned char>((playerIndex + 1) % 7);
+    }
+
+    std::string View::GetFactoryDescription(CivModel::IProductionFactory^ factory)
+    {
+        if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(factory))
+        {
+            return "Pioneer";
+        }
+        if (auto product = dynamic_cast<CivModel::Common::JediKnightProductionFactory^>(factory))
+        {
+            return "Jedi Knight";
+        }
+        else
+        {
+            System::Diagnostics::Debug::WriteLine(L"unqualified production in GetFactoryDescription()");
+            return "????";
         }
     }
 
