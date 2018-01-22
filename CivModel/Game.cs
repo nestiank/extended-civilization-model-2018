@@ -80,7 +80,7 @@ namespace CivModel
         public Player PlayerInTurn => Players[PlayerNumberInTurn];
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Game"/> class.
+        /// Initializes a new instance of the <see cref="Game"/> class, by creating a new game.
         /// </summary>
         /// <param name="width">The width of the <see cref="Terrain"/> of this game. It must be positive.</param>
         /// <param name="height">The height of the <see cref="Terrain"/> of this game. It must be positive.</param>
@@ -127,6 +127,17 @@ namespace CivModel
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Game"/> class, by loading a existing save file.
+        /// </summary>
+        /// <param name="saveFile">The path of the save file.</param>
+        /// <exception cref="InvalidDataException">
+        /// save file is invalid
+        /// </exception>
+        /// <remarks>
+        /// This constructor uses <see cref="File.OpenText(string)"/>.
+        /// See the list of the exceptions <see cref="File.OpenText(string)"/> may throw.
+        /// </remarks>
         public Game(string saveFile)
         {
             int numOfPlayer;
@@ -171,6 +182,10 @@ namespace CivModel
             }
         }
 
+        /// <summary>
+        /// Saves current status of the game to the specified save file.
+        /// </summary>
+        /// <param name="saveFile">The path of the save file.</param>
         public void Save(string saveFile)
         {
             using (var file = File.CreateText(saveFile))

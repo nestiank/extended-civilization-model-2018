@@ -1,18 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 
 namespace CivModel
 {
-    /// <summary>
-    /// The type of a tile of <see cref="Terrain"/>.
-    /// </summary>
-    public enum TerrainType
-    {
-        Plain, Ocean, Mount, Forest, Swamp, Tundra, Ice, Hill
-    }
-
     /// <summary>
     /// Represents a terrain of a game.
     /// </summary>
