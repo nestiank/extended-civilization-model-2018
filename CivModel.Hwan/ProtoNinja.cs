@@ -8,7 +8,7 @@ namespace CivModel.Common
 {
     public class ProtoNinja : Unit
     {
-        public override int MaxAP => 4;
+        public override int MaxAP => 2;
 
         public override double MaxHP => 35;
 
