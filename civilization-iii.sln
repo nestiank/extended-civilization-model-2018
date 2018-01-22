@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FakeView", "FakeView\FakeView.vcxproj", "{AFA459CE-5B69-4E0A-9991-29D13F06B959}"
 EndProject
@@ -23,6 +23,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CivModel extensions", "CivModel extensions", "{80D609BF-AE55-4880-9836-E3DD2BA26253}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CivModel.Common", "CivModel.Common\CivModel.Common.csproj", "{19EC463E-A2C4-47C6-A0E6-BD0882E722B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E74582AE-B8A5-4EB8-9C36-E877E3E07167}"
+	ProjectSection(SolutionItems) = preProject
+		docs\Coordinate System.pptx = docs\Coordinate System.pptx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
