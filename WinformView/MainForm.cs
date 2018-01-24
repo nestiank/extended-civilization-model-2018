@@ -128,14 +128,12 @@ namespace WinformView
 
                     if (point.TileBuilding is CityCenter)
                     {
-                        unchecked
-                        {
-                            var brush = new SolidBrush(Color.FromArgb((int)0xffff00ff));
-                            float cx = px + ax;
-                            float cy = py + 2 * ay;
-                            float radius = blockSize_ * 0.25f;
-                            e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
-                        }
+                        var brush = new SolidBrush(GetPlayerColor(point.TileBuilding.Owner));
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.25f;
+                        e.Graphics.FillEllipse(Brushes.White, cx - radius - 1, cy - radius - 1, radius * 2 + 2, radius * 2 + 2);
+                        e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
                     }
 
                     if (selectedPoint_ is Point ptm && IsInPolygon(polygon, new PointF(ptm.X, ptm.Y)))
@@ -156,6 +154,21 @@ namespace WinformView
                         e.Graphics.DrawEllipse(pen, cx - radius, cy - radius, radius * 2, radius * 2);
                     }
                 }
+            }
+        }
+
+        private Color GetPlayerColor(Player player)
+        {
+            unchecked
+            {
+                int idx = 0;
+                for (; idx < presenter_.Game.Players.Count; ++idx)
+                    if (presenter_.Game.Players[idx] == player)
+                        break;
+                idx = (idx % 6) + 1;
+
+                int color = (((idx & 4) != 0 ? 0xff : 0) << 16) | (((idx & 2) != 0 ? 0xff : 0) << 8) | ((idx & 1) != 0 ? 0xff : 0);
+                return Color.FromArgb((int)0xff000000 | color);
             }
         }
 

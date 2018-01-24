@@ -484,7 +484,7 @@ namespace FakeView
             if (players[playerIndex] == player)
                 break;
         }
-        return static_cast<unsigned char>((playerIndex + 1) % 7);
+        return static_cast<unsigned char>(playerIndex % 6) + 1;
     }
 
     std::string View::GetFactoryDescription(CivModel::IProductionFactory^ factory)
