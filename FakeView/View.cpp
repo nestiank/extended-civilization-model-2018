@@ -302,6 +302,14 @@ namespace FakeView
     {
         switch (ch)
         {
+            case ',':
+            case '<':
+                if (!m_presenter->SaveFile)
+                    m_presenter->SaveFile = L"map.txt";
+                m_presenter->CommandSave();
+                MessageBox(nullptr, L"Saved", L"", MB_OK);
+                break;
+
             case 0x1b: // ESC
                 m_presenter->CommandCancel();
                 break;
