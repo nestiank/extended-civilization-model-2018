@@ -84,7 +84,7 @@ namespace CivModel
         /// </summary>
         /// <param name="width">The width of the <see cref="Terrain"/> of this game. It must be positive.</param>
         /// <param name="height">The height of the <see cref="Terrain"/> of this game. It must be positive.</param>
-        /// <param name="numOfPlayer">The number of player. It must be positive.</param>
+        /// <param name="numOfPlayer">The number of players. It must be positive.</param>
         /// <exception cref="ArgumentException">
         /// <paramref name="width"/> is not positive
         /// or

@@ -117,26 +117,56 @@ namespace CivPresenter
         private Action OnSkip;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Presenter"/> class.
+        /// Initializes a new instance of the <see cref="Presenter"/> class, by creating a new game with testing-purpose parameters.
+        /// </summary>
+        /// <param name="view">The <see cref="IView"/> object.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
+        /// <remarks>
+        /// This constructor calls <see cref="Presenter(IView, int, int, int)"/> constructor with preset testing-purpsoe parameters.
+        /// </remarks>
+        /// <seealso cref="Presenter(IView, int, int, int)"/>
+        public Presenter(IView view) : this(view, 128, 80, 2) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Presenter"/> class, by creating a new game.
+        /// </summary>
+        /// <param name="view">The <see cref="IView"/> object.</param>
+        /// <param name="terrainWidth"><see cref="Terrain.Width"/> of the new game.</param>
+        /// <param name="terrainHeight"><see cref="Terrain.Height"/> of the new game.</param>
+        /// <param name="numOfPlayer">The number of players of the new game.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
+        public Presenter(IView view, int terrainWidth, int terrainHeight, int numOfPlayer)
+        {
+            _view = view ?? throw new ArgumentNullException("view");
+            SaveFile = null;
+
+            _game = new Game(terrainWidth, terrainHeight, numOfPlayer);
+            Initialize();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Presenter"/> class, by loading a existing save file.
         /// </summary>
         /// <param name="view">The <see cref="IView"/> object.</param>
         /// <param name="saveFile">The path of the save file to load. If <c>null</c>, create a new game.</param>
         /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
         /// <remarks>
-        /// If <paramref name="saveFile"/> is not <c>null</c>, <see cref="Game.Game(string)"/> constructor is called.
+        /// This constructor calls <see cref="Game.Game(string)"/> constructor.
         /// See the <strong>exceptions</strong> and <strong>remarks</strong> parts of
         /// the documentation of <see cref="Game.Game(string)"/> constructor.
         /// </remarks>
-        public Presenter(IView view, string saveFile = null)
+        /// <seealso cref="Game.Game(String)"/>
+        public Presenter(IView view, string saveFile)
         {
             _view = view ?? throw new ArgumentNullException("view");
+            SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
-            SaveFile = saveFile;
-            if (saveFile == null)
-                _game = new Game(width: 128, height: 80, numOfPlayer: 2);
-            else
-                _game = new Game(saveFile);
+            _game = new Game(saveFile);
+            Initialize();
+        }
 
+        private void Initialize()
+        {
             // fallback point
             // ProceedTurn() would set FocusedPoint if any unit/city exists.
             FocusedPoint = Game.Terrain.GetPoint(0, 0);

@@ -86,6 +86,11 @@ namespace CivModel.Common
         /// <param name="opposite">The opposite who caused the dying of this actor. If not exists, <c>null</c>.</param>
         protected override void OnDie(Player opposite)
         {
+            if (PlacedPoint.Value.Unit is Unit unit)
+            {
+                unit.Die(opposite);
+            }
+
             // do not call base.OnDie(opposite) if opposite != null
             // city must be captured rather than just removed
             if (opposite != null)
