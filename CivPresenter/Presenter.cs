@@ -67,7 +67,7 @@ namespace CivPresenter
         /// <summary>
         /// Index of the selected production to <see cref="Player.Production"/> list.
         /// <c>-1</c> if there is no selected production.
-        /// If <see cref="SelectedDeploy"/> is not <c>-1</c>, this value is <c>-1</c>
+        /// If <see cref="SelectedDeploy"/> is not <c>-1</c>, this value is <c>-1</c>.
         /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/> || <see cref="State"/> == <see cref="States.ProductAdd"/></c>
         /// </summary>
         public int SelectedProduction { get; private set; } = -1;
