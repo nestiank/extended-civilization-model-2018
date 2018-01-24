@@ -38,7 +38,7 @@ namespace CivModel.Common
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 50, 20);
+            return new TileObjectProduction(this, owner, 50, 15);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
