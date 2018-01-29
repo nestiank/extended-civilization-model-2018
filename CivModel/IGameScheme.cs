@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CivModel.Common;
 
 namespace CivModel
 {
@@ -107,16 +108,18 @@ namespace CivModel
         double ResearchRequireCoefficient { get; }
 
         /// <summary>
-        /// Constant amount of <see cref="Player.TaxRate"/> for <see cref="Player.BasicResearchRequire"/>.
-        /// </summary>
-        double ResearchRequireTaxRateConstant { get; }
-
-        /// <summary>
         /// Initializes the game
         /// </summary>
         /// <param name="game">The game to initialize.</param>
         /// <param name="isNewGame"><c>true</c> if initializing a new game. <c>false</c> if initializing a game loaded from a save file.</param>
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
-        void Initialize(Game game, bool isNewGame);
+        void InitializeGame(Game game, bool isNewGame);
+
+        /// <summary>
+        /// Initializes the city
+        /// </summary>
+        /// <param name="city">The city to initialize.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
+        void InitializeCity(CityCenter city);
     }
 }

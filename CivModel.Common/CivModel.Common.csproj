@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="GameScheme.cs" />
     <Compile Include="JediKnight.cs" />
+    <Compile Include="Pioneer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

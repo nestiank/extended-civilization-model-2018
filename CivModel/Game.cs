@@ -121,7 +121,7 @@ namespace CivModel
                 _players.Add(new Player(this));
             }
 
-            Scheme.Initialize(this, true);
+            Scheme.InitializeGame(this, true);
         }
 
         /// <summary>
@@ -229,6 +229,7 @@ namespace CivModel
                     {
                         var city = new CityCenter(Players[ints[0]]);
                         city.PlacedPoint = pt;
+                        Scheme.InitializeCity(city);
                     }
                     else
                     {
@@ -236,7 +237,7 @@ namespace CivModel
                     }
                 }
 
-                Scheme.Initialize(this, false);
+                Scheme.InitializeGame(this, false);
             }
         }
 

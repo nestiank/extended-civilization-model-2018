@@ -188,21 +188,59 @@ namespace FakeView
         m_screen->PrintString(0, y, 0b0000'1111, "Production UI");
 
         auto player = m_presenter->Game->PlayerInTurn;
-        if ((y = 2) >= scrsz.height)
+        y += 2;
+
+        if (y  >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Total Gold: " + std::to_string(player->Gold)
+            + " (+ " + std::to_string(player->GoldNetIncome) + ")");
+        ++y;
+
+        if (y >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Total Happiness: " + std::to_string(player->Happiness)
+            + " (+ " + std::to_string(player->HappinessIncome) + ")");
+        ++y;
+
+        if (y >= scrsz.height)
             return;
         m_screen->PrintString(0, y, 0b0000'0111,
             "Total Labor: " + std::to_string(player->Labor)
             + " (Used: " + std::to_string(player->EstimatedUsedLabor) + ")");
+        ++y;
+
+        if (y >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Total Population: " + std::to_string(player->Population));
+        ++y;
+
+        if (y >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Economic Investment: " + std::to_string(player->EconomicInvestment)
+            + " (basic requirement: " + std::to_string(player->BasicEconomicRequire) + ")");
+        ++y;
+
+        if (y >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Research Investment: " + std::to_string(player->ResearchInvestment)
+            + " (basic requirement: " + std::to_string(player->BasicResearchRequire) + ")");
+        ++y;
 
         unsigned color = 0b0000'0111;
+        y += 2;
         if (m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
             color = 0b1111'0000;
-        if ((y = 4) >= scrsz.height)
+        if (y >= scrsz.height)
             return;
         m_screen->PrintString(0, y, color, "Add Production");
 
         int idx = 0;
-        y = 5;
+        y += 1;
         for (auto node = player->Deployment->First; node != nullptr; node = node->Next)
         {
             if (y >= scrsz.height)

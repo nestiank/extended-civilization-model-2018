@@ -43,14 +43,13 @@ namespace CivModel
         /// The happiness income of this player.
         /// </summary>
         /// <seealso cref="IGameScheme.HappinessCoefficient"/>
-        public double HappinessIncome => Game.Scheme.HappinessCoefficient;
+        public double HappinessIncome => Game.Scheme.HappinessCoefficient * (EconomicInvestment - BasicEconomicRequire);
 
         /// <summary>
-        /// The labor per turn of this player.
+        /// The labor per turn of this player. It is equal to sum of all <see cref="CityCenter.Labor"/> of cities of this player.
         /// </summary>
-        /// <seealso cref="IGameScheme.LaborCoefficient"/>
-        /// <seealso cref="IGameScheme.LaborHappinessConstant"/>
-        public double Labor => Game.Scheme.LaborCoefficient * (Game.Scheme.LaborHappinessConstant + Happiness);
+        /// <seealso cref="CityCenter.Labor"/>
+        public double Labor => Cities.Select(city => city.Labor).Sum();
 
         /// <summary>
         /// The whole population which this player has. It is equal to sum of all <see cref="CityCenter.Population"/> of cities of this player.
@@ -100,7 +99,7 @@ namespace CivModel
         /// The basic research gold requirement.
         /// </summary>
         /// <seealso cref="ResearchInvestment"/>
-        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient * Population * (Game.Scheme.ResearchRequireTaxRateConstant + TaxRate);
+        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient;
 
         /// <summary>
         /// The amount of gold for research investment.

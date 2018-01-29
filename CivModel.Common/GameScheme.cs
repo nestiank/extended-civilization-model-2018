@@ -47,9 +47,8 @@ namespace CivModel.Common
         public double EconomicRequireTaxRateConstant => 0.2;
 
         public double ResearchRequireCoefficient => 0.2;
-        public double ResearchRequireTaxRateConstant => 0.2;
 
-        public void Initialize(Game game, bool isNewGame)
+        public void InitializeGame(Game game, bool isNewGame)
         {
             if (game == null)
                 throw new ArgumentNullException("game");
@@ -74,7 +73,14 @@ namespace CivModel.Common
                     pionner.PlacedPoint = pt;
                 }
             }
+            game.Players[0].AdditionalAvailableProduction.Add(PioneerProductionFactory.Instance);
             game.Players[0].AdditionalAvailableProduction.Add(JediKnightProductionFactory.Instance);
+        }
+
+        public void InitializeCity(CityCenter city)
+        {
+            var factory = new FactoryBuilding(city.Owner);
+            factory.City = city;
         }
     }
 }

@@ -43,14 +43,26 @@ namespace CivModel.Common
         /// The list of available production from this city.
         /// </summary>
         /// <seealso cref="Player.GetAvailableProduction"/>
-        public IReadOnlyList<IProductionFactory> AvailableProduction => _availableProduction;
-        private List<IProductionFactory> _availableProduction = new List<IProductionFactory>();
+        public ISet<IProductionFactory> AvailableProduction => _availableProduction;
+        private readonly HashSet<IProductionFactory> _availableProduction = new HashSet<IProductionFactory>();
 
         /// <summary>
         /// The population of this city.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Population must be bigger than 1</exception>
+        /// <seealso cref="Player.Population"/>
         /// <seealso cref="PopulationIncome"/>
-        public double Population { get; private set; }
+        public double Population
+        {
+            get => _population;
+            set
+            {
+                if (value < 1)
+                    throw new ArgumentOutOfRangeException("Population", value, "Population must be bigger than 1");
+                _population = value;
+            }
+        }
+        private double _population = 1;
 
         /// <summary>
         /// The population income of this city.
@@ -58,6 +70,23 @@ namespace CivModel.Common
         /// <seealso cref="IGameScheme.PopulationCoefficient"/>
         /// <seealso cref="IGameScheme.PopulationHappinessConstant"/>
         public double PopulationIncome => Owner.Game.Scheme.PopulationCoefficient * (Owner.Game.Scheme.PopulationHappinessConstant + Owner.Happiness);
+
+        /// <summary>
+        /// The labor per turn which this city offers.
+        /// </summary>
+        /// <seealso cref="Player.Labor"/>
+        /// <seealso cref="IGameScheme.LaborCoefficient"/>
+        /// <seealso cref="IGameScheme.LaborHappinessConstant"/>
+        public double Labor =>
+            Owner.Game.Scheme.LaborCoefficient
+            * InteriorBuildings.Where(b => b is FactoryBuilding).Count()
+            * (Owner.Game.Scheme.LaborHappinessConstant + Owner.Happiness);
+
+        /// <summary>
+        /// The list of <see cref="InteriorBuilding"/> this city owns.
+        /// </summary>
+        public IReadOnlyList<InteriorBuilding> InteriorBuildings => _interiorBuildings;
+        private readonly List<InteriorBuilding> _interiorBuildings = new List<InteriorBuilding>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CityCenter"/> class.
@@ -68,8 +97,28 @@ namespace CivModel.Common
         {
             Owner.AddCityToList(this);
             _holdingAttackAct = new AttackActorAction(this, false);
+        }
 
-            _availableProduction.Add(PioneerProductionFactory.Instance);
+        /// <summary>
+        /// This method is used by <see cref="InteriorBuilding.City"/>
+        /// </summary>
+        internal void AddBuilding(InteriorBuilding building)
+        {
+            if (building.City != null)
+                throw new ArgumentException("building is placed already", "building");
+
+            _interiorBuildings.Add(building);
+        }
+
+        /// <summary>
+        /// This method is used by <see cref="InteriorBuilding.City"/>
+        /// </summary>
+        internal void RemoveBuilding(InteriorBuilding building)
+        {
+            if (building.City != this)
+                throw new ArgumentException("building is not placed in this city", "building");
+
+            _interiorBuildings.Remove(building);
         }
 
         /// <summary>
