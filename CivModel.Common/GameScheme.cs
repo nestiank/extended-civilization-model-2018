@@ -75,6 +75,7 @@ namespace CivModel.Common
             }
             game.Players[0].AdditionalAvailableProduction.Add(PioneerProductionFactory.Instance);
             game.Players[0].AdditionalAvailableProduction.Add(JediKnightProductionFactory.Instance);
+            game.Players[0].AdditionalAvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
         }
 
         public void InitializeCity(CityCenter city)

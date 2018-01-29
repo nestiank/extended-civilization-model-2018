@@ -527,9 +527,13 @@ namespace FakeView
         {
             return "Pioneer";
         }
-        if (auto product = dynamic_cast<CivModel::Common::JediKnightProductionFactory^>(factory))
+        else if (auto product = dynamic_cast<CivModel::Common::JediKnightProductionFactory^>(factory))
         {
             return "Jedi Knight";
+        }
+        else if (auto product = dynamic_cast<CivModel::Common::FactoryBuildingProductionFactory^>(factory))
+        {
+            return "Factory";
         }
         else
         {

@@ -91,7 +91,7 @@ namespace CivModel
                 throw new ArgumentException("point is invalid");
 
             var obj = _factory.CreateInteriorBuilding(Owner);
-            //todo
+            obj.City = (CityCenter)point.TileBuilding;
         }
     }
 }
