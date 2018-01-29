@@ -19,10 +19,6 @@ namespace FakeView
         }
         if (!m_presenter)
             m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
-        
-        // test code
-        m_presenter->Game->PlayerInTurn->AdditionalAvailableProduction->Add(
-            CivModel::Common::JediKnightProductionFactory::Instance);
     }
 
     void View::Refocus()

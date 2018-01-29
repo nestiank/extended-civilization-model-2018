@@ -47,6 +47,19 @@ namespace CivModel.Common
         private List<IProductionFactory> _availableProduction = new List<IProductionFactory>();
 
         /// <summary>
+        /// The population of this city.
+        /// </summary>
+        /// <seealso cref="PopulationIncome"/>
+        public double Population { get; private set; }
+
+        /// <summary>
+        /// The population income of this city.
+        /// </summary>
+        /// <seealso cref="IGameScheme.PopulationCoefficient"/>
+        /// <seealso cref="IGameScheme.PopulationHappinessConstant"/>
+        public double PopulationIncome => Owner.Game.Scheme.PopulationCoefficient * (Owner.Game.Scheme.PopulationHappinessConstant + Owner.Happiness);
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CityCenter"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this city.</param>
@@ -102,6 +115,16 @@ namespace CivModel.Common
             {
                 base.OnDie(opposite);
             }
+        }
+
+        /// <summary>
+        /// Called after a turn.
+        /// </summary>
+        public override void PostTurn()
+        {
+            base.PostTurn();
+
+            Population += PopulationIncome;
         }
     }
 }

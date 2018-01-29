@@ -125,22 +125,22 @@ namespace CivPresenter
         /// This constructor calls <see cref="Presenter(IView, int, int, int)"/> constructor with preset testing-purpsoe parameters.
         /// </remarks>
         /// <seealso cref="Presenter(IView, int, int, int)"/>
-        public Presenter(IView view) : this(view, 128, 80, 2) { }
+        public Presenter(IView view) : this(view, -1, -1, -1) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Presenter"/> class, by creating a new game.
         /// </summary>
         /// <param name="view">The <see cref="IView"/> object.</param>
-        /// <param name="terrainWidth"><see cref="Terrain.Width"/> of the new game.</param>
-        /// <param name="terrainHeight"><see cref="Terrain.Height"/> of the new game.</param>
-        /// <param name="numOfPlayer">The number of players of the new game.</param>
+        /// <param name="terrainWidth"><see cref="Terrain.Width"/> of the new game. If this value is <c>-1</c>, uses default value.</param>
+        /// <param name="terrainHeight"><see cref="Terrain.Height"/> of the new game. If this value is <c>-1</c>, uses default value.</param>
+        /// <param name="numOfPlayer">The number of players of the new game. If this value is <c>-1</c>, uses default value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
         public Presenter(IView view, int terrainWidth, int terrainHeight, int numOfPlayer)
         {
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
 
-            _game = new Game(terrainWidth, terrainHeight, numOfPlayer);
+            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new CivModel.Common.GameSchemeFactory());
             Initialize();
         }
 
@@ -151,17 +151,17 @@ namespace CivPresenter
         /// <param name="saveFile">The path of the save file to load. If <c>null</c>, create a new game.</param>
         /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
         /// <remarks>
-        /// This constructor calls <see cref="Game.Game(string)"/> constructor.
+        /// This constructor calls <see cref="Game.Game(string, IEnumerable{IGameSchemeFactory})"/> constructor.
         /// See the <strong>exceptions</strong> and <strong>remarks</strong> parts of
-        /// the documentation of <see cref="Game.Game(string)"/> constructor.
+        /// the documentation of <see cref="Game.Game(string, IEnumerable{IGameSchemeFactory})"/> constructor.
         /// </remarks>
-        /// <seealso cref="Game.Game(String)"/>
+        /// <seealso cref="Game.Game(string, IEnumerable{IGameSchemeFactory})"/>
         public Presenter(IView view, string saveFile)
         {
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
-            _game = new Game(saveFile);
+            _game = new Game(saveFile, new IGameSchemeFactory[] { new CivModel.Common.GameSchemeFactory() });
             Initialize();
         }
 

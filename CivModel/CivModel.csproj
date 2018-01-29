@@ -44,7 +44,9 @@
   <ItemGroup>
     <Compile Include="AttackActorAction.cs" />
     <Compile Include="Common\NamespaceDoc.cs" />
+    <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
+    <Compile Include="InteriorBuilding.cs" />
     <Compile Include="ITurnObserver.cs" />
     <Compile Include="MoveActorAction.cs" />
     <Compile Include="NamespaceDoc.cs" />

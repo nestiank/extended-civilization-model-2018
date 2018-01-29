@@ -10,6 +10,7 @@ namespace CivModel
     /// Represents a building which is an actor.
     /// </summary>
     /// <seealso cref="CivModel.Actor" />
+    /// <seealso cref="InteriorBuilding"/>
     public abstract class TileBuilding : Actor
     {
         /// <summary>

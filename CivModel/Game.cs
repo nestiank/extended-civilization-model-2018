@@ -15,29 +15,9 @@ namespace CivModel
     public class Game
     {
         /// <summary>
-        /// Coefficient for <see cref="Player.GoldIncome"/>.
+        /// The scheme of this game.
         /// </summary>
-        public double GoldCoefficient => 1;
-
-        /// <summary>
-        /// Coefficient for PopulationIncome.
-        /// </summary>
-        public double PopulationCoefficient => 1;
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.HappinessIncome"/>.
-        /// </summary>
-        public double HappinessCoefficient => 1;
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.Labor"/>.
-        /// </summary>
-        public double LaborCoefficient => 0.1;
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.Labor"/>, which works with <see cref="Player.Happiness"/>.
-        /// </summary>
-        public double LaborHappinessConstant => 0;
+        public IGameScheme Scheme;
 
         /// <summary>
         /// <see cref="Terrain"/> of this game.
@@ -80,26 +60,59 @@ namespace CivModel
         public Player PlayerInTurn => Players[PlayerNumberInTurn];
 
         /// <summary>
+        /// See remark section of <see cref="Guid.ParseExact(string, string)"/>.
+        /// </summary>
+        private const string _guidSaveFormat = "D";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class, by creating a new game.
         /// </summary>
-        /// <param name="width">The width of the <see cref="Terrain"/> of this game. It must be positive.</param>
-        /// <param name="height">The height of the <see cref="Terrain"/> of this game. It must be positive.</param>
-        /// <param name="numOfPlayer">The number of players. It must be positive.</param>
+        /// <param name="width">The width of the <see cref="Terrain"/> of this game. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultTerrainWidth"/> of the scheme.</param>
+        /// <param name="height">The height of the <see cref="Terrain"/> of this game. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultTerrainHeight"/> of the scheme.</param>
+        /// <param name="numOfPlayer">The number of players. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultNumberOfPlayers"/> of the scheme.</param>
+        /// <param name="schemeFactory">The factory for <see cref="IGameScheme"/> of the game.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="schemeFactory"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="width"/> is not positive
         /// or
         /// <paramref name="height"/> is not positive
         /// or
         /// <paramref name="numOfPlayer"/> is not positive
+        /// or
+        /// parameter is not equal to default value of scheme, while scheme forces to be.
         /// </exception>
-        public Game(int width, int height, int numOfPlayer)
+        public Game(int width, int height, int numOfPlayer, IGameSchemeFactory schemeFactory)
         {
+            if (schemeFactory == null)
+                throw new ArgumentNullException("schemeFactory");
+            Scheme = schemeFactory.Create();
+
+            if (width == -1)
+                width = Scheme.DefaultTerrainWidth;
+            if (height == -1)
+                height = Scheme.DefaultTerrainWidth;
+            if (numOfPlayer == -1)
+                numOfPlayer = Scheme.DefaultNumberOfPlayers;
+
             if (width <= 0)
                 throw new ArgumentException("width is not positive", "width");
             if (height <= 0)
                 throw new ArgumentException("height is not positive", "height");
             if (numOfPlayer <= 0)
                 throw new ArgumentException("numOfPlayer is not positive", "numOfPlayer");
+
+            if (Scheme.OnlyDefaultTerrain)
+            {
+                if (width != Scheme.DefaultTerrainWidth)
+                    throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "width");
+                if (height != Scheme.DefaultTerrainHeight)
+                    throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "height");
+            }
+            if (Scheme.OnlyDefaultPlayers)
+            {
+                if (numOfPlayer != Scheme.DefaultNumberOfPlayers)
+                    throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "numOfPlayer");
+            }
 
             _terrain = new Terrain(width, height);
 
@@ -108,51 +121,56 @@ namespace CivModel
                 _players.Add(new Player(this));
             }
 
-            var random = new Random();
-            foreach (var player in Players)
-            {
-                Terrain.Point pt;
-                do
-                {
-                    int x = random.Next((int)Math.Floor(Terrain.Width * 0.1),
-                        (int)Math.Ceiling(Terrain.Width * 0.9));
-                    int y = random.Next((int)Math.Floor(Terrain.Height * 0.1),
-                        (int)Math.Ceiling(Terrain.Height * 0.9));
-
-                    pt = Terrain.GetPoint(x, y);
-                } while (pt.Unit != null);
-
-                var pionner = new Pioneer(player);
-                pionner.PlacedPoint = pt;
-            }
+            Scheme.Initialize(this, true);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class, by loading a existing save file.
         /// </summary>
         /// <param name="saveFile">The path of the save file.</param>
+        /// <param name="schemeFactories">the candidates of factories for <see cref="IGameScheme"/> of the game.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="schemeFactories"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidDataException">
         /// save file is invalid
+        /// or
+        /// there is no <see cref="IGameSchemeFactory"/> for this save file.
         /// </exception>
         /// <remarks>
         /// This constructor uses <see cref="File.OpenText(string)"/>.
         /// See the list of the exceptions <see cref="File.OpenText(string)"/> may throw.
         /// </remarks>
-        public Game(string saveFile)
+        public Game(string saveFile, IEnumerable<IGameSchemeFactory> schemeFactories)
         {
+            if (schemeFactories == null)
+                throw new ArgumentNullException("schemeFactory");
+
             int numOfPlayer;
             using (var file = File.OpenText(saveFile))
             {
+                string strGuid = file.ReadLine();
+                if (strGuid == null)
+                    throw new InvalidDataException("save file is invalid");
+
+                Guid guid;
+                if (!Guid.TryParseExact(strGuid, _guidSaveFormat, out guid))
+                    throw new InvalidDataException("save file is invalid");
+
+                var factory = schemeFactories.Where(f => f != null && f.Guid == guid).FirstOrDefault();
+                if (factory == null)
+                    throw new InvalidDataException("there is no IGameSchemeFactory for this save file");
+
+                Scheme = factory.Create();
+
                 int[] ints;
                 try
                 {
-                    ints = file.ReadLine().Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
+                    ints = file.ReadLine()?.Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
                 }
                 catch (Exception e) when (e is FormatException || e is OverflowException)
                 {
                     throw new InvalidDataException("save file is invalid");
                 }
-                if (ints.Length != 3 || ints.Count(x => x <= 0) != 0)
+                if (ints == null || ints.Length != 3 || ints.Count(x => x <= 0) != 0)
                     throw new InvalidDataException("save file is invalid");
 
                 numOfPlayer = ints[0];
@@ -161,6 +179,9 @@ namespace CivModel
                 for (int y = 0; y < Terrain.Height; ++y)
                 {
                     string line = file.ReadLine();
+                    if (line == null)
+                        throw new InvalidDataException("save file is invalid");
+
                     for (int x = 0; x < Terrain.Width; ++x)
                     {
                         if (x >= line.Length)
@@ -214,6 +235,8 @@ namespace CivModel
                         throw new InvalidDataException();
                     }
                 }
+
+                Scheme.Initialize(this, false);
             }
         }
 
@@ -225,6 +248,8 @@ namespace CivModel
         {
             using (var file = File.CreateText(saveFile))
             {
+                file.WriteLine(Scheme.Factory.Guid.ToString(_guidSaveFormat));
+
                 file.WriteLine(Players.Count + " " + Terrain.Width + " " + Terrain.Height);
                 for (int y = 0; y < Terrain.Height; ++y)
                 {

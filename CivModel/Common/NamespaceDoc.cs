@@ -2,7 +2,7 @@ namespace CivModel.Common
 {
     /// <summary>
     /// The <see cref="CivModel.Common"/> namespace of CivModel.dll module
-    ///  provides core, basic common actors, <see cref="Pioneer"/> and <see cref="CityCenter"/>.
+    ///  provides core, basic common actors such as <see cref="CityCenter"/>.
     /// </summary>
     /// <remarks>
     /// Most of common actors are provided by CivModel.Common.dll module.
