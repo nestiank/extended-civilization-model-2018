@@ -261,22 +261,12 @@ namespace CivModel
             {
                 foreach (Player p in Players)
                 {
-                    foreach (var unit in p.Units)
-                        unit.PreTurn();
-                    foreach (var city in p.Cities)
-                        city.PreTurn();
-
                     p.PreTurn();
                 }
             }
 
             foreach (Player p in Players)
             {
-                foreach (var unit in p.Units)
-                    unit.PrePlayerSubTurn(PlayerInTurn);
-                foreach (var city in p.Cities)
-                    city.PrePlayerSubTurn(PlayerInTurn);
-
                 p.PrePlayerSubTurn(PlayerInTurn);
             }
 
@@ -295,11 +285,6 @@ namespace CivModel
             foreach (Player p in Players)
             {
                 p.PostPlayerSubTurn(PlayerInTurn);
-
-                foreach (var unit in p.Units)
-                    unit.PostPlayerSubTurn(PlayerInTurn);
-                foreach (var city in p.Cities)
-                    city.PostPlayerSubTurn(PlayerInTurn);
             }
 
             if ((SubTurnNumber + 1) % Players.Count == 0)
@@ -307,11 +292,6 @@ namespace CivModel
                 foreach (Player p in Players)
                 {
                     p.PostTurn();
-
-                    foreach (var unit in p.Units)
-                        unit.PostTurn();
-                    foreach (var city in p.Cities)
-                        city.PostTurn();
                 }
             }
 
