@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,9 @@ namespace CivModel.Common
 {
     public class LEOSpaceArmada : Unit
     {
+        public static Guid ClassGuid { get; } = new Guid("A41789C8-823A-4B13-BDE2-3171751FC8BF");
+        public override Guid Guid => ClassGuid;
+
         public override int MaxAP => 2;
 
         public override double MaxHP => 50;

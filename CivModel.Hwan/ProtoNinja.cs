@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,9 @@ namespace CivModel.Common
 {
     public class ProtoNinja : Unit
     {
+        public static Guid ClassGuid { get; } = new Guid("87710C32-94A3-4A9D-92ED-8BB29EE2B475");
+        public override Guid Guid => ClassGuid;
+
         public override int MaxAP => 2;
 
         public override double MaxHP => 35;

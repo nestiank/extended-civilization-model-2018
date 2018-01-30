@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,9 @@ namespace CivModel.Common
 {
     public class DecentralizedMilitary : Unit
     {
+        public static Guid ClassGuid { get; } = new Guid("E9A92842-AADA-4700-BCE3-6BEC543F5BC7");
+        public override Guid Guid => ClassGuid;
+
         public override int MaxAP => 2;
 
         public override double MaxHP => 75;

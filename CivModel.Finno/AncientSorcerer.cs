@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,9 @@ namespace CivModel.Common
 {
     public class AncientSorcerer : Unit
     {
+        public static Guid ClassGuid { get; } = new Guid("C49FB444-C530-41B8-9D61-A9CF4443A4D6");
+        public override Guid Guid => ClassGuid;
+
         public override int MaxAP => 2;
 
         public override double MaxHP => 50;

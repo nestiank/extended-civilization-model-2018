@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,9 @@ namespace CivModel.Common
 {
     public class BrainwashedEMUKnight : Unit
     {
+        public static Guid ClassGuid { get; } = new Guid("6C04C360-C1B9-4633-8269-B0911B1D63DA");
+        public override Guid Guid => ClassGuid;
+
         public override int MaxAP => 2;
 
         public override double MaxHP => 75;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,9 @@ namespace CivModel.Common
 {
     public class JediKnight : Unit
     {
+        public static Guid ClassGuid { get; } = new Guid("D4B8D80D-4C68-45AD-9EA3-B40CD3377A60");
+        public override Guid Guid => ClassGuid;
+
         public override int MaxAP => 2;
 
         public override double MaxHP => 30;

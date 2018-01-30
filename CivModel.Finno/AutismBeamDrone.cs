@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,9 @@ namespace CivModel.Common
 {
     public class AutismBeamDrone : Unit
     {
+        public static Guid ClassGuid { get; } = new Guid("B1637348-A97F-4D7F-B160-B82E4695F2C3");
+        public override Guid Guid => ClassGuid;
+
         public override int MaxAP => 2;
 
         public override double MaxHP => 35;

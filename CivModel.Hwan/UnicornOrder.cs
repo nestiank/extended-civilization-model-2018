@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,9 @@ namespace CivModel.Common
 {
     public class UnicornOrder : Unit
     {
+        public static Guid ClassGuid { get; } = new Guid("06128735-B62C-4A40-AC4E-35F26C49A6EC");
+        public override Guid Guid => ClassGuid;
+
         public override int MaxAP => 2;
 
         public override double MaxHP => 50;
