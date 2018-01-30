@@ -29,26 +29,13 @@ namespace CivModel.Common
         /// <see cref="Name"/> cannot have newline characters and cannot be empty string.
         /// See the list of newline characters at <see href="https://en.wikipedia.org/wiki/Newline#Unicode"/>.
         /// </remarks>
-        /// <exception cref="ArgumentException">
-        /// the name of city cannot be empty
-        /// or
-        /// the name of city cannot have newline characters
-        /// </exception>
+        /// <exception cref="ArgumentException">the name is invalid or already used.</exception>
+        /// <seealso cref="SetCityName(string)"/>
+        /// <seealso cref="TrySetCityName(string)"/>
         public string Name
         {
             get => _name;
-            set
-            {
-                if (value == null || value == "")
-                    throw new ArgumentException("the name of city cannot be empty");
-
-                // https://en.wikipedia.org/wiki/Newline#Unicode
-                var i = value.IndexOfAny("\u000a\u000c\u000d\u0085\u2028\u2029".ToCharArray());
-                if (i != -1)
-                    throw new ArgumentException("the name of city cannot have newline characters");
-
-                _name = value;
-            }
+            set => SetCityName(value);
         }
         private string _name;
 
@@ -137,11 +124,59 @@ namespace CivModel.Common
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public CityCenter(Player owner) : base(owner)
         {
-            _name = "CityName " + _cityNamePrefix;
-            ++_cityNamePrefix;
+            string name;
+            do
+            {
+                name = "CityName " + _cityNamePrefix;
+                ++_cityNamePrefix;
+            }
+            while (!TrySetCityName(name));
 
             Owner.AddCityToList(this);
             _holdingAttackAct = new AttackActorAction(this, false);
+        }
+
+        /// <summary>
+        /// Sets <see cref="Name"/> of the city. A return value indicates whether the setting is succeeded.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns><c>true</c> if succeded. otherwise, <c>false</c>.</returns>
+        /// <seealso cref="Name"/>
+        /// <seealso cref="SetCityName(string)"/>
+        public bool TrySetCityName(string value)
+        {
+            if (value == Name)
+                return true;
+
+            if (value == null || value == "")
+                return false;
+
+            // https://en.wikipedia.org/wiki/Newline#Unicode
+            var i = value.IndexOfAny("\u000a\u000c\u000d\u0085\u2028\u2029".ToCharArray());
+            if (i != -1)
+                return false;
+
+            if (!Owner.Game.UsedCityNames.Add(value))
+                return false;
+
+            if (_name != null)
+                Owner.Game.UsedCityNames.Remove(_name);
+
+            _name = value;
+            return true;
+        }
+
+        /// <summary>
+        /// Sets <see cref="Name"/> of the city. The behavior of this method is equal to the setter of <see cref="Name"/>.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentException">the name is invalid or already used.</exception>
+        /// <seealso cref="Name"/>
+        /// <seealso cref="TrySetCityName(string)"/>
+        public void SetCityName(string value)
+        {
+            if (!TrySetCityName(value))
+                throw new ArgumentException("the name is invalid or already used", "value");
         }
 
         /// <summary>

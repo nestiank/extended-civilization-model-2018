@@ -74,6 +74,10 @@ namespace CivModel
         // see StartTurn() comment
         private bool _shouldStartTurnResumeGame = false;
 
+        // a set of used city names in this game.
+        // this is used to validate city name in CityCenter class.
+        internal ISet<string> UsedCityNames { get; } = new HashSet<string>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class, by creating a new game.
         /// </summary>
