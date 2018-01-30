@@ -20,6 +20,12 @@ namespace CivModel
         public IGameScheme Scheme;
 
         /// <summary>
+        /// The manager object of <see cref="IGuidTaggedObject"/>.
+        /// This property is used by model extension modules.
+        /// </summary>
+        public GuidTaggedObjectManager GuidManager { get; } = new GuidTaggedObjectManager();
+
+        /// <summary>
         /// <see cref="Terrain"/> of this game.
         /// </summary>
         public Terrain Terrain => _terrain;
@@ -64,6 +70,10 @@ namespace CivModel
         /// </summary>
         private const string _guidSaveFormat = "D";
 
+        // if this value is true, StartTurn resume the loaded game rather than start a new turn.
+        // see StartTurn() comment
+        private bool _shouldStartTurnResumeGame = false;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class, by creating a new game.
         /// </summary>
@@ -85,7 +95,9 @@ namespace CivModel
         {
             if (schemeFactory == null)
                 throw new ArgumentNullException("schemeFactory");
+
             Scheme = schemeFactory.Create();
+            RegisterGuid();
 
             if (width == -1)
                 width = Scheme.DefaultTerrainWidth;
@@ -121,7 +133,7 @@ namespace CivModel
                 _players.Add(new Player(this));
             }
 
-            Scheme.InitializeGame(this, true);
+            Initialize(true);
         }
 
         /// <summary>
@@ -144,101 +156,151 @@ namespace CivModel
             if (schemeFactories == null)
                 throw new ArgumentNullException("schemeFactory");
 
+            string errmsg = "save file is invalid";
+
+            Guid guid;
+            int[] ints;
             int numOfPlayer;
+
             using (var file = File.OpenText(saveFile))
             {
-                string strGuid = file.ReadLine();
-                if (strGuid == null)
-                    throw new InvalidDataException("save file is invalid");
+                string readLine()
+                {
+                    string s;
+                    do
+                    {
+                        if (file.EndOfStream)
+                            throw new InvalidDataException(errmsg);
+                        s = file.ReadLine();
+                    }
+                    while (s == "");
+                    return s;
+                }
 
-                Guid guid;
-                if (!Guid.TryParseExact(strGuid, _guidSaveFormat, out guid))
-                    throw new InvalidDataException("save file is invalid");
-
-                var factory = schemeFactories.Where(f => f != null && f.Guid == guid).FirstOrDefault();
-                if (factory == null)
-                    throw new InvalidDataException("there is no IGameSchemeFactory for this save file");
-
-                Scheme = factory.Create();
-
-                int[] ints;
                 try
                 {
-                    ints = file.ReadLine()?.Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
+                    guid = Guid.ParseExact(readLine(), _guidSaveFormat);
+
+                    var factory = schemeFactories.Where(f => f != null && f.Guid == guid).FirstOrDefault();
+                    if (factory == null)
+                        throw new InvalidDataException("there is no IGameSchemeFactory for this save file");
+
+                    Scheme = factory.Create();
+                    RegisterGuid();
+
+                    ints = readLine().Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
+                    if (ints.Length != 3 || ints.Count(x => x <= 0) != 0)
+                        throw new InvalidDataException(errmsg);
+
+                    numOfPlayer = ints[0];
+                    _terrain = new Terrain(ints[1], ints[2]);
+
+                    for (int y = 0; y < Terrain.Height; ++y)
+                    {
+                        string line = readLine();
+                        for (int x = 0; x < Terrain.Width; ++x)
+                        {
+                            if (x >= line.Length)
+                                throw new InvalidDataException(errmsg);
+
+                            int idx = "POMFSTIH".IndexOf(line[x]);
+                            if (idx == -1)
+                                throw new InvalidDataException(errmsg);
+
+                            var point = Terrain.GetPoint(x, y);
+                            point.Type = (TerrainType)idx;
+                        }
+                    }
+
+                    for (int i = 0; i < numOfPlayer; ++i)
+                    {
+                        _players.Add(new Player(this));
+                    }
+
+                    while (!file.EndOfStream)
+                    {
+                        ints = readLine().Split(',').Select(str => Convert.ToInt32(str)).ToArray();
+
+                        if (ints.Length != 3)
+                            throw new InvalidDataException(errmsg);
+                        if (ints[0] < 0 || ints[0] >= numOfPlayer)
+                            throw new InvalidDataException(errmsg);
+
+                        var pos = Position.FromPhysical(ints[1], ints[2]);
+                        if (!Terrain.IsValidPosition(pos))
+                            throw new InvalidDataException(errmsg);
+                        var pt = Terrain.GetPoint(pos);
+
+                        guid = Guid.ParseExact(readLine(), _guidSaveFormat);
+
+                        var obj = GuidManager.Create(guid, Players[ints[0]]);
+                        switch (obj)
+                        {
+                            case CityCenter city:
+                            {
+                                city.PlacedPoint = pt;
+                                Scheme.InitializeCity(city, false);
+
+                                city.Name = readLine();
+                                city.Population = Convert.ToDouble(readLine());
+
+                                int len = Convert.ToInt32(readLine());
+                                if (len < 0)
+                                    throw new InvalidDataException(errmsg);
+                                for (int i = 0; i < len; ++i)
+                                {
+                                    guid = Guid.ParseExact(readLine(), _guidSaveFormat);
+                                    var building = (InteriorBuilding)GuidManager.Create(guid, Players[ints[0]]);
+                                    building.City = city;
+                                }
+
+                                break;
+                            }
+                            case Unit unit:
+                            {
+                                unit.PlacedPoint = pt;
+                                unit.RemainAP = Convert.ToInt32(readLine());
+                                unit.RemainHP = Convert.ToInt32(readLine());
+                                break;
+                            }
+                            default:
+                                throw new InvalidDataException(errmsg);
+                        }
+                    }
+
+                    _shouldStartTurnResumeGame = true;
+
+                    Initialize(false);
                 }
-                catch (Exception e) when (e is FormatException || e is OverflowException)
+                catch (InvalidCastException)
                 {
-                    throw new InvalidDataException("save file is invalid");
+                    throw new InvalidDataException(errmsg);
                 }
-                if (ints == null || ints.Length != 3 || ints.Count(x => x <= 0) != 0)
-                    throw new InvalidDataException("save file is invalid");
-
-                numOfPlayer = ints[0];
-                _terrain = new Terrain(ints[1], ints[2]);
-
-                for (int y = 0; y < Terrain.Height; ++y)
+                catch (KeyNotFoundException)
                 {
-                    string line = file.ReadLine();
-                    if (line == null)
-                        throw new InvalidDataException("save file is invalid");
-
-                    for (int x = 0; x < Terrain.Width; ++x)
-                    {
-                        if (x >= line.Length)
-                            throw new InvalidDataException("save file is invalid");
-
-                        int idx = "POMFSTIH".IndexOf(line[x]);
-                        if (idx == -1)
-                            throw new InvalidDataException("save file is invalid");
-
-                        var point = Terrain.GetPoint(x, y);
-                        point.Type = (TerrainType)idx;
-                    }
+                    throw new InvalidDataException(errmsg);
                 }
-
-                for (int i = 0; i < numOfPlayer; ++i)
+                catch (FormatException)
                 {
-                    _players.Add(new Player(this));
+                    throw new InvalidDataException(errmsg);
                 }
-
-                while (!file.EndOfStream)
+                catch (OverflowException)
                 {
-                    string line = file.ReadLine();
-                    if (line == "")
-                        continue;
-                    try
-                    {
-                        ints = line.Split(',').Select(str => Convert.ToInt32(str)).ToArray();
-                    }
-                    catch (Exception e) when (e is FormatException || e is OverflowException)
-                    {
-                        throw new InvalidDataException("save file is invalid");
-                    }
-
-                    if (ints.Length != 4)
-                        throw new InvalidDataException("save file is invalid");
-                    if (ints[0] < 0 || ints[0] >= numOfPlayer)
-                        throw new InvalidDataException("save file is invalid");
-
-                    var pos = Position.FromPhysical(ints[1], ints[2]);
-                    if (!Terrain.IsValidPosition(pos))
-                        throw new InvalidDataException("save file is invalid");
-                    var pt = Terrain.GetPoint(pos);
-
-                    if (ints[3] == 0)
-                    {
-                        var city = new CityCenter(Players[ints[0]]);
-                        city.PlacedPoint = pt;
-                        Scheme.InitializeCity(city);
-                    }
-                    else
-                    {
-                        throw new InvalidDataException();
-                    }
+                    throw new InvalidDataException(errmsg);
                 }
-
-                Scheme.InitializeGame(this, false);
             }
+        }
+
+        private void RegisterGuid()
+        {
+            GuidManager.RegisterGuid(CityCenter.ClassGuid, player => new CityCenter(player));
+            GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, player => new FactoryBuilding(player));
+            Scheme.RegisterGuid(this);
+        }
+
+        private void Initialize(bool isNewGame)
+        {
+            Scheme.InitializeGame(this, isNewGame);
         }
 
         /// <summary>
@@ -267,7 +329,24 @@ namespace CivModel
                     {
                         if (city.PlacedPoint?.Position is Position pos)
                         {
-                            file.WriteLine(i + "," + pos.X + "," + pos.Y + ",0");
+                            file.WriteLine(i + "," + pos.X + "," + pos.Y);
+                            file.WriteLine(city.Guid.ToString(_guidSaveFormat));
+                            file.WriteLine(city.Name);
+                            file.WriteLine(city.Population);
+                            file.WriteLine(city.InteriorBuildings.Count);
+                            foreach (var building in city.InteriorBuildings)
+                                file.WriteLine(building.Guid);
+                        }
+                    }
+
+                    foreach (var unit in Players[i].Units)
+                    {
+                        if (unit.PlacedPoint?.Position is Position pos)
+                        {
+                            file.WriteLine(i + "," + pos.X + "," + pos.Y);
+                            file.WriteLine(unit.Guid.ToString(_guidSaveFormat));
+                            file.WriteLine(unit.RemainAP);
+                            file.WriteLine(unit.RemainHP);
                         }
                     }
                 }
@@ -275,25 +354,35 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Starts the turn.
+        /// Starts the turn. If the game is loaded from a save file and not resumed, Resume the game.
         /// </summary>
+        /// <remarks>
+        /// This method also resumes the game loaded from a save file. In this case, Turn/Subturn does not change.
+        /// </remarks>
         /// <exception cref="InvalidOperationException">this game is inside turn yet</exception>
         public void StartTurn()
         {
             if (IsInsideTurn)
                 throw new InvalidOperationException("this game is inside turn yet");
 
-            if (SubTurnNumber % Players.Count == 0)
+            if (_shouldStartTurnResumeGame)
             {
+                _shouldStartTurnResumeGame = false;
+            }
+            else
+            {
+                if (SubTurnNumber % Players.Count == 0)
+                {
+                    foreach (Player p in Players)
+                    {
+                        p.PreTurn();
+                    }
+                }
+
                 foreach (Player p in Players)
                 {
-                    p.PreTurn();
+                    p.PrePlayerSubTurn(PlayerInTurn);
                 }
-            }
-
-            foreach (Player p in Players)
-            {
-                p.PrePlayerSubTurn(PlayerInTurn);
             }
 
             IsInsideTurn = true;

@@ -10,8 +10,18 @@ namespace CivModel.Common
     /// Represents [factory] interior building.
     /// </summary>
     /// <seealso cref="InteriorBuilding"/>
-    public class FactoryBuilding : InteriorBuilding
+    public sealed class FactoryBuilding : InteriorBuilding
     {
+        /// <summary>
+        /// The unique identifier of this class.
+        /// </summary>
+        public static Guid ClassGuid { get; } = new Guid("A2AE33B4-5543-4751-8681-E958DFC1A511");
+
+        /// <summary>
+        /// The unique identifier of this class.
+        /// </summary>
+        public override Guid Guid => ClassGuid;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
         /// </summary>

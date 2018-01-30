@@ -10,8 +10,50 @@ namespace CivModel.Common
     /// Represents a city as <see cref="TileBuilding"/>.
     /// </summary>
     /// <seealso cref="CivModel.TileBuilding" />
-    public class CityCenter : TileBuilding
+    public sealed class CityCenter : TileBuilding
     {
+        /// <summary>
+        /// The unique identifier of this class.
+        /// </summary>
+        public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
+
+        /// <summary>
+        /// The unique identifier of this class.
+        /// </summary>
+        public override Guid Guid => ClassGuid;
+
+        /// <summary>
+        /// The name of this city.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Name"/> cannot have newline characters and cannot be empty string.
+        /// See the list of newline characters at <see href="https://en.wikipedia.org/wiki/Newline#Unicode"/>.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        /// the name of city cannot be empty
+        /// or
+        /// the name of city cannot have newline characters
+        /// </exception>
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (value == null || value == "")
+                    throw new ArgumentException("the name of city cannot be empty");
+
+                // https://en.wikipedia.org/wiki/Newline#Unicode
+                var i = value.IndexOfAny("\u000a\u000c\u000d\u0085\u2028\u2029".ToCharArray());
+                if (i != -1)
+                    throw new ArgumentException("the name of city cannot have newline characters");
+
+                _name = value;
+            }
+        }
+        private string _name;
+
+        private static int _cityNamePrefix = 1;
+
         /// <summary>
         /// The maximum HP. <c>0</c> if this actor is not a combattant.
         /// </summary>
@@ -95,6 +137,9 @@ namespace CivModel.Common
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public CityCenter(Player owner) : base(owner)
         {
+            _name = "CityName " + _cityNamePrefix;
+            ++_cityNamePrefix;
+
             Owner.AddCityToList(this);
             _holdingAttackAct = new AttackActorAction(this, false);
         }

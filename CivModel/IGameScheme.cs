@@ -108,6 +108,13 @@ namespace CivModel
         double ResearchRequireCoefficient { get; }
 
         /// <summary>
+        /// Registers <see cref="IGuidTaggedObject"/> for this scheme.
+        /// This method is called before <see cref="InitializeGame(Game, bool)"/>.
+        /// </summary>
+        /// <param name="game">The <see cref="Game"/> object.</param>
+        void RegisterGuid(Game game);
+
+        /// <summary>
         /// Initializes the game
         /// </summary>
         /// <param name="game">The game to initialize.</param>
@@ -119,7 +126,8 @@ namespace CivModel
         /// Initializes the city
         /// </summary>
         /// <param name="city">The city to initialize.</param>
+        /// <param name="isNewCity"><c>true</c> if initializing a new city. <c>false</c> if initializing a city loaded from a save file.</param>
         /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
-        void InitializeCity(CityCenter city);
+        void InitializeCity(CityCenter city, bool isNewCity);
     }
 }

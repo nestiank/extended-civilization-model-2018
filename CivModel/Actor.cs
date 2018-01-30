@@ -43,9 +43,22 @@ namespace CivModel
         public abstract int MaxAP { get; }
 
         /// <summary>
-        /// The remaining AP. It is reset to <see cref="MaxAP"/> when <see cref="PreTurn"/> is called.
+        /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
+        /// It is reset to <see cref="MaxAP"/> when <see cref="PreTurn"/> is called.
         /// </summary>
-        public int RemainAP { get; private set; }
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="RemainAP"/> is not in [0, <see cref="MaxAP"/>]</exception>
+        public int RemainAP
+        {
+            get => _remainAP;
+            set
+            {
+                if (value < 0 || value > MaxAP)
+                    throw new ArgumentOutOfRangeException("RemainAP", RemainAP, "RemainAP is not in [0, MaxAP]");
+
+                _remainAP = value;
+            }
+        }
+        private int _remainAP = 0;
 
         /// <summary>
         /// The flag indicating this actor is skipped in this turn. This flag is used by Presenter module.
@@ -204,7 +217,7 @@ namespace CivModel
             if (amount > RemainAP)
                 throw new ArgumentException("amount is bigger than RemainAP", "amount");
 
-            RemainAP -= amount;
+            _remainAP -= amount;
         }
 
         /// <summary>
@@ -213,7 +226,7 @@ namespace CivModel
         /// <seealso cref="ConsumeAP(int)"/>
         public void ConsumeAllAP()
         {
-            RemainAP = 0;
+            _remainAP = 0;
         }
 
         /// <summary>
@@ -292,10 +305,10 @@ namespace CivModel
         /// </summary>
         public virtual void PreTurn()
         {
-            RemainAP = MaxAP;
+            _remainAP = MaxAP;
             SkipFlag = false;
 
-            RemainHP = Math.Min(MaxHP, RemainHP + MaxHealPerTurn);
+            _remainHP = Math.Min(MaxHP, RemainHP + MaxHealPerTurn);
         }
 
         /// <summary>

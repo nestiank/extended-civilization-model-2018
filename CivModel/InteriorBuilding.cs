@@ -11,8 +11,13 @@ namespace CivModel
     /// Represents a building which must be built in <see cref="Common.CityCenter"/>.
     /// </summary>
     /// <seealso cref="TileBuilding"/>
-    public abstract class InteriorBuilding : ITurnObserver
+    public abstract class InteriorBuilding : ITurnObserver, IGuidTaggedObject
     {
+        /// <summary>
+        /// The unique identifier of this class.
+        /// </summary>
+        public abstract Guid Guid { get; }
+
         /// <summary>
         /// The <see cref="Player"/> who owns this building.
         /// </summary>

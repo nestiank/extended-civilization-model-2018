@@ -24,8 +24,13 @@ namespace CivModel
     /// <summary>
     /// Represents an object which can be placed on <see cref="Terrain.Point"/>.
     /// </summary>
-    public abstract class TileObject
+    public abstract class TileObject : IGuidTaggedObject
     {
+        /// <summary>
+        /// The unique identifier of this class.
+        /// </summary>
+        public abstract Guid Guid { get; }
+
         /// <summary>
         /// The value indicating the kind of this object.
         /// </summary>
@@ -54,6 +59,7 @@ namespace CivModel
                 }
             }
         }
+
         private Terrain.Point? _placedPoint;
 
         /// <summary>
