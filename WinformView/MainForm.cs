@@ -22,7 +22,7 @@ namespace WinformView
 
         private Presenter presenter_;
 
-        private int blockSize_ = 24;
+        private float blockSize_ = 24;
 
         private int sightDx_ = 0;
         private int sightDy_ = 0;
@@ -35,6 +35,7 @@ namespace WinformView
         public MainForm()
         {
             InitializeComponent();
+            MouseWheel += MainForm_MouseWheel;
         }
 
         public void Refocus()
@@ -499,6 +500,11 @@ namespace WinformView
             {
                 selectedPoint_ = e.Location;
             }
+        }
+
+        private void MainForm_MouseWheel(object sender, MouseEventArgs e)
+        {
+            blockSize_ *= (float)Math.Pow(1.02, e.Delta / 64.0f);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CivModel
 {
     /// <summary>
-    /// The result of a battle. This is used by <see cref="Actor.AttackTo(Actor)"/>.
+    /// The result of a battle. This is used by <see cref="Actor.AttackTo(Actor)"/> and <see cref="Actor.RangedAttackTo(Actor)"/>.
     /// </summary>
     public enum BattleResult
     {
@@ -231,7 +231,16 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Attacks to another <see cref="Actor"/>.
+        /// Heals HP of this actor with the specified amount.
+        /// </summary>
+        /// <param name="amount">The amount to heal.</param>
+        public void Heal(double amount)
+        {
+            _remainHP = Math.Min(MaxHP, RemainHP + amount);
+        }
+
+        /// <summary>
+        /// Melee-Attack to another <see cref="Actor"/>.
         /// </summary>
         /// <param name="opposite">The opposite.</param>
         /// <returns>
@@ -240,6 +249,7 @@ namespace CivModel
         ///   if this object has died, <see cref="BattleResult.Defeated"/>.
         ///   if both have died or survived, <see cref="BattleResult.Draw"/>.
         /// </returns>
+        /// <seealso cref="RangedAttackTo(Actor)"/>
         public BattleResult AttackTo(Actor opposite)
         {
             int rs = 0;
@@ -270,6 +280,33 @@ namespace CivModel
             }
 
             return rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
+        }
+
+        /// <summary>
+        /// Ranged-Attack to another <see cref="Actor"/>.
+        /// </summary>
+        /// <param name="opposite">The opposite.</param>
+        /// <returns>
+        ///   <see cref="BattleResult"/> indicating the result of this battle.
+        ///   if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.
+        ///   otherwise, <see cref="BattleResult.Draw"/>.
+        /// </returns>
+        /// <seealso cref="AttackTo(Actor)"/>
+        public BattleResult RangedAttackTo(Actor opposite)
+        {
+            opposite._remainHP -= AttackPower;
+            if (opposite._remainHP <= 0)
+            {
+                opposite._remainHP = 0;
+                opposite.Die(Owner);
+                return BattleResult.Victory;
+            }
+            else if (opposite._remainHP > opposite.MaxHP)
+            {
+                opposite._remainHP = opposite.MaxHP;
+            }
+
+            return BattleResult.Draw;
         }
 
         /// <summary>
@@ -309,7 +346,7 @@ namespace CivModel
             _remainAP = MaxAP;
             SkipFlag = false;
 
-            _remainHP = Math.Min(MaxHP, RemainHP + MaxHealPerTurn);
+            Heal(MaxHealPerTurn);
         }
 
         /// <summary>
