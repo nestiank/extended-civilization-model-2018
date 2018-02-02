@@ -10,7 +10,7 @@ namespace CivModel
     /// <summary>
     /// The factory interface of <see cref="InteriorBuildingProduction"/>.
     /// This interface additionally provides <see cref="IsPlacable(InteriorBuildingProduction, CityCenter)"/>
-    ///  and <see cref="CreateInteriorBuilding(Player)"/> methods.
+    ///  and <see cref="CreateInteriorBuilding(CityCenter)"/> methods.
     /// </summary>
     /// <seealso cref="CivModel.IProductionFactory" />
     public interface IInteriorBuildingProductionFactory : IProductionFactory
@@ -28,9 +28,9 @@ namespace CivModel
         /// <summary>
         /// Creates the <see cref="InteriorBuilding"/> which is the production result.
         /// </summary>
-        /// <param name="owner">The <see cref="Player"/> who owns the result.</param>
+        /// <param name="city">The <see cref="CityCenter"/> who will own the building.</param>
         /// <returns>the created <see cref="InteriorBuilding"/> result.</returns>
-        InteriorBuilding CreateInteriorBuilding(Player owner);
+        InteriorBuilding CreateInteriorBuilding(CityCenter city);
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ namespace CivModel
         /// </returns>
         public override bool IsPlacable(Terrain.Point point)
         {
-            if (point.TileBuilding is CityCenter city)
+            if (point.TileBuilding is CityCenter city && city.Owner == Owner)
                 return _factory.IsPlacable(this, city);
             return false;
         }
@@ -90,8 +90,7 @@ namespace CivModel
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            var obj = _factory.CreateInteriorBuilding(Owner);
-            obj.City = (CityCenter)point.TileBuilding;
+            _factory.CreateInteriorBuilding((CityCenter)point.TileBuilding);
         }
     }
 }

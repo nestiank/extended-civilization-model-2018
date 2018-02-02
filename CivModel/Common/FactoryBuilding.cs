@@ -23,11 +23,10 @@ namespace CivModel.Common
         public override Guid Guid => ClassGuid;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
+        /// Initializes a new instance of the <see cref="FactoryBuilding"/> class.
         /// </summary>
-        /// <param name="owner">The <see cref="Player"/> who will own the building.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public FactoryBuilding(Player owner) : base(owner) { }
+        /// <param name="city">The <see cref="CityCenter" /> who will own the building.</param>
+        public FactoryBuilding(CityCenter city) : base(city) { }
     }
 
     /// <summary>
@@ -69,17 +68,17 @@ namespace CivModel.Common
         /// </returns>
         public bool IsPlacable(InteriorBuildingProduction production, CityCenter city)
         {
-            return city.Owner == production.Owner;
+            return true;
         }
 
         /// <summary>
         /// Creates the <see cref="InteriorBuilding"/> which is the production result.
         /// </summary>
-        /// <param name="owner">The <see cref="Player"/> who owns the result.</param>
+        /// <param name="city">The <see cref="CityCenter"/> who will own the building.</param>
         /// <returns>the created <see cref="InteriorBuilding"/> result.</returns>
-        public InteriorBuilding CreateInteriorBuilding(Player owner)
+        public InteriorBuilding CreateInteriorBuilding(CityCenter city)
         {
-            return new FactoryBuilding(owner);
+            return new FactoryBuilding(city);
         }
     }
 }

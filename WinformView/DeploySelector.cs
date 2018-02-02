@@ -37,7 +37,7 @@ namespace WinformView
             {
                 public CityProduction(IProductionFactory factory, Player owner) : base(factory, owner, 1, 1) { }
                 public override bool IsPlacable(Terrain.Point point) => true;
-                public override void Place(Terrain.Point point) => new CityCenter(Owner).PlacedPoint = point;
+                public override void Place(Terrain.Point point) => new CityCenter(Owner, point);
             }
             public Production Create(Player owner)
             {

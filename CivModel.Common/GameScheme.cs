@@ -50,8 +50,8 @@ namespace CivModel.Common
 
         public void RegisterGuid(Game game)
         {
-            game.GuidManager.RegisterGuid(JediKnight.ClassGuid, player => new JediKnight(player));
-            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, player => new Pioneer(player));
+            game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
+            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
         }
 
         public void InitializeGame(Game game, bool isNewGame)
@@ -75,8 +75,7 @@ namespace CivModel.Common
                         pt = game.Terrain.GetPoint(x, y);
                     } while (pt.Unit != null);
 
-                    var pionner = new Pioneer(player);
-                    pionner.PlacedPoint = pt;
+                    new Pioneer(player, pt);
                 }
             }
 
@@ -85,13 +84,10 @@ namespace CivModel.Common
             game.Players[0].AdditionalAvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
         }
 
-        public void InitializeCity(CityCenter city, bool isNewCity)
+        public void InitializeNewCity(CityCenter city)
         {
-            if (isNewCity)
-            {
-                var factory = new FactoryBuilding(city.Owner);
-                factory.City = city;
-            }
+            var factory = new FactoryBuilding(city);
+            factory.City = city;
         }
     }
 }

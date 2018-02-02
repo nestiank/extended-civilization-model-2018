@@ -52,12 +52,13 @@ namespace CivModel.Common
         /// Creates the <see cref="TileObject" /> which is the production result.
         /// </summary>
         /// <param name="owner">The <see cref="Player" /> who owns the result.</param>
+        /// <param name="point">The tile where the object will be.</param>
         /// <returns>
         /// the created <see cref="TileObject" /> result.
         /// </returns>
-        public TileObject CreateTileObject(Player owner)
+        public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new CityCenter(owner);
+            return new CityCenter(owner, point);
         }
     }
 }

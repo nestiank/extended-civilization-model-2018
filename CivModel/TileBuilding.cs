@@ -27,8 +27,9 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="TileBuilding"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this TileBuilding.</param>
+        /// <param name="point">The tile where the object will be.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public TileBuilding(Player owner) : base(owner, TileTag.TileBuilding)
+        public TileBuilding(Player owner, Terrain.Point point) : base(owner, point, TileTag.TileBuilding)
         {
         }
     }

@@ -222,8 +222,7 @@ namespace WinformView
                         }
                         else
                         {
-                            var city = new CityCenter(presenter_.Game.PlayerInTurn);
-                            city.PlacedPoint = selectedTile_.Value;
+                            var city = new CityCenter(presenter_.Game.PlayerInTurn, selectedTile_.Value);
                         }
                         Invalidate();
                     }

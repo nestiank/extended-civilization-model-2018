@@ -132,9 +132,10 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Actor"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this actor.</param>
+        /// <param name="point">The tile where the object will be.</param>
         /// <param name="tag">The <seealso cref="TileTag"/> of this actor.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public Actor(Player owner, TileTag tag) : base(tag)
+        public Actor(Player owner, Terrain.Point point, TileTag tag) : base(point, tag)
         {
             Owner = owner ?? throw new ArgumentNullException("owner");
             RemainHP = MaxHP;

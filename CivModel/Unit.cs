@@ -22,8 +22,9 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Unit"/> class.
         /// </summary>
         /// <param name="owner">The <see cref="Player"/> who owns this unit.</param>
+        /// <param name="point">The tile where the object will be.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public Unit(Player owner) : base(owner, TileTag.Unit)
+        public Unit(Player owner, Terrain.Point point) : base(owner, point, TileTag.Unit)
         {
             Owner.AddUnitToList(this);
             _moveAct = new MoveActorAction(this);

@@ -10,7 +10,7 @@ namespace CivModel
     /// The interface represents an object which can be created and class-level distinguished from <see cref="System.Guid"/>.
     /// </summary>
     /// <remarks>
-    /// To enable object creation from Guid, <see cref="GuidTaggedObjectManager.RegisterGuid(Guid, Func{Player, IGuidTaggedObject})"/> must be called.
+    /// To enable object creation from Guid, <see cref="GuidTaggedObjectManager.RegisterGuid(Guid, Func{Player, Terrain.Point, IGuidTaggedObject})"/> must be called.
     /// </remarks>
     /// <seealso cref="GuidTaggedObjectManager"/>
     public interface IGuidTaggedObject
@@ -27,16 +27,19 @@ namespace CivModel
     /// <seealso cref="IGuidTaggedObject"/>
     public class GuidTaggedObjectManager
     {
-        private Dictionary<Guid, Func<Player, IGuidTaggedObject>> _dict = new Dictionary<Guid, Func<Player, IGuidTaggedObject>>();
+        private Dictionary<Guid, Func<Player, Terrain.Point, IGuidTaggedObject>> _dict = new Dictionary<Guid, Func<Player, Terrain.Point, IGuidTaggedObject>>();
 
         /// <summary>
         /// Registers a Guid with <see cref="IGuidTaggedObject"/> supplier.
         /// </summary>
+        /// <remarks>
+        /// <paramref name="supplier"/> creates an object from arguments. If arguments are invalid, supplier can return <c>null</c>.
+        /// </remarks>
         /// <param name="guid">The Guid.</param>
         /// <param name="supplier">The supplier.</param>
         /// <exception cref="ArgumentNullException"><paramref name="supplier"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">The same Guid is already registered.</exception>
-        public void RegisterGuid(Guid guid, Func<Player, IGuidTaggedObject> supplier)
+        public void RegisterGuid(Guid guid, Func<Player, Terrain.Point, IGuidTaggedObject> supplier)
         {
             if (supplier == null)
                 throw new ArgumentNullException("supplier");
@@ -45,15 +48,16 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Creates the <see cref="IGuidTaggedObject"/> from a specified Guid.
+        /// Creates the <see cref="IGuidTaggedObject"/> from a specified Guid. If arguments are invalid, returns <c>null</c>.
         /// </summary>
         /// <param name="guid">The Guid.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the object.</param>
-        /// <returns>the created <see cref="IGuidTaggedObject"/> object.</returns>
+        /// <param name="point">The tile where the object will be.</param>
+        /// <returns>the created <see cref="IGuidTaggedObject"/> object. If arguments are invalid, <c>null</c>.</returns>
         /// <exception cref="KeyNotFoundException">the value of <paramref name="guid"/> is not registered.</exception>
-        public IGuidTaggedObject Create(Guid guid, Player owner)
+        public IGuidTaggedObject Create(Guid guid, Player owner, Terrain.Point point)
         {
-            return _dict[guid](owner);
+            return _dict[guid](owner, point);
         }
     }
 }

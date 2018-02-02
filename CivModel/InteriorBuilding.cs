@@ -52,11 +52,12 @@ namespace CivModel
         /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
         /// </summary>
-        /// <param name="owner">The <see cref="Player"/> who will own the building.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public InteriorBuilding(Player owner)
+        /// <param name="city">The <see cref="CityCenter"/> who will own the building.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
+        public InteriorBuilding(CityCenter city)
         {
-            _owner = owner ?? throw new ArgumentNullException("city");
+            _owner = city.Owner;
+            City = city ?? throw new ArgumentNullException("city");
         }
 
         /// <summary>

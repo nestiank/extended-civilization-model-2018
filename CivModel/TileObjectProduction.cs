@@ -10,7 +10,7 @@ namespace CivModel
     /// <summary>
     /// The factory interface of <see cref="TileObjectProduction"/>.
     /// This interface additionally provides <see cref="IsPlacable(TileObjectProduction, Terrain.Point)"/>
-    ///  and <see cref="CreateTileObject(Player)"/> methods.
+    ///  and <see cref="CreateTileObject(Player, Terrain.Point)"/> methods.
     /// </summary>
     /// <seealso cref="CivModel.IProductionFactory" />
     public interface ITileObjectProductionFactory : IProductionFactory
@@ -29,8 +29,9 @@ namespace CivModel
         /// Creates the <see cref="TileObject"/> which is the production result.
         /// </summary>
         /// <param name="owner">The <see cref="Player"/> who owns the result.</param>
+        /// <param name="point">The tile where the object will be.</param>
         /// <returns>the created <see cref="TileObject"/> result.</returns>
-        TileObject CreateTileObject(Player owner);
+        TileObject CreateTileObject(Player owner, Terrain.Point point);
     }
 
     /// <summary>
@@ -88,8 +89,7 @@ namespace CivModel
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            var obj = _factory.CreateTileObject(Owner);
-            obj.PlacedPoint = point;
+            _factory.CreateTileObject(Owner, point);
         }
     }
 }

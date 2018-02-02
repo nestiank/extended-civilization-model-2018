@@ -237,14 +237,11 @@ namespace CivModel
 
                         guid = Guid.ParseExact(readLine(), _guidSaveFormat);
 
-                        var obj = GuidManager.Create(guid, Players[ints[0]]);
+                        var obj = GuidManager.Create(guid, Players[ints[0]], pt);
                         switch (obj)
                         {
                             case CityCenter city:
                             {
-                                city.PlacedPoint = pt;
-                                Scheme.InitializeCity(city, false);
-
                                 city.Name = readLine();
                                 city.Population = Convert.ToDouble(readLine());
 
@@ -254,15 +251,13 @@ namespace CivModel
                                 for (int i = 0; i < len; ++i)
                                 {
                                     guid = Guid.ParseExact(readLine(), _guidSaveFormat);
-                                    var building = (InteriorBuilding)GuidManager.Create(guid, Players[ints[0]]);
-                                    building.City = city;
+                                    GuidManager.Create(guid, Players[ints[0]], city.PlacedPoint.Value);
                                 }
 
                                 break;
                             }
                             case Unit unit:
                             {
-                                unit.PlacedPoint = pt;
                                 unit.RemainAP = Convert.ToInt32(readLine());
                                 unit.RemainHP = Convert.ToInt32(readLine());
                                 break;
@@ -297,8 +292,18 @@ namespace CivModel
 
         private void RegisterGuid()
         {
-            GuidManager.RegisterGuid(CityCenter.ClassGuid, player => new CityCenter(player));
-            GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, player => new FactoryBuilding(player));
+            Func<Player, Terrain.Point, IGuidTaggedObject> wrapper(Func<CityCenter, IGuidTaggedObject> supplier)
+            {
+                return (p, t) => {
+                    if (t.TileBuilding is CityCenter city && city.Owner == p)
+                        return supplier(city);
+                    else
+                        return null;
+                };
+            }
+
+            GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
+            GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, wrapper(city => new FactoryBuilding(city)));
             Scheme.RegisterGuid(this);
         }
 

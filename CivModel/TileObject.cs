@@ -45,17 +45,22 @@ namespace CivModel
             get => _placedPoint;
             set
             {
-                if (_placedPoint.HasValue)
+                if (value != _placedPoint)
                 {
-                    var p = _placedPoint.Value;
-                    _placedPoint = null;
-                    p.Terrain.UnplaceObject(this, p);
-                }
+                    if (_placedPoint.HasValue)
+                    {
+                        var p = _placedPoint.Value;
+                        _placedPoint = null;
+                        p.Terrain.UnplaceObject(this, p);
+                    }
 
-                _placedPoint = value;
-                if (value.HasValue)
-                {
-                    value.Value.Terrain.PlaceObject(this);
+                    var oldPoint = _placedPoint;
+                    _placedPoint = value;
+                    if (value.HasValue)
+                    {
+                        value.Value.Terrain.PlaceObject(this);
+                    }
+                    OnChangePlacedPoint(oldPoint);
                 }
             }
         }
@@ -65,10 +70,20 @@ namespace CivModel
         /// <summary>
         /// Initializes a new instance of the <see cref="TileObject"/> class.
         /// </summary>
-        /// <param name="tileTag">The <see cref="TileTag"/> of a object.</param>
-        public TileObject(TileTag tileTag)
+        /// <param name="point">The tile where the object will be.</param>
+        /// <param name="tileTag">The <see cref="TileTag"/> of the object.</param>
+        public TileObject(Terrain.Point point, TileTag tileTag)
         {
             _tileTag = tileTag;
+            PlacedPoint = point;
+        }
+
+        /// <summary>
+        /// Called when <see cref="PlacedPoint"/> is changed.
+        /// </summary>
+        /// <param name="oldPoint">The old value of <see cref="PlacedPoint"/>.</param>
+        protected virtual void OnChangePlacedPoint(Terrain.Point? oldPoint)
+        {
         }
     }
 }

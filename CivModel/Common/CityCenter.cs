@@ -121,8 +121,9 @@ namespace CivModel.Common
         /// Initializes a new instance of the <see cref="CityCenter"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this city.</param>
+        /// <param name="point">The tile where the object will be.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public CityCenter(Player owner) : base(owner)
+        public CityCenter(Player owner, Terrain.Point point) : base(owner, point)
         {
             string name;
             do

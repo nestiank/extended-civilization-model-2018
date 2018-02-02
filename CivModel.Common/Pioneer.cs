@@ -16,7 +16,7 @@ namespace CivModel.Common
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public Pioneer(Player owner) : base(owner)
+        public Pioneer(Player owner, Terrain.Point point) : base(owner, point)
         {
             _specialActs[0] = new PioneerAction(this);
         }
@@ -57,9 +57,8 @@ namespace CivModel.Common
                 var player = Owner.Owner;
                 Owner.Destroy();
 
-                var city = new CityCenter(player);
-                city.PlacedPoint = ownerpt;
-                city.Owner.Game.Scheme.InitializeCity(city, true);
+                var city = new CityCenter(player, ownerpt);
+                player.Game.Scheme.InitializeNewCity(city);
             }
         }
     }
@@ -82,9 +81,9 @@ namespace CivModel.Common
                 && point.TileBuilding is CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
-        public TileObject CreateTileObject(Player owner)
+        public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new Pioneer(owner);
+            return new Pioneer(owner, point);
         }
     }
 }

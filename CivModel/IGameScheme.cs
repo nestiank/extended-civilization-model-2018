@@ -123,11 +123,10 @@ namespace CivModel
         void InitializeGame(Game game, bool isNewGame);
 
         /// <summary>
-        /// Initializes the city
+        /// Initializes a newly created city
         /// </summary>
         /// <param name="city">The city to initialize.</param>
-        /// <param name="isNewCity"><c>true</c> if initializing a new city. <c>false</c> if initializing a city loaded from a save file.</param>
         /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
-        void InitializeCity(CityCenter city, bool isNewCity);
+        void InitializeNewCity(CityCenter city);
     }
 }
