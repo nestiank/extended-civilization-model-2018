@@ -42,16 +42,16 @@
             // 
             // tbUnit
             // 
-            this.tbUnit.Location = new System.Drawing.Point(97, 19);
+            this.tbUnit.Location = new System.Drawing.Point(104, 21);
             this.tbUnit.Name = "tbUnit";
             this.tbUnit.ReadOnly = true;
-            this.tbUnit.Size = new System.Drawing.Size(121, 21);
+            this.tbUnit.Size = new System.Drawing.Size(230, 21);
             this.tbUnit.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 22);
+            this.label1.Location = new System.Drawing.Point(29, 24);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(41, 12);
             this.label1.TabIndex = 0;
@@ -60,7 +60,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(22, 49);
+            this.label2.Location = new System.Drawing.Point(29, 51);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(69, 12);
             this.label2.TabIndex = 2;
@@ -68,16 +68,16 @@
             // 
             // tbTileBuilding
             // 
-            this.tbTileBuilding.Location = new System.Drawing.Point(97, 46);
+            this.tbTileBuilding.Location = new System.Drawing.Point(104, 48);
             this.tbTileBuilding.Name = "tbTileBuilding";
             this.tbTileBuilding.ReadOnly = true;
-            this.tbTileBuilding.Size = new System.Drawing.Size(121, 21);
+            this.tbTileBuilding.Size = new System.Drawing.Size(230, 21);
             this.tbTileBuilding.TabIndex = 3;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(22, 102);
+            this.label3.Location = new System.Drawing.Point(29, 104);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(69, 12);
             this.label3.TabIndex = 6;
@@ -86,7 +86,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(22, 76);
+            this.label4.Location = new System.Drawing.Point(29, 78);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 12);
             this.label4.TabIndex = 4;
@@ -96,24 +96,24 @@
             // 
             this.cbxTileType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxTileType.FormattingEnabled = true;
-            this.cbxTileType.Location = new System.Drawing.Point(97, 73);
+            this.cbxTileType.Location = new System.Drawing.Point(104, 75);
             this.cbxTileType.Name = "cbxTileType";
-            this.cbxTileType.Size = new System.Drawing.Size(121, 20);
+            this.cbxTileType.Size = new System.Drawing.Size(230, 20);
             this.cbxTileType.TabIndex = 5;
             // 
             // cbxCity
             // 
             this.cbxCity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxCity.FormattingEnabled = true;
-            this.cbxCity.Location = new System.Drawing.Point(97, 99);
+            this.cbxCity.Location = new System.Drawing.Point(104, 101);
             this.cbxCity.Name = "cbxCity";
-            this.cbxCity.Size = new System.Drawing.Size(121, 20);
+            this.cbxCity.Size = new System.Drawing.Size(230, 20);
             this.cbxCity.TabIndex = 7;
             // 
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(169, 152);
+            this.btnOk.Location = new System.Drawing.Point(259, 150);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 9;
@@ -124,7 +124,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(88, 152);
+            this.btnCancel.Location = new System.Drawing.Point(178, 150);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 8;
@@ -135,7 +135,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(267, 195);
+            this.ClientSize = new System.Drawing.Size(363, 195);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.cbxCity);

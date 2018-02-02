@@ -203,13 +203,14 @@ namespace WinformView
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            Action<int> foo = i => {
+            void foo(int i)
+            { 
                 if (selectedTile_.HasValue)
                 {
                     var pt = selectedTile_.Value;
                     pt.Type = (TerrainType)i;
                 }
-            };
+            }
 
             switch (e.KeyCode)
             {

@@ -17,6 +17,8 @@ namespace WinformView
         private Game _game;
         private Terrain.Point _tile;
 
+        private TextBox tbCity = null;
+
         public TileInfo(Game game, Terrain.Point tile)
         {
             _game = game;
@@ -27,9 +29,9 @@ namespace WinformView
 
         private void TileInfo_Load(object sender, EventArgs e)
         {
-            tbUnit.Text = _tile.Unit?.GetType().FullName ?? "null";
+            tbUnit.Text = _tile.Unit?.GetType().FullName ?? "(null)";
 
-            tbTileBuilding.Text = _tile.TileBuilding?.GetType().FullName ?? "null";
+            tbTileBuilding.Text = _tile.TileBuilding?.GetType().FullName ?? "(null)";
 
             int len = Enum.GetNames(typeof(TerrainType)).Length;
             object[] arType = new object[len];
@@ -42,10 +44,13 @@ namespace WinformView
 
             if (_tile == _tile.TileOwnerCity?.PlacedPoint)
             {
-                cbxCity.DataSource = new CityCenter[] { _tile.TileOwnerCity };
-                cbxCity.DisplayMember = "Name";
-                cbxCity.ValueMember = "Name";
-                cbxCity.SelectedIndex = 0;
+                tbCity = new TextBox();
+                tbCity.Location = cbxCity.Location;
+                tbCity.Size = cbxCity.Size;
+                tbCity.Text = _tile.TileOwnerCity.Name;
+                cbxCity.Enabled = false;
+                cbxCity.Visible = false;
+                Controls.Add(tbCity);
             }
             else
             {
@@ -61,10 +66,26 @@ namespace WinformView
         {
             _tile.Type = (TerrainType)cbxTileType.SelectedItem;
 
-            var selcity = (CityCenter)cbxCity.SelectedItem;
-            if (selcity != _tile.TileOwnerCity)
+            if (tbCity != null)
             {
-                selcity.AddTerritory(_tile);
+                try
+                {
+                    _tile.TileOwnerCity.Name = tbCity.Text;
+                }
+                catch (ArgumentException)
+                {
+                    MessageBox.Show("도시 이름이 잘못됬거나 이미 존재하는 도시 이름입니다.", "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DialogResult = DialogResult.None;
+                    tbCity.Text = _tile.TileOwnerCity.Name;
+                }
+            }
+            else
+            {
+                var selcity = (CityCenter)cbxCity.SelectedItem;
+                if (selcity != _tile.TileOwnerCity)
+                {
+                    selcity.AddTerritory(_tile);
+                }
             }
         }
     }
