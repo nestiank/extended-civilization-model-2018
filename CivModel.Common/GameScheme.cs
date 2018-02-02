@@ -88,6 +88,12 @@ namespace CivModel.Common
         {
             var factory = new FactoryBuilding(city);
             factory.City = city;
+
+            foreach (var ptn in city.PlacedPoint.Value.Adjacents())
+            {
+                if (ptn is Terrain.Point pt)
+                    city.AddTerritory(pt);
+            }
         }
     }
 }

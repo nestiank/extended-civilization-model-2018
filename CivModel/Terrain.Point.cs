@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CivModel.Common;
 
 namespace CivModel
 {
@@ -34,6 +35,11 @@ namespace CivModel
             }
 
             /// <summary>
+            /// <see cref="CityCenter"/> which owns this tile. If no city owns this tile, <c>null</c>.
+            /// </summary>
+            public CityCenter TileOwnerCity => Terrain._points[Position.Y, Position.X].TileOwnerCity;
+
+            /// <summary>
             /// The <see cref="Unit"/> placed at the tile.
             /// </summary>
             public Unit Unit => (Unit)GetTileObject(TileTag.Unit);
@@ -42,30 +48,6 @@ namespace CivModel
             /// The <see cref="TileBuilding"/> placed at the tile.
             /// </summary>
             public TileBuilding TileBuilding => (TileBuilding)GetTileObject(TileTag.TileBuilding);
-
-            /// <summary>
-            /// this function is used internally by <see cref="Terrain"/> class and getters of <see cref="Terrain.Point"/>.
-            /// </summary>
-            internal TileObject GetTileObject(TileTag tag)
-            {
-                return Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag];
-            }
-
-            /// <summary>
-            /// this function is used internally by <see cref="Terrain"/> class.
-            /// </summary>
-            internal void SetTileObject(TileObject obj)
-            {
-                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)obj.TileTag] = obj;
-            }
-
-            /// <summary>
-            /// this function is used internally by <see cref="Terrain"/> class.
-            /// </summary>
-            internal void UnsetTileObject(TileTag tag)
-            {
-                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag] = null;
-            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Point"/> struct.
@@ -80,6 +62,30 @@ namespace CivModel
 
                 _terrain = terrain;
                 Position = pos;
+            }
+
+            // this function is used internally by Terrain class and getters of this class.
+            internal TileObject GetTileObject(TileTag tag)
+            {
+                return Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag];
+            }
+
+            // this function is used internally by Terrain class.
+            internal void SetTileObject(TileObject obj)
+            {
+                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)obj.TileTag] = obj;
+            }
+
+            // this function is used internally by Terrain class.
+            internal void UnsetTileObject(TileTag tag)
+            {
+                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag] = null;
+            }
+
+            // this function is used internally by CityCenter class.
+            internal void SetTileOwnerCity(CityCenter city)
+            {
+                Terrain._points[Position.Y, Position.X].TileOwnerCity = city;
             }
 
             /// <summary>

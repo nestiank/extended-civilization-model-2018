@@ -192,6 +192,10 @@ namespace CivModel
                     Scheme = factory.Create();
                     RegisterGuid();
 
+                    SubTurnNumber = Convert.ToInt32(readLine());
+                    if (SubTurnNumber < 0)
+                        throw new InvalidDataException(errmsg);
+
                     ints = readLine().Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
                     if (ints.Length != 3 || ints.Count(x => x <= 0) != 0)
                         throw new InvalidDataException(errmsg);
@@ -244,6 +248,19 @@ namespace CivModel
                             {
                                 city.Name = readLine();
                                 city.Population = Convert.ToDouble(readLine());
+
+                                var territory = readLine().Split(':')
+                                    .Where(str => str != "")
+                                    .Select(s1 => s1.Split(',').Select(s2 => Convert.ToInt32(s2)).ToArray());
+                                foreach (var terr in territory)
+                                {
+                                    if (terr.Length != 2)
+                                        throw new InvalidDataException(errmsg);
+
+                                    var ptTerr = Terrain.GetPoint(terr[0], terr[1]);
+                                    if (!city.Territory.Contains(ptTerr))
+                                        city.AddTerritory(ptTerr);
+                                }
 
                                 int len = Convert.ToInt32(readLine());
                                 if (len < 0)
@@ -322,6 +339,7 @@ namespace CivModel
             {
                 file.WriteLine(Scheme.Factory.Guid.ToString(_guidSaveFormat));
 
+                file.WriteLine(SubTurnNumber);
                 file.WriteLine(Players.Count + " " + Terrain.Width + " " + Terrain.Height);
                 for (int y = 0; y < Terrain.Height; ++y)
                 {
@@ -342,6 +360,11 @@ namespace CivModel
                             file.WriteLine(city.Guid.ToString(_guidSaveFormat));
                             file.WriteLine(city.Name);
                             file.WriteLine(city.Population);
+
+                            foreach (var tile in city.Territory)
+                                file.Write(":" + tile.Position.X + "," + tile.Position.Y);
+                            file.WriteLine();
+
                             file.WriteLine(city.InteriorBuildings.Count);
                             foreach (var building in city.InteriorBuildings)
                                 file.WriteLine(building.Guid);

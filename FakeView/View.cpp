@@ -442,7 +442,10 @@ namespace FakeView
     void View::PrintTerrain(int px, int py, CivModel::Terrain::Point point)
     {
         auto& c = m_screen->GetChar(px, py);
-        c.color = 0b0000'0111;
+        if (point.TileOwnerCity)
+            c.color = GetPlayerColor(point.TileOwnerCity->Owner);
+        else
+            c.color = 0b0000'0111;
 
         switch (point.Type)
         {
