@@ -84,7 +84,7 @@ namespace CivModel.Common
         /// <summary>
         /// The population of this city.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Population must be bigger than 1</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Population must be bigger or equal than 1</exception>
         /// <seealso cref="Player.Population"/>
         /// <seealso cref="PopulationIncome"/>
         public double Population
@@ -93,7 +93,7 @@ namespace CivModel.Common
             set
             {
                 if (value < 1)
-                    throw new ArgumentOutOfRangeException("Population", value, "Population must be bigger than 1");
+                    throw new ArgumentOutOfRangeException("Population", value, "Population must be bigger or equal than 1");
                 _population = value;
             }
         }

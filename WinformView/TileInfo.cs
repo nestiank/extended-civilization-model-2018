@@ -47,10 +47,15 @@ namespace WinformView
                 tbCity = new TextBox();
                 tbCity.Location = cbxCity.Location;
                 tbCity.Size = cbxCity.Size;
+                tbCity.TabIndex = cbxCity.TabIndex;
                 tbCity.Text = _tile.TileOwnerCity.Name;
                 cbxCity.Enabled = false;
                 cbxCity.Visible = false;
                 Controls.Add(tbCity);
+
+                tbPopulation.Enabled = true;
+                tbPopulation.ReadOnly = false;
+                tbPopulation.Text = _tile.TileOwnerCity.Population.ToString();
             }
             else
             {
@@ -77,6 +82,17 @@ namespace WinformView
                     MessageBox.Show("도시 이름이 잘못됬거나 이미 존재하는 도시 이름입니다.", "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     DialogResult = DialogResult.None;
                     tbCity.Text = _tile.TileOwnerCity.Name;
+                }
+
+                try
+                {
+                    _tile.TileOwnerCity.Population = Convert.ToDouble(tbPopulation.Text);
+                }
+                catch (Exception ex) when (ex is FormatException || ex is OverflowException || ex is ArgumentOutOfRangeException)
+                {
+                    MessageBox.Show("인구는 1 이상의 실수여야 합니다.", "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DialogResult = DialogResult.None;
+                    tbPopulation.Text = _tile.TileOwnerCity.Population.ToString();
                 }
             }
             else
