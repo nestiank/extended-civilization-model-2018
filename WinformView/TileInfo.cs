@@ -19,6 +19,16 @@ namespace WinformView
 
         private TextBox tbCity = null;
 
+        private struct InteriorSelection
+        {
+            public InteriorBuilding Building;
+            public InteriorSelection(InteriorBuilding building)
+            {
+                Building = building;
+            }
+            public override string ToString() => Building.GetType().Name;
+        }
+
         public TileInfo(Game game, Terrain.Point tile)
         {
             _game = game;
@@ -56,6 +66,12 @@ namespace WinformView
                 tbPopulation.Enabled = true;
                 tbPopulation.ReadOnly = false;
                 tbPopulation.Text = _tile.TileOwnerCity.Population.ToString();
+
+                lbxInterior.Enabled = true;
+                var range = _tile.TileOwnerCity.InteriorBuildings
+                    .Select(building => (object)new InteriorSelection(building))
+                    .ToArray();
+                lbxInterior.Items.AddRange(range);
             }
             else
             {
@@ -102,6 +118,15 @@ namespace WinformView
                 {
                     selcity.AddTerritory(_tile);
                 }
+            }
+        }
+
+        private void btnInteriorDelete_Click(object sender, EventArgs e)
+        {
+            if (lbxInterior.SelectedItem is InteriorSelection sel)
+            {
+                sel.Building.Destroy();
+                lbxInterior.Items.Remove(lbxInterior.SelectedItem);
             }
         }
     }

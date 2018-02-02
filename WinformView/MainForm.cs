@@ -30,6 +30,8 @@ namespace WinformView
         private Point? selectedPoint_;
         private Terrain.Point? selectedTile_;
 
+        public DeploySelector deploySelector_;
+
         public MainForm()
         {
             InitializeComponent();
@@ -126,17 +128,6 @@ namespace WinformView
                     e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(tbl[(int)point.Type])), polygon);
                     e.Graphics.DrawPolygon(Pens.AntiqueWhite, polygon);
 
-                    if (point.TileBuilding is CityCenter)
-                    {
-                        var color = GetPlayerColor(point.TileBuilding.Owner);
-                        var brush = new SolidBrush(color);
-                        float cx = px + ax;
-                        float cy = py + 2 * ay;
-                        float radius = blockSize_ * 0.25f;
-                        e.Graphics.FillEllipse(Brushes.White, cx - radius - 1, cy - radius - 1, radius * 2 + 2, radius * 2 + 2);
-                        e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
-                    }
-
                     if (point.TileOwnerCity != null)
                     {
                         var color = GetPlayerColor(point.TileOwnerCity.Owner, 0x3f);
@@ -145,6 +136,47 @@ namespace WinformView
                         float cy = py + 2 * ay;
                         float radius = blockSize_ * 0.625f;
                         e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
+                    }
+
+                    if (point.TileBuilding is CityCenter)
+                    {
+                        var color = GetPlayerColor(point.TileBuilding.Owner);
+                        var brush = new SolidBrush(color);
+                        var pen = new Pen(Color.White, 2);
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.33f;
+                        e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
+                        e.Graphics.DrawEllipse(pen, cx - radius, cy - radius, radius * 2, radius * 2);
+                    }
+                    else if (point.TileBuilding != null)
+                    {
+                        var color = GetPlayerColor(point.TileBuilding.Owner);
+                        var brush = new SolidBrush(color);
+                        var pen = new Pen(Color.HotPink, 2);
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.25f;
+                        e.Graphics.FillRectangle(brush, cx - radius, cy - radius, radius * 2, radius * 2);
+                        e.Graphics.DrawRectangle(pen, cx - radius, cy - radius, radius * 2, radius * 2);
+                    }
+
+                    if (point.Unit != null)
+                    {
+                        var color = GetPlayerColor(point.Unit.Owner);
+                        var brush = new SolidBrush(color);
+                        var pen = new Pen(Color.Red, 2);
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.20f;
+                        var poly = new PointF[] {
+                            new PointF(cx - radius, cy),
+                            new PointF(cx, cy + radius),
+                            new PointF(cx + radius, cy),
+                            new PointF(cx, cy - radius)
+                        };
+                        e.Graphics.FillPolygon(brush, poly);
+                        e.Graphics.DrawPolygon(pen, poly);
                     }
 
                     if (selectedPoint_ is Point ptm && IsInPolygon(polygon, new PointF(ptm.X, ptm.Y)))
@@ -236,6 +268,22 @@ namespace WinformView
                     if (selectedTile_.HasValue)
                     {
                         new TileInfo(presenter_.Game, selectedTile_.Value).ShowDialog();
+                    }
+                    break;
+
+                case Keys.F2:
+                    if (deploySelector_ == null)
+                    {
+                        deploySelector_ = new DeploySelector(
+                            presenter_.Game, () => deploySelector_ = null);
+                        deploySelector_.Show();
+                    }
+                    break;
+
+                case Keys.F3:
+                    if (selectedTile_.HasValue && deploySelector_ != null)
+                    {
+                        deploySelector_.Deploy(selectedTile_.Value);
                     }
                     break;
 

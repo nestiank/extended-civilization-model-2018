@@ -32,7 +32,7 @@ namespace CivModel
             get => _city;
             set
             {
-                if (value.Owner != Owner)
+                if (value != null && value.Owner != Owner)
                     throw new ArgumentException("the owner of city is different from the owner of building.", "City");
 
                 if (_city != null)
@@ -58,6 +58,27 @@ namespace CivModel
         {
             _owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");
+        }
+
+        /// <summary>
+        /// Destroys this building. <see cref="OnBeforeDestroy"/> is called before the building is destroyed.
+        /// </summary>
+        /// <remarks>
+        /// <strong>postcondition</strong>:
+        /// <c><see cref="TileObject.PlacedPoint"/> == null &amp;&amp; <see cref="Owner"/> == null</c>
+        /// </remarks>
+        public void Destroy()
+        {
+            OnBeforeDestroy();
+            City  = null;
+            _owner = null;
+        }
+
+        /// <summary>
+        /// Called before [destroy], by <see cref="Destroy"/>
+        /// </summary>
+        protected virtual void OnBeforeDestroy()
+        {
         }
 
         /// <summary>

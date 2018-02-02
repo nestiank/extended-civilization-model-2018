@@ -40,11 +40,14 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.tbPopulation = new System.Windows.Forms.TextBox();
+            this.lbxInterior = new System.Windows.Forms.ListBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btnInteriorDelete = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // tbUnit
             // 
-            this.tbUnit.Location = new System.Drawing.Point(104, 25);
+            this.tbUnit.Location = new System.Drawing.Point(95, 34);
             this.tbUnit.Name = "tbUnit";
             this.tbUnit.ReadOnly = true;
             this.tbUnit.Size = new System.Drawing.Size(230, 21);
@@ -53,7 +56,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(29, 28);
+            this.label1.Location = new System.Drawing.Point(20, 37);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(41, 12);
             this.label1.TabIndex = 0;
@@ -62,7 +65,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(29, 55);
+            this.label2.Location = new System.Drawing.Point(20, 64);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(69, 12);
             this.label2.TabIndex = 2;
@@ -70,7 +73,7 @@
             // 
             // tbTileBuilding
             // 
-            this.tbTileBuilding.Location = new System.Drawing.Point(104, 52);
+            this.tbTileBuilding.Location = new System.Drawing.Point(95, 61);
             this.tbTileBuilding.Name = "tbTileBuilding";
             this.tbTileBuilding.ReadOnly = true;
             this.tbTileBuilding.Size = new System.Drawing.Size(230, 21);
@@ -79,7 +82,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(29, 135);
+            this.label3.Location = new System.Drawing.Point(20, 144);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(69, 12);
             this.label3.TabIndex = 8;
@@ -88,7 +91,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(29, 109);
+            this.label4.Location = new System.Drawing.Point(20, 118);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 12);
             this.label4.TabIndex = 6;
@@ -98,7 +101,7 @@
             // 
             this.cbxTileType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxTileType.FormattingEnabled = true;
-            this.cbxTileType.Location = new System.Drawing.Point(104, 106);
+            this.cbxTileType.Location = new System.Drawing.Point(95, 115);
             this.cbxTileType.Name = "cbxTileType";
             this.cbxTileType.Size = new System.Drawing.Size(230, 20);
             this.cbxTileType.TabIndex = 7;
@@ -107,7 +110,7 @@
             // 
             this.cbxCity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxCity.FormattingEnabled = true;
-            this.cbxCity.Location = new System.Drawing.Point(104, 132);
+            this.cbxCity.Location = new System.Drawing.Point(95, 141);
             this.cbxCity.Name = "cbxCity";
             this.cbxCity.Size = new System.Drawing.Size(230, 20);
             this.cbxCity.TabIndex = 9;
@@ -115,7 +118,7 @@
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(259, 183);
+            this.btnOk.Location = new System.Drawing.Point(250, 192);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 11;
@@ -126,7 +129,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(178, 183);
+            this.btnCancel.Location = new System.Drawing.Point(169, 192);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 10;
@@ -136,7 +139,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(29, 82);
+            this.label5.Location = new System.Drawing.Point(20, 91);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(37, 12);
             this.label5.TabIndex = 4;
@@ -145,11 +148,40 @@
             // tbPopulation
             // 
             this.tbPopulation.Enabled = false;
-            this.tbPopulation.Location = new System.Drawing.Point(104, 79);
+            this.tbPopulation.Location = new System.Drawing.Point(95, 88);
             this.tbPopulation.Name = "tbPopulation";
             this.tbPopulation.ReadOnly = true;
             this.tbPopulation.Size = new System.Drawing.Size(230, 21);
             this.tbPopulation.TabIndex = 5;
+            // 
+            // lbxInterior
+            // 
+            this.lbxInterior.Enabled = false;
+            this.lbxInterior.FormattingEnabled = true;
+            this.lbxInterior.ItemHeight = 12;
+            this.lbxInterior.Location = new System.Drawing.Point(342, 58);
+            this.lbxInterior.Name = "lbxInterior";
+            this.lbxInterior.Size = new System.Drawing.Size(120, 160);
+            this.lbxInterior.TabIndex = 12;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(374, 13);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(57, 12);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "일반 건물";
+            // 
+            // btnInteriorDelete
+            // 
+            this.btnInteriorDelete.Location = new System.Drawing.Point(342, 32);
+            this.btnInteriorDelete.Name = "btnInteriorDelete";
+            this.btnInteriorDelete.Size = new System.Drawing.Size(120, 23);
+            this.btnInteriorDelete.TabIndex = 14;
+            this.btnInteriorDelete.Text = "삭제";
+            this.btnInteriorDelete.UseVisualStyleBackColor = true;
+            this.btnInteriorDelete.Click += new System.EventHandler(this.btnInteriorDelete_Click);
             // 
             // TileInfo
             // 
@@ -157,7 +189,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(363, 230);
+            this.ClientSize = new System.Drawing.Size(483, 230);
+            this.Controls.Add(this.btnInteriorDelete);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.lbxInterior);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.tbPopulation);
             this.Controls.Add(this.btnCancel);
@@ -193,5 +228,8 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tbPopulation;
+        private System.Windows.Forms.ListBox lbxInterior;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnInteriorDelete;
     }
 }
