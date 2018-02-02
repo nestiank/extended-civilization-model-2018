@@ -128,11 +128,22 @@ namespace WinformView
 
                     if (point.TileBuilding is CityCenter)
                     {
-                        var brush = new SolidBrush(GetPlayerColor(point.TileBuilding.Owner));
+                        var color = GetPlayerColor(point.TileBuilding.Owner);
+                        var brush = new SolidBrush(color);
                         float cx = px + ax;
                         float cy = py + 2 * ay;
                         float radius = blockSize_ * 0.25f;
                         e.Graphics.FillEllipse(Brushes.White, cx - radius - 1, cy - radius - 1, radius * 2 + 2, radius * 2 + 2);
+                        e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
+                    }
+
+                    if (point.TileOwnerCity != null)
+                    {
+                        var color = GetPlayerColor(point.TileOwnerCity.Owner, 0x3f);
+                        var brush = new SolidBrush(color);
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.625f;
                         e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
                     }
 
@@ -157,7 +168,7 @@ namespace WinformView
             }
         }
 
-        private Color GetPlayerColor(Player player)
+        private Color GetPlayerColor(Player player, int alpha = 0xff)
         {
             unchecked
             {
@@ -168,7 +179,7 @@ namespace WinformView
                 idx = (idx % 6) + 1;
 
                 int color = (((idx & 4) != 0 ? 0xff : 0) << 16) | (((idx & 2) != 0 ? 0xff : 0) << 8) | ((idx & 1) != 0 ? 0xff : 0);
-                return Color.FromArgb((int)0xff000000 | color);
+                return Color.FromArgb((alpha << 24) | color);
             }
         }
 
@@ -213,6 +224,20 @@ namespace WinformView
                     Invalidate();
                     break;
 
+                case Keys.Oemcomma:
+                    if (presenter_.SaveFile == null)
+                        presenter_.SaveFile = "map.txt";
+                    presenter_.CommandSave();
+                    MessageBox.Show("Saved");
+                    break;
+
+                case Keys.F1:
+                    if (selectedTile_.HasValue)
+                    {
+                        new TileInfo(presenter_.Game, selectedTile_.Value).ShowDialog();
+                    }
+                    break;
+
                 case Keys.C:
                     if (selectedTile_.HasValue)
                     {
@@ -226,13 +251,6 @@ namespace WinformView
                         }
                         Invalidate();
                     }
-                    break;
-
-                case Keys.Oemcomma:
-                    if (presenter_.SaveFile == null)
-                        presenter_.SaveFile = "map.txt";
-                    presenter_.CommandSave();
-                    MessageBox.Show("Saved");
                     break;
 
                 case Keys.Left:

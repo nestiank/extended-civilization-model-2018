@@ -60,6 +60,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TileInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TileInfo.Designer.cs">
+      <DependentUpon>TileInfo.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="DeploySelector.resx">
       <DependentUpon>DeploySelector.cs</DependentUpon>
     </EmbeddedResource>
@@ -75,6 +81,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="TileInfo.resx">
+      <DependentUpon>TileInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

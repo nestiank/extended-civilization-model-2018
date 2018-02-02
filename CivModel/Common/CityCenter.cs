@@ -193,7 +193,7 @@ namespace CivModel.Common
         /// </summary>
         /// <param name="pt">The tile to be in the territory.</param>
         /// <exception cref="ArgumentException"><paramref name="pt"/> is already in the territoriy of this city</exception>
-        /// <exception cref="InvalidOperationException">another city is at <paramref cref="pt"/></exception>
+        /// <exception cref="InvalidOperationException">another city is at <paramref name="pt"/></exception>
         public void AddTerritory(Terrain.Point pt)
         {
             if (pt.TileOwnerCity == this)
