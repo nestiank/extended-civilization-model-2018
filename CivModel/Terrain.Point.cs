@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -35,9 +34,9 @@ namespace CivModel
             }
 
             /// <summary>
-            /// <see cref="CityCenter"/> which owns this tile. If no city owns this tile, <c>null</c>.
+            /// <see cref="Player"/> which owns this tile. If no one owns this tile, <c>null</c>.
             /// </summary>
-            public CityCenter TileOwnerCity => Terrain._points[Position.Y, Position.X].TileOwnerCity;
+            public Player TileOwner => Terrain._points[Position.Y, Position.X].TileOwner;
 
             /// <summary>
             /// The <see cref="Unit"/> placed at the tile.
@@ -82,10 +81,10 @@ namespace CivModel
                 Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag] = null;
             }
 
-            // this function is used internally by CityCenter class.
-            internal void SetTileOwnerCity(CityCenter city)
+            // this function is used internally by Player class.
+            internal void SetTileOwner(Player player)
             {
-                Terrain._points[Position.Y, Position.X].TileOwnerCity = city;
+                Terrain._points[Position.Y, Position.X].TileOwner = player;
             }
 
             /// <summary>

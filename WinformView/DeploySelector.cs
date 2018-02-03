@@ -43,8 +43,8 @@ namespace WinformView
             Action<Terrain.Point> wrapper(Action<CityCenter> placer)
             {
                 return pt => {
-                    if (pt.TileOwnerCity != null)
-                        placer(pt.TileOwnerCity);
+                    if (pt.TileBuilding is CityCenter city)
+                        placer(city);
                 };
             }
 

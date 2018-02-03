@@ -31,6 +31,19 @@ namespace CivModel
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public TileBuilding(Player owner, Terrain.Point point) : base(owner, point, TileTag.TileBuilding)
         {
+            owner.AddTerritory(point);
+        }
+
+        /// <summary>
+        /// Called after <see cref="TileObject.PlacedPoint" /> is changed.
+        /// </summary>
+        /// <param name="oldPoint">The old value of <see cref="TileObject.PlacedPoint" />.</param>
+        protected override void OnChangePlacedPoint(Terrain.Point? oldPoint)
+        {
+            base.OnChangePlacedPoint(oldPoint);
+
+            if (PlacedPoint is Terrain.Point pt)
+                Owner.AddTerritory(pt);
         }
     }
 }

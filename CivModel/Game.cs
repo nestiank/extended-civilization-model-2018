@@ -223,6 +223,18 @@ namespace CivModel
                     for (int i = 0; i < numOfPlayer; ++i)
                     {
                         _players.Add(new Player(this));
+
+                        var territory = readLine().Split(':')
+                            .Where(str => str != "")
+                            .Select(s1 => s1.Split(',').Select(s2 => Convert.ToInt32(s2)).ToArray());
+                        foreach (var terr in territory)
+                        {
+                            if (terr.Length != 2)
+                                throw new InvalidDataException(errmsg);
+
+                            var ptTerr = Terrain.GetPoint(terr[0], terr[1]);
+                            _players[i].AddTerritory(ptTerr);
+                        }
                     }
 
                     while (!file.EndOfStream)
@@ -240,7 +252,6 @@ namespace CivModel
                         var pt = Terrain.GetPoint(pos);
 
                         guid = Guid.ParseExact(readLine(), _guidSaveFormat);
-
                         var obj = GuidManager.Create(guid, Players[ints[0]], pt);
                         switch (obj)
                         {
@@ -248,19 +259,6 @@ namespace CivModel
                             {
                                 city.Name = readLine();
                                 city.Population = Convert.ToDouble(readLine());
-
-                                var territory = readLine().Split(':')
-                                    .Where(str => str != "")
-                                    .Select(s1 => s1.Split(',').Select(s2 => Convert.ToInt32(s2)).ToArray());
-                                foreach (var terr in territory)
-                                {
-                                    if (terr.Length != 2)
-                                        throw new InvalidDataException(errmsg);
-
-                                    var ptTerr = Terrain.GetPoint(terr[0], terr[1]);
-                                    if (!city.Territory.Contains(ptTerr))
-                                        city.AddTerritory(ptTerr);
-                                }
 
                                 int len = Convert.ToInt32(readLine());
                                 if (len < 0)
@@ -350,6 +348,15 @@ namespace CivModel
                     file.WriteLine();
                 }
 
+                foreach (var player in Players)
+                {
+                    foreach (var tile in player.Territory)
+                    {
+                        file.Write(":" + tile.Position.X + "," + tile.Position.Y);
+                    }
+                    file.WriteLine();
+                }
+
                 for (int i = 0; i < Players.Count; ++i)
                 {
                     foreach (var city in Players[i].Cities)
@@ -361,13 +368,11 @@ namespace CivModel
                             file.WriteLine(city.Name);
                             file.WriteLine(city.Population);
 
-                            foreach (var tile in city.Territory)
-                                file.Write(":" + tile.Position.X + "," + tile.Position.Y);
-                            file.WriteLine();
-
                             file.WriteLine(city.InteriorBuildings.Count);
                             foreach (var building in city.InteriorBuildings)
+                            {
                                 file.WriteLine(building.Guid);
+                            }
                         }
                     }
 

@@ -28,6 +28,17 @@ namespace WinformView
             }
             public override string ToString() => Building.GetType().Name;
         }
+        private struct PlayerSelection
+        {
+            public string Name;
+            public Player Player;
+            public PlayerSelection(string name, Player player)
+            {
+                Name = name;
+                Player = player;
+            }
+            public override string ToString() => Name;
+        }
 
         public TileInfo(Game game, Terrain.Point tile)
         {
@@ -52,34 +63,38 @@ namespace WinformView
             cbxTileType.Items.AddRange(arType);
             cbxTileType.SelectedIndex = (int)_tile.Type;
 
-            if (_tile == _tile.TileOwnerCity?.PlacedPoint)
+            if (_tile.TileBuilding is CityCenter city)
             {
+                lbPlayer.Text = "도시 이름 : ";
                 tbCity = new TextBox();
-                tbCity.Location = cbxCity.Location;
-                tbCity.Size = cbxCity.Size;
-                tbCity.TabIndex = cbxCity.TabIndex;
-                tbCity.Text = _tile.TileOwnerCity.Name;
-                cbxCity.Enabled = false;
-                cbxCity.Visible = false;
+                tbCity.Location = cbxPlayer.Location;
+                tbCity.Size = cbxPlayer.Size;
+                tbCity.TabIndex = cbxPlayer.TabIndex;
+                tbCity.Text = city.Name;
+                cbxPlayer.Enabled = false;
+                cbxPlayer.Visible = false;
                 Controls.Add(tbCity);
 
                 tbPopulation.Enabled = true;
                 tbPopulation.ReadOnly = false;
-                tbPopulation.Text = _tile.TileOwnerCity.Population.ToString();
+                tbPopulation.Text = city.Population.ToString();
 
                 lbxInterior.Enabled = true;
-                var range = _tile.TileOwnerCity.InteriorBuildings
+                var range = city.InteriorBuildings
                     .Select(building => (object)new InteriorSelection(building))
                     .ToArray();
                 lbxInterior.Items.AddRange(range);
             }
             else
             {
-                var cities = _game.Players.SelectMany(player => player.Cities).ToList();
-                cbxCity.DataSource = cities;
-                cbxCity.DisplayMember = "Name";
-                cbxCity.ValueMember = "Name";
-                cbxCity.SelectedIndex = cities.IndexOf(_tile.TileOwnerCity);
+                var players = _game.Players.Select((p, i) => (object)new PlayerSelection("player " + i, p)).ToArray();
+                cbxPlayer.Items.AddRange(players);
+                cbxPlayer.SelectedIndex = Array.FindIndex(players, p => p == _tile.TileOwner);
+            }
+
+            if (_tile.TileBuilding != null)
+            {
+                cbxPlayer.Enabled = false;
             }
         }
 
@@ -89,34 +104,35 @@ namespace WinformView
 
             if (tbCity != null)
             {
+                var city = (CityCenter)_tile.TileBuilding;
                 try
                 {
-                    _tile.TileOwnerCity.Name = tbCity.Text;
+                    city.Name = tbCity.Text;
                 }
                 catch (ArgumentException)
                 {
                     MessageBox.Show("도시 이름이 잘못됬거나 이미 존재하는 도시 이름입니다.", "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     DialogResult = DialogResult.None;
-                    tbCity.Text = _tile.TileOwnerCity.Name;
+                    tbCity.Text = city.Name;
                 }
 
                 try
                 {
-                    _tile.TileOwnerCity.Population = Convert.ToDouble(tbPopulation.Text);
+                    city.Population = Convert.ToDouble(tbPopulation.Text);
                 }
                 catch (Exception ex) when (ex is FormatException || ex is OverflowException || ex is ArgumentOutOfRangeException)
                 {
                     MessageBox.Show("인구는 1 이상의 실수여야 합니다.", "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     DialogResult = DialogResult.None;
-                    tbPopulation.Text = _tile.TileOwnerCity.Population.ToString();
+                    tbPopulation.Text = city.Population.ToString();
                 }
             }
             else
             {
-                var selcity = (CityCenter)cbxCity.SelectedItem;
-                if (selcity != _tile.TileOwnerCity)
+                var sel = (PlayerSelection)cbxPlayer.SelectedItem;
+                if (sel.Player != _tile.TileOwner)
                 {
-                    selcity.AddTerritory(_tile);
+                    sel.Player.AddTerritory(_tile);
                 }
             }
         }

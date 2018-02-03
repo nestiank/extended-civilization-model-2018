@@ -160,6 +160,12 @@ namespace CivModel
         public double EstimatedUsedLabor { get; private set; }
 
         /// <summary>
+        /// The list of tiles which this player owns as territory.
+        /// </summary>
+        public IReadOnlyList<Terrain.Point> Territory => _territory;
+        private readonly List<Terrain.Point> _territory = new List<Terrain.Point>();
+
+        /// <summary>
         /// Whether this player is defeated.
         /// </summary>
         public bool IsDefeated => !_beforeLandingCity && Cities.Count == 0;
@@ -231,6 +237,40 @@ namespace CivModel
         {
             return Cities.SelectMany(city => city.AvailableProduction).Distinct()
                 .Union(AdditionalAvailableProduction).ToArray();
+        }
+
+        /// <summary>
+        /// Adds the territory of this player.
+        /// </summary>
+        /// <param name="pt">The tile to be in the territory.</param>
+        /// <exception cref="InvalidOperationException">a <see cref="TileBuilding"/> of another player is at <paramref name="pt"/></exception>
+        public void AddTerritory(Terrain.Point pt)
+        {
+            if (pt.TileOwner != this)
+            {
+                if (pt.TileOwner != null)
+                    pt.TileOwner.RemoveTerritory(pt);
+
+                pt.SetTileOwner(this);
+                _territory.Add(pt);
+            }
+        }
+
+        /// <summary>
+        /// Removes the territory of this player.
+        /// </summary>
+        /// <param name="pt">The tile to be out of the territory.</param>
+        /// <exception cref="ArgumentException"><paramref name="pt"/> is not in the territoriy of this player</exception>
+        /// <exception cref="InvalidOperationException">the tile where a <see cref="TileBuilding"/> is cannot be removed from the territory</exception>
+        public void RemoveTerritory(Terrain.Point pt)
+        {
+            if (pt.TileOwner != this)
+                throw new ArgumentException("pt is not in the territoriy of this player", "pt");
+            if (pt.TileBuilding != null && pt.TileBuilding.Owner != this)
+                throw new InvalidOperationException("the tile where a TileBuilding is cannot be removed from the territory");
+
+            _territory.Remove(pt);
+            pt.SetTileOwner(null);
         }
 
         /// <summary>

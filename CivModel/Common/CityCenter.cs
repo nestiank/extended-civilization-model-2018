@@ -76,12 +76,6 @@ namespace CivModel.Common
         private readonly HashSet<IProductionFactory> _availableProduction = new HashSet<IProductionFactory>();
 
         /// <summary>
-        /// The list of tiles which this city owns as territory.
-        /// </summary>
-        public IReadOnlyList<Terrain.Point> Territory => _territory;
-        private readonly List<Terrain.Point> _territory = new List<Terrain.Point>();
-
-        /// <summary>
         /// The population of this city.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Population must be bigger or equal than 1</exception>
@@ -141,8 +135,6 @@ namespace CivModel.Common
 
             Owner.AddCityToList(this);
             _holdingAttackAct = new AttackActorAction(this, false);
-
-            AddTerritory(point);
         }
 
         /// <summary>
@@ -189,41 +181,6 @@ namespace CivModel.Common
         }
 
         /// <summary>
-        /// Adds the territory of this city.
-        /// </summary>
-        /// <param name="pt">The tile to be in the territory.</param>
-        /// <exception cref="ArgumentException"><paramref name="pt"/> is already in the territoriy of this city</exception>
-        /// <exception cref="InvalidOperationException">another city is at <paramref name="pt"/></exception>
-        public void AddTerritory(Terrain.Point pt)
-        {
-            if (pt.TileOwnerCity == this)
-                throw new ArgumentException("pt is already in the territoriy of this city", "pt");
-
-            if (pt.TileOwnerCity != null)
-                pt.TileOwnerCity.RemoveTerritory(pt);
-
-            pt.SetTileOwnerCity(this);
-            _territory.Add(pt);
-        }
-
-        /// <summary>
-        /// Removes the territory of this city.
-        /// </summary>
-        /// <param name="pt">The tile to be out of the territory.</param>
-        /// <exception cref="ArgumentException"><paramref name="pt"/> is not in the territoriy of this city</exception>
-        /// <exception cref="InvalidOperationException">the tile where the city is cannot be removed from the territory of the city</exception>
-        public void RemoveTerritory(Terrain.Point pt)
-        {
-            if (pt.TileOwnerCity != this)
-                throw new ArgumentException("pt is not in the territoriy of this city", "pt");
-            if (PlacedPoint.HasValue && pt == PlacedPoint.Value)
-                throw new InvalidOperationException("the tile where the city is cannot be removed from the territory of the city");
-
-            _territory.Remove(pt);
-            pt.SetTileOwnerCity(null);
-        }
-
-        /// <summary>
         /// This method is used by <see cref="InteriorBuilding.City"/>
         /// </summary>
         internal void AddBuilding(InteriorBuilding building)
@@ -243,18 +200,6 @@ namespace CivModel.Common
                 throw new ArgumentException("building is not placed in this city", "building");
 
             _interiorBuildings.Remove(building);
-        }
-
-        /// <summary>
-        /// Called after <see cref="TileObject.PlacedPoint" /> is changed.
-        /// </summary>
-        /// <param name="oldPoint">The old value of <see cref="TileObject.PlacedPoint" />.</param>
-        protected override void OnChangePlacedPoint(Terrain.Point? oldPoint)
-        {
-            base.OnChangePlacedPoint(oldPoint);
-
-            if (PlacedPoint is Terrain.Point pt)
-                AddTerritory(pt);
         }
 
         /// <summary>

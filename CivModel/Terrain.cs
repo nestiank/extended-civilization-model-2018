@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -13,7 +12,7 @@ namespace CivModel
         private struct Point_t
         {
             public TerrainType Type;
-            public CityCenter TileOwnerCity;
+            public Player TileOwner;
             public TileObject[] PlacedObjects;
         }
 

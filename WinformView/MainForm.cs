@@ -129,9 +129,9 @@ namespace WinformView
                     e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(tbl[(int)point.Type])), polygon);
                     e.Graphics.DrawPolygon(Pens.AntiqueWhite, polygon);
 
-                    if (point.TileOwnerCity != null)
+                    if (point.TileOwner != null)
                     {
-                        var color = GetPlayerColor(point.TileOwnerCity.Owner, 0x3f);
+                        var color = GetPlayerColor(point.TileOwner, 0x3f);
                         var brush = new SolidBrush(color);
                         float cx = px + ax;
                         float cy = py + 2 * ay;

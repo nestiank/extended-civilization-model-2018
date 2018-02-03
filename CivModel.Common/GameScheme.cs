@@ -92,7 +92,7 @@ namespace CivModel.Common
             foreach (var ptn in city.PlacedPoint.Value.Adjacents())
             {
                 if (ptn is Terrain.Point pt)
-                    city.AddTerritory(pt);
+                    city.Owner.AddTerritory(pt);
             }
         }
     }

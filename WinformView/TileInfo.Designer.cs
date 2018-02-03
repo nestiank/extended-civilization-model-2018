@@ -32,10 +32,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.tbTileBuilding = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lbPlayer = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.cbxTileType = new System.Windows.Forms.ComboBox();
-            this.cbxCity = new System.Windows.Forms.ComboBox();
+            this.cbxPlayer = new System.Windows.Forms.ComboBox();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -79,14 +79,14 @@
             this.tbTileBuilding.Size = new System.Drawing.Size(230, 21);
             this.tbTileBuilding.TabIndex = 3;
             // 
-            // label3
+            // lbPlayer
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(20, 144);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(69, 12);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "소속 도시 : ";
+            this.lbPlayer.AutoSize = true;
+            this.lbPlayer.Location = new System.Drawing.Point(20, 144);
+            this.lbPlayer.Name = "lbPlayer";
+            this.lbPlayer.Size = new System.Drawing.Size(69, 12);
+            this.lbPlayer.TabIndex = 8;
+            this.lbPlayer.Text = "소속 진영 : ";
             // 
             // label4
             // 
@@ -106,14 +106,14 @@
             this.cbxTileType.Size = new System.Drawing.Size(230, 20);
             this.cbxTileType.TabIndex = 7;
             // 
-            // cbxCity
+            // cbxPlayer
             // 
-            this.cbxCity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbxCity.FormattingEnabled = true;
-            this.cbxCity.Location = new System.Drawing.Point(95, 141);
-            this.cbxCity.Name = "cbxCity";
-            this.cbxCity.Size = new System.Drawing.Size(230, 20);
-            this.cbxCity.TabIndex = 9;
+            this.cbxPlayer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxPlayer.FormattingEnabled = true;
+            this.cbxPlayer.Location = new System.Drawing.Point(95, 141);
+            this.cbxPlayer.Name = "cbxPlayer";
+            this.cbxPlayer.Size = new System.Drawing.Size(230, 20);
+            this.cbxPlayer.TabIndex = 9;
             // 
             // btnOk
             // 
@@ -197,10 +197,10 @@
             this.Controls.Add(this.tbPopulation);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
-            this.Controls.Add(this.cbxCity);
+            this.Controls.Add(this.cbxPlayer);
             this.Controls.Add(this.cbxTileType);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.lbPlayer);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tbTileBuilding);
             this.Controls.Add(this.label1);
@@ -220,10 +220,10 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbTileBuilding;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lbPlayer;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cbxTileType;
-        private System.Windows.Forms.ComboBox cbxCity;
+        private System.Windows.Forms.ComboBox cbxPlayer;
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label label5;
