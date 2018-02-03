@@ -65,6 +65,8 @@ namespace WinformView
                 presenter_ = new Presenter(this);
 
             RefreshTitle();
+
+            InitPlayerColor();
         }
 
         private void RefreshTitle()
@@ -201,19 +203,29 @@ namespace WinformView
             }
         }
 
+        private Color[] playerColors_;
+        private void InitPlayerColor()
+        {
+            playerColors_ = new Color[presenter_.Game.Players.Count];
+            for (int idx = 0; idx < playerColors_.Length; ++idx)
+            {
+                unchecked
+                {
+                    int p = (idx % 6) + 1;
+                    int color = (((p & 4) != 0 ? 0xff : 0) << 16) | (((p & 2) != 0 ? 0xff : 0) << 8) | ((p & 1) != 0 ? 0xff : 0);
+                    playerColors_[idx] = Color.FromArgb((0xff << 24) | color);
+                }
+            }
+        }
         private Color GetPlayerColor(Player player, int alpha = 0xff)
         {
-            unchecked
-            {
-                int idx = 0;
-                for (; idx < presenter_.Game.Players.Count; ++idx)
-                    if (presenter_.Game.Players[idx] == player)
-                        break;
-                idx = (idx % 6) + 1;
+            int idx = 0;
+            for (; idx < presenter_.Game.Players.Count; ++idx)
+                if (presenter_.Game.Players[idx] == player)
+                    break;
 
-                int color = (((idx & 4) != 0 ? 0xff : 0) << 16) | (((idx & 2) != 0 ? 0xff : 0) << 8) | ((idx & 1) != 0 ? 0xff : 0);
-                return Color.FromArgb((alpha << 24) | color);
-            }
+            var c = playerColors_[idx];
+            return Color.FromArgb(alpha, c.R, c.G, c.B);
         }
 
         private static bool IsInPolygon(PointF[] poly, PointF point)
@@ -285,6 +297,26 @@ namespace WinformView
                     if (selectedTile_.HasValue && deploySelector_ != null)
                     {
                         deploySelector_.Deploy(selectedTile_.Value);
+                    }
+                    break;
+
+                case Keys.F12:
+                    if (selectedTile_.HasValue)
+                    {
+                        string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        {
+                            var dialog = new ColorDialog();
+                            dialog.Color = playerColors_[idx];
+                            if (dialog.ShowDialog() == DialogResult.OK)
+                            {
+                                playerColors_[idx] = dialog.Color;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("invalid player index");
+                        }
                     }
                     break;
 
@@ -421,7 +453,7 @@ namespace WinformView
                         }
                         else
                         {
-                            MessageBox.Show("invalid tile type");
+                            MessageBox.Show("invalid player index");
                         }
                     }
                     break;
@@ -442,7 +474,7 @@ namespace WinformView
                         }
                         else
                         {
-                            MessageBox.Show("invalid tile type");
+                            MessageBox.Show("invalid player index");
                         }
                     }
                     break;
