@@ -10,6 +10,7 @@ namespace CivModel
     /// Represents a building which is an actor.
     /// </summary>
     /// <seealso cref="CivModel.Actor" />
+    /// <seealso cref="InteriorBuilding"/>
     public abstract class TileBuilding : Actor
     {
         /// <summary>
@@ -26,9 +27,23 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="TileBuilding"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this TileBuilding.</param>
+        /// <param name="point">The tile where the object will be.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public TileBuilding(Player owner) : base(owner, TileTag.TileBuilding)
+        public TileBuilding(Player owner, Terrain.Point point) : base(owner, point, TileTag.TileBuilding)
         {
+            owner.AddTerritory(point);
+        }
+
+        /// <summary>
+        /// Called after <see cref="TileObject.PlacedPoint" /> is changed.
+        /// </summary>
+        /// <param name="oldPoint">The old value of <see cref="TileObject.PlacedPoint" />.</param>
+        protected override void OnChangePlacedPoint(Terrain.Point? oldPoint)
+        {
+            base.OnChangePlacedPoint(oldPoint);
+
+            if (PlacedPoint is Terrain.Point pt)
+                Owner.AddTerritory(pt);
         }
     }
 }

@@ -15,29 +15,15 @@ namespace CivModel
     public class Game
     {
         /// <summary>
-        /// Coefficient for <see cref="Player.GoldIncome"/>.
+        /// The scheme of this game.
         /// </summary>
-        public double GoldCoefficient => 1;
+        public IGameScheme Scheme;
 
         /// <summary>
-        /// Coefficient for PopulationIncome.
+        /// The manager object of <see cref="IGuidTaggedObject"/>.
+        /// This property is used by model extension modules.
         /// </summary>
-        public double PopulationCoefficient => 1;
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.HappinessIncome"/>.
-        /// </summary>
-        public double HappinessCoefficient => 1;
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.Labor"/>.
-        /// </summary>
-        public double LaborCoefficient => 0.1;
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.Labor"/>, which works with <see cref="Player.Happiness"/>.
-        /// </summary>
-        public double LaborHappinessConstant => 0;
+        public GuidTaggedObjectManager GuidManager { get; } = new GuidTaggedObjectManager();
 
         /// <summary>
         /// <see cref="Terrain"/> of this game.
@@ -80,26 +66,69 @@ namespace CivModel
         public Player PlayerInTurn => Players[PlayerNumberInTurn];
 
         /// <summary>
+        /// See remark section of <see cref="Guid.ParseExact(string, string)"/>.
+        /// </summary>
+        private const string _guidSaveFormat = "D";
+
+        // if this value is true, StartTurn resume the loaded game rather than start a new turn.
+        // see StartTurn() comment
+        private bool _shouldStartTurnResumeGame = false;
+
+        // a set of used city names in this game.
+        // this is used to validate city name in CityCenter class.
+        internal ISet<string> UsedCityNames { get; } = new HashSet<string>();
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class, by creating a new game.
         /// </summary>
-        /// <param name="width">The width of the <see cref="Terrain"/> of this game. It must be positive.</param>
-        /// <param name="height">The height of the <see cref="Terrain"/> of this game. It must be positive.</param>
-        /// <param name="numOfPlayer">The number of player. It must be positive.</param>
+        /// <param name="width">The width of the <see cref="Terrain"/> of this game. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultTerrainWidth"/> of the scheme.</param>
+        /// <param name="height">The height of the <see cref="Terrain"/> of this game. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultTerrainHeight"/> of the scheme.</param>
+        /// <param name="numOfPlayer">The number of players. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultNumberOfPlayers"/> of the scheme.</param>
+        /// <param name="schemeFactory">The factory for <see cref="IGameScheme"/> of the game.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="schemeFactory"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="width"/> is not positive
         /// or
         /// <paramref name="height"/> is not positive
         /// or
         /// <paramref name="numOfPlayer"/> is not positive
+        /// or
+        /// parameter is not equal to default value of scheme, while scheme forces to be.
         /// </exception>
-        public Game(int width, int height, int numOfPlayer)
+        public Game(int width, int height, int numOfPlayer, IGameSchemeFactory schemeFactory)
         {
+            if (schemeFactory == null)
+                throw new ArgumentNullException("schemeFactory");
+
+            Scheme = schemeFactory.Create();
+            RegisterGuid();
+
+            if (width == -1)
+                width = Scheme.DefaultTerrainWidth;
+            if (height == -1)
+                height = Scheme.DefaultTerrainWidth;
+            if (numOfPlayer == -1)
+                numOfPlayer = Scheme.DefaultNumberOfPlayers;
+
             if (width <= 0)
                 throw new ArgumentException("width is not positive", "width");
             if (height <= 0)
                 throw new ArgumentException("height is not positive", "height");
             if (numOfPlayer <= 0)
                 throw new ArgumentException("numOfPlayer is not positive", "numOfPlayer");
+
+            if (Scheme.OnlyDefaultTerrain)
+            {
+                if (width != Scheme.DefaultTerrainWidth)
+                    throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "width");
+                if (height != Scheme.DefaultTerrainHeight)
+                    throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "height");
+            }
+            if (Scheme.OnlyDefaultPlayers)
+            {
+                if (numOfPlayer != Scheme.DefaultNumberOfPlayers)
+                    throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "numOfPlayer");
+            }
 
             _terrain = new Terrain(width, height);
 
@@ -108,78 +137,194 @@ namespace CivModel
                 _players.Add(new Player(this));
             }
 
-            var random = new Random();
-            foreach (var player in Players)
-            {
-                Terrain.Point pt;
-                do
-                {
-                    int x = random.Next((int)Math.Floor(Terrain.Width * 0.1),
-                        (int)Math.Ceiling(Terrain.Width * 0.9));
-                    int y = random.Next((int)Math.Floor(Terrain.Height * 0.1),
-                        (int)Math.Ceiling(Terrain.Height * 0.9));
-
-                    pt = Terrain.GetPoint(x, y);
-                } while (pt.Unit != null);
-
-                var pionner = new Pioneer(player);
-                pionner.PlacedPoint = pt;
-            }
+            Initialize(true);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class, by loading a existing save file.
         /// </summary>
         /// <param name="saveFile">The path of the save file.</param>
+        /// <param name="schemeFactories">the candidates of factories for <see cref="IGameScheme"/> of the game.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="schemeFactories"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidDataException">
         /// save file is invalid
+        /// or
+        /// there is no <see cref="IGameSchemeFactory"/> for this save file.
         /// </exception>
         /// <remarks>
         /// This constructor uses <see cref="File.OpenText(string)"/>.
         /// See the list of the exceptions <see cref="File.OpenText(string)"/> may throw.
         /// </remarks>
-        public Game(string saveFile)
+        public Game(string saveFile, IEnumerable<IGameSchemeFactory> schemeFactories)
         {
+            if (schemeFactories == null)
+                throw new ArgumentNullException("schemeFactory");
+
+            string errmsg = "save file is invalid";
+
+            Guid guid;
+            int[] ints;
             int numOfPlayer;
+
             using (var file = File.OpenText(saveFile))
             {
-                int[] ints;
+                string readLine()
+                {
+                    string s;
+                    do
+                    {
+                        if (file.EndOfStream)
+                            throw new InvalidDataException(errmsg);
+                        s = file.ReadLine();
+                    }
+                    while (s == "");
+                    return s;
+                }
+
                 try
                 {
-                    ints = file.ReadLine().Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
-                }
-                catch (Exception e) when (e is FormatException || e is OverflowException)
-                {
-                    throw new InvalidDataException("save file is invalid");
-                }
-                if (ints.Length != 3 || ints.Count(x => x <= 0) != 0)
-                    throw new InvalidDataException("save file is invalid");
+                    guid = Guid.ParseExact(readLine(), _guidSaveFormat);
 
-                numOfPlayer = ints[0];
-                _terrain = new Terrain(ints[1], ints[2]);
+                    var factory = schemeFactories.Where(f => f != null && f.Guid == guid).FirstOrDefault();
+                    if (factory == null)
+                        throw new InvalidDataException("there is no IGameSchemeFactory for this save file");
 
-                for (int y = 0; y < Terrain.Height; ++y)
-                {
-                    string line = file.ReadLine();
-                    for (int x = 0; x < Terrain.Width; ++x)
+                    Scheme = factory.Create();
+                    RegisterGuid();
+
+                    SubTurnNumber = Convert.ToInt32(readLine());
+                    if (SubTurnNumber < 0)
+                        throw new InvalidDataException(errmsg);
+
+                    ints = readLine().Split(' ').Select(str => Convert.ToInt32(str)).ToArray();
+                    if (ints.Length != 3 || ints.Count(x => x <= 0) != 0)
+                        throw new InvalidDataException(errmsg);
+
+                    numOfPlayer = ints[0];
+                    _terrain = new Terrain(ints[1], ints[2]);
+
+                    for (int y = 0; y < Terrain.Height; ++y)
                     {
-                        if (x >= line.Length)
-                            throw new InvalidDataException("save file is invalid");
+                        string line = readLine();
+                        for (int x = 0; x < Terrain.Width; ++x)
+                        {
+                            if (x >= line.Length)
+                                throw new InvalidDataException(errmsg);
 
-                        int idx = "POMFSTIH".IndexOf(line[x]);
-                        if (idx == -1)
-                            throw new InvalidDataException("save file is invalid");
+                            int idx = "POMFSTIH".IndexOf(line[x]);
+                            if (idx == -1)
+                                throw new InvalidDataException(errmsg);
 
-                        var point = Terrain.GetPoint(x, y);
-                        point.Type = (TerrainType)idx;
+                            var point = Terrain.GetPoint(x, y);
+                            point.Type = (TerrainType)idx;
+                        }
                     }
+
+                    for (int i = 0; i < numOfPlayer; ++i)
+                    {
+                        _players.Add(new Player(this));
+
+                        var territory = readLine().Split(':')
+                            .Where(str => str != "")
+                            .Select(s1 => s1.Split(',').Select(s2 => Convert.ToInt32(s2)).ToArray());
+                        foreach (var terr in territory)
+                        {
+                            if (terr.Length != 2)
+                                throw new InvalidDataException(errmsg);
+
+                            var ptTerr = Terrain.GetPoint(terr[0], terr[1]);
+                            _players[i].AddTerritory(ptTerr);
+                        }
+                    }
+
+                    while (!file.EndOfStream)
+                    {
+                        ints = readLine().Split(',').Select(str => Convert.ToInt32(str)).ToArray();
+
+                        if (ints.Length != 3)
+                            throw new InvalidDataException(errmsg);
+                        if (ints[0] < 0 || ints[0] >= numOfPlayer)
+                            throw new InvalidDataException(errmsg);
+
+                        var pos = Position.FromPhysical(ints[1], ints[2]);
+                        if (!Terrain.IsValidPosition(pos))
+                            throw new InvalidDataException(errmsg);
+                        var pt = Terrain.GetPoint(pos);
+
+                        guid = Guid.ParseExact(readLine(), _guidSaveFormat);
+                        var obj = GuidManager.Create(guid, Players[ints[0]], pt);
+                        switch (obj)
+                        {
+                            case CityCenter city:
+                            {
+                                city.Name = readLine();
+                                city.Population = Convert.ToDouble(readLine());
+
+                                int len = Convert.ToInt32(readLine());
+                                if (len < 0)
+                                    throw new InvalidDataException(errmsg);
+                                for (int i = 0; i < len; ++i)
+                                {
+                                    guid = Guid.ParseExact(readLine(), _guidSaveFormat);
+                                    GuidManager.Create(guid, Players[ints[0]], city.PlacedPoint.Value);
+                                }
+
+                                break;
+                            }
+                            case Unit unit:
+                            {
+                                unit.RemainAP = Convert.ToInt32(readLine());
+                                unit.RemainHP = Convert.ToInt32(readLine());
+                                break;
+                            }
+                            default:
+                                throw new InvalidDataException(errmsg);
+                        }
+                    }
+
+                    _shouldStartTurnResumeGame = true;
+
+                    Initialize(false);
+                }
+                catch (InvalidCastException)
+                {
+                    throw new InvalidDataException(errmsg);
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new InvalidDataException(errmsg);
+                }
+                catch (FormatException)
+                {
+                    throw new InvalidDataException(errmsg);
+                }
+                catch (OverflowException)
+                {
+                    throw new InvalidDataException(errmsg);
                 }
             }
+        }
 
-            for (int i = 0; i < numOfPlayer; ++i)
+        private void RegisterGuid()
+        {
+            Func<Player, Terrain.Point, IGuidTaggedObject> wrapper(Func<CityCenter, IGuidTaggedObject> supplier)
             {
-                _players.Add(new Player(this));
+                return (p, t) => {
+                    if (t.TileBuilding is CityCenter city && city.Owner == p)
+                        return supplier(city);
+                    else
+                        return null;
+                };
             }
+
+            GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
+            GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, wrapper(city => new FactoryBuilding(city)));
+            Scheme.RegisterGuid(this);
+        }
+
+        private void Initialize(bool isNewGame)
+        {
+            Scheme.InitializeGame(this, isNewGame);
         }
 
         /// <summary>
@@ -190,6 +335,9 @@ namespace CivModel
         {
             using (var file = File.CreateText(saveFile))
             {
+                file.WriteLine(Scheme.Factory.Guid.ToString(_guidSaveFormat));
+
+                file.WriteLine(SubTurnNumber);
                 file.WriteLine(Players.Count + " " + Terrain.Width + " " + Terrain.Height);
                 for (int y = 0; y < Terrain.Height; ++y)
                 {
@@ -199,39 +347,79 @@ namespace CivModel
                     }
                     file.WriteLine();
                 }
+
+                foreach (var player in Players)
+                {
+                    foreach (var tile in player.Territory)
+                    {
+                        file.Write(":" + tile.Position.X + "," + tile.Position.Y);
+                    }
+                    file.WriteLine();
+                }
+
+                for (int i = 0; i < Players.Count; ++i)
+                {
+                    foreach (var city in Players[i].Cities)
+                    {
+                        if (city.PlacedPoint?.Position is Position pos)
+                        {
+                            file.WriteLine(i + "," + pos.X + "," + pos.Y);
+                            file.WriteLine(city.Guid.ToString(_guidSaveFormat));
+                            file.WriteLine(city.Name);
+                            file.WriteLine(city.Population);
+
+                            file.WriteLine(city.InteriorBuildings.Count);
+                            foreach (var building in city.InteriorBuildings)
+                            {
+                                file.WriteLine(building.Guid);
+                            }
+                        }
+                    }
+
+                    foreach (var unit in Players[i].Units)
+                    {
+                        if (unit.PlacedPoint?.Position is Position pos)
+                        {
+                            file.WriteLine(i + "," + pos.X + "," + pos.Y);
+                            file.WriteLine(unit.Guid.ToString(_guidSaveFormat));
+                            file.WriteLine(unit.RemainAP);
+                            file.WriteLine(unit.RemainHP);
+                        }
+                    }
+                }
             }
         }
 
         /// <summary>
-        /// Starts the turn.
+        /// Starts the turn. If the game is loaded from a save file and not resumed, Resume the game.
         /// </summary>
+        /// <remarks>
+        /// This method also resumes the game loaded from a save file. In this case, Turn/Subturn does not change.
+        /// </remarks>
         /// <exception cref="InvalidOperationException">this game is inside turn yet</exception>
         public void StartTurn()
         {
             if (IsInsideTurn)
                 throw new InvalidOperationException("this game is inside turn yet");
 
-            if (SubTurnNumber % Players.Count == 0)
+            if (_shouldStartTurnResumeGame)
             {
+                _shouldStartTurnResumeGame = false;
+            }
+            else
+            {
+                if (SubTurnNumber % Players.Count == 0)
+                {
+                    foreach (Player p in Players)
+                    {
+                        p.PreTurn();
+                    }
+                }
+
                 foreach (Player p in Players)
                 {
-                    foreach (var unit in p.Units)
-                        unit.PreTurn();
-                    foreach (var city in p.Cities)
-                        city.PreTurn();
-
-                    p.PreTurn();
+                    p.PrePlayerSubTurn(PlayerInTurn);
                 }
-            }
-
-            foreach (Player p in Players)
-            {
-                foreach (var unit in p.Units)
-                    unit.PrePlayerSubTurn(PlayerInTurn);
-                foreach (var city in p.Cities)
-                    city.PrePlayerSubTurn(PlayerInTurn);
-
-                p.PrePlayerSubTurn(PlayerInTurn);
             }
 
             IsInsideTurn = true;
@@ -249,11 +437,6 @@ namespace CivModel
             foreach (Player p in Players)
             {
                 p.PostPlayerSubTurn(PlayerInTurn);
-
-                foreach (var unit in p.Units)
-                    unit.PostPlayerSubTurn(PlayerInTurn);
-                foreach (var city in p.Cities)
-                    city.PostPlayerSubTurn(PlayerInTurn);
             }
 
             if ((SubTurnNumber + 1) % Players.Count == 0)
@@ -261,11 +444,6 @@ namespace CivModel
                 foreach (Player p in Players)
                 {
                     p.PostTurn();
-
-                    foreach (var unit in p.Units)
-                        unit.PostTurn();
-                    foreach (var city in p.Cities)
-                        city.PostTurn();
                 }
             }
 

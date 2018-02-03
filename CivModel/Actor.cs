@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CivModel
 {
     /// <summary>
-    /// The result of a battle. This is used by <see cref="Actor.AttackTo(Actor)"/>.
+    /// The result of a battle. This is used by <see cref="Actor.AttackTo(Actor)"/> and <see cref="Actor.RangedAttackTo(Actor)"/>.
     /// </summary>
     public enum BattleResult
     {
@@ -43,9 +43,22 @@ namespace CivModel
         public abstract int MaxAP { get; }
 
         /// <summary>
-        /// The remaining AP. It is reset to <see cref="MaxAP"/> when <see cref="PreTurn"/> is called.
+        /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
+        /// It is reset to <see cref="MaxAP"/> when <see cref="PreTurn"/> is called.
         /// </summary>
-        public int RemainAP { get; private set; }
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="RemainAP"/> is not in [0, <see cref="MaxAP"/>]</exception>
+        public int RemainAP
+        {
+            get => _remainAP;
+            set
+            {
+                if (value < 0 || value > MaxAP)
+                    throw new ArgumentOutOfRangeException("RemainAP", RemainAP, "RemainAP is not in [0, MaxAP]");
+
+                _remainAP = value;
+            }
+        }
+        private int _remainAP = 0;
 
         /// <summary>
         /// The flag indicating this actor is skipped in this turn. This flag is used by Presenter module.
@@ -119,9 +132,10 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Actor"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this actor.</param>
+        /// <param name="point">The tile where the object will be.</param>
         /// <param name="tag">The <seealso cref="TileTag"/> of this actor.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public Actor(Player owner, TileTag tag) : base(tag)
+        public Actor(Player owner, Terrain.Point point, TileTag tag) : base(point, tag)
         {
             Owner = owner ?? throw new ArgumentNullException("owner");
             RemainHP = MaxHP;
@@ -204,7 +218,7 @@ namespace CivModel
             if (amount > RemainAP)
                 throw new ArgumentException("amount is bigger than RemainAP", "amount");
 
-            RemainAP -= amount;
+            _remainAP -= amount;
         }
 
         /// <summary>
@@ -213,11 +227,20 @@ namespace CivModel
         /// <seealso cref="ConsumeAP(int)"/>
         public void ConsumeAllAP()
         {
-            RemainAP = 0;
+            _remainAP = 0;
         }
 
         /// <summary>
-        /// Attacks to another <see cref="Actor"/>.
+        /// Heals HP of this actor with the specified amount.
+        /// </summary>
+        /// <param name="amount">The amount to heal.</param>
+        public void Heal(double amount)
+        {
+            _remainHP = Math.Min(MaxHP, RemainHP + amount);
+        }
+
+        /// <summary>
+        /// Melee-Attack to another <see cref="Actor"/>.
         /// </summary>
         /// <param name="opposite">The opposite.</param>
         /// <returns>
@@ -226,6 +249,7 @@ namespace CivModel
         ///   if this object has died, <see cref="BattleResult.Defeated"/>.
         ///   if both have died or survived, <see cref="BattleResult.Draw"/>.
         /// </returns>
+        /// <seealso cref="RangedAttackTo(Actor)"/>
         public BattleResult AttackTo(Actor opposite)
         {
             int rs = 0;
@@ -256,6 +280,33 @@ namespace CivModel
             }
 
             return rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
+        }
+
+        /// <summary>
+        /// Ranged-Attack to another <see cref="Actor"/>.
+        /// </summary>
+        /// <param name="opposite">The opposite.</param>
+        /// <returns>
+        ///   <see cref="BattleResult"/> indicating the result of this battle.
+        ///   if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.
+        ///   otherwise, <see cref="BattleResult.Draw"/>.
+        /// </returns>
+        /// <seealso cref="AttackTo(Actor)"/>
+        public BattleResult RangedAttackTo(Actor opposite)
+        {
+            opposite._remainHP -= AttackPower;
+            if (opposite._remainHP <= 0)
+            {
+                opposite._remainHP = 0;
+                opposite.Die(Owner);
+                return BattleResult.Victory;
+            }
+            else if (opposite._remainHP > opposite.MaxHP)
+            {
+                opposite._remainHP = opposite.MaxHP;
+            }
+
+            return BattleResult.Draw;
         }
 
         /// <summary>
@@ -292,10 +343,10 @@ namespace CivModel
         /// </summary>
         public virtual void PreTurn()
         {
-            RemainAP = MaxAP;
+            _remainAP = MaxAP;
             SkipFlag = false;
 
-            RemainHP = Math.Min(MaxHP, RemainHP + MaxHealPerTurn);
+            Heal(MaxHealPerTurn);
         }
 
         /// <summary>

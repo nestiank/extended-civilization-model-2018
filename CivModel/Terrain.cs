@@ -12,6 +12,7 @@ namespace CivModel
         private struct Point_t
         {
             public TerrainType Type;
+            public Player TileOwner;
             public TileObject[] PlacedObjects;
         }
 

@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public sealed class JediKnight : Unit
+    public class GenghisKhan : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("8209396E-45E3-441C-879F-29EFE9EDC23C");
+        public static Guid ClassGuid { get; } = new Guid("DCB724DA-430E-4B13-8703-9517F173FE4B");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 4;
+        public override int MaxAP => 2;
 
-        public override double MaxHP => 30;
+        public override double MaxHP => 50;
 
-        public override double AttackPower => 25;
-        public override double DefencePower => 5;
+        public override double AttackPower => 35;
+        public override double DefencePower => 10;
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -24,24 +24,24 @@ namespace CivModel.Common
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public JediKnight(Player owner, Terrain.Point point) : base(owner, point)
+        public GenghisKhan(Player owner) : base(owner)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
         }
     }
 
-    public class JediKnightProductionFactory : ITileObjectProductionFactory
+    public class GenghisKhanProductionFactory : ITileObjectProductionFactory
     {
-        private static Lazy<JediKnightProductionFactory> _instance
-            = new Lazy<JediKnightProductionFactory>(() => new JediKnightProductionFactory());
-        public static JediKnightProductionFactory Instance => _instance.Value;
-        private JediKnightProductionFactory()
+        private static Lazy<GenghisKhanProductionFactory> _instance
+            = new Lazy<GenghisKhanProductionFactory>(() => new GenghisKhanProductionFactory());
+        public static GenghisKhanProductionFactory Instance => _instance.Value;
+        private GenghisKhanProductionFactory()
         {
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 7.5, 3);
+            return new TileObjectProduction(this, owner, 100, 20);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
@@ -49,9 +49,9 @@ namespace CivModel.Common
                 && point.TileBuilding is CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
-        public TileObject CreateTileObject(Player owner, Terrain.Point point)
+        public TileObject CreateTileObject(Player owner)
         {
-            return new JediKnight(owner, point);
+            return new GenghisKhan(owner);
         }
     }
 }

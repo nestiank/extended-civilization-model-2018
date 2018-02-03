@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using CivPresenter;
 using CivModel;
+using CivModel.Common;
 
 namespace WinformView
 {
@@ -21,7 +22,7 @@ namespace WinformView
 
         private Presenter presenter_;
 
-        private int blockSize_ = 24;
+        private float blockSize_ = 24;
 
         private int sightDx_ = 0;
         private int sightDy_ = 0;
@@ -29,9 +30,12 @@ namespace WinformView
         private Point? selectedPoint_;
         private Terrain.Point? selectedTile_;
 
+        public DeploySelector deploySelector_;
+
         public MainForm()
         {
             InitializeComponent();
+            MouseWheel += MainForm_MouseWheel;
         }
 
         public void Refocus()
@@ -59,6 +63,15 @@ namespace WinformView
             }
             if (presenter_ == null)
                 presenter_ = new Presenter(this);
+
+            RefreshTitle();
+
+            InitPlayerColor();
+        }
+
+        private void RefreshTitle()
+        {
+            Text = "WinformView - Player " + presenter_.Game.PlayerNumberInTurn;
         }
 
         private void MainForm_Paint(object sender, PaintEventArgs e)
@@ -106,17 +119,68 @@ namespace WinformView
                         tbl = new int[] {
                                 (int)0xffdeb887,
                                 (int)0xff1c6ba0,
-                                (int)0xff000000,
+                                (int)0xff303030,
                                 (int)0xff00ff00,
                                 (int)0xff007f00,
                                 (int)0xff7f7f7f,
-                                (int)0xffffffff,
+                                (int)0xffe5e5e0,
                                 (int)0xffffa500,
                             };
                     }
 
                     e.Graphics.FillPolygon(new SolidBrush(Color.FromArgb(tbl[(int)point.Type])), polygon);
                     e.Graphics.DrawPolygon(Pens.AntiqueWhite, polygon);
+
+                    if (point.TileOwner != null)
+                    {
+                        var color = GetPlayerColor(point.TileOwner, 0x3f);
+                        var brush = new SolidBrush(color);
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.625f;
+                        e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
+                    }
+
+                    if (point.TileBuilding is CityCenter)
+                    {
+                        var color = GetPlayerColor(point.TileBuilding.Owner);
+                        var brush = new SolidBrush(color);
+                        var pen = new Pen(Color.White, 2);
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.33f;
+                        e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
+                        e.Graphics.DrawEllipse(pen, cx - radius, cy - radius, radius * 2, radius * 2);
+                    }
+                    else if (point.TileBuilding != null)
+                    {
+                        var color = GetPlayerColor(point.TileBuilding.Owner);
+                        var brush = new SolidBrush(color);
+                        var pen = new Pen(Color.HotPink, 2);
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.25f;
+                        e.Graphics.FillRectangle(brush, cx - radius, cy - radius, radius * 2, radius * 2);
+                        e.Graphics.DrawRectangle(pen, cx - radius, cy - radius, radius * 2, radius * 2);
+                    }
+
+                    if (point.Unit != null)
+                    {
+                        var color = GetPlayerColor(point.Unit.Owner);
+                        var brush = new SolidBrush(color);
+                        var pen = new Pen(Color.Red, 2);
+                        float cx = px + ax;
+                        float cy = py + 2 * ay;
+                        float radius = blockSize_ * 0.20f;
+                        var poly = new PointF[] {
+                            new PointF(cx - radius, cy),
+                            new PointF(cx, cy + radius),
+                            new PointF(cx + radius, cy),
+                            new PointF(cx, cy - radius)
+                        };
+                        e.Graphics.FillPolygon(brush, poly);
+                        e.Graphics.DrawPolygon(pen, poly);
+                    }
 
                     if (selectedPoint_ is Point ptm && IsInPolygon(polygon, new PointF(ptm.X, ptm.Y)))
                     {
@@ -139,6 +203,31 @@ namespace WinformView
             }
         }
 
+        private Color[] playerColors_;
+        private void InitPlayerColor()
+        {
+            playerColors_ = new Color[presenter_.Game.Players.Count];
+            for (int idx = 0; idx < playerColors_.Length; ++idx)
+            {
+                unchecked
+                {
+                    int p = (idx % 6) + 1;
+                    int color = (((p & 4) != 0 ? 0xff : 0) << 16) | (((p & 2) != 0 ? 0xff : 0) << 8) | ((p & 1) != 0 ? 0xff : 0);
+                    playerColors_[idx] = Color.FromArgb((0xff << 24) | color);
+                }
+            }
+        }
+        private Color GetPlayerColor(Player player, int alpha = 0xff)
+        {
+            int idx = 0;
+            for (; idx < presenter_.Game.Players.Count; ++idx)
+                if (presenter_.Game.Players[idx] == player)
+                    break;
+
+            var c = playerColors_[idx];
+            return Color.FromArgb(alpha, c.R, c.G, c.B);
+        }
+
         private static bool IsInPolygon(PointF[] poly, PointF point)
         {
             var coef = poly.Skip(1).Select((p, i) =>
@@ -157,21 +246,22 @@ namespace WinformView
             return true;
         }
 
-
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            Action<int> foo = i => {
+            void foo(int i)
+            { 
                 if (selectedTile_.HasValue)
                 {
                     var pt = selectedTile_.Value;
                     pt.Type = (TerrainType)i;
                 }
-            };
+            }
 
             switch (e.KeyCode)
             {
                 case Keys.Enter:
                     presenter_.CommandApply();
+                    RefreshTitle();
                     Invalidate();
                     break;
 
@@ -185,6 +275,63 @@ namespace WinformView
                         presenter_.SaveFile = "map.txt";
                     presenter_.CommandSave();
                     MessageBox.Show("Saved");
+                    break;
+
+                case Keys.F1:
+                    if (selectedTile_.HasValue)
+                    {
+                        new TileInfo(presenter_.Game, selectedTile_.Value).ShowDialog();
+                    }
+                    break;
+
+                case Keys.F2:
+                    if (deploySelector_ == null)
+                    {
+                        deploySelector_ = new DeploySelector(
+                            presenter_.Game, () => deploySelector_ = null);
+                        deploySelector_.Show();
+                    }
+                    break;
+
+                case Keys.F3:
+                    if (selectedTile_.HasValue && deploySelector_ != null)
+                    {
+                        deploySelector_.Deploy(selectedTile_.Value);
+                    }
+                    break;
+
+                case Keys.F12:
+                    {
+                        string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        {
+                            var dialog = new ColorDialog();
+                            dialog.Color = playerColors_[idx];
+                            if (dialog.ShowDialog() == DialogResult.OK)
+                            {
+                                playerColors_[idx] = dialog.Color;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("invalid player index");
+                        }
+                    }
+                    break;
+
+                case Keys.C:
+                    if (selectedTile_.HasValue)
+                    {
+                        if (selectedTile_.Value.TileBuilding is CityCenter)
+                        {
+                            selectedTile_.Value.TileBuilding.PlacedPoint = null;
+                        }
+                        else
+                        {
+                            var city = new CityCenter(presenter_.Game.PlayerInTurn, selectedTile_.Value);
+                        }
+                        Invalidate();
+                    }
                     break;
 
                 case Keys.Left:
@@ -279,6 +426,87 @@ namespace WinformView
                     }
                     break;
 
+                case Keys.D3:
+                    if (selectedTile_.HasValue)
+                    {
+                        string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        {
+                            try
+                            {
+                                string strn = Microsoft.VisualBasic.Interaction.InputBox("몇개");
+                                int n = Convert.ToInt32(strn);
+                                var pos = selectedTile_.Value.Position;
+                                do
+                                {
+                                    var pt = presenter_.Game.Terrain.GetPoint(pos);
+                                    pt.TileOwner = presenter_.Game.Players[idx];
+                                    pos.X += 1;
+                                }
+                                while (--n > 0 && presenter_.Game.Terrain.IsValidPosition(pos));
+                            }
+                            catch (Exception ex) when (ex is FormatException || ex is OverflowException)
+                            {
+                                MessageBox.Show("invalid input");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("invalid player index");
+                        }
+                    }
+                    break;
+                case Keys.D4:
+                    if (selectedTile_.HasValue)
+                    {
+                        string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        {
+                            if (MessageBox.Show("채우기 고고혓?", "ㄱㄱ?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                            {
+                                var newOwner = presenter_.Game.Players[idx];
+                                var origin = selectedTile_.Value.TileOwner;
+                                if (newOwner == origin)
+                                    break;
+                                RecursiveOwn(origin, newOwner, selectedTile_.Value);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("invalid player index");
+                        }
+                    }
+                    break;
+
+                case Keys.B:
+                    if (selectedTile_.HasValue)
+                    {
+                        var tile = selectedTile_.Value;
+                        try
+                        {
+                            tile.TileOwner = presenter_.Game.PlayerInTurn;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // ignore
+                        }
+                    }
+                    break;
+                case Keys.N:
+                    if (selectedTile_.HasValue)
+                    {
+                        var tile = selectedTile_.Value;
+                        try
+                        {
+                            tile.TileOwner = null;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // ignore
+                        }
+                    }
+                    break;
+
                 case Keys.P:
                     foo(0);
                     break;
@@ -315,6 +543,15 @@ namespace WinformView
             foreach (var sub in pt.Adjacents())
                 if (sub.HasValue)
                     RecursiveFill(origin, newType, sub.Value);
+        }
+        private void RecursiveOwn(Player origin, Player newOwner, Terrain.Point pt)
+        {
+            if (pt.TileOwner != origin)
+                return;
+            pt.TileOwner = newOwner;
+            foreach (var sub in pt.Adjacents())
+                if (sub.HasValue)
+                    RecursiveOwn(origin, newOwner, sub.Value);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -384,6 +621,11 @@ namespace WinformView
             {
                 selectedPoint_ = e.Location;
             }
+        }
+
+        private void MainForm_MouseWheel(object sender, MouseEventArgs e)
+        {
+            blockSize_ *= (float)Math.Pow(1.02, e.Delta / 64.0f);
         }
     }
 }

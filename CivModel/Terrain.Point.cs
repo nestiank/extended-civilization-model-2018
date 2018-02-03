@@ -34,6 +34,30 @@ namespace CivModel
             }
 
             /// <summary>
+            /// <see cref="Player"/> which owns this tile. If no one owns this tile, <c>null</c>.
+            /// </summary>
+            /// <remarks>
+            /// The setter of this property is wrapper of <see cref="Player.AddTerritory(Point)"/> and <see cref="Player.RemoveTerritory(Point)"/>.
+            /// See these methods for more details and throwable exceptions.
+            /// </remarks>
+            /// <seealso cref="Player.AddTerritory(Point)"/>
+            /// <seealso cref="Player.RemoveTerritory(Point)"/>
+            public Player TileOwner
+            {
+                get => Terrain._points[Position.Y, Position.X].TileOwner;
+                set
+                {
+                    if (value != TileOwner)
+                    {
+                        if (TileOwner != null)
+                            TileOwner.RemoveTerritory(this);
+                        if (value != null)
+                            value.AddTerritory(this);
+                    }
+                }
+            }
+
+            /// <summary>
             /// The <see cref="Unit"/> placed at the tile.
             /// </summary>
             public Unit Unit => (Unit)GetTileObject(TileTag.Unit);
@@ -42,30 +66,6 @@ namespace CivModel
             /// The <see cref="TileBuilding"/> placed at the tile.
             /// </summary>
             public TileBuilding TileBuilding => (TileBuilding)GetTileObject(TileTag.TileBuilding);
-
-            /// <summary>
-            /// this function is used internally by <see cref="Terrain"/> class and getters of <see cref="Terrain.Point"/>.
-            /// </summary>
-            internal TileObject GetTileObject(TileTag tag)
-            {
-                return Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag];
-            }
-
-            /// <summary>
-            /// this function is used internally by <see cref="Terrain"/> class.
-            /// </summary>
-            internal void SetTileObject(TileObject obj)
-            {
-                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)obj.TileTag] = obj;
-            }
-
-            /// <summary>
-            /// this function is used internally by <see cref="Terrain"/> class.
-            /// </summary>
-            internal void UnsetTileObject(TileTag tag)
-            {
-                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag] = null;
-            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Point"/> struct.
@@ -80,6 +80,30 @@ namespace CivModel
 
                 _terrain = terrain;
                 Position = pos;
+            }
+
+            // this function is used internally by Terrain class and getters of this class.
+            internal TileObject GetTileObject(TileTag tag)
+            {
+                return Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag];
+            }
+
+            // this function is used internally by Terrain class.
+            internal void SetTileObject(TileObject obj)
+            {
+                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)obj.TileTag] = obj;
+            }
+
+            // this function is used internally by Terrain class.
+            internal void UnsetTileObject(TileTag tag)
+            {
+                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag] = null;
+            }
+
+            // this function is used internally by Player class.
+            internal void SetTileOwner(Player player)
+            {
+                Terrain._points[Position.Y, Position.X].TileOwner = player;
             }
 
             /// <summary>

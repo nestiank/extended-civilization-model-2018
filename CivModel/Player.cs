@@ -14,50 +14,108 @@ namespace CivModel
     public class Player : ITurnObserver
     {
         /// <summary>
-        /// The gold of this player.
+        /// The gold of this player. This value is not negative.
         /// </summary>
+        /// <seealso cref="GoldIncome"/>
         public double Gold { get; private set; } = 0;
 
         /// <summary>
-        /// The gold income of this player.
+        /// The gold income of this player. This is not negative, and can be different from <see cref="GoldNetIncome"/>
         /// </summary>
+        /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
-        /// <seealso cref="Game.GoldCoefficient"/>
-        public double GoldIncome => Game.GoldCoefficient * TaxRate;
+        /// <seealso cref="IGameScheme.GoldCoefficient"/>
+        public double GoldIncome => Game.Scheme.GoldCoefficient * TaxRate;
 
         /// <summary>
-        /// The happiness of this player. This value cannot exceed <c>100</c>.
+        /// The net income of gold.
         /// </summary>
+        /// <seealso cref="GoldIncome"/>
+        public double GoldNetIncome => GoldIncome - EconomicInvestment - ResearchInvestment;
+
+        /// <summary>
+        /// The happiness of this player. This value is in [-100, 100].
+        /// </summary>
+        /// <seealso cref="HappinessIncome"/>
         public double Happiness { get; private set; } = 100;
 
         /// <summary>
         /// The happiness income of this player.
         /// </summary>
-        /// <seealso cref="Game.HappinessCoefficient"/>
-        public double HappinessIncome => Game.HappinessCoefficient;
+        /// <seealso cref="IGameScheme.HappinessCoefficient"/>
+        public double HappinessIncome => Game.Scheme.HappinessCoefficient * (EconomicInvestment - BasicEconomicRequire);
 
         /// <summary>
-        /// The labor per turn of this player.
+        /// The labor per turn of this player. It is equal to sum of all <see cref="CityCenter.Labor"/> of cities of this player.
         /// </summary>
-        /// <seealso cref="Game.LaborCoefficient"/>
-        /// <seealso cref="Game.LaborHappinessConstant"/>
-        public double Labor => Game.LaborCoefficient * (Game.LaborHappinessConstant + Happiness);
+        /// <seealso cref="CityCenter.Labor"/>
+        public double Labor => Cities.Select(city => city.Labor).Sum();
 
         /// <summary>
-        /// The tax rate of this player. It affects <see cref="GoldIncome"/>.
+        /// The whole population which this player has. It is equal to sum of all <see cref="CityCenter.Population"/> of cities of this player.
         /// </summary>
-        /// <exception cref="ArgumentException"><see cref="TaxRate"/> is not in [0, 1]</exception>
+        /// <seealso cref="CityCenter.Population"/>
+        public double Population => Cities.Select(city => city.Population).Sum();
+
+        /// <summary>
+        /// The tax rate of this player. It affects <see cref="GoldIncome"/> and <see cref="BasicEconomicRequire"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="TaxRate"/> is not in [0, 1]</exception>
         public double TaxRate
         {
             get => _taxRate;
             set
             {
                 if (value < 0 && value > 1)
-                    throw new ArgumentException("TaxRate is not in [0, 1]");
+                    throw new ArgumentOutOfRangeException("TaxRate", value, "TaxRate is not in [0, 1]");
                 _taxRate = value;
             }
         }
         private double _taxRate = 1;
+
+        /// <summary>
+        /// The basic economic gold requirement.
+        /// </summary>
+        /// <seealso cref="EconomicInvestment"/>
+        public double BasicEconomicRequire => Game.Scheme.EconomicRequireCoefficient * Population * (Game.Scheme.EconomicRequireTaxRateConstant + TaxRate);
+
+        /// <summary>
+        /// The amount of gold for economic investment.
+        /// </summary>
+        /// <seealso cref="BasicEconomicRequire"/>
+        public double EconomicInvestment
+        {
+            get => _economicInvestment;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException("EconomicInvestment", value, "EconomicInvest is negative");
+                _economicInvestment = value;
+            }
+        }
+        private double _economicInvestment = 0;
+
+        /// <summary>
+        /// The basic research gold requirement.
+        /// </summary>
+        /// <seealso cref="ResearchInvestment"/>
+        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient;
+
+        /// <summary>
+        /// The amount of gold for research investment.
+        /// </summary>
+        /// <seealso cref="BasicResearchRequire"/>
+        public double ResearchInvestment
+        {
+            get => _researchInvestment;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException("ResearchInvestment", value, "ResearchInvest is negative");
+                _researchInvestment = value;
+            }
+        }
+        private double _researchInvestment = 0;
 
         /// <summary>
         /// The list of units of this player.
@@ -89,8 +147,8 @@ namespace CivModel
         /// The list of additional available productions of this player.
         /// This list will added to the calculation of <see cref="GetAvailableProduction"/>
         /// </summary>
-        public List<IProductionFactory> AdditionalAvailableProduction => _additionalAvailableProduction;
-        private readonly List<IProductionFactory> _additionalAvailableProduction = new List<IProductionFactory>();
+        public ISet<IProductionFactory> AdditionalAvailableProduction => _additionalAvailableProduction;
+        private readonly HashSet<IProductionFactory> _additionalAvailableProduction = new HashSet<IProductionFactory>();
 
         /// <summary>
         /// The estimated used labor in this turn.
@@ -100,6 +158,12 @@ namespace CivModel
         /// You must call that function before use this property.
         /// </remarks>
         public double EstimatedUsedLabor { get; private set; }
+
+        /// <summary>
+        /// The list of tiles which this player owns as territory.
+        /// </summary>
+        public IReadOnlyList<Terrain.Point> Territory => _territory;
+        private readonly List<Terrain.Point> _territory = new List<Terrain.Point>();
 
         /// <summary>
         /// Whether this player is defeated.
@@ -176,10 +240,48 @@ namespace CivModel
         }
 
         /// <summary>
+        /// Adds the territory of this player.
+        /// </summary>
+        /// <param name="pt">The tile to be in the territory.</param>
+        /// <exception cref="InvalidOperationException">a <see cref="TileBuilding"/> of another player is at <paramref name="pt"/></exception>
+        public void AddTerritory(Terrain.Point pt)
+        {
+            if (pt.TileOwner != this)
+            {
+                if (pt.TileOwner != null)
+                    pt.TileOwner.RemoveTerritory(pt);
+
+                pt.SetTileOwner(this);
+                _territory.Add(pt);
+            }
+        }
+
+        /// <summary>
+        /// Removes the territory of this player.
+        /// </summary>
+        /// <param name="pt">The tile to be out of the territory.</param>
+        /// <exception cref="ArgumentException"><paramref name="pt"/> is not in the territoriy of this player</exception>
+        /// <exception cref="InvalidOperationException">the tile where a <see cref="TileBuilding"/> is cannot be removed from the territory</exception>
+        public void RemoveTerritory(Terrain.Point pt)
+        {
+            if (pt.TileOwner != this)
+                throw new ArgumentException("pt is not in the territoriy of this player", "pt");
+            if (pt.TileBuilding != null)
+                throw new InvalidOperationException("the tile where a TileBuilding is cannot be removed from the territory");
+
+            _territory.Remove(pt);
+            pt.SetTileOwner(null);
+        }
+
+        /// <summary>
         /// Called before a turn.
         /// </summary>
         public void PreTurn()
         {
+            foreach (var unit in Units)
+                unit.PreTurn();
+            foreach (var city in Cities)
+                city.PreTurn();
         }
 
         /// <summary>
@@ -187,13 +289,18 @@ namespace CivModel
         /// </summary>
         public void PostTurn()
         {
+            foreach (var city in Cities)
+                city.PostTurn();
+            foreach (var unit in Units)
+                unit.PostTurn();
+
             var dg = GoldIncome;
             var dh = HappinessIncome;
 
             productionProcess();
 
-            Gold += dg;
-            Happiness = Math.Min(100, Happiness + dh);
+            Gold = Math.Max(0, Gold + dg);
+            Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
         }
 
         /// <summary>
@@ -202,6 +309,10 @@ namespace CivModel
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public void PrePlayerSubTurn(Player playerInTurn)
         {
+            foreach (var unit in Units)
+                unit.PrePlayerSubTurn(playerInTurn);
+            foreach (var city in Cities)
+                city.PrePlayerSubTurn(playerInTurn);
         }
 
         /// <summary>
@@ -210,6 +321,10 @@ namespace CivModel
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public void PostPlayerSubTurn(Player playerInTurn)
         {
+            foreach (var city in Cities)
+                city.PostPlayerSubTurn(playerInTurn);
+            foreach (var unit in Units)
+                unit.PostPlayerSubTurn(playerInTurn);
         }
 
         /// <summary>

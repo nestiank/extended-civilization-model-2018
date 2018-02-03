@@ -8,42 +8,41 @@ using CivModel.Common;
 namespace CivModel
 {
     /// <summary>
-    /// The factory interface of <see cref="TileObjectProduction"/>.
-    /// This interface additionally provides <see cref="IsPlacable(TileObjectProduction, Terrain.Point)"/>
-    ///  and <see cref="CreateTileObject(Player, Terrain.Point)"/> methods.
+    /// The factory interface of <see cref="InteriorBuildingProduction"/>.
+    /// This interface additionally provides <see cref="IsPlacable(InteriorBuildingProduction, CityCenter)"/>
+    ///  and <see cref="CreateInteriorBuilding(CityCenter)"/> methods.
     /// </summary>
     /// <seealso cref="CivModel.IProductionFactory" />
-    public interface ITileObjectProductionFactory : IProductionFactory
+    public interface IInteriorBuildingProductionFactory : IProductionFactory
     {
         /// <summary>
-        /// Determines whether the production result is placable at the specified point.
+        /// Determines whether the production result is placable in the specified city.
         /// </summary>
         /// <param name="production">The production.</param>
-        /// <param name="point">The point to test to place the production result.</param>
+        /// <param name="city">The city to test to place the production result.</param>
         /// <returns>
         ///   <c>true</c> if the production is placable; otherwise, <c>false</c>.
         /// </returns>
-        bool IsPlacable(TileObjectProduction production, Terrain.Point point);
+        bool IsPlacable(InteriorBuildingProduction production, CityCenter city);
 
         /// <summary>
-        /// Creates the <see cref="TileObject"/> which is the production result.
+        /// Creates the <see cref="InteriorBuilding"/> which is the production result.
         /// </summary>
-        /// <param name="owner">The <see cref="Player"/> who owns the result.</param>
-        /// <param name="point">The tile where the object will be.</param>
-        /// <returns>the created <see cref="TileObject"/> result.</returns>
-        TileObject CreateTileObject(Player owner, Terrain.Point point);
+        /// <param name="city">The <see cref="CityCenter"/> who will own the building.</param>
+        /// <returns>the created <see cref="InteriorBuilding"/> result.</returns>
+        InteriorBuilding CreateInteriorBuilding(CityCenter city);
     }
 
     /// <summary>
-    /// The <see cref="Production"/> class for <see cref="TileObject"/>
+    /// The <see cref="Production"/> class for <see cref="InteriorBuilding"/>
     /// </summary>
     /// <seealso cref="CivModel.Production" />
-    public class TileObjectProduction : Production
+    public class InteriorBuildingProduction : Production
     {
-        private readonly ITileObjectProductionFactory _factory;
+        private readonly IInteriorBuildingProductionFactory _factory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TileObjectProduction"/> class.
+        /// Initializes a new instance of the <see cref="InteriorBuildingProduction"/> class.
         /// </summary>
         /// <param name="factory">The factory object of this production kind.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the production.</param>
@@ -56,8 +55,8 @@ namespace CivModel
         /// or
         /// <paramref name="owner"/> is <c>null</c>
         /// </exception>
-        public TileObjectProduction(
-            ITileObjectProductionFactory factory, Player owner,
+        public InteriorBuildingProduction(
+            IInteriorBuildingProductionFactory factory, Player owner,
             double totalCost, double capacityPerTurn)
             : base(factory, owner, totalCost, capacityPerTurn)
         {
@@ -73,7 +72,9 @@ namespace CivModel
         /// </returns>
         public override bool IsPlacable(Terrain.Point point)
         {
-            return _factory.IsPlacable(this, point);
+            if (point.TileBuilding is CityCenter city && city.Owner == Owner)
+                return _factory.IsPlacable(this, city);
+            return false;
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace CivModel
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            _factory.CreateTileObject(Owner, point);
+            _factory.CreateInteriorBuilding((CityCenter)point.TileBuilding);
         }
     }
 }

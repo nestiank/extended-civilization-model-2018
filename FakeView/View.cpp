@@ -18,11 +18,7 @@ namespace FakeView
             }
         }
         if (!m_presenter)
-            m_presenter = gcnew CivPresenter::Presenter(this, nullptr);
-        
-        // test code
-        m_presenter->Game->PlayerInTurn->AdditionalAvailableProduction->Add(
-            CivModel::Common::JediKnightProductionFactory::Instance);
+            m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
     }
 
     void View::Refocus()
@@ -192,21 +188,59 @@ namespace FakeView
         m_screen->PrintString(0, y, 0b0000'1111, "Production UI");
 
         auto player = m_presenter->Game->PlayerInTurn;
-        if ((y = 2) >= scrsz.height)
+        y += 2;
+
+        if (y  >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Total Gold: " + std::to_string(player->Gold)
+            + " (+ " + std::to_string(player->GoldNetIncome) + ")");
+        ++y;
+
+        if (y >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Total Happiness: " + std::to_string(player->Happiness)
+            + " (+ " + std::to_string(player->HappinessIncome) + ")");
+        ++y;
+
+        if (y >= scrsz.height)
             return;
         m_screen->PrintString(0, y, 0b0000'0111,
             "Total Labor: " + std::to_string(player->Labor)
             + " (Used: " + std::to_string(player->EstimatedUsedLabor) + ")");
+        ++y;
+
+        if (y >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Total Population: " + std::to_string(player->Population));
+        ++y;
+
+        if (y >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Economic Investment: " + std::to_string(player->EconomicInvestment)
+            + " (basic requirement: " + std::to_string(player->BasicEconomicRequire) + ")");
+        ++y;
+
+        if (y >= scrsz.height)
+            return;
+        m_screen->PrintString(0, y, 0b0000'0111,
+            "Research Investment: " + std::to_string(player->ResearchInvestment)
+            + " (basic requirement: " + std::to_string(player->BasicResearchRequire) + ")");
+        ++y;
 
         unsigned color = 0b0000'0111;
+        y += 2;
         if (m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
             color = 0b1111'0000;
-        if ((y = 4) >= scrsz.height)
+        if (y >= scrsz.height)
             return;
         m_screen->PrintString(0, y, color, "Add Production");
 
         int idx = 0;
-        y = 5;
+        y += 1;
         for (auto node = player->Deployment->First; node != nullptr; node = node->Next)
         {
             if (y >= scrsz.height)
@@ -302,6 +336,14 @@ namespace FakeView
     {
         switch (ch)
         {
+            case ',':
+            case '<':
+                if (!m_presenter->SaveFile)
+                    m_presenter->SaveFile = L"map.txt";
+                m_presenter->CommandSave();
+                MessageBox(nullptr, L"Saved", L"", MB_OK);
+                break;
+
             case 0x1b: // ESC
                 m_presenter->CommandCancel();
                 break;
@@ -400,7 +442,10 @@ namespace FakeView
     void View::PrintTerrain(int px, int py, CivModel::Terrain::Point point)
     {
         auto& c = m_screen->GetChar(px, py);
-        c.color = 0b0000'0111;
+        if (point.TileOwner)
+            c.color = GetPlayerColor(point.TileOwner);
+        else
+            c.color = 0b0000'0111;
 
         switch (point.Type)
         {
@@ -476,7 +521,7 @@ namespace FakeView
             if (players[playerIndex] == player)
                 break;
         }
-        return static_cast<unsigned char>((playerIndex + 1) % 7);
+        return static_cast<unsigned char>(playerIndex % 6) + 1;
     }
 
     std::string View::GetFactoryDescription(CivModel::IProductionFactory^ factory)
@@ -485,9 +530,13 @@ namespace FakeView
         {
             return "Pioneer";
         }
-        if (auto product = dynamic_cast<CivModel::Common::JediKnightProductionFactory^>(factory))
+        else if (auto product = dynamic_cast<CivModel::Common::JediKnightProductionFactory^>(factory))
         {
             return "Jedi Knight";
+        }
+        else if (auto product = dynamic_cast<CivModel::Common::FactoryBuildingProductionFactory^>(factory))
+        {
+            return "Factory";
         }
         else
         {

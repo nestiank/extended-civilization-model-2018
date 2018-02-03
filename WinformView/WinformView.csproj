@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeploySelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DeploySelector.Designer.cs">
+      <DependentUpon>DeploySelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -54,6 +60,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TileInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TileInfo.Designer.cs">
+      <DependentUpon>TileInfo.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="DeploySelector.resx">
+      <DependentUpon>DeploySelector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -66,6 +81,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="TileInfo.resx">
+      <DependentUpon>TileInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -80,6 +98,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
+      <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
+      <Name>CivModel.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
       <Name>CivModel</Name>
@@ -88,6 +110,9 @@
       <Project>{fe79d521-a9b9-425c-84c6-2f89fd5a9879}</Project>
       <Name>CivPresenter</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="map.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

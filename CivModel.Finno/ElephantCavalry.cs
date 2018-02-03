@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public sealed class JediKnight : Unit
+    public class ElephantCavalry : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("8209396E-45E3-441C-879F-29EFE9EDC23C");
+        public static Guid ClassGuid { get; } = new Guid("8AC71759-3B58-4637-9F09-4F483EB0F4B8");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 4;
+        public override int MaxAP => 2;
 
-        public override double MaxHP => 30;
+        public override double MaxHP => 50;
 
-        public override double AttackPower => 25;
+        public override double AttackPower => 17;
         public override double DefencePower => 5;
 
         private readonly IActorAction _holdingAttackAct;
@@ -24,24 +24,24 @@ namespace CivModel.Common
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public JediKnight(Player owner, Terrain.Point point) : base(owner, point)
+        public ElephantCavalry(Player owner) : base(owner)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
         }
     }
 
-    public class JediKnightProductionFactory : ITileObjectProductionFactory
+    public class ElephantCavalryProductionFactory : ITileObjectProductionFactory
     {
-        private static Lazy<JediKnightProductionFactory> _instance
-            = new Lazy<JediKnightProductionFactory>(() => new JediKnightProductionFactory());
-        public static JediKnightProductionFactory Instance => _instance.Value;
-        private JediKnightProductionFactory()
+        private static Lazy<ElephantCavalryProductionFactory> _instance
+            = new Lazy<ElephantCavalryProductionFactory>(() => new ElephantCavalryProductionFactory());
+        public static ElephantCavalryProductionFactory Instance => _instance.Value;
+        private ElephantCavalryProductionFactory()
         {
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 7.5, 3);
+            return new TileObjectProduction(this, owner, 50, 15);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
@@ -49,9 +49,9 @@ namespace CivModel.Common
                 && point.TileBuilding is CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
-        public TileObject CreateTileObject(Player owner, Terrain.Point point)
+        public TileObject CreateTileObject(Player owner)
         {
-            return new JediKnight(owner, point);
+            return new ElephantCavalry(owner);
         }
     }
 }

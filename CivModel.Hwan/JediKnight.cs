@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public sealed class JediKnight : Unit
+    public class JediKnight : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("8209396E-45E3-441C-879F-29EFE9EDC23C");
+        public static Guid ClassGuid { get; } = new Guid("4DCCABFE-74C5-44C9-AB5E-6340F6DF75C5");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 4;
+        public override int MaxAP => 2;
 
         public override double MaxHP => 30;
 
@@ -24,7 +24,7 @@ namespace CivModel.Common
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public JediKnight(Player owner, Terrain.Point point) : base(owner, point)
+        public JediKnight(Player owner) : base(owner)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -41,7 +41,7 @@ namespace CivModel.Common
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 7.5, 3);
+            return new TileObjectProduction(this, owner, 75, 20);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
@@ -49,9 +49,9 @@ namespace CivModel.Common
                 && point.TileBuilding is CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
-        public TileObject CreateTileObject(Player owner, Terrain.Point point)
+        public TileObject CreateTileObject(Player owner)
         {
-            return new JediKnight(owner, point);
+            return new JediKnight(owner);
         }
     }
 }

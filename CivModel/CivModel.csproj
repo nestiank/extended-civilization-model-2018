@@ -43,8 +43,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttackActorAction.cs" />
+    <Compile Include="Common\CityCenterProductionFactory.cs" />
+    <Compile Include="Common\FactoryBuilding.cs" />
     <Compile Include="Common\NamespaceDoc.cs" />
+    <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
+    <Compile Include="IGuidTaggedObject.cs" />
+    <Compile Include="InteriorBuilding.cs" />
+    <Compile Include="InteriorBuildingProduction.cs" />
     <Compile Include="ITurnObserver.cs" />
     <Compile Include="MoveActorAction.cs" />
     <Compile Include="NamespaceDoc.cs" />
@@ -62,7 +68,6 @@
     <Compile Include="Terrain.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="TileObjectProduction.cs" />
-    <Compile Include="Common\Pioneer.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
