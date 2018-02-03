@@ -461,6 +461,20 @@ namespace WinformView
                         }
                     }
                     break;
+                case Keys.N:
+                    if (selectedTile_.HasValue)
+                    {
+                        var tile = selectedTile_.Value;
+                        try
+                        {
+                            tile.TileOwner = null;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // ignore
+                        }
+                    }
+                    break;
 
                 case Keys.P:
                     foo(0);
