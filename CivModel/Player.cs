@@ -266,7 +266,7 @@ namespace CivModel
         {
             if (pt.TileOwner != this)
                 throw new ArgumentException("pt is not in the territoriy of this player", "pt");
-            if (pt.TileBuilding != null && pt.TileBuilding.Owner != this)
+            if (pt.TileBuilding != null)
                 throw new InvalidOperationException("the tile where a TileBuilding is cannot be removed from the territory");
 
             _territory.Remove(pt);

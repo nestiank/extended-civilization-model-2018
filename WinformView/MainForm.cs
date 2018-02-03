@@ -447,6 +447,21 @@ namespace WinformView
                     }
                     break;
 
+                case Keys.B:
+                    if (selectedTile_.HasValue)
+                    {
+                        var tile = selectedTile_.Value;
+                        try
+                        {
+                            tile.TileOwner = presenter_.Game.PlayerInTurn;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // ignore
+                        }
+                    }
+                    break;
+
                 case Keys.P:
                     foo(0);
                     break;
