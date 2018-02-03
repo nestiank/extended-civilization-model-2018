@@ -395,6 +395,58 @@ namespace WinformView
                     }
                     break;
 
+                case Keys.D3:
+                    if (selectedTile_.HasValue)
+                    {
+                        string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        {
+                            try
+                            {
+                                string strn = Microsoft.VisualBasic.Interaction.InputBox("몇개");
+                                int n = Convert.ToInt32(strn);
+                                var pos = selectedTile_.Value.Position;
+                                do
+                                {
+                                    var pt = presenter_.Game.Terrain.GetPoint(pos);
+                                    pt.TileOwner = presenter_.Game.Players[idx];
+                                    pos.X += 1;
+                                }
+                                while (--n > 0 && presenter_.Game.Terrain.IsValidPosition(pos));
+                            }
+                            catch (Exception ex) when (ex is FormatException || ex is OverflowException)
+                            {
+                                MessageBox.Show("invalid input");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("invalid tile type");
+                        }
+                    }
+                    break;
+                case Keys.D4:
+                    if (selectedTile_.HasValue)
+                    {
+                        string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        {
+                            if (MessageBox.Show("채우기 고고혓?", "ㄱㄱ?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                            {
+                                var newOwner = presenter_.Game.Players[idx];
+                                var origin = selectedTile_.Value.TileOwner;
+                                if (newOwner == origin)
+                                    break;
+                                RecursiveOwn(origin, newOwner, selectedTile_.Value);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("invalid tile type");
+                        }
+                    }
+                    break;
+
                 case Keys.P:
                     foo(0);
                     break;
@@ -431,6 +483,15 @@ namespace WinformView
             foreach (var sub in pt.Adjacents())
                 if (sub.HasValue)
                     RecursiveFill(origin, newType, sub.Value);
+        }
+        private void RecursiveOwn(Player origin, Player newOwner, Terrain.Point pt)
+        {
+            if (pt.TileOwner != origin)
+                return;
+            pt.TileOwner = newOwner;
+            foreach (var sub in pt.Adjacents())
+                if (sub.HasValue)
+                    RecursiveOwn(origin, newOwner, sub.Value);
         }
 
         private void timer1_Tick(object sender, EventArgs e)

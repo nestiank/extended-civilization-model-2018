@@ -36,7 +36,26 @@ namespace CivModel
             /// <summary>
             /// <see cref="Player"/> which owns this tile. If no one owns this tile, <c>null</c>.
             /// </summary>
-            public Player TileOwner => Terrain._points[Position.Y, Position.X].TileOwner;
+            /// <remarks>
+            /// The setter of this property is wrapper of <see cref="Player.AddTerritory(Point)"/> and <see cref="Player.RemoveTerritory(Point)"/>.
+            /// See these methods for more details and throwable exceptions.
+            /// </remarks>
+            /// <seealso cref="Player.AddTerritory(Point)"/>
+            /// <seealso cref="Player.RemoveTerritory(Point)"/>
+            public Player TileOwner
+            {
+                get => Terrain._points[Position.Y, Position.X].TileOwner;
+                set
+                {
+                    if (value != TileOwner)
+                    {
+                        if (TileOwner != null)
+                            TileOwner.RemoveTerritory(this);
+                        if (value != null)
+                            value.AddTerritory(this);
+                    }
+                }
+            }
 
             /// <summary>
             /// The <see cref="Unit"/> placed at the tile.
