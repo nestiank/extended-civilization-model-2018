@@ -301,7 +301,6 @@ namespace WinformView
                     break;
 
                 case Keys.F12:
-                    if (selectedTile_.HasValue)
                     {
                         string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
                         if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
