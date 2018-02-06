@@ -239,10 +239,19 @@ namespace CivModel
         /// <summary>
         /// Heals HP of this actor with the specified amount.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="amount"/> is negative.</exception>
         /// <param name="amount">The amount to heal.</param>
-        public void Heal(double amount)
+        /// <returns>The real amount which this actor was healed.</returns>
+        public double Heal(double amount)
         {
-            _remainHP = Math.Min(MaxHP, RemainHP + amount);
+            if (amount < 0)
+                throw new ArgumentOutOfRangeException("amount", amount, "amount is negative");
+
+            double x = Math.Min(MaxHP, RemainHP + amount);
+            double heal = x - _remainHP;
+            _remainHP = x;
+
+            return heal;
         }
 
         /// <summary>
