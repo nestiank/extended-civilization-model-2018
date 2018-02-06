@@ -307,18 +307,7 @@ namespace CivModel
 
         private void RegisterGuid()
         {
-            Func<Player, Terrain.Point, IGuidTaggedObject> wrapper(Func<CityCenter, IGuidTaggedObject> supplier)
-            {
-                return (p, t) => {
-                    if (t.TileBuilding is CityCenter city && city.Owner == p)
-                        return supplier(city);
-                    else
-                        return null;
-                };
-            }
-
             GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
-            GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, wrapper(city => new FactoryBuilding(city)));
             Scheme.RegisterGuid(this);
         }
 

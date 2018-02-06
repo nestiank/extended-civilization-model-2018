@@ -46,10 +46,40 @@ namespace CivModel
         public double HappinessIncome => Game.Scheme.HappinessCoefficient * (EconomicInvestment - BasicEconomicRequire);
 
         /// <summary>
-        /// The labor per turn of this player. It is equal to sum of all <see cref="CityCenter.Labor"/> of cities of this player.
+        /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
+        /// It is equal to sum of all <see cref="CityCenter.Labor"/> of cities of this player.
         /// </summary>
+        /// <seealso cref="Labor"/>
         /// <seealso cref="CityCenter.Labor"/>
-        public double Labor => Cities.Select(city => city.Labor).Sum();
+        public double OriginalLabor => Cities.Select(city => city.Labor).Sum();
+
+        /// <summary>
+        /// The labor per turn of this player.
+        /// It is calculated from <see cref="OriginalLabor"/> with <see cref="Happiness"/>.
+        /// </summary>
+        /// <seealso cref="OriginalLabor"/>
+        /// <seealso cref="CityCenter.Labor"/>
+        public double Labor => OriginalLabor * (1 + Game.Scheme.LaborHappinessCoefficient * Happiness);
+
+        /// <summary>
+        /// The research per turn of this player, not controlled by <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
+        /// It is equal to sum of all <see cref="CityCenter.Research"/> of cities of this player.
+        /// </summary>
+        /// <seealso cref="Research"/>
+        /// <seealso cref="CityCenter.Research"/>
+        /// <seealso cref="ResearchInvestment"/>
+        public double OriginalResearch => Cities.Select(city => city.Research).Sum();
+
+        /// <summary>
+        /// The research per turn of this player.
+        /// It is calculated from <see cref="OriginalResearch"/> with <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
+        /// </summary>
+        /// <seealso cref="OriginalResearch"/>
+        /// <seealso cref="CityCenter.Research"/>
+        /// <seealso cref="ResearchInvestment"/>
+        public double Research => OriginalResearch
+            * (1 + Game.Scheme.ResearchHappinessCoefficient * Happiness)
+            * (BasicResearchRequire != 0 ? ResearchInvestment / BasicResearchRequire : 1);
 
         /// <summary>
         /// The whole population which this player has. It is equal to sum of all <see cref="CityCenter.Population"/> of cities of this player.
@@ -80,16 +110,19 @@ namespace CivModel
         public double BasicEconomicRequire => Game.Scheme.EconomicRequireCoefficient * Population * (Game.Scheme.EconomicRequireTaxRateConstant + TaxRate);
 
         /// <summary>
-        /// The amount of gold for economic investment.
+        /// The amount of gold for economic investment. It must be in [<c>0</c>, <c>2 * <see cref="BasicEconomicRequire"/></c>].
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="EconomicInvestment"/> is not in [<c>0</c>, <c>2 * <see cref="BasicEconomicRequire"/></c>].
+        /// </exception>
         /// <seealso cref="BasicEconomicRequire"/>
         public double EconomicInvestment
         {
-            get => _economicInvestment;
+            get => Math.Min(_economicInvestment, 2 * BasicEconomicRequire);
             set
             {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException("EconomicInvestment", value, "EconomicInvest is negative");
+                if (value < 0 || value > 2 * BasicEconomicRequire)
+                    throw new ArgumentOutOfRangeException("EconomicInvestment", value, "EconomicInvest is not in [0, 2 * BasicEconomicRequire]");
                 _economicInvestment = value;
             }
         }
@@ -99,19 +132,22 @@ namespace CivModel
         /// The basic research gold requirement.
         /// </summary>
         /// <seealso cref="ResearchInvestment"/>
-        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient;
+        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient * OriginalResearch;
 
         /// <summary>
-        /// The amount of gold for research investment.
+        /// The amount of gold for research investment. It must be in [<c>0</c>, <c>2 * <see cref="BasicResearchRequire"/></c>].
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="ResearchInvestment"/> is not in [<c>0</c>, <c>2 * <see cref="BasicResearchRequire"/></c>].
+        /// </exception>
         /// <seealso cref="BasicResearchRequire"/>
         public double ResearchInvestment
         {
             get => _researchInvestment;
             set
             {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException("ResearchInvestment", value, "ResearchInvest is negative");
+                if (value < 0 || value > 2 * BasicEconomicRequire)
+                    throw new ArgumentOutOfRangeException("ResearchInvestment", value, "ResearchInvestment is not in [0, 2 * BasicResearchRequire]");
                 _researchInvestment = value;
             }
         }

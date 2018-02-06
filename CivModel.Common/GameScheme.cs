@@ -35,13 +35,13 @@ namespace CivModel.Common
 
         public double GoldCoefficient => 1;
 
-        public double PopulationCoefficient => 0.1;
-        public double PopulationHappinessConstant => 0;
+        public double PopulationConstant => 0.1;
+        public double PopulationHappinessCoefficient => 0.01;
 
         public double HappinessCoefficient => 1;
 
-        public double LaborCoefficient => 0.1;
-        public double LaborHappinessConstant => 0;
+        public double LaborHappinessCoefficient => 0.008;
+        public double ResearchHappinessCoefficient => 0.005;
 
         public double EconomicRequireCoefficient => 0.2;
         public double EconomicRequireTaxRateConstant => 0.2;
@@ -50,8 +50,10 @@ namespace CivModel.Common
 
         public void RegisterGuid(Game game)
         {
-            game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
             game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
+            game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
+            game.GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, city => new FactoryBuilding(city));
+            game.GuidManager.RegisterGuid(LaboratoryBuilding.ClassGuid, city => new LaboratoryBuilding(city));
         }
 
         public void InitializeGame(Game game, bool isNewGame)
@@ -79,9 +81,13 @@ namespace CivModel.Common
                 }
             }
 
-            game.Players[0].AdditionalAvailableProduction.Add(PioneerProductionFactory.Instance);
-            game.Players[0].AdditionalAvailableProduction.Add(JediKnightProductionFactory.Instance);
-            game.Players[0].AdditionalAvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
+            foreach (var player in game.Players)
+            {
+                player.AdditionalAvailableProduction.Add(PioneerProductionFactory.Instance);
+                player.AdditionalAvailableProduction.Add(JediKnightProductionFactory.Instance);
+                player.AdditionalAvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
+                player.AdditionalAvailableProduction.Add(LaboratoryBuildingProductionFactory.Instance);
+            }
         }
 
         public void InitializeNewCity(CityCenter city)

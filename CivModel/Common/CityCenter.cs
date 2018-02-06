@@ -96,20 +96,23 @@ namespace CivModel.Common
         /// <summary>
         /// The population income of this city.
         /// </summary>
-        /// <seealso cref="IGameScheme.PopulationCoefficient"/>
-        /// <seealso cref="IGameScheme.PopulationHappinessConstant"/>
-        public double PopulationIncome => Owner.Game.Scheme.PopulationCoefficient * (Owner.Game.Scheme.PopulationHappinessConstant + Owner.Happiness);
+        /// <seealso cref="IGameScheme.PopulationConstant"/>
+        /// <seealso cref="IGameScheme.PopulationHappinessCoefficient"/>
+        public double PopulationIncome => Owner.Game.Scheme.PopulationConstant + Owner.Game.Scheme.PopulationHappinessCoefficient * Owner.Happiness;
 
         /// <summary>
-        /// The labor per turn which this city offers.
+        /// The labor which this city offers.
         /// </summary>
+        /// <seealso cref="InteriorBuilding.ProvidedLabor"/>
         /// <seealso cref="Player.Labor"/>
-        /// <seealso cref="IGameScheme.LaborCoefficient"/>
-        /// <seealso cref="IGameScheme.LaborHappinessConstant"/>
-        public double Labor =>
-            Owner.Game.Scheme.LaborCoefficient
-            * InteriorBuildings.Where(b => b is FactoryBuilding).Count()
-            * (Owner.Game.Scheme.LaborHappinessConstant + Owner.Happiness);
+        public double Labor => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
+
+        /// <summary>
+        /// The research per turn which this city offers.
+        /// </summary>
+        /// <seealso cref="InteriorBuilding.ProvidedResearch"/>
+        /// <seealso cref="Player.Labor"/>
+        public double Research => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedResearch).Sum());
 
         /// <summary>
         /// The list of <see cref="InteriorBuilding"/> this city owns.

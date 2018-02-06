@@ -32,22 +32,37 @@ namespace CivModel
             get => _city;
             set
             {
-                if (value != null && value.Owner != Owner)
-                    throw new ArgumentException("the owner of city is different from the owner of building.", "City");
+                if (value != _city)
+                {
+                    if (value != null && value.Owner != Owner)
+                        throw new ArgumentException("the owner of city is different from the owner of building.", "City");
 
-                if (_city != null)
-                {
-                    _city.RemoveBuilding(this);
-                    _city = null;
-                }
-                if (value != null)
-                {
-                    value.AddBuilding(this);
-                    _city = value;
+                    if (_city != null)
+                    {
+                        _city.RemoveBuilding(this);
+                        _city = null;
+                    }
+                    if (value != null)
+                    {
+                        value.AddBuilding(this);
+                        _city = value;
+                    }
                 }
             }
         }
         private CityCenter _city = null;
+
+        /// <summary>
+        /// The amount of labor this building provides.
+        /// </summary>
+        /// <seealso cref="CityCenter.Labor"/>
+        public virtual double ProvidedLabor => 0;
+
+        /// <summary>
+        /// The amount of research this building provides.
+        /// </summary>
+        /// <seealso cref="CityCenter.Research"/>
+        public virtual double ProvidedResearch => 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.

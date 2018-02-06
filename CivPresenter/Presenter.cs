@@ -57,18 +57,34 @@ namespace CivPresenter
         public IReadOnlyActorAction RunningAction { get; private set; }
 
         /// <summary>
+        /// Index of the selected investment.
+        /// If <see cref="SelectedProduction"/> is not <c>-1</c>, this value is <c>-1</c>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/></c>.
+        /// See remarks section for information about the value.
+        /// </summary>
+        /// <remarks>
+        /// <list type="bullet">
+        ///  <item><c>0</c> if <see cref="Player.EconomicInvestment"/> is selected.</item>
+        ///  <item><c>1</c> if <see cref="Player.ResearchInvestment"/> is selected.</item>
+        ///  <item><c>-1</c> if there is no selected deploy.</item>
+        /// </list>
+        /// </remarks>
+        public int SelectedInvestment { get; private set; } = -1;
+        private const int _selectedInvestmentCount = 2;
+
+        /// <summary>
         /// Index of the selected deploy to <see cref="Player.Deployment"/> list.
         /// <c>-1</c> if there is no selected deploy.
-        /// If <see cref="SelectedProduction"/> is not <c>-1</c>, this value is <c>-1</c>.
-        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/></c>
+        /// If <see cref="SelectedProduction"/> or <see cref="SelectedInvestment"/> is not <c>-1</c>, this value is <c>-1</c>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/></c>.
         /// </summary>
         public int SelectedDeploy { get; private set; } = -1;
 
         /// <summary>
         /// Index of the selected production to <see cref="Player.Production"/> list.
         /// <c>-1</c> if there is no selected production.
-        /// If <see cref="SelectedDeploy"/> is not <c>-1</c>, this value is <c>-1</c>.
-        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/> || <see cref="State"/> == <see cref="States.ProductAdd"/></c>
+        /// If <see cref="SelectedDeploy"/> or <see cref="SelectedInvestment"/> is not <c>-1</c>, this value is <c>-1</c>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductUI"/> || <see cref="State"/> == <see cref="States.ProductAdd"/></c>.
         /// </summary>
         public int SelectedProduction { get; private set; } = -1;
 
@@ -613,6 +629,7 @@ namespace CivPresenter
 
             SelectedDeploy = -1;
             SelectedProduction = -1;
+            SelectedInvestment = -1;
             IsProductManipulating = false;
 
             Game.PlayerInTurn.EstimateLaborInputing();
@@ -620,6 +637,7 @@ namespace CivPresenter
             Action clear = () => {
                 SelectedDeploy = -1;
                 SelectedProduction = -1;
+                SelectedInvestment = -1;
                 IsProductManipulating = false;
             };
             OnApply = () => {
@@ -639,6 +657,11 @@ namespace CivPresenter
                 {
                     IsProductManipulating = true;
                 }
+                else if (SelectedInvestment != -1)
+                {
+                    clear();
+                    StateNormal();
+                }
                 else
                 {
                     clear();
@@ -657,7 +680,7 @@ namespace CivPresenter
                 }
             };
             OnArrowKey = direction => {
-                if (IsProductManipulating)
+                if (IsProductManipulating && SelectedProduction != -1)
                 {
                     switch (direction)
                     {
@@ -689,7 +712,7 @@ namespace CivPresenter
                             break;
                     }
                 }
-                else
+                else if (!IsProductManipulating)
                 {
                     switch (direction)
                     {
@@ -706,9 +729,24 @@ namespace CivPresenter
                             {
                                 --SelectedDeploy;
                             }
+                            else if (SelectedInvestment == -1)
+                            {
+                                SelectedInvestment = _selectedInvestmentCount - 1;
+                            }
+                            else if (SelectedInvestment > 0)
+                            {
+                                --SelectedInvestment;
+                            }
                             break;
                         case Direction.Down:
-                            if (SelectedProduction == -1)
+                            if (SelectedInvestment >= 0)
+                            {
+                                if (++SelectedInvestment == _selectedInvestmentCount)
+                                {
+                                    SelectedInvestment = -1;
+                                }
+                            }
+                            else if (SelectedProduction == -1)
                             {
                                 if (++SelectedDeploy >= Game.PlayerInTurn.Deployment.Count)
                                 {
@@ -729,7 +767,21 @@ namespace CivPresenter
                 if (IsProductManipulating)
                     return;
 
-                if (index < Game.PlayerInTurn.Deployment.Count)
+                if (SelectedInvestment != -1)
+                {
+                    double require = 0;
+                    if (SelectedInvestment == 0)
+                        require = Game.PlayerInTurn.BasicEconomicRequire;
+                    else if (SelectedInvestment == 1)
+                        require = Game.PlayerInTurn.BasicResearchRequire;
+
+                    double value = require * (index / 4.0);
+                    if (SelectedInvestment == 0)
+                        Game.PlayerInTurn.EconomicInvestment = value;
+                    else if (SelectedInvestment == 1)
+                        Game.PlayerInTurn.ResearchInvestment = value;
+                }
+                else if (index < Game.PlayerInTurn.Deployment.Count)
                 {
                     SelectedDeploy = index;
                     SelectedProduction = 0;

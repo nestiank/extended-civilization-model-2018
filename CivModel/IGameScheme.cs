@@ -68,14 +68,14 @@ namespace CivModel
         double GoldCoefficient { get; }
 
         /// <summary>
-        /// Coefficient for <see cref="Common.CityCenter.Population"/>.
+        /// Constant amount of <see cref="Common.CityCenter.Population"/>.
         /// </summary>
-        double PopulationCoefficient { get; }
+        double PopulationConstant { get; }
 
         /// <summary>
-        /// Constant amount of <see cref="Player.Happiness"/> for <see cref="Player.Population"/>.
+        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Population"/>.
         /// </summary>
-        double PopulationHappinessConstant { get; }
+        double PopulationHappinessCoefficient { get; }
 
         /// <summary>
         /// Coefficient for <see cref="Player.HappinessIncome"/>.
@@ -83,14 +83,14 @@ namespace CivModel
         double HappinessCoefficient { get; }
 
         /// <summary>
-        /// Coefficient for <see cref="Player.Labor"/>.
+        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Labor"/>.
         /// </summary>
-        double LaborCoefficient { get; }
+        double LaborHappinessCoefficient { get; }
 
         /// <summary>
-        /// Constant amount of <see cref="Player.Happiness"/> for <see cref="Player.Labor"/>.
+        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Research"/>.
         /// </summary>
-        double LaborHappinessConstant { get; }
+        double ResearchHappinessCoefficient { get; }
 
         /// <summary>
         /// Coefficient for <see cref="Player.BasicEconomicRequire"/>.

@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="AttackActorAction.cs" />
     <Compile Include="Common\CityCenterProductionFactory.cs" />
-    <Compile Include="Common\FactoryBuilding.cs" />
     <Compile Include="Common\NamespaceDoc.cs" />
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />

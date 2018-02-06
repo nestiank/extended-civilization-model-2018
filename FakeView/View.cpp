@@ -184,63 +184,84 @@ namespace FakeView
     {
         auto scrsz = m_screen->GetSize();
 
+        auto player = m_presenter->Game->PlayerInTurn;
         int y = 0;
         m_screen->PrintString(0, y, 0b0000'1111, "Production UI");
 
-        auto player = m_presenter->Game->PlayerInTurn;
-        y += 2;
+        {
+            unsigned char color = 0b0000'0111;
 
-        if (y  >= scrsz.height)
-            return;
-        m_screen->PrintString(0, y, 0b0000'0111,
-            "Total Gold: " + std::to_string(player->Gold)
-            + " (+ " + std::to_string(player->GoldNetIncome) + ")");
+            y += 2;
+            if (y >= scrsz.height)
+                return;
+            color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "Total Gold: " + std::to_string(player->Gold)
+                + " (+ " + std::to_string(player->GoldNetIncome) + ")");
+
+            ++y;
+            if (y >= scrsz.height)
+                return;
+            color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "Total Happiness: " + std::to_string(player->Happiness)
+                + " (+ " + std::to_string(player->HappinessIncome) + ")");
+
+            ++y;
+            if (y >= scrsz.height)
+                return;
+            color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "Total Labor: " + std::to_string(player->Labor)
+                + " (Used: " + std::to_string(player->EstimatedUsedLabor) + ")");
+
+            ++y;
+            if (y >= scrsz.height)
+                return;
+            color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "Total Research: " + std::to_string(player->Research));
+
+            ++y;
+            if (y >= scrsz.height)
+                return;
+            m_screen->PrintString(0, y, color,
+                "Total Population: " + std::to_string(player->Population));
+
+            y += 2;
+            if (y >= scrsz.height)
+                return;
+            if (m_presenter->SelectedInvestment == 0)
+                color = 0b1111'0000;
+            else
+                color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "Economic Investment: " + std::to_string(player->EconomicInvestment)
+                + " (basic requirement: " + std::to_string(player->BasicEconomicRequire) + ")");
+
+            ++y;
+            if (y >= scrsz.height)
+                return;
+            if (m_presenter->SelectedInvestment == 1)
+                color = 0b1111'0000;
+            else
+                color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "Research Investment: " + std::to_string(player->ResearchInvestment)
+                + " (basic requirement: " + std::to_string(player->BasicResearchRequire) + ")");
+
+            y += 2;
+            if (m_presenter->SelectedInvestment == -1 && m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
+                color = 0b1111'0000;
+            else
+                color = 0b0000'0111;
+            if (y >= scrsz.height)
+                return;
+            m_screen->PrintString(0, y, color, "Add Production");
+        }
+
         ++y;
-
-        if (y >= scrsz.height)
-            return;
-        m_screen->PrintString(0, y, 0b0000'0111,
-            "Total Happiness: " + std::to_string(player->Happiness)
-            + " (+ " + std::to_string(player->HappinessIncome) + ")");
-        ++y;
-
-        if (y >= scrsz.height)
-            return;
-        m_screen->PrintString(0, y, 0b0000'0111,
-            "Total Labor: " + std::to_string(player->Labor)
-            + " (Used: " + std::to_string(player->EstimatedUsedLabor) + ")");
-        ++y;
-
-        if (y >= scrsz.height)
-            return;
-        m_screen->PrintString(0, y, 0b0000'0111,
-            "Total Population: " + std::to_string(player->Population));
-        ++y;
-
-        if (y >= scrsz.height)
-            return;
-        m_screen->PrintString(0, y, 0b0000'0111,
-            "Economic Investment: " + std::to_string(player->EconomicInvestment)
-            + " (basic requirement: " + std::to_string(player->BasicEconomicRequire) + ")");
-        ++y;
-
-        if (y >= scrsz.height)
-            return;
-        m_screen->PrintString(0, y, 0b0000'0111,
-            "Research Investment: " + std::to_string(player->ResearchInvestment)
-            + " (basic requirement: " + std::to_string(player->BasicResearchRequire) + ")");
-        ++y;
-
-        unsigned color = 0b0000'0111;
-        y += 2;
-        if (m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
-            color = 0b1111'0000;
-        if (y >= scrsz.height)
-            return;
-        m_screen->PrintString(0, y, color, "Add Production");
-
         int idx = 0;
-        y += 1;
         for (auto node = player->Deployment->First; node != nullptr; node = node->Next)
         {
             if (y >= scrsz.height)
@@ -280,7 +301,14 @@ namespace FakeView
             ++y;
         }
 
-        if (m_presenter->IsProductManipulating)
+        if (m_presenter->SelectedInvestment != -1)
+        {
+            m_screen->PrintStringEx(0, scrsz.height - 1, 0x0f,
+                "[1-4]%c\x07: set investments (below basic requirement) %c\x0f"
+                "[5]%c\x07: set investments to basic requirement %c\x0f"
+                "[6-0]%c\x07: set investments (above basic requirement) %c\x0f");
+        }
+        else if (m_presenter->IsProductManipulating)
         {
             m_screen->PrintStringEx(0, scrsz.height - 1, 0x0f,
                 "d%c\x07: cancel production %c\x0f"
