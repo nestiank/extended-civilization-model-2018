@@ -51,9 +51,11 @@ namespace CivModel.Common
 
             public int GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt != null)
+                if (pt == null)
                     return -1;
                 if (!_owner.PlacedPoint.HasValue)
+                    return -1;
+                if (pt.Value.Unit == null)
                     return -1;
                 if (pt.Value.Unit.Owner != Owner.Owner)
                     return -1;
@@ -67,6 +69,8 @@ namespace CivModel.Common
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
+                if (pt.Value.Unit == null)
+                    throw new InvalidOperationException("There is no target");
                 if (pt.Value.Unit.Owner != Owner.Owner)
                     throw new InvalidOperationException("The Unit is hostile");
 
