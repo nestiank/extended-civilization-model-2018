@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 namespace CivModel
 {
     /// <summary>
-    /// The result of a battle. This is used by <see cref="Actor.AttackTo(Actor)"/> and <see cref="Actor.RangedAttackTo(Actor)"/>.
+    /// The result of a battle.
     /// </summary>
+    /// <seealso cref="Actor.AttackTo(double, Actor, double, bool, bool)"/>
     public enum BattleResult
     {
         /// <summary>
@@ -129,6 +130,11 @@ namespace CivModel
         private double _remainHP = 0;
 
         /// <summary>
+        /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
+        /// </summary>
+        public virtual int BattleClassLevel => 0;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Actor"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this actor.</param>
@@ -243,70 +249,125 @@ namespace CivModel
         /// Melee-Attack to another <see cref="Actor"/>.
         /// </summary>
         /// <param name="opposite">The opposite.</param>
-        /// <returns>
-        ///   <see cref="BattleResult"/> indicating the result of this battle.
-        ///   if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.
-        ///   if this object has died, <see cref="BattleResult.Defeated"/>.
-        ///   if both have died or survived, <see cref="BattleResult.Draw"/>.
-        /// </returns>
-        /// <seealso cref="RangedAttackTo(Actor)"/>
-        public BattleResult AttackTo(Actor opposite)
+        /// <remarks>
+        /// This method is wrapper of <see cref="AttackTo(double, Actor, double, bool, bool)"/>.
+        /// See <see cref="AttackTo(double, Actor, double, bool, bool)"/> for more information about battle.
+        /// </remarks>
+        /// <seealso cref="AttackTo(double, Actor, double, bool, bool)"/>
+        public BattleResult MeleeAttackTo(Actor opposite)
         {
-            int rs = 0;
-
-            _remainHP -= opposite.DefencePower;
-            opposite._remainHP -= AttackPower;
-
-            if (_remainHP <= 0)
-            {
-                _remainHP = 0;
-                Die(opposite.Owner);
-                --rs;
-            }
-            else if (_remainHP > MaxHP)
-            {
-                _remainHP = MaxHP;
-            }
-
-            if (opposite._remainHP <= 0)
-            {
-                opposite._remainHP = 0;
-                opposite.Die(Owner);
-                ++rs;
-            }
-            else if (opposite._remainHP > opposite.MaxHP)
-            {
-                opposite._remainHP = opposite.MaxHP;
-            }
-
-            return rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
+            return AttackTo(AttackPower, opposite, opposite.DefencePower, true, false);
         }
 
         /// <summary>
         /// Ranged-Attack to another <see cref="Actor"/>.
         /// </summary>
         /// <param name="opposite">The opposite.</param>
+        /// <remarks>
+        /// This method is wrapper of <see cref="AttackTo(double, Actor, double, bool, bool)"/>.
+        /// See <see cref="AttackTo(double, Actor, double, bool, bool)"/> for more information about battle.
+        /// </remarks>
+        /// <seealso cref="AttackTo(double, Actor, double, bool, bool)"/>
+        public BattleResult RangedAttackTo(Actor opposite)
+        {
+            return AttackTo(AttackPower, opposite, opposite.DefencePower, false, false);
+        }
+
+        /// <summary>
+        /// Attack to another <see cref="Actor"/>.
+        /// </summary>
+        /// <param name="thisAttack">ATK power of this actor.</param>
+        /// <param name="opposite">The opposite.</param>
+        /// <param name="oppositeDefence">DEF power of <paramref name="opposite"/>.</param>
+        /// <param name="isMelee">Whether the battle is melee or not.</param>
+        /// <param name="isSkillAttack">Whether the battle </param>
+        /// <exception cref="ArgumentNullException"><paramref name="opposite"/> is <c>null</c>.</exception>
         /// <returns>
         ///   <see cref="BattleResult"/> indicating the result of this battle.
         ///   if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.
-        ///   otherwise, <see cref="BattleResult.Draw"/>.
+        ///   if this object has died, <see cref="BattleResult.Defeated"/>.
+        ///   if both have died or survived, <see cref="BattleResult.Draw"/>.
         /// </returns>
-        /// <seealso cref="AttackTo(Actor)"/>
-        public BattleResult RangedAttackTo(Actor opposite)
+        /// <remarks>
+        /// This method is intented to be used to customerize battle.
+        /// <see cref="MeleeAttackTo(Actor)"/>, <see cref="RangedAttackTo(Actor)"/> or battle-causing skills should be used in noraml cases.
+        /// </remarks>
+        /// <seealso cref="MeleeAttackTo(Actor)"/>
+        /// <seealso cref="RangedAttackTo(Actor)"/>
+        public BattleResult AttackTo(double thisAttack, Actor opposite, double oppositeDefence, bool isMelee, bool isSkillAttack)
         {
-            opposite._remainHP -= AttackPower;
-            if (opposite._remainHP <= 0)
+            if (opposite == null)
+                throw new ArgumentNullException("opposite");
+
+            double atk = CalculateAttackPower(thisAttack, opposite, isMelee, isSkillAttack);
+            double def = opposite.CalculateAttackPower(oppositeDefence, this, isMelee, isSkillAttack);
+
+            int rs = 0;
+
+            if (opposite.GetDamage(opposite.CalculateDamage(atk, this, isMelee, isSkillAttack), Owner))
+                ++rs;
+
+            if (isMelee)
             {
-                opposite._remainHP = 0;
-                opposite.Die(Owner);
-                return BattleResult.Victory;
-            }
-            else if (opposite._remainHP > opposite.MaxHP)
-            {
-                opposite._remainHP = opposite.MaxHP;
+                if (GetDamage(CalculateDamage(def, opposite, isMelee, isSkillAttack), opposite.Owner))
+                    --rs;
             }
 
-            return BattleResult.Draw;
+            return rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
+        }
+
+        private bool GetDamage(double damage, Player oppositeOwner)
+        {
+            _remainHP -= damage;
+            if (_remainHP <= 0)
+            {
+                _remainHP = 0;
+                Die(oppositeOwner);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the ATK which is used during battle.
+        /// </summary>
+        /// <param name="originalPower">The original ATK power.</param>
+        /// <param name="opposite">The opposite of battle.</param>
+        /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
+        /// <param name="isSkillAttack">whether attack is <i>skill</i> type.</param>
+        /// <returns>the ATK power to be used during battle.</returns>
+        protected virtual double CalculateAttackPower(double originalPower, Actor opposite, bool isMelee, bool isSkillAttack)
+        {
+            return originalPower;
+        }
+
+        /// <summary>
+        /// Calculates the DEF which is used during battle.
+        /// </summary>
+        /// <param name="originalPower">The original DEF power.</param>
+        /// <param name="opposite">The opposite of battle.</param>
+        /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
+        /// <param name="isSkillAttack">whether attack is <i>skill</i> type.</param>
+        /// <returns>the DEF power to be used during battle.</returns>
+        protected virtual double CalculateDefencePower(double originalPower, Actor opposite, bool isMelee, bool isSkillAttack)
+        {
+            return originalPower;
+        }
+
+        /// <summary>
+        /// Calculates the damage by battle.
+        /// </summary>
+        /// <param name="originalDamage">The original damage.</param>
+        /// <param name="opposite">The opposite of battle.</param>
+        /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
+        /// <param name="isSkillAttack">whether attack is <i>skill</i> type.</param>
+        /// <returns>the damage by battle.</returns>
+        protected virtual double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        {
+            return originalDamage;
         }
 
         /// <summary>
