@@ -26,7 +26,7 @@ namespace CivModel.Common
         }
         public Production Create(Player owner)
         {
-            return new InteriorBuildingProduction(this, owner, 5, 2);
+            return new InteriorBuildingProduction(this, owner, 5, 2, 5, 2);
         }
         public bool IsPlacable(InteriorBuildingProduction production, CityCenter city)
         {

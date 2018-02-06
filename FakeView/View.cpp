@@ -267,12 +267,12 @@ namespace FakeView
             if (y >= scrsz.height)
                 return;
 
-            std::string msg = GetFactoryDescription(node->Value->Factory);
-            msg += " (completed)";
-
             unsigned char color = 0b0000'0111;
             if (m_presenter->SelectedDeploy == idx)
                 color = 0b1111'0000;
+
+            std::string msg = GetFactoryDescription(node->Value->Factory);
+            msg += " (completed)";
 
             m_screen->PrintString(0, y, color, msg);
 
@@ -283,22 +283,25 @@ namespace FakeView
         idx = 0;
         for (auto node = player->Production->First; node != nullptr; node = node->Next)
         {
-            if (y >= scrsz.height)
+            if (y + 2 >= scrsz.height)
                 return;
-
-            std::string msg = GetFactoryDescription(node->Value->Factory);
-            msg += " " + std::to_string(node->Value->LaborInputed) + " / " + std::to_string(node->Value->TotalCost);
-            msg += " (+" + std::to_string(node->Value->EstimatedLaborInputing);
-            msg += " / " + std::to_string(node->Value->CapacityPerTurn) + ")";
 
             unsigned char color = 0b0000'0111;
             if (m_presenter->SelectedProduction == idx)
                 color = 0b1111'0000;
 
-            m_screen->PrintString(0, y, color, msg);
+            std::string msg1, msg2, msg3;
+            msg1 = GetFactoryDescription(node->Value->Factory);
+            msg2 = "    Labor: " + std::to_string(node->Value->LaborInputed) + " / " + std::to_string(node->Value->TotalLaborCost);
+            msg2 += " (+" + std::to_string(node->Value->EstimatedLaborInputing) + " / " + std::to_string(node->Value->LaborCapacityPerTurn) + ")";
+            msg3 = "     Gold: " + std::to_string(node->Value->GoldInputed) + " / " + std::to_string(node->Value->TotalGoldCost);
+            msg3 += " (+" + std::to_string(node->Value->EstimatedGoldInputing) + " / " + std::to_string(node->Value->GoldCapacityPerTurn) + ")";
+
+            m_screen->PrintString(0, y++, color, msg1);
+            m_screen->PrintString(0, y++, color, msg2);
+            m_screen->PrintString(0, y++, color, msg3);
 
             ++idx;
-            ++y;
         }
 
         if (m_presenter->SelectedInvestment != -1)
@@ -336,11 +339,11 @@ namespace FakeView
             if (y >= scrsz.height)
                 return;
 
-            auto value = m_presenter->AvailableProduction[idx];
-
             unsigned char color = 0b0000'1111;
             if (m_presenter->SelectedProduction == idx)
                 color = ~color;
+
+            auto value = m_presenter->AvailableProduction[idx];
 
             m_screen->PrintString(0, y, color, GetFactoryDescription(value));
 
@@ -565,6 +568,10 @@ namespace FakeView
         else if (auto product = dynamic_cast<CivModel::Common::FactoryBuildingProductionFactory^>(factory))
         {
             return "Factory";
+        }
+        else if (auto product = dynamic_cast<CivModel::Common::LaboratoryBuildingProductionFactory^>(factory))
+        {
+            return "Laboratory";
         }
         else
         {

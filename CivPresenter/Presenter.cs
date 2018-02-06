@@ -632,7 +632,7 @@ namespace CivPresenter
             SelectedInvestment = -1;
             IsProductManipulating = false;
 
-            Game.PlayerInTurn.EstimateLaborInputing();
+            Game.PlayerInTurn.EstimateInputsForProduction();
 
             Action clear = () => {
                 SelectedDeploy = -1;
@@ -693,7 +693,7 @@ namespace CivPresenter
                                 var prev = node.Previous;
                                 Game.PlayerInTurn.Production.Remove(node);
                                 Game.PlayerInTurn.Production.AddBefore(prev, node.Value);
-                                Game.PlayerInTurn.EstimateLaborInputing();
+                                Game.PlayerInTurn.EstimateInputsForProduction();
                                 --SelectedProduction;
                             }
                             break;
@@ -706,7 +706,7 @@ namespace CivPresenter
                                 var next = node.Next;
                                 Game.PlayerInTurn.Production.Remove(node);
                                 Game.PlayerInTurn.Production.AddAfter(next, node.Value);
-                                Game.PlayerInTurn.EstimateLaborInputing();
+                                Game.PlayerInTurn.EstimateInputsForProduction();
                                 ++SelectedProduction;
                             }
                             break;

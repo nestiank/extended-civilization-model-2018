@@ -22,16 +22,28 @@ namespace CivModel
         /// <summary>
         /// The gold income of this player. This is not negative, and can be different from <see cref="GoldNetIncome"/>
         /// </summary>
+        /// <seealso cref="GoldIncomeWithInvestments"/>
         /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
         /// <seealso cref="IGameScheme.GoldCoefficient"/>
         public double GoldIncome => Game.Scheme.GoldCoefficient * TaxRate;
 
         /// <summary>
-        /// The net income of gold.
+        /// The gold income with investments.
         /// </summary>
         /// <seealso cref="GoldIncome"/>
-        public double GoldNetIncome => GoldIncome - EconomicInvestment - ResearchInvestment;
+        /// <seealso cref="GoldNetIncome"/>
+        public double GoldIncomeWithInvestments => GoldIncome - EconomicInvestment - ResearchInvestment;
+
+        /// <summary>
+        /// The net income of gold. <see cref="EstimatedUsedGold"/> property is used for calculation.
+        /// Therefore, you must call <see cref="EstimateInputsForProduction"/> before use this property.
+        /// </summary>
+        /// <seealso cref="GoldIncome"/>
+        /// <seealso cref="GoldIncomeWithInvestments"/>
+        /// <seealso cref="EstimatedUsedGold"/>
+        /// <seealso cref="EstimateInputsForProduction"/>
+        public double GoldNetIncome => GoldIncomeWithInvestments - EstimatedUsedGold;
 
         /// <summary>
         /// The happiness of this player. This value is in [-100, 100].
@@ -190,10 +202,19 @@ namespace CivModel
         /// The estimated used labor in this turn.
         /// </summary>
         /// <remarks>
-        /// This property is updated by <see cref="EstimateLaborInputing"/>.
+        /// This property is updated by <see cref="EstimateInputsForProduction"/>.
         /// You must call that function before use this property.
         /// </remarks>
         public double EstimatedUsedLabor { get; private set; }
+
+        /// <summary>
+        /// The estimated used gold in this turn.
+        /// </summary>
+        /// <remarks>
+        /// This property is updated by <see cref="EstimateInputsForProduction"/>.
+        /// You must call that function before use this property.
+        /// </remarks>
+        public double EstimatedUsedGold { get; private set; }
 
         /// <summary>
         /// The list of tiles which this player owns as territory.
@@ -330,10 +351,11 @@ namespace CivModel
             foreach (var unit in Units)
                 unit.PostTurn();
 
-            var dg = GoldIncome;
-            var dh = HappinessIncome;
-
+            // this will update GoldNetIncome
             productionProcess();
+
+            var dg = GoldNetIncome;
+            var dh = HappinessIncome;
 
             Gold = Math.Max(0, Gold + dg);
             Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
@@ -364,31 +386,43 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Update <see cref="Production.EstimatedLaborInputing"/> property of all productions
-        /// and <see cref="EstimatedUsedLabor"/> property  of this player.
+        /// Update <see cref="Production.EstimatedLaborInputing"/> and <see cref="Production.EstimatedGoldInputing"/> property of all productions
+        /// and <see cref="EstimatedUsedLabor"/> and <see cref="EstimatedUsedGold"/> property  of this player.
         /// </summary>
-        public void EstimateLaborInputing()
+        public void EstimateInputsForProduction()
         {
             var labor = Labor;
+            var gold = GoldIncomeWithInvestments;
 
             EstimatedUsedLabor = 0;
+            EstimatedUsedGold = 0;
+
             foreach (var production in Production)
             {
-                var input = production.GetAvailableInputLabor(labor);
-                production.EstimatedLaborInputing = input;
-                EstimatedUsedLabor += input;
-                labor -= input;
+                var estLabor = production.GetAvailableInputLabor(labor);
+                var estGold = production.GetAvailableInputGold(gold);
+
+                production.EstimatedLaborInputing = estLabor;
+                production.EstimatedGoldInputing = estGold;
+
+                EstimatedUsedLabor += estLabor;
+                EstimatedUsedGold += estGold;
+
+                labor -= estLabor;
+                gold -= estGold;
             }
         }
 
         private void productionProcess()
         {
-            var labor = Labor;
+            EstimateInputsForProduction();
 
             for (var node = Production.First; node != null; )
             {
-                labor -= node.Value.InputLabor(labor);
-                if (node.Value.Completed)
+                var prod = node.Value;
+                prod.InputResources(prod.EstimatedLaborInputing, prod.EstimatedGoldInputing);
+
+                if (prod.Completed)
                 {
                     var tmp = node;
                     node = node.Next;

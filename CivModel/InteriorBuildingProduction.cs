@@ -46,10 +46,20 @@ namespace CivModel
         /// </summary>
         /// <param name="factory">The factory object of this production kind.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the production.</param>
-        /// <param name="totalCost"><see cref="Production.TotalCost"/> of the production</param>
-        /// <param name="capacityPerTurn"><see cref="Production.CapacityPerTurn"/> of the production.</param>
-        /// <exception cref="ArgumentException">totalCost is not positive</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacityPerTurn"/> is not in [0, <see cref="Production.TotalCost"/>]</exception>
+        /// <param name="totalLaborCost"><see cref="Production.TotalLaborCost"/> of the production</param>
+        /// <param name="laborCapacityPerTurn"><see cref="Production.LaborCapacityPerTurn"/> of the production.</param>
+        /// <param name="totalGoldCost"><see cref="Production.TotalGoldCost"/> of the production</param>
+        /// <param name="goldCapacityPerTurn"><see cref="Production.GoldCapacityPerTurn"/> of the production.</param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="totalLaborCost"/> is negative
+        /// or
+        /// <paramref name="totalGoldCost"/> is negative
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="laborCapacityPerTurn"/> is not in [0, <see cref="Production.TotalLaborCost"/>]
+        /// or
+        /// <paramref name="goldCapacityPerTurn"/> is not in [0, <see cref="Production.TotalGoldCost"/>]
+        /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="factory"/> is <c>null</c>
         /// or
@@ -57,8 +67,9 @@ namespace CivModel
         /// </exception>
         public InteriorBuildingProduction(
             IInteriorBuildingProductionFactory factory, Player owner,
-            double totalCost, double capacityPerTurn)
-            : base(factory, owner, totalCost, capacityPerTurn)
+            double totalLaborCost, double laborCapacityPerTurn,
+            double totalGoldCost, double goldCapacityPerTurn)
+            : base(factory, owner, totalLaborCost, laborCapacityPerTurn, totalGoldCost, goldCapacityPerTurn)
         {
             _factory = factory;
         }
