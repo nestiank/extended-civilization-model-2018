@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,10 +24,59 @@ namespace CivModel.Common
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public LEOSpaceArmada(Player owner) : base(owner)
+        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
+
+        public LEOSpaceArmada(Player owner, Terrain.Point point) : base(owner, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
+            _specialActs[0] = new LEOSpaceArmadaAction(this);
+        }
+
+
+        private class LEOSpaceArmadaAction : IActorAction
+        {
+            private readonly LEOSpaceArmada _owner;
+            public Actor Owner => _owner;
+
+            public bool IsParametered => true;
+
+            public LEOSpaceArmadaAction(LEOSpaceArmada owner)
+            {
+                _owner = owner;
+            }
+
+            public int LastSkillCalled = -3;
+
+            public int GetRequiredAP(Terrain.Point? pt)
+            {
+                if (pt == null)
+                    return -1;
+                if (!_owner.PlacedPoint.HasValue)
+                    return -1;
+                if (Owner.Owner.Game.TurnNumber < LastSkillCalled + 3)
+                    return -1;
+                if (pt.Value.Unit == null)
+                    return -1;
+
+                return 1;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (pt == null)
+                    throw new ArgumentException("pt is invalid");
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber < LastSkillCalled + 3)
+                    throw new InvalidOperationException("Skill is not turned on");
+                if (pt.Value.Unit == null)
+                    throw new InvalidOperationException("There is no target");
+
+                Owner.RangedAttackTo(pt.Value.Unit);
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
+            }
         }
     }
 
@@ -49,9 +98,9 @@ namespace CivModel.Common
                 && point.TileBuilding is CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
-        public TileObject CreateTileObject(Player owner)
+        public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new LEOSpaceArmada(owner);
+            return new LEOSpaceArmada(owner,point);
         }
     }
 }

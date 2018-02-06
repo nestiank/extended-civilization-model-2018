@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +24,7 @@ namespace CivModel.Common
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public ElephantCavalry(Player owner) : base(owner)
+        public ElephantCavalry(Player owner, Terrain.Point point) : base(owner, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -49,9 +49,9 @@ namespace CivModel.Common
                 && point.TileBuilding is CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
-        public TileObject CreateTileObject(Player owner)
+        public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new ElephantCavalry(owner);
+            return new ElephantCavalry(owner, point);
         }
     }
 }
