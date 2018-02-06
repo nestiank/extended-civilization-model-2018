@@ -82,7 +82,7 @@ namespace CivModel
             Actor targetObject = GetTargetObject(pt.Value);
 
             _owner.ConsumeAP(requiredAP);
-            var result = _owner.AttackTo(targetObject);
+            var result = _owner.MeleeAttackTo(targetObject);
 
             if (_isMoving && result == BattleResult.Victory)
             {
