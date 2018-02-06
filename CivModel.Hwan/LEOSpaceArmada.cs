@@ -74,7 +74,7 @@ namespace CivModel.Common
                 if (pt.Value.Unit == null)
                     throw new InvalidOperationException("There is no target");
 
-                Owner.RangedAttackTo(pt.Value.Unit);
+                Owner.AttackTo(Owner.AttackPower * 2, pt.Value.Unit, pt.Value.Unit.DefencePower,false, true);
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
             }
         }
