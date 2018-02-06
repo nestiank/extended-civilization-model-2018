@@ -18,6 +18,8 @@ namespace CivModel.Common
         public override double AttackPower => 15;
         public override double DefencePower => 5;
 
+        public override int BattleClassLevel => 2;
+
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
