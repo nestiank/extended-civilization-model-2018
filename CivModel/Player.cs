@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -59,10 +58,10 @@ namespace CivModel
 
         /// <summary>
         /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
-        /// It is equal to sum of all <see cref="CityCenter.Labor"/> of cities of this player.
+        /// It is equal to sum of all <see cref="CityBase.Labor"/> of cities of this player.
         /// </summary>
         /// <seealso cref="Labor"/>
-        /// <seealso cref="CityCenter.Labor"/>
+        /// <seealso cref="CityBase.Labor"/>
         public double OriginalLabor => Cities.Select(city => city.Labor).Sum();
 
         /// <summary>
@@ -70,15 +69,15 @@ namespace CivModel
         /// It is calculated from <see cref="OriginalLabor"/> with <see cref="Happiness"/>.
         /// </summary>
         /// <seealso cref="OriginalLabor"/>
-        /// <seealso cref="CityCenter.Labor"/>
+        /// <seealso cref="CityBase.Labor"/>
         public double Labor => OriginalLabor * (1 + Game.Scheme.LaborHappinessCoefficient * Happiness);
 
         /// <summary>
         /// The research per turn of this player, not controlled by <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
-        /// It is equal to sum of all <see cref="CityCenter.Research"/> of cities of this player.
+        /// It is equal to sum of all <see cref="CityBase.Research"/> of cities of this player.
         /// </summary>
         /// <seealso cref="Research"/>
-        /// <seealso cref="CityCenter.Research"/>
+        /// <seealso cref="CityBase.Research"/>
         /// <seealso cref="ResearchInvestment"/>
         public double OriginalResearch => Cities.Select(city => city.Research).Sum();
 
@@ -87,16 +86,16 @@ namespace CivModel
         /// It is calculated from <see cref="OriginalResearch"/> with <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
         /// </summary>
         /// <seealso cref="OriginalResearch"/>
-        /// <seealso cref="CityCenter.Research"/>
+        /// <seealso cref="CityBase.Research"/>
         /// <seealso cref="ResearchInvestment"/>
         public double Research => OriginalResearch
             * (1 + Game.Scheme.ResearchHappinessCoefficient * Happiness)
             * (BasicResearchRequire != 0 ? ResearchInvestment / BasicResearchRequire : 1);
 
         /// <summary>
-        /// The whole population which this player has. It is equal to sum of all <see cref="CityCenter.Population"/> of cities of this player.
+        /// The whole population which this player has. It is equal to sum of all <see cref="CityBase.Population"/> of cities of this player.
         /// </summary>
-        /// <seealso cref="CityCenter.Population"/>
+        /// <seealso cref="CityBase.Population"/>
         public double Population => Cities.Select(city => city.Population).Sum();
 
         /// <summary>
@@ -175,9 +174,9 @@ namespace CivModel
         /// <summary>
         /// The list of cities of this player.
         /// </summary>
-        /// <seealso cref="CityCenter"/>
-        public IReadOnlyList<CityCenter> Cities => _cities;
-        private readonly List<CityCenter> _cities = new List<CityCenter>();
+        /// <seealso cref="CityBase"/>
+        public IReadOnlyList<CityBase> Cities => _cities;
+        private readonly List<CityBase> _cities = new List<CityBase>();
 
         /// <summary>
         /// The list of the not-finished productions of this player.
@@ -263,20 +262,20 @@ namespace CivModel
         }
 
         /// <summary>
-        /// this function is used by <see cref="CityCenter"/> class
+        /// this function is used by <see cref="CityBase"/> class
         /// </summary>
         /// <param name="city">city to add</param>
-        internal void AddCityToList(CityCenter city)
+        internal void AddCityToList(CityBase city)
         {
             _beforeLandingCity = false;
             _cities.Add(city);
         }
 
         /// <summary>
-        /// this function is used by <see cref="CityCenter"/> class
+        /// this function is used by <see cref="CityBase"/> class
         /// </summary>
         /// <param name="city">city to remove</param>
-        internal void RemoveCityFromList(CityCenter city)
+        internal void RemoveCityFromList(CityBase city)
         {
             _cities.Remove(city);
         }
@@ -286,7 +285,7 @@ namespace CivModel
         /// </summary>
         /// <remarks>
         /// The return value is the result of
-        /// merging the result of <see cref="CityCenter.AvailableProduction"/> of all cities of this player
+        /// merging the result of <see cref="CityBase.AvailableProduction"/> of all cities of this player
         /// and <see cref="AdditionalAvailableProduction"/>.
         /// </remarks>
         /// <returns>the list of available productions</returns>

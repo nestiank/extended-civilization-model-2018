@@ -4,24 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Common
+namespace CivModel
 {
     /// <summary>
     /// Represents a city as <see cref="TileBuilding"/>.
     /// </summary>
     /// <seealso cref="CivModel.TileBuilding" />
-    public sealed class CityCenter : TileBuilding
+    public abstract class CityBase : TileBuilding
     {
-        /// <summary>
-        /// The unique identifier of this class.
-        /// </summary>
-        public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
-
-        /// <summary>
-        /// The unique identifier of this class.
-        /// </summary>
-        public override Guid Guid => ClassGuid;
-
         /// <summary>
         /// The name of this city.
         /// </summary>
@@ -121,12 +111,12 @@ namespace CivModel.Common
         private readonly List<InteriorBuilding> _interiorBuildings = new List<InteriorBuilding>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CityCenter"/> class.
+        /// Initializes a new instance of the <see cref="CityBase"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this city.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public CityCenter(Player owner, Terrain.Point point) : base(owner, point)
+        public CityBase(Player owner, Terrain.Point point) : base(owner, point)
         {
             string name;
             do

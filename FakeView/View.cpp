@@ -533,7 +533,7 @@ namespace FakeView
         auto& c = m_screen->GetChar(px, py);
         c.color &= 0x0f;
         c.color |= GetPlayerColor(tileBuilding->Owner) << 4;
-        if (auto b = dynamic_cast<CivModel::Common::CityCenter^>(tileBuilding))
+        if (auto b = dynamic_cast<CivModel::CityBase^>(tileBuilding))
         {
             // do nothing
         }
@@ -557,7 +557,11 @@ namespace FakeView
 
     std::string View::GetFactoryDescription(CivModel::IProductionFactory^ factory)
     {
-        if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(factory))
+        if (auto product = dynamic_cast<CivModel::Common::CityCenterProductionFactory^>(factory))
+        {
+            return "CityCenter";
+        }
+        else if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(factory))
         {
             return "Pioneer";
         }

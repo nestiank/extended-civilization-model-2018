@@ -50,6 +50,7 @@ namespace CivModel.Common
 
         public void RegisterGuid(Game game)
         {
+            game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t, false));
             game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
             game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
             game.GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, city => new FactoryBuilding(city));
@@ -75,14 +76,15 @@ namespace CivModel.Common
                             (int)Math.Ceiling(game.Terrain.Height * 0.9));
 
                         pt = game.Terrain.GetPoint(x, y);
-                    } while (pt.Unit != null);
+                    } while (pt.TileBuilding != null);
 
-                    new Pioneer(player, pt);
+                    new CityCenter(player, pt, true);
                 }
             }
 
             foreach (var player in game.Players)
             {
+                player.AdditionalAvailableProduction.Add(CityCenterProductionFactory.Instance);
                 player.AdditionalAvailableProduction.Add(PioneerProductionFactory.Instance);
                 player.AdditionalAvailableProduction.Add(JediKnightProductionFactory.Instance);
                 player.AdditionalAvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
@@ -90,16 +92,9 @@ namespace CivModel.Common
             }
         }
 
-        public void InitializeNewCity(CityCenter city)
+        public CityBase CreateCity(Player player, Terrain.Point point, bool isNewCity)
         {
-            var factory = new FactoryBuilding(city);
-            factory.City = city;
-
-            foreach (var ptn in city.PlacedPoint.Value.Adjacents())
-            {
-                if (ptn is Terrain.Point pt)
-                    city.Owner.AddTerritory(pt);
-            }
+            return new CityCenter(player, point, isNewCity);
         }
     }
 }

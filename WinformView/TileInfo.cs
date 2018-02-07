@@ -63,7 +63,7 @@ namespace WinformView
             cbxTileType.Items.AddRange(arType);
             cbxTileType.SelectedIndex = (int)_tile.Type;
 
-            if (_tile.TileBuilding is CityCenter city)
+            if (_tile.TileBuilding is CityBase city)
             {
                 lbPlayer.Text = "도시 이름 : ";
                 tbCity = new TextBox();
@@ -104,7 +104,7 @@ namespace WinformView
 
             if (tbCity != null)
             {
-                var city = (CityCenter)_tile.TileBuilding;
+                var city = (CityBase)_tile.TileBuilding;
                 try
                 {
                     city.Name = tbCity.Text;

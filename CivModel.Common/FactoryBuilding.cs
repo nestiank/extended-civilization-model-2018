@@ -13,7 +13,7 @@ namespace CivModel.Common
 
         public override double ProvidedLabor => 1;
 
-        public FactoryBuilding(CityCenter city) : base(city) { }
+        public FactoryBuilding(CityBase city) : base(city) { }
     }
 
     public class FactoryBuildingProductionFactory : IInteriorBuildingProductionFactory
@@ -28,11 +28,11 @@ namespace CivModel.Common
         {
             return new InteriorBuildingProduction(this, owner, 5, 2, 5, 2);
         }
-        public bool IsPlacable(InteriorBuildingProduction production, CityCenter city)
+        public bool IsPlacable(InteriorBuildingProduction production, CityBase city)
         {
             return true;
         }
-        public InteriorBuilding CreateInteriorBuilding(CityCenter city)
+        public InteriorBuilding CreateInteriorBuilding(CityBase city)
         {
             return new FactoryBuilding(city);
         }

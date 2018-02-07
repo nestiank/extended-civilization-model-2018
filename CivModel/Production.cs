@@ -10,7 +10,7 @@ namespace CivModel
     /// The factory interface of <see cref="Production"/>
     /// </summary>
     /// <seealso cref="Player.GetAvailableProduction"/>
-    /// <seealso cref="Common.CityCenter.AvailableProduction"/>
+    /// <seealso cref="CityBase.AvailableProduction"/>
     /// <seealso cref="Player.AdditionalAvailableProduction"/>
     public interface IProductionFactory
     {

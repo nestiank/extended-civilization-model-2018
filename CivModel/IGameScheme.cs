@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -68,7 +67,7 @@ namespace CivModel
         double GoldCoefficient { get; }
 
         /// <summary>
-        /// Constant amount of <see cref="Common.CityCenter.Population"/>.
+        /// Constant amount of <see cref="CityBase.Population"/>.
         /// </summary>
         double PopulationConstant { get; }
 
@@ -123,10 +122,12 @@ namespace CivModel
         void InitializeGame(Game game, bool isNewGame);
 
         /// <summary>
-        /// Initializes a newly created city
+        /// Create a <see cref="CityBase"/> object
         /// </summary>
-        /// <param name="city">The city to initialize.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
-        void InitializeNewCity(CityCenter city);
+        /// <param name="player">The player who owns the city.</param>
+        /// <param name="point">The tile where the city will be.</param>
+        /// <param name="isNewCity"><c>true</c> if the city is newly created. <c>false</c> if the city is loaded from a save file.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="player"/> is <c>null</c>.</exception>
+        CityBase CreateCity(Player player, Terrain.Point point, bool isNewCity);
     }
 }

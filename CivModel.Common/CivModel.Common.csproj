@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CityCenterProductionFactory.cs" />
+    <Compile Include="CityCenter.cs" />
     <Compile Include="FactoryBuilding.cs" />
     <Compile Include="GameScheme.cs" />
     <Compile Include="JediKnight.cs" />

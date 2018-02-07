@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
     /// <summary>
     /// The factory interface of <see cref="InteriorBuildingProduction"/>.
-    /// This interface additionally provides <see cref="IsPlacable(InteriorBuildingProduction, CityCenter)"/>
-    ///  and <see cref="CreateInteriorBuilding(CityCenter)"/> methods.
+    /// This interface additionally provides <see cref="IsPlacable(InteriorBuildingProduction, CityBase)"/>
+    ///  and <see cref="CreateInteriorBuilding(CityBase)"/> methods.
     /// </summary>
     /// <seealso cref="CivModel.IProductionFactory" />
     public interface IInteriorBuildingProductionFactory : IProductionFactory
@@ -23,14 +22,14 @@ namespace CivModel
         /// <returns>
         ///   <c>true</c> if the production is placable; otherwise, <c>false</c>.
         /// </returns>
-        bool IsPlacable(InteriorBuildingProduction production, CityCenter city);
+        bool IsPlacable(InteriorBuildingProduction production, CityBase city);
 
         /// <summary>
         /// Creates the <see cref="InteriorBuilding"/> which is the production result.
         /// </summary>
-        /// <param name="city">The <see cref="CityCenter"/> who will own the building.</param>
+        /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
         /// <returns>the created <see cref="InteriorBuilding"/> result.</returns>
-        InteriorBuilding CreateInteriorBuilding(CityCenter city);
+        InteriorBuilding CreateInteriorBuilding(CityBase city);
     }
 
     /// <summary>
@@ -83,7 +82,7 @@ namespace CivModel
         /// </returns>
         public override bool IsPlacable(Terrain.Point point)
         {
-            if (point.TileBuilding is CityCenter city && city.Owner == Owner)
+            if (point.TileBuilding is CityBase city && city.Owner == Owner)
                 return _factory.IsPlacable(this, city);
             return false;
         }
@@ -101,7 +100,7 @@ namespace CivModel
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            _factory.CreateInteriorBuilding((CityCenter)point.TileBuilding);
+            _factory.CreateInteriorBuilding((CityBase)point.TileBuilding);
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Linq;
 using System.IO;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -255,7 +254,7 @@ namespace CivModel
                         var obj = GuidManager.Create(guid, Players[ints[0]], pt);
                         switch (obj)
                         {
-                            case CityCenter city:
+                            case CityBase city:
                             {
                                 city.Name = readLine();
                                 city.Population = Convert.ToDouble(readLine());
@@ -307,7 +306,6 @@ namespace CivModel
 
         private void RegisterGuid()
         {
-            GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
             Scheme.RegisterGuid(this);
         }
 

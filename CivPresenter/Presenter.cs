@@ -156,7 +156,7 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
 
-            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new CivModel.Common.GameSchemeFactory());
+            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new GameSchemeFactory());
             Initialize();
         }
 
@@ -177,7 +177,7 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
-            _game = new Game(saveFile, new IGameSchemeFactory[] { new CivModel.Common.GameSchemeFactory() });
+            _game = new Game(saveFile, new IGameSchemeFactory[] { new GameSchemeFactory() });
             Initialize();
         }
 
@@ -327,7 +327,7 @@ namespace CivPresenter
             SelectNextUnit();
             if (_selectedActor == null)
             {
-                if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityCenter city)
+                if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
                 {
                     if (city.PlacedPoint is Terrain.Point pt)
                         FocusedPoint = pt;

@@ -6,6 +6,26 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
+    public sealed class CityCenter : CityBase
+    {
+        public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
+        public override Guid Guid => ClassGuid;
+
+        public CityCenter(Player player, Terrain.Point point, bool isNewCity) : base(player, point)
+        {
+            if (isNewCity)
+            {
+                new FactoryBuilding(this);
+
+                foreach (var pt in point.Adjacents())
+                {
+                    if (pt.HasValue)
+                        player.AddTerritory(pt.Value);
+                }
+            }
+        }
+    }
+
     public class CityCenterProductionFactory : ITileObjectProductionFactory
     {
         public static CityCenterProductionFactory Instance => _instance.Value;
@@ -30,7 +50,10 @@ namespace CivModel.Common
 
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new CityCenter(owner, point);
+            // remove pioneer
+            point.Unit.Destroy();
+
+            return new CityCenter(owner, point, true);
         }
     }
 }

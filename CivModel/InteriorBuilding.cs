@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
     /// <summary>
-    /// Represents a building which must be built in <see cref="Common.CityCenter"/>.
+    /// Represents a building which must be built in <see cref="CityBase"/>.
     /// </summary>
     /// <seealso cref="TileBuilding"/>
     public abstract class InteriorBuilding : ITurnObserver, IGuidTaggedObject
@@ -25,9 +24,9 @@ namespace CivModel
         private Player _owner;
 
         /// <summary>
-        /// The <see cref="CityCenter"/> where this building is.
+        /// The <see cref="CityBase"/> where this building is.
         /// </summary>
-        public CityCenter City
+        public CityBase City
         {
             get => _city;
             set
@@ -50,26 +49,26 @@ namespace CivModel
                 }
             }
         }
-        private CityCenter _city = null;
+        private CityBase _city = null;
 
         /// <summary>
         /// The amount of labor this building provides.
         /// </summary>
-        /// <seealso cref="CityCenter.Labor"/>
+        /// <seealso cref="CityBase.Labor"/>
         public virtual double ProvidedLabor => 0;
 
         /// <summary>
         /// The amount of research this building provides.
         /// </summary>
-        /// <seealso cref="CityCenter.Research"/>
+        /// <seealso cref="CityBase.Research"/>
         public virtual double ProvidedResearch => 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
         /// </summary>
-        /// <param name="city">The <see cref="CityCenter"/> who will own the building.</param>
+        /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
         /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
-        public InteriorBuilding(CityCenter city)
+        public InteriorBuilding(CityBase city)
         {
             _owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");
