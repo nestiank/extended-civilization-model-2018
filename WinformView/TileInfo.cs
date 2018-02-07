@@ -107,7 +107,7 @@ namespace WinformView
                 var city = (CityBase)_tile.TileBuilding;
                 try
                 {
-                    city.Name = tbCity.Text;
+                    city.SetCityName(tbCity.Text);
                 }
                 catch (ArgumentException)
                 {

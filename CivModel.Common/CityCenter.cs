@@ -11,17 +11,20 @@ namespace CivModel.Common
         public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
         public override Guid Guid => ClassGuid;
 
-        public CityCenter(Player player, Terrain.Point point, bool isNewCity) : base(player, point)
+        public CityCenter(Player player, Terrain.Point point) : base(player, point)
         {
-            if (isNewCity)
-            {
-                new FactoryBuilding(this);
+        }
 
-                foreach (var pt in point.Adjacents())
-                {
-                    if (pt.HasValue)
-                        player.AddTerritory(pt.Value);
-                }
+        protected override void OnProcessCreation()
+        {
+            base.OnProcessCreation();
+
+            new FactoryBuilding(this).ProcessCreation();
+
+            foreach (var pt in PlacedPoint.Value.Adjacents())
+            {
+                if (pt.HasValue)
+                    Owner.AddTerritory(pt.Value);
             }
         }
     }
@@ -53,7 +56,7 @@ namespace CivModel.Common
             // remove pioneer
             point.Unit.Destroy();
 
-            return new CityCenter(owner, point, true);
+            return new CityCenter(owner, point);
         }
     }
 }

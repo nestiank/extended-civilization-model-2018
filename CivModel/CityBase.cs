@@ -22,11 +22,7 @@ namespace CivModel
         /// <exception cref="ArgumentException">the name is invalid or already used.</exception>
         /// <seealso cref="SetCityName(string)"/>
         /// <seealso cref="TrySetCityName(string)"/>
-        public string Name
-        {
-            get => _name;
-            set => SetCityName(value);
-        }
+        public override string Name => _name;
         private string _name;
 
         private static int _cityNamePrefix = 1;

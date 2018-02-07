@@ -75,6 +75,35 @@ namespace CivModel
         }
 
         /// <summary>
+        /// Process the logic to do at the creation of this actor.
+        /// This method should not be called when this <see cref="Actor"/> object is created by loading a save file.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"><see cref="ProcessCreation"/> has already been called</exception>
+        /// <remarks>
+        /// If <see cref="Actor"/> is newly created in game logic, such as <see cref="Production"/>, the creator should call this method.
+        /// </remarks>
+        /// <seealso cref="OnProcessCreation"/>
+        public void ProcessCreation()
+        {
+            if (_processCreationAlreadyCalled)
+                throw new InvalidOperationException("ProcessCreation has already been called");
+
+            _processCreationAlreadyCalled = true;
+            OnProcessCreation();
+        }
+
+        private bool _processCreationAlreadyCalled = false;
+
+        /// <summary>
+        /// Called when <see cref="ProcessCreation"/> is called.
+        /// This method is not called when this <see cref="Actor"/> object is created by loading a save file.
+        /// </summary>
+        /// <seealso cref="ProcessCreation"/>
+        protected virtual void OnProcessCreation()
+        {
+        }
+
+        /// <summary>
         /// Destroys this building. <see cref="OnBeforeDestroy"/> is called before the building is destroyed.
         /// </summary>
         /// <remarks>

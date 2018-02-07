@@ -256,7 +256,9 @@ namespace CivModel
                         {
                             case CityBase city:
                             {
-                                city.Name = readLine();
+                                if (!city.TrySetCityName(readLine()))
+                                    throw new InvalidDataException(errmsg);
+
                                 city.Population = Convert.ToDouble(readLine());
 
                                 int len = Convert.ToInt32(readLine());

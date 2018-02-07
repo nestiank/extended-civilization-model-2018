@@ -39,6 +39,11 @@ namespace CivModel
         public Player Owner { get; private set; }
 
         /// <summary>
+        /// The name of this actor.
+        /// </summary>
+        public virtual string Name => "";
+
+        /// <summary>
         /// The maximum AP.
         /// </summary>
         public abstract int MaxAP { get; }

@@ -50,7 +50,7 @@ namespace WinformView
 
             var player = _game.PlayerInTurn;
             var ar = new object[] {
-                new SelectionObject("CityCenter", pt => new CityCenter(player, pt, false)),
+                new SelectionObject("CityCenter", pt => new CityCenter(player, pt)),
                 new SelectionObject("JediKnight", pt => new JediKnight(player, pt)),
                 new SelectionObject("Pioneer", pt => new Pioneer(player, pt)),
                 new SelectionObject("FactoryBuilding", wrapper(city => new FactoryBuilding(city)))

@@ -120,14 +120,5 @@ namespace CivModel
         /// <param name="isNewGame"><c>true</c> if initializing a new game. <c>false</c> if initializing a game loaded from a save file.</param>
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
         void InitializeGame(Game game, bool isNewGame);
-
-        /// <summary>
-        /// Create a <see cref="CityBase"/> object
-        /// </summary>
-        /// <param name="player">The player who owns the city.</param>
-        /// <param name="point">The tile where the city will be.</param>
-        /// <param name="isNewCity"><c>true</c> if the city is newly created. <c>false</c> if the city is loaded from a save file.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="player"/> is <c>null</c>.</exception>
-        CityBase CreateCity(Player player, Terrain.Point point, bool isNewCity);
     }
 }

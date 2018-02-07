@@ -50,7 +50,7 @@ namespace CivModel.Common
 
         public void RegisterGuid(Game game)
         {
-            game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t, false));
+            game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
             game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
             game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
             game.GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, city => new FactoryBuilding(city));
@@ -78,7 +78,7 @@ namespace CivModel.Common
                         pt = game.Terrain.GetPoint(x, y);
                     } while (pt.TileBuilding != null);
 
-                    new CityCenter(player, pt, true);
+                    new CityCenter(player, pt).ProcessCreation();
                 }
             }
 
@@ -90,11 +90,6 @@ namespace CivModel.Common
                 player.AdditionalAvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
                 player.AdditionalAvailableProduction.Add(LaboratoryBuildingProductionFactory.Instance);
             }
-        }
-
-        public CityBase CreateCity(Player player, Terrain.Point point, bool isNewCity)
-        {
-            return new CityCenter(player, point, isNewCity);
         }
     }
 }

@@ -99,7 +99,8 @@ namespace CivModel
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            _factory.CreateTileObject(Owner, point);
+            var obj = _factory.CreateTileObject(Owner, point);
+            obj.ProcessCreation();
         }
     }
 }

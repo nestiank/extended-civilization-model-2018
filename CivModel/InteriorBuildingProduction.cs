@@ -100,7 +100,8 @@ namespace CivModel
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            _factory.CreateInteriorBuilding((CityBase)point.TileBuilding);
+            var building = _factory.CreateInteriorBuilding((CityBase)point.TileBuilding);
+            building.ProcessCreation();
         }
     }
 }
