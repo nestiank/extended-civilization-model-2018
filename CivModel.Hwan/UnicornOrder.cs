@@ -26,10 +26,69 @@ namespace CivModel.Common
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
+        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
+
         public UnicornOrder(Player owner, Terrain.Point point) : base(owner, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
+            _specialActs[0] = new UnicornOrderAction(this);
+        }
+
+        private class UnicornOrderAction : IActorAction
+        {
+            private readonly UnicornOrder _owner;
+            public Actor Owner => _owner;
+
+            public bool IsParametered => true;
+
+            public UnicornOrderAction(UnicornOrder owner)
+            {
+                _owner = owner;
+            }
+
+            public int LastSkillCalled = -2;
+
+            public int GetRequiredAP(Terrain.Point? pt)
+            {
+                if (pt == null)
+                    return -1;
+                if (!_owner.PlacedPoint.HasValue)
+                    return -1;
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
+                    return -1;
+                if (pt.Value.Unit != null)
+                    return -1;
+                if (pt.Value.Position.A !=  Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
+                    return -1;
+                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 5)
+                    return -1;
+
+
+                return 1;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (pt != null)
+                    throw new ArgumentException("pt is invalid");
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
+                    throw new InvalidOperationException("Skill is not turned on");
+                if (pt.Value.Unit != null)
+                    throw new InvalidOperationException("Can't go that way");
+                if (pt.Value.Position.A != Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
+                    throw new InvalidOperationException("Can't go that way");
+                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 5)
+                    throw new InvalidOperationException("Can't go that way");
+
+                Owner.PlacedPoint = pt;
+
+
+
+            }
         }
     }
 
