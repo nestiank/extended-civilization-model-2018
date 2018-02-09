@@ -56,7 +56,7 @@ namespace CivModel.Common
                     return -1;
                 if (!_owner.PlacedPoint.HasValue)
                     return -1;
-                if (Owner.Owner.Game.TurnNumber < LastSkillCalled + 3)
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 3)
                     return -1;
                 if (pt.Value.Unit == null)
                     return -1;

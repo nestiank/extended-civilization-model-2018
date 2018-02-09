@@ -71,7 +71,7 @@ namespace CivModel.Common
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
-                if (Owner.Owner.Game.TurnNumber < LastSkillCalled + 3)
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 3)
                     throw new InvalidOperationException("Skill is not turned on");
                 if (pt.Value.Unit == null)
                     throw new InvalidOperationException("There is no target");
