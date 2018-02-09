@@ -56,7 +56,7 @@ namespace CivModel.Common
                     return -1;
                 if (!_owner.PlacedPoint.HasValue)
                     return -1;
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 3)
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     return -1;
                 if (pt.Value.Unit == null)
                     return -1;
@@ -76,7 +76,7 @@ namespace CivModel.Common
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
-                if (Owner.Owner.Game.TurnNumber < LastSkillCalled + 3)
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     throw new InvalidOperationException("Skill is not turned on");
                 if (pt.Value.Unit == null)
                     throw new InvalidOperationException("There is no target");
@@ -93,6 +93,7 @@ namespace CivModel.Common
                 {
                     Owner.PlacedPoint = pt;
                 }
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
             }
         }
 

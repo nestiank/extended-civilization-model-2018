@@ -86,7 +86,7 @@ namespace CivModel.Common
 
                 Owner.PlacedPoint = pt;
 
-
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
 
             }
         }

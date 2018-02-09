@@ -56,7 +56,7 @@ namespace CivModel.Common
                     return -1;
                 if (!_owner.PlacedPoint.HasValue)
                     return -1;
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
                     return -1;
 
                 return 1;
@@ -68,7 +68,7 @@ namespace CivModel.Common
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
-                if (Owner.Owner.Game.TurnNumber < LastSkillCalled + 5)
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
                     throw new InvalidOperationException("Skill is not turned on");
                 if (Owner.PlacedPoint.Value.TileOwner == Owner.Owner)
                     throw new InvalidOperationException("You have the Territory");
@@ -78,6 +78,8 @@ namespace CivModel.Common
                 {
                     Owner.PlacedPoint.Value.TileBuilding.Destroy();
                 }
+
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
 
             }
         }
