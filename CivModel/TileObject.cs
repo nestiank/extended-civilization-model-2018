@@ -32,6 +32,12 @@ namespace CivModel
         public abstract Guid Guid { get; }
 
         /// <summary>
+        /// The <see cref="Game"/> object
+        /// </summary>
+        public Game Game => _game;
+        private readonly Game _game;
+
+        /// <summary>
         /// The value indicating the kind of this object.
         /// </summary>
         public TileTag TileTag => _tileTag;
@@ -50,6 +56,8 @@ namespace CivModel
                     var oldPoint = _placedPoint;
                     SetPlacedPoint(value);
                     OnChangePlacedPoint(oldPoint);
+
+                    Game.IterateTileObjectObserver(obj => obj.TileObjectPlaced(this));
                 }
             }
         }
@@ -58,13 +66,19 @@ namespace CivModel
         /// <summary>
         /// Initializes a new instance of the <see cref="TileObject"/> class.
         /// </summary>
+        /// <param name="game">The <see cref="CivModel.Game"/> object.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <param name="tileTag">The <see cref="TileTag"/> of the object.</param>
-        public TileObject(Terrain.Point point, TileTag tileTag)
+        /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
+        public TileObject(Game game, Terrain.Point point, TileTag tileTag)
         {
+            _game = game ?? throw new ArgumentNullException(nameof(game));
             _tileTag = tileTag;
 
             SetPlacedPoint(point);
+
+            Game.IterateTileObjectObserver(obj => obj.TileObjectCreated(this));
+            Game.IterateTileObjectObserver(obj => obj.TileObjectPlaced(this));
         }
 
         private void SetPlacedPoint(Terrain.Point? value)
@@ -76,7 +90,6 @@ namespace CivModel
                 p.Terrain.UnplaceObject(this, p);
             }
 
-            var oldPoint = _placedPoint;
             _placedPoint = value;
             if (value.HasValue)
             {

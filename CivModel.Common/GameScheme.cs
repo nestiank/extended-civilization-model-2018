@@ -89,6 +89,8 @@ namespace CivModel.Common
                 player.AdditionalAvailableProduction.Add(JediKnightProductionFactory.Instance);
                 player.AdditionalAvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
                 player.AdditionalAvailableProduction.Add(LaboratoryBuildingProductionFactory.Instance);
+
+                new TestQuest(player).Deploy();
             }
         }
     }

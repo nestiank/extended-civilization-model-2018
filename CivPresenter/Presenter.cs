@@ -118,6 +118,38 @@ namespace CivPresenter
         /// </summary>
         public int StateParam { get; private set; } = -1;
 
+        /// <summary>
+        /// The list of <see cref="Quest"/> of <see cref="Game.PlayerInTurn"/> whose status is <see cref="QuestStatus.Accepted"/>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.Quest"/></c>.
+        /// </summary>
+        public IReadOnlyList<Quest> AcceptedQuests => _acceptedQuests;
+        private List<Quest> _acceptedQuests;
+        /// <summary>
+        /// The list of <see cref="Quest"/> of <see cref="Game.PlayerInTurn"/> whose status is <see cref="QuestStatus.Deployed"/>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.Quest"/></c>.
+        /// </summary>
+        public IReadOnlyList<Quest> DeployedQuests => _deployedQuests;
+        private List<Quest> _deployedQuests;
+        /// <summary>
+        /// The list of <see cref="Quest"/> of <see cref="Game.PlayerInTurn"/> whose status is <see cref="QuestStatus.Completed"/>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.Quest"/></c>.
+        /// </summary>
+        public IReadOnlyList<Quest> CompletedQuests => _completedQuests;
+        private List<Quest> _completedQuests;
+        /// <summary>
+        /// The list of <see cref="Quest"/> of <see cref="Game.PlayerInTurn"/> whose status is <see cref="QuestStatus.Disabled"/>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.Quest"/></c>.
+        /// </summary>
+        public IReadOnlyList<Quest> DisabledQuests => _disabledQuests;
+        private List<Quest> _disabledQuests;
+        /// <summary>
+        /// Index of the selected quest to <see cref="Player.Quests"/> list.
+        /// <c>-1</c> if there is no selected quest.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.Quest"/></c>.
+        /// </summary>
+        public int SelectedQuest { get; private set; } = -1;
+        private int _questsCount = -1;
+
         private bool[] _victoryNotified = null;
 
         /// <summary>
@@ -278,7 +310,7 @@ namespace CivPresenter
         {
             if (State == States.Normal)
                 StateMove();
-            else
+            else if (State == States.Move)
                 OnCancel();
         }
 
@@ -290,7 +322,7 @@ namespace CivPresenter
         {
             if (State == States.Normal)
                 StateMovingAttack();
-            else
+            else if (State == States.MovingAttack)
                 OnCancel();
         }
 
@@ -302,7 +334,7 @@ namespace CivPresenter
         {
             if (State == States.Normal)
                 StateHoldingAttack();
-            else
+            else if (State == States.HoldingAttack)
                 OnCancel();
         }
 
@@ -314,7 +346,19 @@ namespace CivPresenter
         {
             if (State == States.Normal)
                 StateProductUI();
-            else
+            else if (State == States.ProductUI)
+                OnCancel();
+        }
+
+        /// <summary>
+        /// Gives the command [quest].
+        /// This method may introduce <see cref="States.Quest"/> state.
+        /// </summary>
+        public void CommandQuest()
+        {
+            if (State == States.Normal)
+                StateQuest();
+            else if (State == States.Quest)
                 OnCancel();
         }
 
@@ -585,9 +629,10 @@ namespace CivPresenter
 
             RunningAction = action;
 
-            Action clear = () => {
+            void clear()
+            {
                 RunningAction = null;
-            };
+            }
             OnApply = () => {
                 if (action.IsActable(FocusedPoint))
                 {
@@ -634,12 +679,13 @@ namespace CivPresenter
 
             Game.PlayerInTurn.EstimateInputsForProduction();
 
-            Action clear = () => {
+            void clear()
+            {
                 SelectedDeploy = -1;
                 SelectedProduction = -1;
                 SelectedInvestment = -1;
                 IsProductManipulating = false;
-            };
+            }
             OnApply = () => {
                 if (IsProductManipulating)
                 {
@@ -812,9 +858,10 @@ namespace CivPresenter
             else
                 SelectedProduction = 0;
 
-            Action clear = () => {
+            void clear()
+            {
                 AvailableProduction = null;
-            };
+            }
             OnApply = () => {
                 if (SelectedProduction != -1)
                 {
@@ -854,9 +901,10 @@ namespace CivPresenter
 
             DeployProduction = node.Value;
 
-            Action clear = () => {
+            void clear()
+            {
                 DeployProduction = null;
-            };
+            }
             OnApply = () => {
                 if (DeployProduction.IsPlacable(FocusedPoint))
                 {
@@ -873,6 +921,80 @@ namespace CivPresenter
                 MoveSight(direction);
             };
             OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+        }
+
+        private void StateQuest()
+        {
+            State = States.Quest;
+
+            _acceptedQuests = Game.PlayerInTurn.Quests.Where(q => q.Status == QuestStatus.Accepted).ToList();
+            _deployedQuests = Game.PlayerInTurn.Quests.Where(q => q.Status == QuestStatus.Deployed).ToList();
+            _completedQuests = Game.PlayerInTurn.Quests.Where(q => q.Status == QuestStatus.Completed).ToList();
+            _disabledQuests = Game.PlayerInTurn.Quests.Where(q => q.Status == QuestStatus.Disabled).ToList();
+            SelectedQuest = 0;
+            _questsCount = Game.PlayerInTurn.Quests.Count;
+
+            void clear()
+            {
+                _acceptedQuests = null;
+                _deployedQuests = null;
+                _completedQuests = null;
+                _disabledQuests = null;
+                SelectedQuest = -1;
+                _questsCount = -1;
+            }
+            OnApply = () => {
+                Quest quest = null;
+                if (SelectedQuest < AcceptedQuests.Count)
+                    quest = AcceptedQuests[SelectedQuest];
+                else if (SelectedQuest < AcceptedQuests.Count + DeployedQuests.Count)
+                    quest = DeployedQuests[SelectedQuest - AcceptedQuests.Count];
+                else if (SelectedQuest < AcceptedQuests.Count + DeployedQuests.Count + CompletedQuests.Count)
+                    quest = CompletedQuests[SelectedQuest - AcceptedQuests.Count - DeployedQuests.Count];
+                else if (SelectedQuest < _questsCount)
+                    quest = DisabledQuests[SelectedQuest - AcceptedQuests.Count - DeployedQuests.Count - CompletedQuests.Count];
+
+                if (quest != null)
+                {
+                    if (quest.Status == QuestStatus.Deployed)
+                    {
+                        quest.Accept();
+                        _deployedQuests.Remove(quest);
+                        _acceptedQuests.Insert(0, quest);
+                        SelectedQuest = 0;
+                    }
+                    else if (quest.Status == QuestStatus.Accepted)
+                    {
+                        quest.Deploy();
+                        _acceptedQuests.Remove(quest);
+                        _deployedQuests.Insert(0, quest);
+                        SelectedQuest = _acceptedQuests.Count;
+                    }
+                }
+            };
+            OnCancel = () => {
+                clear();
+                StateNormal();
+            };
+            OnArrowKey = direction => {
+                switch (direction)
+                {
+                    case Direction.Up:
+                        if (SelectedQuest > 0)
+                            --SelectedQuest;
+                        break;
+                    case Direction.Down:
+                        if (SelectedQuest + 1 < _questsCount)
+                            ++SelectedQuest;
+                        break;
+                }
+            };
+            OnNumeric = index => {
+                if (index < _questsCount)
+                    SelectedQuest = index;
+            };
             OnRemove = () => { };
             OnSkip = () => { };
         }

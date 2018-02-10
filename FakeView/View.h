@@ -20,6 +20,7 @@ namespace FakeView
         void RenderNormal();
         void RenderProductUI();
         void RenderProductAdd();
+        void RenderQuest();
         void RenderVictory();
         void RenderDefeated();
 

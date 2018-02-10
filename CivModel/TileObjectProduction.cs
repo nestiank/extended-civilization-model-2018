@@ -94,7 +94,7 @@ namespace CivModel
         /// <exception cref="ArgumentException">point is invalid</exception>
         public override void Place(Terrain.Point point)
         {
-            if (!Completed)
+            if (!IsCompleted)
                 throw new InvalidOperationException("production is not completed yet");
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");

@@ -3,6 +3,18 @@
 
 #include "Screen.h"
 
+namespace
+{
+    std::string cli2str(System::String^ str)
+    {
+        using namespace System::Runtime::InteropServices;
+        auto chars = static_cast<char*>(Marshal::StringToHGlobalAnsi(str).ToPointer());
+        std::string ret = chars;
+        Marshal::FreeHGlobal(System::IntPtr(chars));
+        return ret;
+    }
+}
+
 namespace FakeView
 {
     View::View(Screen* screen)
@@ -40,6 +52,9 @@ namespace FakeView
                 break;
             case CivPresenter::Presenter::States::ProductAdd:
                 RenderProductAdd();
+                break;
+            case CivPresenter::Presenter::States::Quest:
+                RenderQuest();
                 break;
             case CivPresenter::Presenter::States::Victory:
                 RenderVictory();
@@ -351,6 +366,61 @@ namespace FakeView
         }
     }
 
+    void View::RenderQuest()
+    {
+        auto scrsz = m_screen->GetSize();
+
+        int y = 0;
+        unsigned char color = 0b0000'1111;
+        m_screen->PrintString(0, y, color, "Quest List");
+
+        y += 2;
+        int count = 0;
+        auto arr = gcnew array<System::Collections::Generic::IReadOnlyList<CivModel::Quest^>^>(4);
+        arr[0] = m_presenter->AcceptedQuests;
+        arr[1] = m_presenter->DeployedQuests;
+        arr[2] = m_presenter->CompletedQuests;
+        arr[3] = m_presenter->DisabledQuests;
+        for each (auto list in arr)
+        {
+            for (int idx = 0; idx < list->Count; ++idx)
+            {
+                if (y >= scrsz.height)
+                    return;
+
+                CivModel::Quest^ quest = list[idx];
+                std::string msg;
+                //msg += cli2str(quest->Name); // 한글앙대
+                msg += cli2str(quest->GetType()->ToString());
+                if (quest->Status == CivModel::QuestStatus::Accepted)
+                {
+                    msg += " (accepted: " + std::to_string(quest->LeftTurn) + " / " + std::to_string(quest->LimitTurn) + ")";
+                }
+                else if (quest->Status == CivModel::QuestStatus::Deployed)
+                {
+                    msg += " (deployed: " + std::to_string(quest->LeftTurn) + " / " + std::to_string(quest->PostingTurn) + ")";
+                }
+                else if (quest->Status == CivModel::QuestStatus::Completed)
+                {
+                    msg += " (completed)";
+                }
+                else if (quest->Status == CivModel::QuestStatus::Disabled)
+                {
+                    msg += " (disabled)";
+                }
+
+                color = 0b0000'1111;
+                if (m_presenter->SelectedQuest == count)
+                    color = ~color;
+
+                m_screen->PrintString(0, y, color, msg);
+
+                ++y;
+                ++count;
+            }
+        }
+    }
+
     void View::RenderVictory()
     {
         for (int y = 10; y <= 20; ++y)
@@ -430,6 +500,11 @@ namespace FakeView
             case 'p':
             case 'P':
                 m_presenter->CommandProductUI();
+                break;
+
+            case 'o':
+            case 'O':
+                m_presenter->CommandQuest();
                 break;
 
             case '\r':

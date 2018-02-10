@@ -179,6 +179,12 @@ namespace CivModel
         private readonly List<CityBase> _cities = new List<CityBase>();
 
         /// <summary>
+        /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
+        /// </summary>
+        public IReadOnlyList<Quest> Quests => _quests;
+        private readonly List<Quest> _quests = new List<Quest>();
+
+        /// <summary>
         /// The list of the not-finished productions of this player.
         /// </summary>
         /// <seealso cref="Deployment"/>
@@ -238,46 +244,43 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Player"/> class.
         /// </summary>
         /// <param name="game">The game which this player participates.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
         public Player(Game game)
         {
-            _game = game;
+            _game = game ?? throw new ArgumentNullException(nameof(game));
+
+            game.AddTurnObserver(this);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="Unit"/> class
-        /// </summary>
-        /// <param name="unit">unit to add</param>
+        // this function is used by Unit class
         internal void AddUnitToList(Unit unit)
         {
             _units.Add(unit);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="Unit"/> class
-        /// </summary>
-        /// <param name="unit">unit to remove</param>
+        // this function is used by Unit class
         internal void RemoveUnitFromList(Unit unit)
         {
             _units.Remove(unit);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="CityBase"/> class
-        /// </summary>
-        /// <param name="city">city to add</param>
+        /// this function is used by CityBase class
         internal void AddCityToList(CityBase city)
         {
             _beforeLandingCity = false;
             _cities.Add(city);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="CityBase"/> class
-        /// </summary>
-        /// <param name="city">city to remove</param>
+        // this function is used by CityBase class
         internal void RemoveCityFromList(CityBase city)
         {
             _cities.Remove(city);
+        }
+
+        // this function is used by Quest class
+        internal void AddQuestToList(Quest quest)
+        {
+            _quests.Add(quest);
         }
 
         /// <summary>
@@ -302,7 +305,7 @@ namespace CivModel
         /// <exception cref="InvalidOperationException">a <see cref="TileBuilding"/> of another player is at <paramref name="pt"/></exception>
         public void AddTerritory(Terrain.Point pt)
         {
-            if (pt.TileOwner != this)
+            if (pt.TileOwner != this && pt.TileBuilding == null)
             {
                 if (pt.TileOwner != null)
                     pt.TileOwner.RemoveTerritory(pt);
@@ -421,7 +424,7 @@ namespace CivModel
                 var prod = node.Value;
                 prod.InputResources(prod.EstimatedLaborInputing, prod.EstimatedGoldInputing);
 
-                if (prod.Completed)
+                if (prod.IsCompleted)
                 {
                     var tmp = node;
                     node = node.Next;

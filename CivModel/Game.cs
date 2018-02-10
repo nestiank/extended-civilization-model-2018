@@ -11,7 +11,7 @@ namespace CivModel
     /// <summary>
     /// Represents one civ game.
     /// </summary>
-    public class Game
+    public partial class Game
     {
         /// <summary>
         /// The scheme of this game.
@@ -399,16 +399,10 @@ namespace CivModel
             {
                 if (SubTurnNumber % Players.Count == 0)
                 {
-                    foreach (Player p in Players)
-                    {
-                        p.PreTurn();
-                    }
+                    IterateTurnObserver(obj => obj.PreTurn());
                 }
 
-                foreach (Player p in Players)
-                {
-                    p.PrePlayerSubTurn(PlayerInTurn);
-                }
+                IterateTurnObserver(obj => obj.PrePlayerSubTurn(PlayerInTurn));
             }
 
             IsInsideTurn = true;
@@ -423,17 +417,11 @@ namespace CivModel
             if (!IsInsideTurn)
                 throw new InvalidOperationException("the turn is not started yet");
 
-            foreach (Player p in Players)
-            {
-                p.PostPlayerSubTurn(PlayerInTurn);
-            }
+            IterateTurnObserver(obj => obj.PostPlayerSubTurn(PlayerInTurn));
 
             if ((SubTurnNumber + 1) % Players.Count == 0)
             {
-                foreach (Player p in Players)
-                {
-                    p.PostTurn();
-                }
+                IterateTurnObserver(obj => obj.PostTurn());
             }
 
             ++SubTurnNumber;

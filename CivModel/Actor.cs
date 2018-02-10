@@ -146,9 +146,10 @@ namespace CivModel
         /// <param name="point">The tile where the object will be.</param>
         /// <param name="tag">The <seealso cref="TileTag"/> of this actor.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public Actor(Player owner, Terrain.Point point, TileTag tag) : base(point, tag)
+        public Actor(Player owner, Terrain.Point point, TileTag tag)
+            : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
-            Owner = owner ?? throw new ArgumentNullException("owner");
+            Owner = owner;
             RemainHP = MaxHP;
         }
 
@@ -327,7 +328,11 @@ namespace CivModel
                     --rs;
             }
 
-            return rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
+            var ret = rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
+
+            Game.IterateBattleObserver(obj => obj.OnBattle(this, opposite, ret));
+
+            return ret;
         }
 
         private bool GetDamage(double damage, Player oppositeOwner)
