@@ -100,6 +100,7 @@ namespace CivModel
 
         /// <summary>
         /// The tax rate of this player. It affects <see cref="GoldIncome"/> and <see cref="BasicEconomicRequire"/>.
+        /// This value must be in [0, 1]
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><see cref="TaxRate"/> is not in [0, 1]</exception>
         public double TaxRate
