@@ -41,6 +41,7 @@ namespace CivModel.Common
             for (int i = 0; i < 6; ++i)
             {
                 var production = JediKnightProductionFactory.Instance.Create(Requestee);
+                production.IsCompleted = true;
                 Requestee.Deployment.AddLast(production);
             }
 
