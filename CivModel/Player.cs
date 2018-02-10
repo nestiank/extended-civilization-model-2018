@@ -25,7 +25,7 @@ namespace CivModel
         /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
         /// <seealso cref="IGameScheme.GoldCoefficient"/>
-        public double GoldIncome => Game.Scheme.GoldCoefficient * TaxRate;
+        public double GoldIncome => Game.Scheme.GoldCoefficient * Population * TaxRate;
 
         /// <summary>
         /// The gold income with investments.
