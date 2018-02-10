@@ -20,16 +20,75 @@ namespace CivModel.Common
 
         public override int BattleClassLevel => 3;
 
+        public int SkillDurationTime = 0;
+
+        protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        {
+            if (this.SkillDurationTime >= this.Owner.Game.TurnNumber)
+            {
+                AttackTo(opposite.AttackPower, this, opposite.DefencePower, false, true);
+                return 0;
+            }
+            else
+            {
+                return originalDamage;
+            }
+        }
+
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
+        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
+
         public JediKnight(Player owner, Terrain.Point point) : base(owner, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
+            _specialActs[0] = new JediKnightAction(this);
+        }
+
+        private class JediKnightAction : IActorAction
+        {
+            private readonly JediKnight _owner;
+            public Actor Owner => _owner;
+
+            public bool IsParametered => false;
+
+            public JediKnightAction(JediKnight owner)
+            {
+                _owner = owner;
+            }
+
+            public int LastSkillCalled = -3;
+
+            public int GetRequiredAP(Terrain.Point? pt)
+            {
+                if (pt != null)
+                    return -1;
+                if (!_owner.PlacedPoint.HasValue)
+                    return -1;
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
+                    return -1;
+
+
+                return 1;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (pt != null)
+                    throw new ArgumentException("pt is invalid");
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
+                    throw new InvalidOperationException("Skill is not turned on");
+
+                _owner.SkillDurationTime = Owner.Owner.Game.TurnNumber + 1;
+            }
         }
     }
 
