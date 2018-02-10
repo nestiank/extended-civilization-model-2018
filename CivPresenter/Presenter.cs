@@ -96,7 +96,7 @@ namespace CivPresenter
         public bool IsProductManipulating { get; private set; } = false;
 
         /// <summary>
-        /// The list of the available production, retrieved by <see cref="Player.GetAvailableProduction"/>
+        /// The list of the available production, retrieved by <see cref="Player.AvailableProduction"/>
         /// This value is valid iff <c><see cref="State"/> == <see cref="States.ProductAdd"/></c>
         /// </summary>
         public IReadOnlyList<IProductionFactory> AvailableProduction { get; private set; }
