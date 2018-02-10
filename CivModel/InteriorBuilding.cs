@@ -60,8 +60,8 @@ namespace CivModel
         /// <summary>
         /// The amount of research this building provides.
         /// </summary>
-        /// <seealso cref="CityBase.Research"/>
-        public virtual double ProvidedResearch => 0;
+        /// <seealso cref="CityBase.ResearchIncome"/>
+        public virtual double ProvidedResearchIncome => 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.

@@ -87,7 +87,7 @@ namespace CivModel
         double LaborHappinessCoefficient { get; }
 
         /// <summary>
-        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Research"/>.
+        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.ResearchIncome"/>.
         /// </summary>
         double ResearchHappinessCoefficient { get; }
 

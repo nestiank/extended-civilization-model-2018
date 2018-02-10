@@ -234,7 +234,9 @@ namespace FakeView
             if (y >= scrsz.height)
                 return;
             color = 0b0000'0111;
-            m_screen->PrintString(0, y, color, "Total Research: " + std::to_string(player->Research));
+            m_screen->PrintString(0, y, color,
+                "Total Research: " + std::to_string(player->Research)
+                + " (+ " + std::to_string(player->ResearchIncome) + ")");
 
             ++y;
             if (y >= scrsz.height)

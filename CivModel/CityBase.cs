@@ -89,9 +89,9 @@ namespace CivModel
         /// <summary>
         /// The research per turn which this city offers.
         /// </summary>
-        /// <seealso cref="InteriorBuilding.ProvidedResearch"/>
+        /// <seealso cref="InteriorBuilding.ProvidedResearchIncome"/>
         /// <seealso cref="Player.Labor"/>
-        public double Research => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedResearch).Sum());
+        public double ResearchIncome => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedResearchIncome).Sum());
 
         /// <summary>
         /// The list of <see cref="InteriorBuilding"/> this city owns.

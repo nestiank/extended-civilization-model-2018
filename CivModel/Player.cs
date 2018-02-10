@@ -74,23 +74,29 @@ namespace CivModel
 
         /// <summary>
         /// The research per turn of this player, not controlled by <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
-        /// It is equal to sum of all <see cref="CityBase.Research"/> of cities of this player.
+        /// It is equal to sum of all <see cref="CityBase.ResearchIncome"/> of cities of this player.
         /// </summary>
-        /// <seealso cref="Research"/>
-        /// <seealso cref="CityBase.Research"/>
+        /// <seealso cref="ResearchIncome"/>
+        /// <seealso cref="CityBase.ResearchIncome"/>
         /// <seealso cref="ResearchInvestment"/>
-        public double OriginalResearch => Cities.Select(city => city.Research).Sum();
+        public double OriginalResearchIncome => Cities.Select(city => city.ResearchIncome).Sum();
 
         /// <summary>
         /// The research per turn of this player.
-        /// It is calculated from <see cref="OriginalResearch"/> with <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
+        /// It is calculated from <see cref="OriginalResearchIncome"/> with <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
         /// </summary>
-        /// <seealso cref="OriginalResearch"/>
-        /// <seealso cref="CityBase.Research"/>
+        /// <seealso cref="OriginalResearchIncome"/>
+        /// <seealso cref="CityBase.ResearchIncome"/>
         /// <seealso cref="ResearchInvestment"/>
-        public double Research => OriginalResearch
+        public double ResearchIncome => OriginalResearchIncome
             * (1 + Game.Scheme.ResearchHappinessCoefficient * Happiness)
             * (BasicResearchRequire != 0 ? ResearchInvestment / BasicResearchRequire : 1);
+
+        /// <summary>
+        /// The total research of this player.
+        /// </summary>
+        /// <seealso cref="ResearchIncome"/>
+        public double Research { get; private set; } = 0;
 
         /// <summary>
         /// The whole population which this player has. It is equal to sum of all <see cref="CityBase.Population"/> of cities of this player.
@@ -144,7 +150,7 @@ namespace CivModel
         /// The basic research gold requirement.
         /// </summary>
         /// <seealso cref="ResearchInvestment"/>
-        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient * OriginalResearch;
+        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient * OriginalResearchIncome;
 
         /// <summary>
         /// The amount of gold for research investment. It must be in [<c>0</c>, <c>2 * <see cref="BasicResearchRequire"/></c>].
@@ -343,9 +349,11 @@ namespace CivModel
 
             var dg = GoldNetIncome;
             var dh = HappinessIncome;
+            var dr = ResearchIncome;
 
             Gold = Math.Max(0, Gold + dg);
             Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
+            Research += dr;
         }
 
         /// <summary>
