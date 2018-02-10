@@ -71,7 +71,7 @@ namespace CivModel.Common
 
             public void Act(Terrain.Point? pt)
             {
-                if (pt != null)
+                if (pt == null)
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
