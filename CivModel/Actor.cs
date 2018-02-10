@@ -67,9 +67,39 @@ namespace CivModel
         private int _remainAP = 0;
 
         /// <summary>
-        /// The flag indicating this actor is skipped in this turn. This flag is used by Presenter module.
+        /// The flag indicating this actor is skipped in this turn.
+        /// If this flag is <c>false</c>, ,<see cref="SleepFlag"/> is also <c>false</c>.
         /// </summary>
-        public bool SkipFlag { get; set; }
+        /// <seealso cref="SleepFlag"/>
+        public bool SkipFlag
+        {
+            get => _skipFlag;
+            set
+            {
+                _skipFlag = value;
+                if (_sleepFlag && !_skipFlag)
+                    _sleepFlag = false;
+            }
+        }
+        private bool _skipFlag = false;
+
+        /// <summary>
+        /// The flag indicating this actor is skipped in every turn.
+        /// If this flag is <c>true</c>, <see cref="SkipFlag"/> is always <c>true</c>.
+        /// </summary>
+        /// <seealso cref="SkipFlag"/>
+        public bool SleepFlag
+        {
+            get => _sleepFlag;
+            set
+            {
+                _sleepFlag = value;
+                if (_sleepFlag && !_skipFlag)
+                    _skipFlag = true;
+            }
+        }
+        private bool _sleepFlag = false;
+
 
         /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
@@ -424,9 +454,9 @@ namespace CivModel
         public virtual void PreTurn()
         {
             _remainAP = MaxAP;
-            SkipFlag = false;
 
-            Heal(MaxHealPerTurn);
+            if (!SleepFlag)
+                SkipFlag = false;
         }
 
         /// <summary>
@@ -434,6 +464,7 @@ namespace CivModel
         /// </summary>
         public virtual void PostTurn()
         {
+            Heal(MaxHealPerTurn);
         }
 
         /// <summary>

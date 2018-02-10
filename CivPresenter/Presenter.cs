@@ -164,6 +164,7 @@ namespace CivPresenter
         private Action<int> OnNumeric;
         private Action OnRemove;
         private Action OnSkip;
+        private Action OnSleep;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Presenter"/> class, by creating a new game with testing-purpose parameters.
@@ -274,6 +275,14 @@ namespace CivPresenter
         public void CommandSkip()
         {
             OnSkip();
+        }
+
+        /// <summary>
+        /// Gives the command [sleep].
+        /// </summary>
+        public void CommandSleep()
+        {
+            OnSleep();
         }
 
         /// <summary>
@@ -532,6 +541,13 @@ namespace CivPresenter
                     SelectNextUnit();
                 }
             };
+            OnSleep = () => {
+                if (SelectedActor != null)
+                {
+                    SelectedActor.SleepFlag = !SelectedActor.SleepFlag;
+                    SelectNextUnit();
+                }
+            };
         }
 
         private void StateMove()
@@ -656,6 +672,7 @@ namespace CivPresenter
             OnNumeric = index => { };
             OnRemove = () => { };
             OnSkip = () => { };
+            OnSleep = () => { };
         }
 
         private void DoUnparameteredAction(IActorAction action)
@@ -851,6 +868,7 @@ namespace CivPresenter
                 }
             };
             OnSkip = () => { };
+            OnSleep = () => { };
         }
 
         private void StateProductAdd()
@@ -898,6 +916,7 @@ namespace CivPresenter
             };
             OnRemove = () => { };
             OnSkip = () => { };
+            OnSleep = () => { };
         }
 
         private void StateDeploy(LinkedListNode<Production> node)
@@ -928,6 +947,7 @@ namespace CivPresenter
             OnNumeric = index => { };
             OnRemove = () => { };
             OnSkip = () => { };
+            OnSleep = () => { };
         }
 
         private void StateQuest()
@@ -1002,6 +1022,7 @@ namespace CivPresenter
             };
             OnRemove = () => { };
             OnSkip = () => { };
+            OnSleep = () => { };
         }
 
         private void StateVictory()
@@ -1018,6 +1039,7 @@ namespace CivPresenter
             OnNumeric = index => { };
             OnRemove = () => { };
             OnSkip = () => { };
+            OnSleep = () => { };
         }
 
         private void StateDefeated()
@@ -1034,6 +1056,7 @@ namespace CivPresenter
             OnNumeric = index => { };
             OnRemove = () => { };
             OnSkip = () => { };
+            OnSleep = () => { };
         }
     }
 }

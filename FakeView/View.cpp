@@ -494,6 +494,11 @@ namespace FakeView
                 m_presenter->CommandSkip();
                 break;
 
+            case 'x':
+            case 'X':
+                m_presenter->CommandSleep();
+                break;
+
             case 'q':
             case 'Q':
                 m_presenter->CommandMovingAttack();
