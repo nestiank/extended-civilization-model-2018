@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="AttackActorAction.cs" />
     <Compile Include="CityBase.cs" />
+    <Compile Include="Game.Save.cs" />
     <Compile Include="IBattleObserver.cs" />
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
