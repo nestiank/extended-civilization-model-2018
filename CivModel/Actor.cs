@@ -360,7 +360,7 @@ namespace CivModel
 
             var ret = rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
 
-            Game.IterateBattleObserver(obj => obj.OnBattle(this, opposite, ret));
+            Game.BattleObservable.IterateObserver(obj => obj.OnBattle(this, opposite, ret));
 
             return ret;
         }

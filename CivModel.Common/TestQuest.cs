@@ -23,12 +23,12 @@ namespace CivModel.Common
 
         protected override void OnAccept()
         {
-            Game.AddBattleObserver(this);
+            Game.BattleObservable.AddObserver(this);
         }
 
         private void Cleanup()
         {
-            Game.RemoveBattleObserver(this);
+            Game.BattleObservable.RemoveObserver(this);
         }
 
         protected override void OnGiveup()

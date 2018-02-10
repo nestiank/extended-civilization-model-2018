@@ -57,7 +57,7 @@ namespace CivModel
                     SetPlacedPoint(value);
                     OnChangePlacedPoint(oldPoint);
 
-                    Game.IterateTileObjectObserver(obj => obj.TileObjectPlaced(this));
+                    Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectPlaced(this));
                 }
             }
         }
@@ -77,8 +77,8 @@ namespace CivModel
 
             SetPlacedPoint(point);
 
-            Game.IterateTileObjectObserver(obj => obj.TileObjectCreated(this));
-            Game.IterateTileObjectObserver(obj => obj.TileObjectPlaced(this));
+            Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectCreated(this));
+            Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectPlaced(this));
         }
 
         private void SetPlacedPoint(Terrain.Point? value)

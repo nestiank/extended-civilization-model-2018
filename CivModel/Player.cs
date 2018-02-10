@@ -255,7 +255,7 @@ namespace CivModel
         {
             _game = game ?? throw new ArgumentNullException(nameof(game));
 
-            game.AddTurnObserver(this);
+            game.TurnObservable.AddObserver(this);
         }
 
         // this function is used by Unit class

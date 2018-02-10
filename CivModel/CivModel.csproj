@@ -52,6 +52,7 @@
     <Compile Include="InteriorBuilding.cs" />
     <Compile Include="InteriorBuildingProduction.cs" />
     <Compile Include="ITileObjectObserver.cs" />
+    <Compile Include="Observable.cs" />
     <Compile Include="Quest.cs" />
     <Compile Include="ITurnObserver.cs" />
     <Compile Include="MoveActorAction.cs" />

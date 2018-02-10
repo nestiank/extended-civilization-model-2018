@@ -159,7 +159,7 @@ namespace CivModel
 
             requestee.AddQuestToList(this);
 
-            Game.AddTurnObserver(this);
+            Game.TurnObservable.AddObserver(this);
         }
 
         /// <summary>

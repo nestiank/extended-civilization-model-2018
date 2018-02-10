@@ -175,6 +175,8 @@ namespace CivModel
             SubTurnNumber = 0;
             IsInsideTurn = false;
             _shouldStartTurnResumeGame = false;
+
+            InitializeObservable();
         }
 
         private void RegisterGuid()
@@ -207,10 +209,10 @@ namespace CivModel
             {
                 if (SubTurnNumber % Players.Count == 0)
                 {
-                    IterateTurnObserver(obj => obj.PreTurn());
+                    TurnObservable.IterateObserver(obj => obj.PreTurn());
                 }
 
-                IterateTurnObserver(obj => obj.PrePlayerSubTurn(PlayerInTurn));
+                TurnObservable.IterateObserver(obj => obj.PrePlayerSubTurn(PlayerInTurn));
             }
 
             IsInsideTurn = true;
@@ -225,11 +227,11 @@ namespace CivModel
             if (!IsInsideTurn)
                 throw new InvalidOperationException("the turn is not started yet");
 
-            IterateTurnObserver(obj => obj.PostPlayerSubTurn(PlayerInTurn));
+            TurnObservable.IterateObserver(obj => obj.PostPlayerSubTurn(PlayerInTurn));
 
             if ((SubTurnNumber + 1) % Players.Count == 0)
             {
-                IterateTurnObserver(obj => obj.PostTurn());
+                TurnObservable.IterateObserver(obj => obj.PostTurn());
             }
 
             ++SubTurnNumber;
