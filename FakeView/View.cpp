@@ -219,19 +219,26 @@ namespace FakeView
             if (y >= scrsz.height)
                 return;
             color = 0b0000'0111;
-            m_screen->PrintString(0, y, color,
-                "Total Research: " + std::to_string(player->Research));
+            m_screen->PrintString(0, y, color, "Total Research: " + std::to_string(player->Research));
 
             ++y;
             if (y >= scrsz.height)
                 return;
-            m_screen->PrintString(0, y, color,
-                "Total Population: " + std::to_string(player->Population));
+            m_screen->PrintString(0, y, color, "Total Population: " + std::to_string(player->Population));
 
             y += 2;
             if (y >= scrsz.height)
                 return;
             if (m_presenter->SelectedInvestment == 0)
+                color = 0b1111'0000;
+            else
+                color = 0b0000'0111;
+            m_screen->PrintString(0, y, color, "Tax Rate: " + std::to_string(player->TaxRate));
+
+            y += 2;
+            if (y >= scrsz.height)
+                return;
+            if (m_presenter->SelectedInvestment == 1)
                 color = 0b1111'0000;
             else
                 color = 0b0000'0111;
@@ -242,7 +249,7 @@ namespace FakeView
             ++y;
             if (y >= scrsz.height)
                 return;
-            if (m_presenter->SelectedInvestment == 1)
+            if (m_presenter->SelectedInvestment == 2)
                 color = 0b1111'0000;
             else
                 color = 0b0000'0111;
@@ -309,7 +316,7 @@ namespace FakeView
             m_screen->PrintStringEx(0, scrsz.height - 1, 0x0f,
                 "[1-4]%c\x07: set investments (below basic requirement) %c\x0f"
                 "[5]%c\x07: set investments to basic requirement %c\x0f"
-                "[6-0]%c\x07: set investments (above basic requirement) %c\x0f");
+                "[6-9]%c\x07: set investments (above basic requirement) %c\x0f");
         }
         else if (m_presenter->IsProductManipulating)
         {

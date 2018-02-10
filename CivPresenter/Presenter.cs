@@ -64,13 +64,14 @@ namespace CivPresenter
         /// </summary>
         /// <remarks>
         /// <list type="bullet">
-        ///  <item><c>0</c> if <see cref="Player.EconomicInvestment"/> is selected.</item>
-        ///  <item><c>1</c> if <see cref="Player.ResearchInvestment"/> is selected.</item>
+        ///  <item><c>0</c> if <see cref="Player.TaxRate"/> is selected.</item>
+        ///  <item><c>1</c> if <see cref="Player.EconomicInvestment"/> is selected.</item>
+        ///  <item><c>2</c> if <see cref="Player.ResearchInvestment"/> is selected.</item>
         ///  <item><c>-1</c> if there is no selected deploy.</item>
         /// </list>
         /// </remarks>
         public int SelectedInvestment { get; private set; } = -1;
-        private const int _selectedInvestmentCount = 2;
+        private const int _selectedInvestmentCount = 3;
 
         /// <summary>
         /// Index of the selected deploy to <see cref="Player.Deployment"/> list.
@@ -771,14 +772,18 @@ namespace CivPresenter
                 {
                     double require = 0;
                     if (SelectedInvestment == 0)
-                        require = Game.PlayerInTurn.BasicEconomicRequire;
+                        require = 0.5;
                     else if (SelectedInvestment == 1)
+                        require = Game.PlayerInTurn.BasicEconomicRequire;
+                    else if (SelectedInvestment == 2)
                         require = Game.PlayerInTurn.BasicResearchRequire;
 
                     double value = require * (index / 4.0);
                     if (SelectedInvestment == 0)
-                        Game.PlayerInTurn.EconomicInvestment = value;
+                        Game.PlayerInTurn.TaxRate = value;
                     else if (SelectedInvestment == 1)
+                        Game.PlayerInTurn.EconomicInvestment = value;
+                    else if (SelectedInvestment == 2)
                         Game.PlayerInTurn.ResearchInvestment = value;
                 }
                 else if (index < Game.PlayerInTurn.Deployment.Count)
