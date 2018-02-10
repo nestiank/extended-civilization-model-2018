@@ -441,6 +441,9 @@ namespace CivPresenter
 
         private bool CheckVictory()
         {
+            if (_victoryNotified != null)
+                return false;
+
             var survivors = Game.Players.Where(player => !player.IsDefeated);
             if (survivors.Count() <= 1)
             {
@@ -934,6 +937,7 @@ namespace CivPresenter
                 {
                     Game.PlayerInTurn.Deployment.Remove(node);
                     DeployProduction.Place(FocusedPoint);
+                    SelectNextUnit();
                     OnCancel();
                 }
             };
