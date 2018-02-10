@@ -26,7 +26,7 @@ namespace CivModel.Common
         {
             if (this.SkillDurationTime >= this.Owner.Game.TurnNumber)
             {
-                AttackTo(opposite.AttackPower, this, opposite.DefencePower, false, true);
+                AttackTo(originalDamage, this, opposite.DefencePower, false, true);
                 return 0;
             }
             else
