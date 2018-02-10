@@ -857,7 +857,7 @@ namespace CivPresenter
         {
             State = States.ProductAdd;
 
-            AvailableProduction = Game.PlayerInTurn.GetAvailableProduction();
+            AvailableProduction = Game.PlayerInTurn.AvailableProduction.ToList();
             if (AvailableProduction.Count == 0)
                 SelectedProduction = -1;
             else

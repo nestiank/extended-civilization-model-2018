@@ -84,11 +84,11 @@ namespace CivModel.Common
 
             foreach (var player in game.Players)
             {
-                player.AdditionalAvailableProduction.Add(CityCenterProductionFactory.Instance);
-                player.AdditionalAvailableProduction.Add(PioneerProductionFactory.Instance);
-                player.AdditionalAvailableProduction.Add(JediKnightProductionFactory.Instance);
-                player.AdditionalAvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
-                player.AdditionalAvailableProduction.Add(LaboratoryBuildingProductionFactory.Instance);
+                player.AvailableProduction.Add(CityCenterProductionFactory.Instance);
+                player.AvailableProduction.Add(PioneerProductionFactory.Instance);
+                player.AvailableProduction.Add(JediKnightProductionFactory.Instance);
+                player.AvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
+                player.AvailableProduction.Add(LaboratoryBuildingProductionFactory.Instance);
 
                 new TestQuest(player).Deploy();
             }

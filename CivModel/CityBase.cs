@@ -55,13 +55,6 @@ namespace CivModel
         private readonly IActorAction _holdingAttackAct;
 
         /// <summary>
-        /// The list of available production from this city.
-        /// </summary>
-        /// <seealso cref="Player.GetAvailableProduction"/>
-        public ISet<IProductionFactory> AvailableProduction => _availableProduction;
-        private readonly HashSet<IProductionFactory> _availableProduction = new HashSet<IProductionFactory>();
-
-        /// <summary>
         /// The population of this city.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Population must be bigger or equal than 1</exception>

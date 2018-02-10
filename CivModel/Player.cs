@@ -198,11 +198,10 @@ namespace CivModel
         public LinkedList<Production> Deployment { get; } = new LinkedList<Production>();
 
         /// <summary>
-        /// The list of additional available productions of this player.
-        /// This list will added to the calculation of <see cref="GetAvailableProduction"/>
+        /// The list of available productions of this player.
         /// </summary>
-        public ISet<IProductionFactory> AdditionalAvailableProduction => _additionalAvailableProduction;
-        private readonly HashSet<IProductionFactory> _additionalAvailableProduction = new HashSet<IProductionFactory>();
+        public ISet<IProductionFactory> AvailableProduction => _availableProduction;
+        private readonly HashSet<IProductionFactory> _availableProduction = new HashSet<IProductionFactory>();
 
         /// <summary>
         /// The estimated used labor in this turn.
@@ -282,21 +281,6 @@ namespace CivModel
         internal void AddQuestToList(Quest quest)
         {
             _quests.Add(quest);
-        }
-
-        /// <summary>
-        /// Gets the list of available productions of this player.
-        /// </summary>
-        /// <remarks>
-        /// The return value is the result of
-        /// merging the result of <see cref="CityBase.AvailableProduction"/> of all cities of this player
-        /// and <see cref="AdditionalAvailableProduction"/>.
-        /// </remarks>
-        /// <returns>the list of available productions</returns>
-        public IReadOnlyList<IProductionFactory> GetAvailableProduction()
-        {
-            return Cities.SelectMany(city => city.AvailableProduction).Distinct()
-                .Union(AdditionalAvailableProduction).ToArray();
         }
 
         /// <summary>
