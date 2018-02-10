@@ -88,6 +88,7 @@ namespace CivModel.Common
                     throw new InvalidOperationException("Skill is not turned on");
 
                 _owner.SkillDurationTime = Owner.Owner.Game.TurnNumber + 1;
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
             }
         }
     }
