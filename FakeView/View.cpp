@@ -3,6 +3,18 @@
 
 #include "Screen.h"
 
+namespace
+{
+    std::string cli2str(System::String^ str)
+    {
+        using namespace System::Runtime::InteropServices;
+        auto chars = static_cast<char*>(Marshal::StringToHGlobalAnsi(str).ToPointer());
+        std::string ret = chars;
+        Marshal::FreeHGlobal(System::IntPtr(chars));
+        return ret;
+    }
+}
+
 namespace FakeView
 {
     View::View(Screen* screen)
@@ -40,6 +52,9 @@ namespace FakeView
                 break;
             case CivPresenter::Presenter::States::ProductAdd:
                 RenderProductAdd();
+                break;
+            case CivPresenter::Presenter::States::Quest:
+                RenderQuest();
                 break;
             case CivPresenter::Presenter::States::Victory:
                 RenderVictory();
@@ -220,18 +235,27 @@ namespace FakeView
                 return;
             color = 0b0000'0111;
             m_screen->PrintString(0, y, color,
-                "Total Research: " + std::to_string(player->Research));
+                "Total Research: " + std::to_string(player->Research)
+                + " (+ " + std::to_string(player->ResearchIncome) + ")");
 
             ++y;
             if (y >= scrsz.height)
                 return;
-            m_screen->PrintString(0, y, color,
-                "Total Population: " + std::to_string(player->Population));
+            m_screen->PrintString(0, y, color, "Total Population: " + std::to_string(player->Population));
 
             y += 2;
             if (y >= scrsz.height)
                 return;
             if (m_presenter->SelectedInvestment == 0)
+                color = 0b1111'0000;
+            else
+                color = 0b0000'0111;
+            m_screen->PrintString(0, y, color, "Tax Rate: " + std::to_string(player->TaxRate));
+
+            y += 2;
+            if (y >= scrsz.height)
+                return;
+            if (m_presenter->SelectedInvestment == 1)
                 color = 0b1111'0000;
             else
                 color = 0b0000'0111;
@@ -242,7 +266,7 @@ namespace FakeView
             ++y;
             if (y >= scrsz.height)
                 return;
-            if (m_presenter->SelectedInvestment == 1)
+            if (m_presenter->SelectedInvestment == 2)
                 color = 0b1111'0000;
             else
                 color = 0b0000'0111;
@@ -309,7 +333,7 @@ namespace FakeView
             m_screen->PrintStringEx(0, scrsz.height - 1, 0x0f,
                 "[1-4]%c\x07: set investments (below basic requirement) %c\x0f"
                 "[5]%c\x07: set investments to basic requirement %c\x0f"
-                "[6-0]%c\x07: set investments (above basic requirement) %c\x0f");
+                "[6-9]%c\x07: set investments (above basic requirement) %c\x0f");
         }
         else if (m_presenter->IsProductManipulating)
         {
@@ -348,6 +372,61 @@ namespace FakeView
             m_screen->PrintString(0, y, color, GetFactoryDescription(value));
 
             ++y;
+        }
+    }
+
+    void View::RenderQuest()
+    {
+        auto scrsz = m_screen->GetSize();
+
+        int y = 0;
+        unsigned char color = 0b0000'1111;
+        m_screen->PrintString(0, y, color, "Quest List");
+
+        y += 2;
+        int count = 0;
+        auto arr = gcnew array<System::Collections::Generic::IReadOnlyList<CivModel::Quest^>^>(4);
+        arr[0] = m_presenter->AcceptedQuests;
+        arr[1] = m_presenter->DeployedQuests;
+        arr[2] = m_presenter->CompletedQuests;
+        arr[3] = m_presenter->DisabledQuests;
+        for each (auto list in arr)
+        {
+            for (int idx = 0; idx < list->Count; ++idx)
+            {
+                if (y >= scrsz.height)
+                    return;
+
+                CivModel::Quest^ quest = list[idx];
+                std::string msg;
+                //msg += cli2str(quest->Name); // 한글앙대
+                msg += cli2str(quest->GetType()->ToString());
+                if (quest->Status == CivModel::QuestStatus::Accepted)
+                {
+                    msg += " (accepted: " + std::to_string(quest->LeftTurn) + " / " + std::to_string(quest->LimitTurn) + ")";
+                }
+                else if (quest->Status == CivModel::QuestStatus::Deployed)
+                {
+                    msg += " (deployed: " + std::to_string(quest->LeftTurn) + " / " + std::to_string(quest->PostingTurn) + ")";
+                }
+                else if (quest->Status == CivModel::QuestStatus::Completed)
+                {
+                    msg += " (completed)";
+                }
+                else if (quest->Status == CivModel::QuestStatus::Disabled)
+                {
+                    msg += " (disabled)";
+                }
+
+                color = 0b0000'1111;
+                if (m_presenter->SelectedQuest == count)
+                    color = ~color;
+
+                m_screen->PrintString(0, y, color, msg);
+
+                ++y;
+                ++count;
+            }
         }
     }
 
@@ -417,6 +496,11 @@ namespace FakeView
                 m_presenter->CommandSkip();
                 break;
 
+            case 'x':
+            case 'X':
+                m_presenter->CommandSleep();
+                break;
+
             case 'q':
             case 'Q':
                 m_presenter->CommandMovingAttack();
@@ -430,6 +514,11 @@ namespace FakeView
             case 'p':
             case 'P':
                 m_presenter->CommandProductUI();
+                break;
+
+            case 'o':
+            case 'O':
+                m_presenter->CommandQuest();
                 break;
 
             case '\r':
@@ -533,7 +622,7 @@ namespace FakeView
         auto& c = m_screen->GetChar(px, py);
         c.color &= 0x0f;
         c.color |= GetPlayerColor(tileBuilding->Owner) << 4;
-        if (auto b = dynamic_cast<CivModel::Common::CityCenter^>(tileBuilding))
+        if (auto b = dynamic_cast<CivModel::CityBase^>(tileBuilding))
         {
             // do nothing
         }
@@ -557,7 +646,11 @@ namespace FakeView
 
     std::string View::GetFactoryDescription(CivModel::IProductionFactory^ factory)
     {
-        if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(factory))
+        if (auto product = dynamic_cast<CivModel::Common::CityCenterProductionFactory^>(factory))
+        {
+            return "CityCenter";
+        }
+        else if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(factory))
         {
             return "Pioneer";
         }

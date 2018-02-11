@@ -40,10 +40,10 @@ namespace WinformView
 
         private void DeploySelector_Load(object sender, EventArgs e)
         {
-            Action<Terrain.Point> wrapper(Action<CityCenter> placer)
+            Action<Terrain.Point> wrapper(Action<CityBase> placer)
             {
                 return pt => {
-                    if (pt.TileBuilding is CityCenter city)
+                    if (pt.TileBuilding is CityBase city)
                         placer(city);
                 };
             }

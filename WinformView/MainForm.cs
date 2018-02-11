@@ -141,7 +141,7 @@ namespace WinformView
                         e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
                     }
 
-                    if (point.TileBuilding is CityCenter)
+                    if (point.TileBuilding is CityBase)
                     {
                         var color = GetPlayerColor(point.TileBuilding.Owner);
                         var brush = new SolidBrush(color);
@@ -322,7 +322,7 @@ namespace WinformView
                 case Keys.C:
                     if (selectedTile_.HasValue)
                     {
-                        if (selectedTile_.Value.TileBuilding is CityCenter)
+                        if (selectedTile_.Value.TileBuilding is CityBase)
                         {
                             selectedTile_.Value.TileBuilding.PlacedPoint = null;
                         }

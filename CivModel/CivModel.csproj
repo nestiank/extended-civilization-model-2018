@@ -43,12 +43,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttackActorAction.cs" />
-    <Compile Include="Common\NamespaceDoc.cs" />
+    <Compile Include="CityBase.cs" />
+    <Compile Include="Game.Save.cs" />
+    <Compile Include="IBattleObserver.cs" />
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
     <Compile Include="IGuidTaggedObject.cs" />
     <Compile Include="InteriorBuilding.cs" />
     <Compile Include="InteriorBuildingProduction.cs" />
+    <Compile Include="ITileObjectObserver.cs" />
+    <Compile Include="Observable.cs" />
+    <Compile Include="Quest.cs" />
     <Compile Include="ITurnObserver.cs" />
     <Compile Include="MoveActorAction.cs" />
     <Compile Include="NamespaceDoc.cs" />
@@ -57,7 +62,6 @@
     <Compile Include="Terrain.Point.cs" />
     <Compile Include="TerrainType.cs" />
     <Compile Include="TileBuilding.cs" />
-    <Compile Include="Common\CityCenter.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Actor.cs" />
     <Compile Include="TileObject.cs" />
@@ -67,6 +71,8 @@
     <Compile Include="Unit.cs" />
     <Compile Include="TileObjectProduction.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Game.Observers.cs" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

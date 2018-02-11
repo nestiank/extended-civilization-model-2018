@@ -46,7 +46,7 @@ namespace CivModel.Common
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CityCenter
+                && point.TileBuilding is CityBase
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)

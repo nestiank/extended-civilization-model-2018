@@ -13,53 +13,8 @@ namespace CivModel.Common
 
         public override int MaxAP => 2;
 
-        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
-        private readonly IActorAction[] _specialActs = new IActorAction[1];
-
         public Pioneer(Player owner, Terrain.Point point) : base(owner, point)
         {
-            _specialActs[0] = new PioneerAction(this);
-        }
-
-        private class PioneerAction : IActorAction
-        {
-            private readonly Pioneer _owner;
-            public Actor Owner => _owner;
-
-            public bool IsParametered => false;
-
-            public PioneerAction(Pioneer owner)
-            {
-                _owner = owner;
-            }
-
-            public int GetRequiredAP(Terrain.Point? pt)
-            {
-                if (pt != null)
-                    return -1;
-                if (!_owner.PlacedPoint.HasValue)
-                    return -1;
-
-                if (_owner.PlacedPoint.Value.TileBuilding != null)
-                    return -1;
-
-                return 1;
-            }
-
-            public void Act(Terrain.Point? pt)
-            {
-                if (pt != null)
-                    throw new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
-
-                var ownerpt = _owner.PlacedPoint.Value;
-                var player = Owner.Owner;
-                Owner.Destroy();
-
-                var city = new CityCenter(player, ownerpt);
-                player.Game.Scheme.InitializeNewCity(city);
-            }
         }
     }
 
@@ -78,7 +33,7 @@ namespace CivModel.Common
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CityCenter
+                && point.TileBuilding is CityBase
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)

@@ -4,24 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Common
+namespace CivModel
 {
     /// <summary>
     /// Represents a city as <see cref="TileBuilding"/>.
     /// </summary>
     /// <seealso cref="CivModel.TileBuilding" />
-    public sealed class CityCenter : TileBuilding
+    public abstract class CityBase : TileBuilding
     {
-        /// <summary>
-        /// The unique identifier of this class.
-        /// </summary>
-        public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
-
-        /// <summary>
-        /// The unique identifier of this class.
-        /// </summary>
-        public override Guid Guid => ClassGuid;
-
         /// <summary>
         /// The name of this city.
         /// </summary>
@@ -32,11 +22,7 @@ namespace CivModel.Common
         /// <exception cref="ArgumentException">the name is invalid or already used.</exception>
         /// <seealso cref="SetCityName(string)"/>
         /// <seealso cref="TrySetCityName(string)"/>
-        public string Name
-        {
-            get => _name;
-            set => SetCityName(value);
-        }
+        public override string Name => _name;
         private string _name;
 
         private static int _cityNamePrefix = 1;
@@ -67,13 +53,6 @@ namespace CivModel.Common
         /// </summary>
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
         private readonly IActorAction _holdingAttackAct;
-
-        /// <summary>
-        /// The list of available production from this city.
-        /// </summary>
-        /// <seealso cref="Player.GetAvailableProduction"/>
-        public ISet<IProductionFactory> AvailableProduction => _availableProduction;
-        private readonly HashSet<IProductionFactory> _availableProduction = new HashSet<IProductionFactory>();
 
         /// <summary>
         /// The population of this city.
@@ -110,9 +89,9 @@ namespace CivModel.Common
         /// <summary>
         /// The research per turn which this city offers.
         /// </summary>
-        /// <seealso cref="InteriorBuilding.ProvidedResearch"/>
+        /// <seealso cref="InteriorBuilding.ProvidedResearchIncome"/>
         /// <seealso cref="Player.Labor"/>
-        public double Research => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedResearch).Sum());
+        public double ResearchIncome => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedResearchIncome).Sum());
 
         /// <summary>
         /// The list of <see cref="InteriorBuilding"/> this city owns.
@@ -121,12 +100,12 @@ namespace CivModel.Common
         private readonly List<InteriorBuilding> _interiorBuildings = new List<InteriorBuilding>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CityCenter"/> class.
+        /// Initializes a new instance of the <see cref="CityBase"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this city.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public CityCenter(Player owner, Terrain.Point point) : base(owner, point)
+        public CityBase(Player owner, Terrain.Point point) : base(owner, point)
         {
             string name;
             do

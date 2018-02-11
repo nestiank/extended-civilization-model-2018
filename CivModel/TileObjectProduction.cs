@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -95,12 +94,13 @@ namespace CivModel
         /// <exception cref="ArgumentException">point is invalid</exception>
         public override void Place(Terrain.Point point)
         {
-            if (!Completed)
+            if (!IsCompleted)
                 throw new InvalidOperationException("production is not completed yet");
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            _factory.CreateTileObject(Owner, point);
+            var obj = _factory.CreateTileObject(Owner, point);
+            obj.ProcessCreation();
         }
     }
 }

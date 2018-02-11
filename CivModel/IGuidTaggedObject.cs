@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -49,7 +48,7 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Registers a Guid with <see cref="IGuidTaggedObject"/> supplier, which requires <see cref="CityCenter"/>.
+        /// Registers a Guid with <see cref="IGuidTaggedObject"/> supplier, which requires <see cref="CityBase"/>.
         /// </summary>
         /// <remarks>
         /// <paramref name="supplier"/> creates an object from arguments. If arguments are invalid, supplier can return <c>null</c>.
@@ -58,10 +57,10 @@ namespace CivModel
         /// <param name="supplier">The supplier.</param>
         /// <exception cref="ArgumentNullException"><paramref name="supplier"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">The same Guid is already registered.</exception>
-        public void RegisterGuid(Guid guid, Func<CityCenter, IGuidTaggedObject> supplier)
+        public void RegisterGuid(Guid guid, Func<CityBase, IGuidTaggedObject> supplier)
         {
             RegisterGuid(guid, (p, t) => {
-                if (t.TileBuilding is CityCenter city && city.Owner == p)
+                if (t.TileBuilding is CityBase city && city.Owner == p)
                     return supplier(city);
                 else
                     return null;

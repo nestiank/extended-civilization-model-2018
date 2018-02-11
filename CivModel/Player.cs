@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -26,7 +25,7 @@ namespace CivModel
         /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
         /// <seealso cref="IGameScheme.GoldCoefficient"/>
-        public double GoldIncome => Game.Scheme.GoldCoefficient * TaxRate;
+        public double GoldIncome => Game.Scheme.GoldCoefficient * Population * TaxRate;
 
         /// <summary>
         /// The gold income with investments.
@@ -59,10 +58,10 @@ namespace CivModel
 
         /// <summary>
         /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
-        /// It is equal to sum of all <see cref="CityCenter.Labor"/> of cities of this player.
+        /// It is equal to sum of all <see cref="CityBase.Labor"/> of cities of this player.
         /// </summary>
         /// <seealso cref="Labor"/>
-        /// <seealso cref="CityCenter.Labor"/>
+        /// <seealso cref="CityBase.Labor"/>
         public double OriginalLabor => Cities.Select(city => city.Labor).Sum();
 
         /// <summary>
@@ -70,37 +69,44 @@ namespace CivModel
         /// It is calculated from <see cref="OriginalLabor"/> with <see cref="Happiness"/>.
         /// </summary>
         /// <seealso cref="OriginalLabor"/>
-        /// <seealso cref="CityCenter.Labor"/>
+        /// <seealso cref="CityBase.Labor"/>
         public double Labor => OriginalLabor * (1 + Game.Scheme.LaborHappinessCoefficient * Happiness);
 
         /// <summary>
         /// The research per turn of this player, not controlled by <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
-        /// It is equal to sum of all <see cref="CityCenter.Research"/> of cities of this player.
+        /// It is equal to sum of all <see cref="CityBase.ResearchIncome"/> of cities of this player.
         /// </summary>
-        /// <seealso cref="Research"/>
-        /// <seealso cref="CityCenter.Research"/>
+        /// <seealso cref="ResearchIncome"/>
+        /// <seealso cref="CityBase.ResearchIncome"/>
         /// <seealso cref="ResearchInvestment"/>
-        public double OriginalResearch => Cities.Select(city => city.Research).Sum();
+        public double OriginalResearchIncome => Cities.Select(city => city.ResearchIncome).Sum();
 
         /// <summary>
         /// The research per turn of this player.
-        /// It is calculated from <see cref="OriginalResearch"/> with <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
+        /// It is calculated from <see cref="OriginalResearchIncome"/> with <see cref="Happiness"/> and <see cref="ResearchInvestment"/>.
         /// </summary>
-        /// <seealso cref="OriginalResearch"/>
-        /// <seealso cref="CityCenter.Research"/>
+        /// <seealso cref="OriginalResearchIncome"/>
+        /// <seealso cref="CityBase.ResearchIncome"/>
         /// <seealso cref="ResearchInvestment"/>
-        public double Research => OriginalResearch
+        public double ResearchIncome => OriginalResearchIncome
             * (1 + Game.Scheme.ResearchHappinessCoefficient * Happiness)
             * (BasicResearchRequire != 0 ? ResearchInvestment / BasicResearchRequire : 1);
 
         /// <summary>
-        /// The whole population which this player has. It is equal to sum of all <see cref="CityCenter.Population"/> of cities of this player.
+        /// The total research of this player.
         /// </summary>
-        /// <seealso cref="CityCenter.Population"/>
+        /// <seealso cref="ResearchIncome"/>
+        public double Research { get; private set; } = 0;
+
+        /// <summary>
+        /// The whole population which this player has. It is equal to sum of all <see cref="CityBase.Population"/> of cities of this player.
+        /// </summary>
+        /// <seealso cref="CityBase.Population"/>
         public double Population => Cities.Select(city => city.Population).Sum();
 
         /// <summary>
         /// The tax rate of this player. It affects <see cref="GoldIncome"/> and <see cref="BasicEconomicRequire"/>.
+        /// This value must be in [0, 1]
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><see cref="TaxRate"/> is not in [0, 1]</exception>
         public double TaxRate
@@ -144,7 +150,7 @@ namespace CivModel
         /// The basic research gold requirement.
         /// </summary>
         /// <seealso cref="ResearchInvestment"/>
-        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient * OriginalResearch;
+        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient * OriginalResearchIncome;
 
         /// <summary>
         /// The amount of gold for research investment. It must be in [<c>0</c>, <c>2 * <see cref="BasicResearchRequire"/></c>].
@@ -175,9 +181,15 @@ namespace CivModel
         /// <summary>
         /// The list of cities of this player.
         /// </summary>
-        /// <seealso cref="CityCenter"/>
-        public IReadOnlyList<CityCenter> Cities => _cities;
-        private readonly List<CityCenter> _cities = new List<CityCenter>();
+        /// <seealso cref="CityBase"/>
+        public IReadOnlyList<CityBase> Cities => _cities;
+        private readonly List<CityBase> _cities = new List<CityBase>();
+
+        /// <summary>
+        /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
+        /// </summary>
+        public IReadOnlyList<Quest> Quests => _quests;
+        private readonly List<Quest> _quests = new List<Quest>();
 
         /// <summary>
         /// The list of the not-finished productions of this player.
@@ -192,11 +204,10 @@ namespace CivModel
         public LinkedList<Production> Deployment { get; } = new LinkedList<Production>();
 
         /// <summary>
-        /// The list of additional available productions of this player.
-        /// This list will added to the calculation of <see cref="GetAvailableProduction"/>
+        /// The list of available productions of this player.
         /// </summary>
-        public ISet<IProductionFactory> AdditionalAvailableProduction => _additionalAvailableProduction;
-        private readonly HashSet<IProductionFactory> _additionalAvailableProduction = new HashSet<IProductionFactory>();
+        public ISet<IProductionFactory> AvailableProduction => _availableProduction;
+        private readonly HashSet<IProductionFactory> _availableProduction = new HashSet<IProductionFactory>();
 
         /// <summary>
         /// The estimated used labor in this turn.
@@ -239,61 +250,43 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Player"/> class.
         /// </summary>
         /// <param name="game">The game which this player participates.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
         public Player(Game game)
         {
-            _game = game;
+            _game = game ?? throw new ArgumentNullException(nameof(game));
+
+            game.TurnObservable.AddObserver(this);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="Unit"/> class
-        /// </summary>
-        /// <param name="unit">unit to add</param>
+        // this function is used by Unit class
         internal void AddUnitToList(Unit unit)
         {
             _units.Add(unit);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="Unit"/> class
-        /// </summary>
-        /// <param name="unit">unit to remove</param>
+        // this function is used by Unit class
         internal void RemoveUnitFromList(Unit unit)
         {
             _units.Remove(unit);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="CityCenter"/> class
-        /// </summary>
-        /// <param name="city">city to add</param>
-        internal void AddCityToList(CityCenter city)
+        /// this function is used by CityBase class
+        internal void AddCityToList(CityBase city)
         {
             _beforeLandingCity = false;
             _cities.Add(city);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="CityCenter"/> class
-        /// </summary>
-        /// <param name="city">city to remove</param>
-        internal void RemoveCityFromList(CityCenter city)
+        // this function is used by CityBase class
+        internal void RemoveCityFromList(CityBase city)
         {
             _cities.Remove(city);
         }
 
-        /// <summary>
-        /// Gets the list of available productions of this player.
-        /// </summary>
-        /// <remarks>
-        /// The return value is the result of
-        /// merging the result of <see cref="CityCenter.AvailableProduction"/> of all cities of this player
-        /// and <see cref="AdditionalAvailableProduction"/>.
-        /// </remarks>
-        /// <returns>the list of available productions</returns>
-        public IReadOnlyList<IProductionFactory> GetAvailableProduction()
+        // this function is used by Quest class
+        internal void AddQuestToList(Quest quest)
         {
-            return Cities.SelectMany(city => city.AvailableProduction).Distinct()
-                .Union(AdditionalAvailableProduction).ToArray();
+            _quests.Add(quest);
         }
 
         /// <summary>
@@ -303,7 +296,7 @@ namespace CivModel
         /// <exception cref="InvalidOperationException">a <see cref="TileBuilding"/> of another player is at <paramref name="pt"/></exception>
         public void AddTerritory(Terrain.Point pt)
         {
-            if (pt.TileOwner != this)
+            if (pt.TileOwner != this && pt.TileBuilding == null)
             {
                 if (pt.TileOwner != null)
                     pt.TileOwner.RemoveTerritory(pt);
@@ -356,9 +349,11 @@ namespace CivModel
 
             var dg = GoldNetIncome;
             var dh = HappinessIncome;
+            var dr = ResearchIncome;
 
             Gold = Math.Max(0, Gold + dg);
             Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
+            Research += dr;
         }
 
         /// <summary>
@@ -422,7 +417,7 @@ namespace CivModel
                 var prod = node.Value;
                 prod.InputResources(prod.EstimatedLaborInputing, prod.EstimatedGoldInputing);
 
-                if (prod.Completed)
+                if (prod.IsCompleted)
                 {
                     var tmp = node;
                     node = node.Next;

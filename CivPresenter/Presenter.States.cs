@@ -63,6 +63,12 @@ namespace CivPresenter
             /// </summary>
             Deploy,
             /// <summary>
+            /// State [quest]. This state indicates user is viewing the list of quests.
+            /// <see cref="Presenter.CommandQuest"/> method may introduce this state.
+            /// In this state, asdf indicates asdf.
+            /// </summary>
+            Quest,
+            /// <summary>
             /// State [victory]. This state indicates user is viewing a <strong>victory</strong> screen.
             /// </summary>
             Victory,

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -68,7 +67,7 @@ namespace CivModel
         double GoldCoefficient { get; }
 
         /// <summary>
-        /// Constant amount of <see cref="Common.CityCenter.Population"/>.
+        /// Constant amount of <see cref="CityBase.Population"/>.
         /// </summary>
         double PopulationConstant { get; }
 
@@ -88,7 +87,7 @@ namespace CivModel
         double LaborHappinessCoefficient { get; }
 
         /// <summary>
-        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Research"/>.
+        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.ResearchIncome"/>.
         /// </summary>
         double ResearchHappinessCoefficient { get; }
 
@@ -121,12 +120,5 @@ namespace CivModel
         /// <param name="isNewGame"><c>true</c> if initializing a new game. <c>false</c> if initializing a game loaded from a save file.</param>
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
         void InitializeGame(Game game, bool isNewGame);
-
-        /// <summary>
-        /// Initializes a newly created city
-        /// </summary>
-        /// <param name="city">The city to initialize.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
-        void InitializeNewCity(CityCenter city);
     }
 }

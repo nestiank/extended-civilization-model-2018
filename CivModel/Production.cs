@@ -9,9 +9,7 @@ namespace CivModel
     /// <summary>
     /// The factory interface of <see cref="Production"/>
     /// </summary>
-    /// <seealso cref="Player.GetAvailableProduction"/>
-    /// <seealso cref="Common.CityCenter.AvailableProduction"/>
-    /// <seealso cref="Player.AdditionalAvailableProduction"/>
+    /// <seealso cref="Player.AvailableProduction"/>
     public interface IProductionFactory
     {
         /// <summary>
@@ -88,7 +86,24 @@ namespace CivModel
         /// <summary>
         /// Whether this production is completed.
         /// </summary>
-        public bool Completed { get; private set; } = false;
+        /// <remarks>
+        /// You can mark a production not completed as completed, but cannot do opposite.
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">
+        /// Cannot mark a production completed as not completed
+        /// </exception>
+        public bool IsCompleted
+        {
+            get => _isCompleted;
+            set
+            {
+                if (_isCompleted && !value)
+                    throw new InvalidOperationException("Cannot mark a production completed as not completed");
+
+                _isCompleted = value;
+            }
+        }
+        private bool _isCompleted = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Production"/> class.
@@ -143,11 +158,12 @@ namespace CivModel
         /// check how much labor can be inputed into this production in this turn
         /// </summary>
         /// <param name="labor">labor amount which you want to put</param>
+        /// <exception cref="InvalidOperationException">production is already completed</exception>
         /// <returns>maximum labor amount possible to put, less than <paramref name="labor"/></returns>
         public double GetAvailableInputLabor(double labor)
         {
-            if (Completed)
-                throw new InvalidOperationException("Production.InputLabor(): production is already done");
+            if (IsCompleted)
+                throw new InvalidOperationException("production is already completed");
 
             double capacity = Math.Min(LaborCapacityPerTurn, TotalLaborCost - LaborInputed);
             return Math.Min(labor, capacity);
@@ -157,11 +173,12 @@ namespace CivModel
         /// check how much gold can be inputed into this production in this turn
         /// </summary>
         /// <param name="gold">gold amount which you want to put</param>
+        /// <exception cref="InvalidOperationException">production is already completed</exception>
         /// <returns>maximum gold amount possible to put, less than <paramref name="gold"/></returns>
         public double GetAvailableInputGold(double gold)
         {
-            if (Completed)
-                throw new InvalidOperationException("Production.InputLabor(): production is already done");
+            if (IsCompleted)
+                throw new InvalidOperationException("production is already completed");
 
             double capacity = Math.Min(GoldCapacityPerTurn, TotalGoldCost - GoldInputed);
             return Math.Min(gold, capacity);
@@ -172,6 +189,7 @@ namespace CivModel
         /// </summary>
         /// <param name="labor">labor amount to input</param>
         /// <param name="gold">gold amount to input</param>
+        /// <exception cref="InvalidOperationException">production is already completed</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="labor"/> is negative
         /// or
@@ -180,6 +198,9 @@ namespace CivModel
         /// <returns>The amount which is really inputed. It can be different from the parameter.</returns>
         public Tuple<double, double> InputResources(double labor, double gold)
         {
+            if (IsCompleted)
+                throw new InvalidOperationException("production is already completed");
+
             if (labor < 0)
                 throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
             if (gold < 0)
@@ -192,7 +213,7 @@ namespace CivModel
             GoldInputed += gold;
 
             if (LaborInputed >= TotalLaborCost && GoldInputed >= TotalGoldCost)
-                Completed = true;
+                IsCompleted = true;
 
             return new Tuple<double, double>(labor, gold);
         }

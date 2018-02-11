@@ -11,9 +11,9 @@ namespace CivModel.Common
         public static Guid ClassGuid { get; } = new Guid("39C928FE-721D-4BB9-B7F4-995F631923AF");
         public override Guid Guid => ClassGuid;
 
-        public override double ProvidedResearch => 10;
+        public override double ProvidedResearchIncome => 10;
 
-        public LaboratoryBuilding(CityCenter city) : base(city) { }
+        public LaboratoryBuilding(CityBase city) : base(city) { }
     }
 
     public class LaboratoryBuildingProductionFactory : IInteriorBuildingProductionFactory
@@ -28,11 +28,11 @@ namespace CivModel.Common
         {
             return new InteriorBuildingProduction(this, owner, 5, 2, 5, 2);
         }
-        public bool IsPlacable(InteriorBuildingProduction production, CityCenter city)
+        public bool IsPlacable(InteriorBuildingProduction production, CityBase city)
         {
             return true;
         }
-        public InteriorBuilding CreateInteriorBuilding(CityCenter city)
+        public InteriorBuilding CreateInteriorBuilding(CityBase city)
         {
             return new LaboratoryBuilding(city);
         }
