@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Common
+namespace CivModel.Hwan
 {
     public class JackieChan : Unit
     {
@@ -169,7 +169,7 @@ namespace CivModel.Common
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CityCenter
+                && point.TileBuilding is CivModel.Common.CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
