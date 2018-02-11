@@ -618,6 +618,10 @@ namespace FakeView
         {
             c.ch = 'J';
         }
+        else if (auto u = dynamic_cast<CivModel::Finno::AncientSorcerer^>(unit))
+        {
+            c.ch = 'S';
+        }
         else
         {
             System::Diagnostics::Debug::WriteLine(L"unqualified unit in PrintUnit()");
@@ -664,7 +668,7 @@ namespace FakeView
         }
         else if (auto product = dynamic_cast<CivModel::Common::JediKnightProductionFactory^>(factory))
         {
-            return "Jedi Knight";
+            return "Fake Jedi Knight";
         }
         else if (auto product = dynamic_cast<CivModel::Common::FactoryBuildingProductionFactory^>(factory))
         {
@@ -673,6 +677,10 @@ namespace FakeView
         else if (auto product = dynamic_cast<CivModel::Common::LaboratoryBuildingProductionFactory^>(factory))
         {
             return "Laboratory";
+        }
+        else if (auto product = dynamic_cast<CivModel::Finno::AncientSorcererProductionFactory^>(factory))
+        {
+            return "Ancient Sorceror";
         }
         else
         {

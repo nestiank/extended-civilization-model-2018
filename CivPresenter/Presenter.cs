@@ -223,6 +223,12 @@ namespace CivPresenter
             ProceedTurn();
 
             StateNormal();
+
+            Game.GuidManager.RegisterGuid(CivModel.Finno.AncientSorcerer.ClassGuid, (p, t) => new CivModel.Finno.AncientSorcerer(p, t));
+            foreach (var player in Game.Players)
+            {
+                player.AvailableProduction.Add(CivModel.Finno.AncientSorcererProductionFactory.Instance);
+            }
         }
 
         /// <summary>
