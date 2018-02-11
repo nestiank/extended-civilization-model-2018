@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -70,6 +70,10 @@ namespace CivModel.Hwan
                     throw new InvalidOperationException("Actor is not placed yet");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 4)
                     throw new InvalidOperationException("Skill is not turned on");
+
+                int Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
 
                 int A = Owner.PlacedPoint.Value.Position.A;
                 int B = Owner.PlacedPoint.Value.Position.B;
@@ -148,6 +152,7 @@ namespace CivModel.Hwan
                 }
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
+                Owner.ConsumeAP(Ap);
             }
 
         }
