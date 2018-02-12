@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -84,10 +84,14 @@ namespace CivModel.Hwan
                 if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 5)
                     throw new InvalidOperationException("Can't go that way");
 
+                int Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
                 Owner.PlacedPoint = pt;
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
-
+                Owner.ConsumeAP(Ap);
             }
         }
     }

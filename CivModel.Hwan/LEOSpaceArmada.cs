@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -76,8 +76,13 @@ namespace CivModel.Hwan
                 if (pt.Value.Unit == null)
                     throw new InvalidOperationException("There is no target");
 
+                int Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
                 Owner.AttackTo(Owner.AttackPower * 2, pt.Value.Unit, pt.Value.Unit.DefencePower,false, true);
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
+                Owner.ConsumeAP(Ap);
             }
         }
     }

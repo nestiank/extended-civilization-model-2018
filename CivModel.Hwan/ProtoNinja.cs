@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -87,6 +87,10 @@ namespace CivModel.Hwan
                 if (pt.Value.Unit.BattleClassLevel > 3)
                     throw new InvalidOperationException("The Unit's ClassLevel is more then limit");
 
+                int Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
                 Owner.AttackTo(pt.Value.Unit.MaxHP, pt.Value.Unit, 0, true, true);
 
                 if (pt.Value.Unit == null && Owner != null)
@@ -94,6 +98,7 @@ namespace CivModel.Hwan
                     Owner.PlacedPoint = pt;
                 }
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
+                Owner.ConsumeAP(Ap);
             }
         }
 

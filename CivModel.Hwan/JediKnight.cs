@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -87,8 +87,13 @@ namespace CivModel.Hwan
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     throw new InvalidOperationException("Skill is not turned on");
 
+                int Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
                 _owner.SkillDurationTime = Owner.Owner.Game.TurnNumber + 1;
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
+                Owner.ConsumeAP(Ap);
             }
         }
     }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,6 +73,10 @@ namespace CivModel.Finno
                 if (Owner.PlacedPoint.Value.TileOwner == Owner.Owner)
                     throw new InvalidOperationException("You have the Territory");
 
+                int Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
                 Owner.Owner.AddTerritory(Owner.PlacedPoint.Value);
                 if (Owner.PlacedPoint.Value.TileBuilding != null)
                 {
@@ -80,7 +84,7 @@ namespace CivModel.Finno
                 }
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
-
+                Owner.ConsumeAP(Ap);
             }
         }
     }

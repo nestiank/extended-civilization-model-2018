@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,12 +74,21 @@ namespace CivModel.Finno
                 if (pt.Value.Unit.Owner != Owner.Owner)
                     throw new InvalidOperationException("The Unit is hostile");
 
+                int Ap = GetRequiredAP(pt);
+                if(!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
                 double AmountOfHeal = 0;
 
                 AmountOfHeal = Math.Min(10, Owner.RemainHP - 1);
                 pt.Value.Unit.Heal(AmountOfHeal);
 
                 Owner.RemainHP = Owner.RemainHP - AmountOfHeal;
+                if (Owner.RemainHP <= 0)
+                {
+                    Owner.Destroy();
+                }
+                Owner.ConsumeAP(Ap);
 
             }
         }
