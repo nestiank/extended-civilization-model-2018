@@ -614,7 +614,7 @@ namespace FakeView
         {
             c.ch = 'P';
         }
-        else if (auto u = dynamic_cast<CivModel::Common::JediKnight^>(unit))
+        else if (auto u = dynamic_cast<CivModel::Common::FakeKnight^>(unit))
         {
             c.ch = 'J';
         }
@@ -662,9 +662,9 @@ namespace FakeView
         {
             return "Pioneer";
         }
-        else if (auto product = dynamic_cast<CivModel::Common::JediKnightProductionFactory^>(factory))
+        else if (auto product = dynamic_cast<CivModel::Common::FakeKnightProductionFactory^>(factory))
         {
-            return "Jedi Knight";
+            return "Fake Knight";
         }
         else if (auto product = dynamic_cast<CivModel::Common::FactoryBuildingProductionFactory^>(factory))
         {

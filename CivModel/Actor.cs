@@ -34,9 +34,18 @@ namespace CivModel
     public abstract class Actor : TileObject, ITurnObserver
     {
         /// <summary>
-        /// The player who owns this actor.
+        /// The player who owns this actor. <c>null</c> if this actor is destroyed.
         /// </summary>
-        public Player Owner { get; private set; }
+        /// <remarks>
+        /// Setter of this property is wrapper of <see cref="ChangeOwner(Player)"/>. See <see cref="ChangeOwner(Player)"/> for more information.
+        /// </remarks>
+        /// <seealso cref="ChangeOwner(Player)"/>
+        public Player Owner
+        {
+            get => _owner;
+            set => ChangeOwner(value);
+        }
+        private Player _owner;
 
         /// <summary>
         /// The name of this actor.
@@ -65,6 +74,11 @@ namespace CivModel
             }
         }
         private int _remainAP = 0;
+
+        /// <summary>
+        /// Whether this <see cref="Actor"/> is controllable by <see cref="Owner"/> or not.
+        /// </summary>
+        public bool IsControllable { get; set; } = true;
 
         /// <summary>
         /// The flag indicating this actor is skipped in this turn.
@@ -99,7 +113,6 @@ namespace CivModel
             }
         }
         private bool _sleepFlag = false;
-
 
         /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
@@ -169,6 +182,8 @@ namespace CivModel
         /// </summary>
         public virtual int BattleClassLevel => 0;
 
+        private Effect[] _effects;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Actor"/> class.
         /// </summary>
@@ -179,24 +194,61 @@ namespace CivModel
         public Actor(Player owner, Terrain.Point point, TileTag tag)
             : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
-            Owner = owner;
+            _owner = owner;
             RemainHP = MaxHP;
+
+            _effects = new Effect[Enum.GetNames(typeof(EffectTag)).Length];
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Effect"/> object on this actor by <see cref="EffectTag"/>.
+        /// </summary>
+        /// <param name="tag">The tag.</param>
+        /// <returns>The <see cref="Effect"/> object.</returns>
+        public Effect GetEffectByTag(EffectTag tag)
+        {
+            return _effects[(int)tag];
+        }
+
+        // this method is used by Effect class
+        internal void SetEffect(Effect effect)
+        {
+            if (effect == null)
+                throw new ArgumentNullException(nameof(effect));
+
+            _effects[(int)effect.Tag] = effect;
+        }
+
+        // this method is used by Effect class
+        internal void UnsetEffect(EffectTag tag)
+        {
+            _effects[(int)tag] = null;
         }
 
         /// <summary>
         /// Changes <see cref="Owner"/>. <see cref="OnBeforeChangeOwner(Player)"/> is called before the property is changed.
         /// </summary>
         /// <param name="newOwner">The new owner.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="newOwner"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// Actor is already destroyed
+        /// or
+        /// the ownership of unit on TileBuilding cannot be changed
+        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="newOwner"/> is <c>null</c>.</exception>
         public void ChangeOwner(Player newOwner)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("Actor is already destroyed");
             if (newOwner == null)
                 throw new ArgumentNullException("newOwner");
+
             if (newOwner == Owner)
                 return;
+            if (PlacedPoint?.TileBuilding != null)
+                throw new InvalidOperationException("the ownership of unit on TileBuilding cannot be changed");
 
             OnBeforeChangeOwner(newOwner);
-            Owner = newOwner;
+            _owner = newOwner;
         }
 
         /// <summary>
@@ -217,8 +269,12 @@ namespace CivModel
         public void Destroy()
         {
             OnBeforeDestroy();
+
+            foreach (var effect in _effects)
+                effect.CallOnTargetDestroy();
+
             PlacedPoint = null;
-            Owner = null;
+            _owner = null;
         }
 
         /// <summary>
@@ -327,6 +383,11 @@ namespace CivModel
         /// <param name="isMelee">Whether the battle is melee or not.</param>
         /// <param name="isSkillAttack">Whether the battle </param>
         /// <exception cref="ArgumentNullException"><paramref name="opposite"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// Actor is already destroyed
+        /// or
+        /// Opposite actor is already destroyed
+        /// </exception>
         /// <returns>
         ///   <see cref="BattleResult"/> indicating the result of this battle.
         ///   if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.
@@ -343,6 +404,10 @@ namespace CivModel
         {
             if (opposite == null)
                 throw new ArgumentNullException("opposite");
+            if (Owner == null)
+                throw new InvalidOperationException("Actor is already destroyed");
+            if (opposite.Owner == null)
+                throw new InvalidOperationException("Opposite actor is already destroyed");
 
             double atk = CalculateAttackPower(thisAttack, opposite, isMelee, isSkillAttack);
             double def = opposite.CalculateAttackPower(oppositeDefence, this, isMelee, isSkillAttack);
@@ -457,6 +522,9 @@ namespace CivModel
 
             if (!SleepFlag)
                 SkipFlag = false;
+
+            foreach (var effect in _effects)
+                effect?.PreTurn();
         }
 
         /// <summary>
@@ -464,6 +532,9 @@ namespace CivModel
         /// </summary>
         public virtual void PostTurn()
         {
+            foreach (var effect in _effects)
+                effect?.PostTurn();
+
             Heal(MaxHealPerTurn);
         }
 
@@ -473,6 +544,8 @@ namespace CivModel
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public virtual void PrePlayerSubTurn(Player playerInTurn)
         {
+            foreach (var effect in _effects)
+                effect?.PrePlayerSubTurn(playerInTurn);
         }
 
         /// <summary>
@@ -481,6 +554,8 @@ namespace CivModel
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public virtual void PostPlayerSubTurn(Player playerInTurn)
         {
+            foreach (var effect in _effects)
+                effect?.PostPlayerSubTurn(playerInTurn);
         }
     }
 }

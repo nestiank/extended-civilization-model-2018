@@ -97,7 +97,7 @@ namespace CivModel
         /// The list of <see cref="InteriorBuilding"/> this city owns.
         /// </summary>
         public IReadOnlyList<InteriorBuilding> InteriorBuildings => _interiorBuildings;
-        private readonly List<InteriorBuilding> _interiorBuildings = new List<InteriorBuilding>();
+        private readonly SafeEnumerableCollection<InteriorBuilding> _interiorBuildings = new SafeEnumerableCollection<InteriorBuilding>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CityBase"/> class.

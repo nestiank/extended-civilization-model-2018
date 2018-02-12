@@ -406,7 +406,7 @@ namespace CivPresenter
                 for (; idx < _standbyUnits.Length; ++idx)
                 {
                     var unit = _standbyUnits[idx];
-                    if (unit.RemainAP > 0 && !unit.SkipFlag && unit.PlacedPoint.HasValue)
+                    if (unit.RemainAP > 0 && !unit.SkipFlag && unit.IsControllable && unit.PlacedPoint.HasValue)
                     {
                         _standbyUnitIndex = idx;
                         _selectedActor = _standbyUnits[idx];
@@ -428,6 +428,8 @@ namespace CivPresenter
             int idx = Array.IndexOf(units, unit);
 
             if (idx == -1)
+                return;
+            if (!unit.IsControllable)
                 return;
 
             _selectedActor = unit;
