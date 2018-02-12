@@ -52,7 +52,7 @@ namespace CivModel.Common
         {
             game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
             game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
-            game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
+            game.GuidManager.RegisterGuid(FakeKnight.ClassGuid, (p, t) => new FakeKnight(p, t));
             game.GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, city => new FactoryBuilding(city));
             game.GuidManager.RegisterGuid(LaboratoryBuilding.ClassGuid, city => new LaboratoryBuilding(city));
         }
@@ -86,7 +86,7 @@ namespace CivModel.Common
             {
                 player.AvailableProduction.Add(CityCenterProductionFactory.Instance);
                 player.AvailableProduction.Add(PioneerProductionFactory.Instance);
-                player.AvailableProduction.Add(JediKnightProductionFactory.Instance);
+                player.AvailableProduction.Add(FakeKnightProductionFactory.Instance);
                 player.AvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
                 player.AvailableProduction.Add(LaboratoryBuildingProductionFactory.Instance);
 

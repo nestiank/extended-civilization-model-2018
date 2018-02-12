@@ -176,20 +176,20 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="Unit"/>
         public IReadOnlyList<Unit> Units => _units;
-        private readonly List<Unit> _units = new List<Unit>();
+        private readonly SafeEnumerableCollection<Unit> _units = new SafeEnumerableCollection<Unit>();
 
         /// <summary>
         /// The list of cities of this player.
         /// </summary>
         /// <seealso cref="CityBase"/>
         public IReadOnlyList<CityBase> Cities => _cities;
-        private readonly List<CityBase> _cities = new List<CityBase>();
+        private readonly SafeEnumerableCollection<CityBase> _cities = new SafeEnumerableCollection<CityBase>();
 
         /// <summary>
         /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
         /// </summary>
         public IReadOnlyList<Quest> Quests => _quests;
-        private readonly List<Quest> _quests = new List<Quest>();
+        private readonly SafeEnumerableCollection<Quest> _quests = new SafeEnumerableCollection<Quest>();
 
         /// <summary>
         /// The list of the not-finished productions of this player.
@@ -204,7 +204,7 @@ namespace CivModel
         public LinkedList<Production> Deployment { get; } = new LinkedList<Production>();
 
         /// <summary>
-        /// The list of available productions of this player.
+        /// The set of available productions of this player.
         /// </summary>
         public ISet<IProductionFactory> AvailableProduction => _availableProduction;
         private readonly HashSet<IProductionFactory> _availableProduction = new HashSet<IProductionFactory>();
