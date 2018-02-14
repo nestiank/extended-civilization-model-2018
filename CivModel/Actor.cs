@@ -289,7 +289,7 @@ namespace CivModel
 
             for (int i = 0; i < _effects.Length; ++i)
             {
-                _effects[i].CallOnTargetDestroy();
+                _effects[i]?.CallOnTargetDestroy();
                 _effects[i] = null;
             }
 

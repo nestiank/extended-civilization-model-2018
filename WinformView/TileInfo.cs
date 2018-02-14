@@ -132,7 +132,7 @@ namespace WinformView
                 if (cbxPlayer.SelectedItem is PlayerSelection sel)
                 {
                     if (sel.Player != _tile.TileOwner)
-                        sel.Player.AddTerritory(_tile);
+                        sel.Player.TryAddTerritory(_tile);
                 }
             }
         }

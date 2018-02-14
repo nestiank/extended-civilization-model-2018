@@ -31,7 +31,7 @@ namespace CivModel
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public TileBuilding(Player owner, Terrain.Point point) : base(owner, point, TileTag.TileBuilding)
         {
-            owner.AddTerritory(point);
+            owner.TryAddTerritory(point);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace CivModel
             base.OnChangePlacedPoint(oldPoint);
 
             if (PlacedPoint is Terrain.Point pt)
-                Owner.AddTerritory(pt);
+                Owner.TryAddTerritory(pt);
         }
     }
 }

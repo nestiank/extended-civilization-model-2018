@@ -119,7 +119,7 @@ namespace CivModel
                             throw new InvalidDataException(errmsg);
 
                         var ptTerr = Terrain.GetPoint(terr[0], terr[1]);
-                        _players[i].AddTerritory(ptTerr);
+                        _players[i].TryAddTerritory(ptTerr);
                     }
                 }
 
