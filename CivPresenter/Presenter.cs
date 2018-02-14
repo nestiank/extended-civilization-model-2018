@@ -65,13 +65,14 @@ namespace CivPresenter
         /// <remarks>
         /// <list type="bullet">
         ///  <item><c>0</c> if <see cref="Player.TaxRate"/> is selected.</item>
-        ///  <item><c>1</c> if <see cref="Player.EconomicInvestment"/> is selected.</item>
-        ///  <item><c>2</c> if <see cref="Player.ResearchInvestment"/> is selected.</item>
+        ///  <item><c>1</c> if <see cref="Player.EconomicInvestmentRatio"/> is selected.</item>
+        ///  <item><c>2</c> if <see cref="Player.ResearchInvestmentRatio"/> is selected.</item>
+        ///  <item><c>3</c> if <see cref="Player.LogisticInvestmentRatio"/> is selected.</item>
         ///  <item><c>-1</c> if there is no selected deploy.</item>
         /// </list>
         /// </remarks>
         public int SelectedInvestment { get; private set; } = -1;
-        private const int _selectedInvestmentCount = 3;
+        private const int _selectedInvestmentCount = 4;
 
         /// <summary>
         /// Index of the selected deploy to <see cref="Player.Deployment"/> list.
@@ -700,7 +701,7 @@ namespace CivPresenter
             SelectedInvestment = -1;
             IsProductManipulating = false;
 
-            Game.PlayerInTurn.EstimateInputsForProduction();
+            Game.PlayerInTurn.EstimateResourceInputs();
 
             void clear()
             {
@@ -762,7 +763,7 @@ namespace CivPresenter
                                 var prev = node.Previous;
                                 Game.PlayerInTurn.Production.Remove(node);
                                 Game.PlayerInTurn.Production.AddBefore(prev, node.Value);
-                                Game.PlayerInTurn.EstimateInputsForProduction();
+                                Game.PlayerInTurn.EstimateResourceInputs();
                                 --SelectedProduction;
                             }
                             break;
@@ -775,7 +776,7 @@ namespace CivPresenter
                                 var next = node.Next;
                                 Game.PlayerInTurn.Production.Remove(node);
                                 Game.PlayerInTurn.Production.AddAfter(next, node.Value);
-                                Game.PlayerInTurn.EstimateInputsForProduction();
+                                Game.PlayerInTurn.EstimateResourceInputs();
                                 ++SelectedProduction;
                             }
                             break;
@@ -838,21 +839,18 @@ namespace CivPresenter
 
                 if (SelectedInvestment != -1)
                 {
-                    double require = 0;
-                    if (SelectedInvestment == 0)
-                        require = 0.5;
-                    else if (SelectedInvestment == 1)
-                        require = Game.PlayerInTurn.BasicEconomicRequire;
-                    else if (SelectedInvestment == 2)
-                        require = Game.PlayerInTurn.BasicResearchRequire;
+                    double[] maxval = { 1, 2, 2, 1 };
+                    double value = maxval[SelectedInvestment] * (index / 8.0);
 
-                    double value = require * (index / 4.0);
+                    var player = Game.PlayerInTurn;
                     if (SelectedInvestment == 0)
-                        Game.PlayerInTurn.TaxRate = value;
+                        player.TaxRate = value;
                     else if (SelectedInvestment == 1)
-                        Game.PlayerInTurn.EconomicInvestment = value;
+                        player.EconomicInvestmentRatio = value;
                     else if (SelectedInvestment == 2)
-                        Game.PlayerInTurn.ResearchInvestment = value;
+                        player.ResearchInvestmentRatio = value;
+                    else if (SelectedInvestment == 3)
+                        player.LogisticInvestmentRatio = value;
                 }
                 else if (index < Game.PlayerInTurn.Deployment.Count)
                 {

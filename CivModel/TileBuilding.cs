@@ -16,7 +16,17 @@ namespace CivModel
         /// <summary>
         /// The maximum AP. <c>0</c> by default.
         /// </summary>
-        public override int MaxAP => 0;
+        public override double MaxAP => 0;
+
+        /// <summary>
+        /// The amount of gold logistics of this actor.
+        /// </summary>
+        public override double GoldLogistics => 0;
+
+        /// <summary>
+        /// The amount of labor logistics of this actor to get the full heal amount of <see cref="Actor.MaxHealPerTurn" />.
+        /// </summary>
+        public override double FullLaborLogicstics => 0;
 
         /// <summary>
         /// The action performing movement. <c>null</c> by default.
