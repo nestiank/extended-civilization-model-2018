@@ -393,7 +393,7 @@ namespace CivModel
         public void EstimateInputsForProduction()
         {
             var labor = Labor;
-            var gold = GoldIncomeWithInvestments;
+            var gold = Math.Max(0, GoldIncomeWithInvestments);
 
             EstimatedUsedLabor = 0;
             EstimatedUsedGold = 0;

@@ -158,10 +158,13 @@ namespace CivModel
         /// check how much labor can be inputed into this production in this turn
         /// </summary>
         /// <param name="labor">labor amount which you want to put</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="labor"/> is negative</exception>
         /// <exception cref="InvalidOperationException">production is already completed</exception>
         /// <returns>maximum labor amount possible to put, less than <paramref name="labor"/></returns>
         public double GetAvailableInputLabor(double labor)
         {
+            if (labor < 0)
+                throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
             if (IsCompleted)
                 throw new InvalidOperationException("production is already completed");
 
@@ -173,10 +176,13 @@ namespace CivModel
         /// check how much gold can be inputed into this production in this turn
         /// </summary>
         /// <param name="gold">gold amount which you want to put</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="gold"/> is negative</exception>
         /// <exception cref="InvalidOperationException">production is already completed</exception>
         /// <returns>maximum gold amount possible to put, less than <paramref name="gold"/></returns>
         public double GetAvailableInputGold(double gold)
         {
+            if (gold < 0)
+                throw new ArgumentOutOfRangeException(nameof(gold), gold, "gold is negative");
             if (IsCompleted)
                 throw new InvalidOperationException("production is already completed");
 
