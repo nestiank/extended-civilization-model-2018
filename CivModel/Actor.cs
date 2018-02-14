@@ -157,16 +157,23 @@ namespace CivModel
 
         /// <summary>
         /// The remaining AP. It must be in [0, <see cref="MaxHP"/>].
+        /// If this value gets <c>0</c> while <see cref="MaxHP"/> is not <c>0</c>,
+        ///  <see cref="Die(Player)"/> is called with <c>null</c> argument.
+        /// </summary>
+        /// <remarks>
         /// If this is lower than <see cref="MaxHP"/>,
         ///  this value is increased to min{<see cref="MaxHP"/>, value + <see cref="MaxHealPerTurn"/>}
         ///  when <see cref="PreTurn"/> is called.
-        /// </summary>
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentOutOfRangeException"><see cref="RemainHP"/> is not in [0, <see cref="MaxHP"/>]</exception>
         public double RemainHP
         {
             get => _remainHP;
             set
             {
+                if (Owner == null)
+                    throw new InvalidOperationException("actor is already destroyed");
                 if (value < 0 || value > MaxHP)
                     throw new ArgumentOutOfRangeException("RemainHP", RemainHP, "RemainHP is not in [0, MaxHP]");
 
@@ -213,6 +220,8 @@ namespace CivModel
         // this method is used by Effect class
         internal void SetEffect(Effect effect)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
             if (effect == null)
                 throw new ArgumentNullException(nameof(effect));
 
@@ -222,6 +231,9 @@ namespace CivModel
         // this method is used by Effect class
         internal void UnsetEffect(EffectTag tag)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             _effects[(int)tag] = null;
         }
 
@@ -230,15 +242,16 @@ namespace CivModel
         /// </summary>
         /// <param name="newOwner">The new owner.</param>
         /// <exception cref="InvalidOperationException">
-        /// Actor is already destroyed
+        /// actor is already destroyed
         /// or
         /// the ownership of unit on TileBuilding cannot be changed
         /// </exception>
         /// <exception cref="ArgumentNullException"><paramref name="newOwner"/> is <c>null</c>.</exception>
+        /// <seealso cref="Owner"/>
         public void ChangeOwner(Player newOwner)
         {
             if (Owner == null)
-                throw new InvalidOperationException("Actor is already destroyed");
+                throw new InvalidOperationException("actor is already destroyed");
             if (newOwner == null)
                 throw new ArgumentNullException("newOwner");
 
@@ -262,16 +275,23 @@ namespace CivModel
         /// <summary>
         /// Destroys this actor. <see cref="OnBeforeDestroy"/> is called before the actor is destroyed.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <remarks>
         /// <strong>postcondition</strong>:
         /// <c><see cref="TileObject.PlacedPoint"/> == null &amp;&amp; <see cref="Owner"/> == null</c>
         /// </remarks>
         public void Destroy()
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             OnBeforeDestroy();
 
-            foreach (var effect in _effects)
-                effect.CallOnTargetDestroy();
+            for (int i = 0; i < _effects.Length; ++i)
+            {
+                _effects[i]?.CallOnTargetDestroy();
+                _effects[i] = null;
+            }
 
             PlacedPoint = null;
             _owner = null;
@@ -291,9 +311,12 @@ namespace CivModel
         /// <returns>
         ///   <c>true</c> if this actor can consume the specified amount of AP; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentException"><paramref name="amount"/> is negative</exception>
         public bool CanConsumeAP(int amount)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
             if (amount < 0)
                 throw new ArgumentException("amount is negative", "amount");
 
@@ -304,6 +327,7 @@ namespace CivModel
         /// Consumes the specified amount of AP.
         /// </summary>
         /// <param name="amount">The amount of AP</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="amount"/> is negative
         /// or
@@ -311,6 +335,8 @@ namespace CivModel
         /// </exception>
         public void ConsumeAP(int amount)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
             if (amount < 0)
                 throw new ArgumentException("amount is negative", "amount");
             if (amount > RemainAP)
@@ -322,20 +348,27 @@ namespace CivModel
         /// <summary>
         /// Consumes all of AP which this actor has.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <seealso cref="ConsumeAP(int)"/>
         public void ConsumeAllAP()
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             _remainAP = 0;
         }
 
         /// <summary>
         /// Heals HP of this actor with the specified amount.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="amount"/> is negative.</exception>
         /// <param name="amount">The amount to heal.</param>
         /// <returns>The real amount which this actor was healed.</returns>
         public double Heal(double amount)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
             if (amount < 0)
                 throw new ArgumentOutOfRangeException("amount", amount, "amount is negative");
 
@@ -384,7 +417,7 @@ namespace CivModel
         /// <param name="isSkillAttack">Whether the battle </param>
         /// <exception cref="ArgumentNullException"><paramref name="opposite"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">
-        /// Actor is already destroyed
+        /// actor is already destroyed
         /// or
         /// Opposite actor is already destroyed
         /// </exception>
@@ -405,7 +438,7 @@ namespace CivModel
             if (opposite == null)
                 throw new ArgumentNullException("opposite");
             if (Owner == null)
-                throw new InvalidOperationException("Actor is already destroyed");
+                throw new InvalidOperationException("actor is already destroyed");
             if (opposite.Owner == null)
                 throw new InvalidOperationException("Opposite actor is already destroyed");
 
@@ -498,8 +531,12 @@ namespace CivModel
         /// Make this actor die. This function calls <see cref="OnDie(Player)"/>.
         /// </summary>
         /// <param name="opposite">The opposite who caused the dying of this actor. If not exists, <c>null</c>.</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public void Die(Player opposite)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             OnDie(opposite);
         }
 
@@ -516,8 +553,12 @@ namespace CivModel
         /// <summary>
         /// Called before a turn.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public virtual void PreTurn()
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             _remainAP = MaxAP;
 
             if (!SleepFlag)
@@ -530,8 +571,12 @@ namespace CivModel
         /// <summary>
         /// Called after a turn.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public virtual void PostTurn()
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             foreach (var effect in _effects)
                 effect?.PostTurn();
 
@@ -542,8 +587,12 @@ namespace CivModel
         /// Called before a sub turn.
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public virtual void PrePlayerSubTurn(Player playerInTurn)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             foreach (var effect in _effects)
                 effect?.PrePlayerSubTurn(playerInTurn);
         }
@@ -552,8 +601,12 @@ namespace CivModel
         /// Called after a sub turn.
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public virtual void PostPlayerSubTurn(Player playerInTurn)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             foreach (var effect in _effects)
                 effect?.PostPlayerSubTurn(playerInTurn);
         }

@@ -290,20 +290,26 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Adds the territory of this player.
+        /// Adds the territory of this player if possible.
         /// </summary>
         /// <param name="pt">The tile to be in the territory.</param>
-        /// <exception cref="InvalidOperationException">a <see cref="TileBuilding"/> of another player is at <paramref name="pt"/></exception>
-        public void AddTerritory(Terrain.Point pt)
+        /// <returns>
+        /// <c>true</c> if the owner of the tile was successfully changed or already this player.<br/>
+        /// <c>false</c> if the owner of the tile is not this player and cannot be changed.
+        /// </returns>
+        public bool TryAddTerritory(Terrain.Point pt)
         {
-            if (pt.TileOwner != this && pt.TileBuilding == null)
-            {
-                if (pt.TileOwner != null)
-                    pt.TileOwner.RemoveTerritory(pt);
+            if (pt.TileOwner == this)
+                return true;
+            if (pt.TileOwner != null && pt.TileBuilding != null)
+                return false;
 
-                pt.SetTileOwner(this);
-                _territory.Add(pt);
-            }
+            if (pt.TileOwner != null)
+                pt.TileOwner.RemoveTerritory(pt);
+
+            pt.SetTileOwner(this);
+            _territory.Add(pt);
+            return true;
         }
 
         /// <summary>
