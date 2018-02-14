@@ -22,7 +22,14 @@ namespace CivModel
         /// <seealso cref="M:CivModel.IObservable`1.RemoveObserver(`0)" />
         public void AddObserver(T observer)
         {
-            _observerList.Add(observer);
+            if (_observerRemoveList.Contains(observer))
+            {
+                _observerRemoveList.Remove(observer);
+            }
+            else
+            {
+                _observerList.Add(observer);
+            }
         }
 
         /// <summary>

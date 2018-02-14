@@ -109,7 +109,14 @@ namespace CivModel
         /// <param name="item"><see cref="T:System.Collections.Generic.ICollection`1" />에 추가할 개체입니다.</param>
         public void Add(T item)
         {
-            _list.Add(item);
+            if (_countOfEnumerator != 0 && _removeList.Contains(item))
+            {
+                _removeList.Remove(item);
+            }
+            else
+            {
+                _list.Add(item);
+            }
         }
 
         /// <summary>
