@@ -55,14 +55,18 @@ namespace CivModel
         /// <summary>
         /// The maximum AP.
         /// </summary>
-        public abstract int MaxAP { get; }
+        public abstract double MaxAP { get; }
 
         /// <summary>
         /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
         /// It is reset to <see cref="MaxAP"/> when <see cref="PreTurn"/> is called.
         /// </summary>
+        /// <remarks>
+        /// When setting this property with the value close to <c>0</c> or <see cref="MaxAP"/> within small error,
+        /// setter automatically make a correction of that error.
+        /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><see cref="RemainAP"/> is not in [0, <see cref="MaxAP"/>]</exception>
-        public int RemainAP
+        public double RemainAP
         {
             get => _remainAP;
             set
@@ -71,9 +75,14 @@ namespace CivModel
                     throw new ArgumentOutOfRangeException("RemainAP", RemainAP, "RemainAP is not in [0, MaxAP]");
 
                 _remainAP = value;
+
+                if (AboutEqual(_remainAP, 0))
+                    _remainAP = 0;
+                else if (AboutEqual(_remainAP, MaxAP))
+                    _remainAP = MaxAP;
             }
         }
-        private int _remainAP = 0;
+        private double _remainAP = 0;
 
         /// <summary>
         /// Whether this <see cref="Actor"/> is controllable by <see cref="Owner"/> or not.
@@ -156,7 +165,7 @@ namespace CivModel
         public virtual double MaxHealPerTurn => 5;
 
         /// <summary>
-        /// The remaining AP. It must be in [0, <see cref="MaxHP"/>].
+        /// The remaining HP. It must be in [0, <see cref="MaxHP"/>].
         /// If this value gets <c>0</c> while <see cref="MaxHP"/> is not <c>0</c>,
         ///  <see cref="Die(Player)"/> is called with <c>null</c> argument.
         /// </summary>
@@ -342,7 +351,7 @@ namespace CivModel
             if (amount > RemainAP)
                 throw new ArgumentException("amount is bigger than RemainAP", "amount");
 
-            _remainAP -= amount;
+            RemainAP -= amount;
         }
 
         /// <summary>
@@ -609,6 +618,14 @@ namespace CivModel
 
             foreach (var effect in _effects)
                 effect?.PostPlayerSubTurn(playerInTurn);
+        }
+
+        // compare floating point with relative error.
+        // https://stackoverflow.com/questions/2411392/double-epsilon-for-equality-greater-than-less-than-less-than-or-equal-to-gre
+        private static bool AboutEqual(double x, double y)
+        {
+            double epsilon = Math.Max(Math.Abs(x), Math.Abs(y)) * 1E-15;
+            return Math.Abs(x - y) <= epsilon;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace CivModel.Common
         public static Guid ClassGuid { get; } = new Guid("8209396E-45E3-441C-879F-29EFE9EDC23C");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 4;
+        public override double MaxAP => 4;
 
         public override double MaxHP => 30;
 

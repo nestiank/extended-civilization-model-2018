@@ -11,7 +11,7 @@ namespace CivModel.Common
         public static Guid ClassGuid { get; } = new Guid("487BBF97-538A-45CB-A62D-B33E173F8E6F");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 2;
+        public override double MaxAP => 2;
 
         public Pioneer(Player owner, Terrain.Point point) : base(owner, point)
         {

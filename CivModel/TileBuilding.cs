@@ -16,7 +16,7 @@ namespace CivModel
         /// <summary>
         /// The maximum AP. <c>0</c> by default.
         /// </summary>
-        public override int MaxAP => 0;
+        public override double MaxAP => 0;
 
         /// <summary>
         /// The action performing movement. <c>null</c> by default.
