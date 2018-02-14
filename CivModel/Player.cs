@@ -32,9 +32,7 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="GoldIncome"/>
         /// <seealso cref="GoldNetIncome"/>
-        public double GoldIncomeWithInvestments => GoldIncome
-            - EconomicInvestmentRatio * BasicEconomicRequire
-            - ResearchInvestmentRatio * BasicResearchRequire;
+        public double GoldIncomeWithInvestments => GoldIncome - EconomicInvestment - ResearchInvestment;
 
         /// <summary>
         /// The net income of gold. <see cref="EstimatedUsedGold"/> property is used for calculation.
@@ -123,11 +121,6 @@ namespace CivModel
         private double _taxRate = 1;
 
         /// <summary>
-        /// The basic logistic labor requirement.
-        /// </summary>
-        public double BasicLogisticRequire => Actors.Select(actor => actor.BasicLaborLogistics).Sum();
-
-        /// <summary>
         /// The ratio of real amount to basic amount of logistic investment. It must be in [<c>0</c>, <c>2</c>].
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">value is not in [<c>0</c>, <c>2</c>].</exception>
@@ -143,6 +136,16 @@ namespace CivModel
             }
         }
         private double _logisticInvestmentRatio = 1;
+
+        /// <summary>
+        /// The amount of labor for logistic investment.
+        /// </summary>
+        public double LogisticInvestment => Math.Min(Labor, LogisticInvestmentRatio * BasicLogisticRequire);
+
+        /// <summary>
+        /// The basic logistic labor requirement.
+        /// </summary>
+        public double BasicLogisticRequire => Actors.Select(actor => actor.BasicLaborLogistics).Sum();
 
         /// <summary>
         /// The basic economic gold requirement.
@@ -168,6 +171,11 @@ namespace CivModel
         private double _economicInvestmentRatio = 1;
 
         /// <summary>
+        /// The amount of gold for economic investment.
+        /// </summary>
+        public double EconomicInvestment => Math.Min(GoldIncome, EconomicInvestmentRatio * BasicEconomicRequire);
+
+        /// <summary>
         /// The basic research gold requirement.
         /// </summary>
         /// <seealso cref="ResearchInvestmentRatio"/>
@@ -189,6 +197,11 @@ namespace CivModel
             }
         }
         private double _researchInvestmentRatio = 1;
+
+        /// <summary>
+        /// The amount of gold for research investment.
+        /// </summary>
+        public double ResearchInvestment => Math.Min(GoldIncome - EconomicInvestment, ResearchInvestmentRatio * BasicResearchRequire);
 
         /// <summary>
         /// The list of units of this player.
@@ -423,7 +436,7 @@ namespace CivModel
             EstimatedUsedLabor = 0;
             EstimatedUsedGold = 0;
 
-            var logistics = Math.Min(labor, LogisticInvestmentRatio * BasicLogisticRequire);
+            var logistics = LogisticInvestment;
 
             foreach (var actor in Actors)
             {
@@ -431,8 +444,11 @@ namespace CivModel
                 actor.EstimatedLaborLogicstics = estLabor;
 
                 EstimatedUsedLabor += estLabor;
+                EstimatedUsedGold += actor.GoldLogistics;
+
                 logistics -= estLabor;
                 labor -= estLabor;
+                gold = Math.Max(0, gold - actor.GoldLogistics);
             }
 
             foreach (var production in Production)
