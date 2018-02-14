@@ -18,6 +18,9 @@ namespace CivModel.Common
         public override double AttackPower => 25;
         public override double DefencePower => 5;
 
+        public override double GoldLogistics => 10;
+        public override double FullLaborLogicstics => 5;
+
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
         private readonly IActorAction _holdingAttackAct;
 

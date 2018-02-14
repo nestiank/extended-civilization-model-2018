@@ -70,17 +70,23 @@ namespace CivModel
         public double GoldInputed { get; private set; } = 0;
 
         /// <summary>
-        /// This property is updated by <see cref="Player.EstimateInputsForProduction"/>.
-        /// You must call that function before use this property.
+        /// The amount of labor to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
         /// </summary>
-        /// <seealso cref="Player.EstimateInputsForProduction"/>
+        /// <remarks>
+        /// This property is updated by <see cref="Player.EstimateResourceInputs"/>.
+        /// You must call that function before use this property.
+        /// </remarks>
+        /// <seealso cref="Player.EstimateResourceInputs"/>
         public double EstimatedLaborInputing { get; internal set; }
 
         /// <summary>
-        /// This property is updated by <see cref="Player.EstimateInputsForProduction"/>.
-        /// You must call that function before use this property.
+        /// The amount of gold to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
         /// </summary>
-        /// <seealso cref="Player.EstimateInputsForProduction"/>
+        /// <remarks>
+        /// This property is updated by <see cref="Player.EstimateResourceInputs"/>.
+        /// You must call that function before use this property.
+        /// </remarks>
+        /// <seealso cref="Player.EstimateResourceInputs"/>
         public double EstimatedGoldInputing { get; internal set; }
 
         /// <summary>
@@ -161,6 +167,8 @@ namespace CivModel
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="labor"/> is negative</exception>
         /// <exception cref="InvalidOperationException">production is already completed</exception>
         /// <returns>maximum labor amount possible to put, less than <paramref name="labor"/></returns>
+        /// <seealso cref="InputResources(double, double)"/>
+        /// <seealso cref="GetAvailableInputGold(double)"/>
         public double GetAvailableInputLabor(double labor)
         {
             if (labor < 0)
@@ -179,6 +187,8 @@ namespace CivModel
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="gold"/> is negative</exception>
         /// <exception cref="InvalidOperationException">production is already completed</exception>
         /// <returns>maximum gold amount possible to put, less than <paramref name="gold"/></returns>
+        /// <seealso cref="InputResources(double, double)"/>
+        /// <seealso cref="GetAvailableInputLabor(double)"/>
         public double GetAvailableInputGold(double gold)
         {
             if (gold < 0)
@@ -195,13 +205,15 @@ namespace CivModel
         /// </summary>
         /// <param name="labor">labor amount to input</param>
         /// <param name="gold">gold amount to input</param>
+        /// <returns>The amount which is really inputed. It can be different from the argument.</returns>
         /// <exception cref="InvalidOperationException">production is already completed</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="labor"/> is negative
         /// or
         /// <paramref name="gold"/> is negative
         /// </exception>
-        /// <returns>The amount which is really inputed. It can be different from the parameter.</returns>
+        /// <seealso cref="GetAvailableInputLabor(double)"/>
+        /// <seealso cref="GetAvailableInputGold(double)"/>
         public Tuple<double, double> InputResources(double labor, double gold)
         {
             if (IsCompleted)

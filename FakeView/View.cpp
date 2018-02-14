@@ -260,8 +260,9 @@ namespace FakeView
             else
                 color = 0b0000'0111;
             m_screen->PrintString(0, y, color,
-                "Economic Investment: " + std::to_string(player->EconomicInvestment)
-                + " (basic requirement: " + std::to_string(player->BasicEconomicRequire) + ")");
+                "Economic Investment: " + std::to_string(player->EconomicInvestmentRatio * 100) + "%"
+                + " [ " + std::to_string(player->EconomicInvestmentRatio * player->BasicEconomicRequire)
+                + " / " + std::to_string(player->BasicEconomicRequire) + " ]");
 
             ++y;
             if (y >= scrsz.height)
@@ -271,8 +272,21 @@ namespace FakeView
             else
                 color = 0b0000'0111;
             m_screen->PrintString(0, y, color,
-                "Research Investment: " + std::to_string(player->ResearchInvestment)
-                + " (basic requirement: " + std::to_string(player->BasicResearchRequire) + ")");
+                "Research Investment: " + std::to_string(player->ResearchInvestmentRatio * 100) + "%"
+                + " [ " + std::to_string(player->ResearchInvestmentRatio * player->BasicResearchRequire)
+                + " / " + std::to_string(player->BasicResearchRequire) + " ]");
+
+            ++y;
+            if (y >= scrsz.height)
+                return;
+            if (m_presenter->SelectedInvestment == 3)
+                color = 0b1111'0000;
+            else
+                color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "Logistic Investment: " + std::to_string(player->LogisticInvestmentRatio * 100) + "%"
+                + " [ " + std::to_string(player->LogisticInvestmentRatio * player->BasicLogisticRequire)
+                + " / " + std::to_string(player->BasicLogisticRequire) + " ]");
 
             y += 2;
             if (m_presenter->SelectedInvestment == -1 && m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
@@ -331,9 +345,8 @@ namespace FakeView
         if (m_presenter->SelectedInvestment != -1)
         {
             m_screen->PrintStringEx(0, scrsz.height - 1, 0x0f,
-                "[1-4]%c\x07: set investments (below basic requirement) %c\x0f"
-                "[5]%c\x07: set investments to basic requirement %c\x0f"
-                "[6-9]%c\x07: set investments (above basic requirement) %c\x0f");
+                "[1-9]%c\x07: set the amount %c\x0f"
+                "Up/Down%c\x07: move selection");
         }
         else if (m_presenter->IsProductManipulating)
         {
@@ -341,6 +354,12 @@ namespace FakeView
                 "d%c\x07: cancel production %c\x0f"
                 "Up/Down%c\x07: change production order %c\x0f"
                 "ESC/Enter%c\x07: cancel selection");
+        }
+        else
+        {
+            m_screen->PrintStringEx(0, scrsz.height - 1, 0x0f,
+                "Enter%c\x07: work with selection %c\x0f"
+                "Up/Down%c\x07: move selection");
         }
     }
 
@@ -428,6 +447,10 @@ namespace FakeView
                 ++count;
             }
         }
+
+        m_screen->PrintStringEx(0, scrsz.height - 1, 0x0f,
+            "Enter%c\x07: quest accept/unaccept %c\x0f"
+            "Up/Down%c\x07: move selection");
     }
 
     void View::RenderVictory()

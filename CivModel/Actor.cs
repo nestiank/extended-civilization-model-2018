@@ -85,75 +85,6 @@ namespace CivModel
         private double _remainAP = 0;
 
         /// <summary>
-        /// Whether this <see cref="Actor"/> is controllable by <see cref="Owner"/> or not.
-        /// </summary>
-        public bool IsControllable { get; set; } = true;
-
-        /// <summary>
-        /// The flag indicating this actor is skipped in this turn.
-        /// If this flag is <c>false</c>, ,<see cref="SleepFlag"/> is also <c>false</c>.
-        /// </summary>
-        /// <seealso cref="SleepFlag"/>
-        public bool SkipFlag
-        {
-            get => _skipFlag;
-            set
-            {
-                _skipFlag = value;
-                if (_sleepFlag && !_skipFlag)
-                    _sleepFlag = false;
-            }
-        }
-        private bool _skipFlag = false;
-
-        /// <summary>
-        /// The flag indicating this actor is skipped in every turn.
-        /// If this flag is <c>true</c>, <see cref="SkipFlag"/> is always <c>true</c>.
-        /// </summary>
-        /// <seealso cref="SkipFlag"/>
-        public bool SleepFlag
-        {
-            get => _sleepFlag;
-            set
-            {
-                _sleepFlag = value;
-                if (_sleepFlag && !_skipFlag)
-                    _skipFlag = true;
-            }
-        }
-        private bool _sleepFlag = false;
-
-        /// <summary>
-        /// The action performing movement. <c>null</c> if this actor cannot do.
-        /// </summary>
-        public abstract IActorAction MoveAct { get; }
-
-        /// <summary>
-        /// The action performing movement. <c>null</c> if this actor cannot do.
-        /// </summary>
-        public virtual IActorAction HoldingAttackAct => null;
-
-        /// <summary>
-        /// The action performing moving attack. <c>null</c> if this actor cannot do.
-        /// </summary>
-        public virtual IActorAction MovingAttackAct => null;
-
-        /// <summary>
-        /// The list of special actions. <c>null</c> if not exists.
-        /// </summary>
-        public virtual IReadOnlyList<IActorAction> SpecialActs => null;
-
-        /// <summary>
-        /// The attack power.
-        /// </summary>
-        public virtual double AttackPower => 0;
-
-        /// <summary>
-        /// The defence power.
-        /// </summary>
-        public virtual double DefencePower => 0;
-
-        /// <summary>
         /// The maximum HP. <c>0</c> if this actor is not a combattant.
         /// </summary>
         public virtual double MaxHP => 0;
@@ -194,10 +125,108 @@ namespace CivModel
         private double _remainHP = 0;
 
         /// <summary>
+        /// The attack power.
+        /// </summary>
+        public virtual double AttackPower => 0;
+
+        /// <summary>
+        /// The defence power.
+        /// </summary>
+        public virtual double DefencePower => 0;
+
+        /// <summary>
+        /// The amount of gold logistics of this actor.
+        /// </summary>
+        public abstract double GoldLogistics { get; }
+
+        /// <summary>
+        /// The amount of labor logistics of this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
+        /// </summary>
+        public abstract double FullLaborLogicstics { get; }
+
+        /// <summary>
+        /// The amount of labor logistics of this actor to get the maximum heal mount in this turn.
+        /// </summary>
+        public double BasicLaborLogistics => FullLaborLogicstics * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
+
+        /// <summary>
+        /// The amount of labor logicstics to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
+        /// </summary>
+        /// <remarks>
+        /// This property is updated by <see cref="Player.EstimateResourceInputs"/>.
+        /// You must call that function before use this property.
+        /// </remarks>
+        /// <seealso cref="Player.EstimateResourceInputs"/>
+        public double EstimatedLaborLogicstics { get; internal set; }
+
+        /// <summary>
         /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
         /// </summary>
         public virtual int BattleClassLevel => 0;
 
+        /// <summary>
+        /// The action performing movement. <c>null</c> if this actor cannot do.
+        /// </summary>
+        public abstract IActorAction MoveAct { get; }
+
+        /// <summary>
+        /// The action performing movement. <c>null</c> if this actor cannot do.
+        /// </summary>
+        public virtual IActorAction HoldingAttackAct => null;
+
+        /// <summary>
+        /// The action performing moving attack. <c>null</c> if this actor cannot do.
+        /// </summary>
+        public virtual IActorAction MovingAttackAct => null;
+
+        /// <summary>
+        /// The list of special actions. <c>null</c> if not exists.
+        /// </summary>
+        public virtual IReadOnlyList<IActorAction> SpecialActs => null;
+
+        /// <summary>
+        /// Whether this <see cref="Actor"/> is controllable by <see cref="Owner"/> or not.
+        /// </summary>
+        public bool IsControllable { get; set; } = true;
+
+        /// <summary>
+        /// The flag indicating this actor is skipped in this turn.
+        /// If this flag is <c>false</c>, ,<see cref="SleepFlag"/> is also <c>false</c>.
+        /// </summary>
+        /// <seealso cref="SleepFlag"/>
+        public bool SkipFlag
+        {
+            get => _skipFlag;
+            set
+            {
+                _skipFlag = value;
+                if (_sleepFlag && !_skipFlag)
+                    _sleepFlag = false;
+            }
+        }
+        private bool _skipFlag = false;
+
+        /// <summary>
+        /// The flag indicating this actor is skipped in every turn.
+        /// If this flag is <c>true</c>, <see cref="SkipFlag"/> is always <c>true</c>.
+        /// </summary>
+        /// <seealso cref="SkipFlag"/>
+        public bool SleepFlag
+        {
+            get => _sleepFlag;
+            set
+            {
+                _sleepFlag = value;
+                if (_sleepFlag && !_skipFlag)
+                    _skipFlag = true;
+            }
+        }
+        private bool _sleepFlag = false;
+
+        /// <summary>
+        /// The list of <see cref="Effect"/> objects which affect on this actor.
+        /// </summary>
+        public IReadOnlyList<Effect> Effects => _effects;
         private Effect[] _effects;
 
         /// <summary>
@@ -386,6 +415,47 @@ namespace CivModel
             _remainHP = x;
 
             return heal;
+        }
+
+        /// <summary>
+        /// Check how much labor logistics can be inputed for healing.
+        /// </summary>
+        /// <param name="labor">labor amount which you want to put</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="labor"/> is negative</exception>
+        /// <returns>maximum labor amount possible to put, less than <paramref name="labor"/></returns>
+        public double GetAvailableInputLaborLogistics(double labor)
+        {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+            if (labor < 0)
+                throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
+
+            return Math.Min(labor, BasicLaborLogistics);
+        }
+
+        /// <summary>
+        /// Heals this actor by inputing labor logistics.
+        /// </summary>
+        /// <param name="labor">labor amount to input</param>
+        /// <returns>The amount which is really inputed. It can be different from the argument.</returns>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="labor"/> is negative</exception>
+        /// <seealso cref="GetAvailableInputLaborLogistics(double)"/>
+        public double HealByLogistics(double labor)
+        {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+            if (labor < 0)
+                throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
+
+            labor = GetAvailableInputLaborLogistics(labor);
+            if (AboutEqual(labor, FullLaborLogicstics))
+                Heal(MaxHealPerTurn);
+            else
+                Heal(MaxHealPerTurn * labor / FullLaborLogicstics);
+
+            return labor;
         }
 
         /// <summary>
@@ -588,8 +658,6 @@ namespace CivModel
 
             foreach (var effect in _effects)
                 effect?.PostTurn();
-
-            Heal(MaxHealPerTurn);
         }
 
         /// <summary>

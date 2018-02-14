@@ -13,6 +13,9 @@ namespace CivModel.Common
 
         public override double MaxAP => 2;
 
+        public override double GoldLogistics => 10;
+        public override double FullLaborLogicstics => 5;
+
         public Pioneer(Player owner, Terrain.Point point) : base(owner, point)
         {
         }
