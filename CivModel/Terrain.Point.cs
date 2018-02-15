@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
-    public partial class Terrain
+    public sealed partial class Terrain
     {
         /// <summary>
         /// Represents one tile of a <see cref="Terrain"/>.
@@ -29,8 +29,8 @@ namespace CivModel
             /// </summary>
             public TerrainType Type
             {
-                get => Terrain._points[Position.Y, Position.X].Type;
-                set => Terrain._points[Position.Y, Position.X].Type = value;
+                get => Terrain._points[Position.Y * Terrain.Width + Position.X].Type;
+                set => Terrain._points[Position.Y * Terrain.Width + Position.X].Type = value;
             }
 
             /// <summary>
@@ -44,7 +44,7 @@ namespace CivModel
             /// <seealso cref="Player.RemoveTerritory(Point)"/>
             public Player TileOwner
             {
-                get => Terrain._points[Position.Y, Position.X].TileOwner;
+                get => Terrain._points[Position.Y * Terrain.Width + Position.X].TileOwner;
                 set
                 {
                     if (value != TileOwner)
@@ -85,25 +85,25 @@ namespace CivModel
             // this function is used internally by Terrain class and getters of this class.
             internal TileObject GetTileObject(TileTag tag)
             {
-                return Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag];
+                return Terrain._points[Position.Y * Terrain.Width + Position.X].PlacedObjects[(int)tag];
             }
 
             // this function is used internally by Terrain class.
             internal void SetTileObject(TileObject obj)
             {
-                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)obj.TileTag] = obj;
+                Terrain._points[Position.Y * Terrain.Width + Position.X].PlacedObjects[(int)obj.TileTag] = obj;
             }
 
             // this function is used internally by Terrain class.
             internal void UnsetTileObject(TileTag tag)
             {
-                Terrain._points[Position.Y, Position.X].PlacedObjects[(int)tag] = null;
+                Terrain._points[Position.Y * Terrain.Width + Position.X].PlacedObjects[(int)tag] = null;
             }
 
             // this function is used internally by Player class.
             internal void SetTileOwner(Player player)
             {
-                Terrain._points[Position.Y, Position.X].TileOwner = player;
+                Terrain._points[Position.Y * Terrain.Width + Position.X].TileOwner = player;
             }
 
             /// <summary>
