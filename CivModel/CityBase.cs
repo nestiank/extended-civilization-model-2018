@@ -97,7 +97,7 @@ namespace CivModel
         /// The list of <see cref="InteriorBuilding"/> this city owns.
         /// </summary>
         public IReadOnlyList<InteriorBuilding> InteriorBuildings => _interiorBuildings;
-        private readonly List<InteriorBuilding> _interiorBuildings = new List<InteriorBuilding>();
+        private readonly SafeEnumerableCollection<InteriorBuilding> _interiorBuildings = new SafeEnumerableCollection<InteriorBuilding>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CityBase"/> class.
@@ -206,7 +206,6 @@ namespace CivModel
 
         /// <summary>
         /// Called when [die] by <see cref="Actor.Die(Player)" />.
-        /// The default implementation calls <see cref="Actor.Destroy" />.
         /// </summary>
         /// <param name="opposite">The opposite who caused the dying of this actor. If not exists, <c>null</c>.</param>
         protected override void OnDie(Player opposite)
@@ -236,7 +235,11 @@ namespace CivModel
         {
             base.PostTurn();
 
-            Population += PopulationIncome;
+            _population += PopulationIncome;
+            if (_population < 1)
+            {
+                Destroy();
+            }
         }
     }
 }

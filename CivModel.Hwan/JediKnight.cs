@@ -11,12 +11,15 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("4DCCABFE-74C5-44C9-AB5E-6340F6DF75C5");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 2;
+        public override double MaxAP => 2;
 
         public override double MaxHP => 30;
 
         public override double AttackPower => 25;
         public override double DefencePower => 5;
+
+        public override double GoldLogistics => 2;
+        public override double FullLaborLogicstics => 2;
 
         public override int BattleClassLevel => 3;
 

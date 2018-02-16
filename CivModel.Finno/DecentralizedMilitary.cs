@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,12 +11,15 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("E1B2CAD9-56D5-427B-AEB7-6B291AD4F3D1");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 2;
+        public override double MaxAP => 2;
 
         public override double MaxHP => 75;
 
         public override double AttackPower => 10;
         public override double DefencePower => 7;
+
+        public override double GoldLogistics => 0;
+        public override double FullLaborLogicstics => 0;
 
         public override int BattleClassLevel => 1;
 

@@ -263,7 +263,6 @@ namespace CivModel
         /// <summary>
         /// Called before a turn.
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
         public void PreTurn()
         {
         }
@@ -271,19 +270,17 @@ namespace CivModel
         /// <summary>
         /// Called after a turn.
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
         public void PostTurn()
         {
-            if (LeftTurn == 0)
+            if (LeftTurn >= 0)
             {
-                if (Status == QuestStatus.Accepted)
-                    Deploy();
-                else if (Status == QuestStatus.Deployed)
-                    Disable();
-            }
-            else if (LeftTurn > 0)
-            {
-                --LeftTurn;
+                if (--LeftTurn <= 0)
+                {
+                    if (Status == QuestStatus.Accepted)
+                        Deploy();
+                    else if (Status == QuestStatus.Deployed)
+                        Disable();
+                }
             }
         }
 
@@ -291,7 +288,6 @@ namespace CivModel
         /// Called before a sub turn.
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        /// <exception cref="NotImplementedException"></exception>
         public void PrePlayerSubTurn(Player playerInTurn)
         {
         }
@@ -300,7 +296,6 @@ namespace CivModel
         /// Called after a sub turn.
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        /// <exception cref="NotImplementedException"></exception>
         public void PostPlayerSubTurn(Player playerInTurn)
         {
         }

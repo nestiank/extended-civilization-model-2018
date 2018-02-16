@@ -11,12 +11,15 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("DCB724DA-430E-4B13-8703-9517F173FE4B");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 2;
+        public override double MaxAP => 2;
 
         public override double MaxHP => 50;
 
         public override double AttackPower => 35;
         public override double DefencePower => 10;
+
+        public override double GoldLogistics => 3;
+        public override double FullLaborLogicstics => 3;
 
         public override int BattleClassLevel => 4;
 

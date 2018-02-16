@@ -34,9 +34,18 @@ namespace CivModel
     public abstract class Actor : TileObject, ITurnObserver
     {
         /// <summary>
-        /// The player who owns this actor.
+        /// The player who owns this actor. <c>null</c> if this actor is destroyed.
         /// </summary>
-        public Player Owner { get; private set; }
+        /// <remarks>
+        /// Setter of this property is wrapper of <see cref="ChangeOwner(Player)"/>. See <see cref="ChangeOwner(Player)"/> for more information.
+        /// </remarks>
+        /// <seealso cref="ChangeOwner(Player)"/>
+        public Player Owner
+        {
+            get => _owner;
+            set => ChangeOwner(value);
+        }
+        private Player _owner;
 
         /// <summary>
         /// The name of this actor.
@@ -46,14 +55,18 @@ namespace CivModel
         /// <summary>
         /// The maximum AP.
         /// </summary>
-        public abstract int MaxAP { get; }
+        public abstract double MaxAP { get; }
 
         /// <summary>
         /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
         /// It is reset to <see cref="MaxAP"/> when <see cref="PreTurn"/> is called.
         /// </summary>
+        /// <remarks>
+        /// When setting this property with the value close to <c>0</c> or <see cref="MaxAP"/> within small error,
+        /// setter automatically make a correction of that error.
+        /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><see cref="RemainAP"/> is not in [0, <see cref="MaxAP"/>]</exception>
-        public int RemainAP
+        public double RemainAP
         {
             get => _remainAP;
             set
@@ -62,9 +75,119 @@ namespace CivModel
                     throw new ArgumentOutOfRangeException("RemainAP", RemainAP, "RemainAP is not in [0, MaxAP]");
 
                 _remainAP = value;
+
+                if (AboutEqual(_remainAP, 0))
+                    _remainAP = 0;
+                else if (AboutEqual(_remainAP, MaxAP))
+                    _remainAP = MaxAP;
             }
         }
-        private int _remainAP = 0;
+        private double _remainAP = 0;
+
+        /// <summary>
+        /// The maximum HP. <c>0</c> if this actor is not a combattant.
+        /// </summary>
+        public virtual double MaxHP => 0;
+
+        /// <summary>
+        /// The maximum heal per turn.
+        /// </summary>
+        /// <seealso cref="RemainHP" />
+        public virtual double MaxHealPerTurn => 5;
+
+        /// <summary>
+        /// The remaining HP. It must be in [0, <see cref="MaxHP"/>].
+        /// If this value gets <c>0</c> while <see cref="MaxHP"/> is not <c>0</c>,
+        ///  <see cref="Die(Player)"/> is called with <c>null</c> argument.
+        /// </summary>
+        /// <remarks>
+        /// If this is lower than <see cref="MaxHP"/>,
+        ///  this value is increased to min{<see cref="MaxHP"/>, value + <see cref="MaxHealPerTurn"/>}
+        ///  when <see cref="PreTurn"/> is called.
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="RemainHP"/> is not in [0, <see cref="MaxHP"/>]</exception>
+        public double RemainHP
+        {
+            get => _remainHP;
+            set
+            {
+                if (Owner == null)
+                    throw new InvalidOperationException("actor is already destroyed");
+                if (value < 0 || value > MaxHP)
+                    throw new ArgumentOutOfRangeException("RemainHP", RemainHP, "RemainHP is not in [0, MaxHP]");
+
+                _remainHP = value;
+                if (_remainHP == 0 && MaxHP != 0)
+                    Die(null);
+            }
+        }
+        private double _remainHP = 0;
+
+        /// <summary>
+        /// The attack power.
+        /// </summary>
+        public virtual double AttackPower => 0;
+
+        /// <summary>
+        /// The defence power.
+        /// </summary>
+        public virtual double DefencePower => 0;
+
+        /// <summary>
+        /// The amount of gold logistics of this actor.
+        /// </summary>
+        public abstract double GoldLogistics { get; }
+
+        /// <summary>
+        /// The amount of labor logistics of this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
+        /// </summary>
+        public abstract double FullLaborLogicstics { get; }
+
+        /// <summary>
+        /// The amount of labor logistics of this actor to get the maximum heal mount in this turn.
+        /// </summary>
+        public double BasicLaborLogistics => FullLaborLogicstics * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
+
+        /// <summary>
+        /// The amount of labor logicstics to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
+        /// </summary>
+        /// <remarks>
+        /// This property is updated by <see cref="Player.EstimateResourceInputs"/>.
+        /// You must call that function before use this property.
+        /// </remarks>
+        /// <seealso cref="Player.EstimateResourceInputs"/>
+        public double EstimatedLaborLogicstics { get; internal set; }
+
+        /// <summary>
+        /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
+        /// </summary>
+        public virtual int BattleClassLevel => 0;
+
+        /// <summary>
+        /// The action performing movement. <c>null</c> if this actor cannot do.
+        /// </summary>
+        public abstract IActorAction MoveAct { get; }
+
+        /// <summary>
+        /// The action performing movement. <c>null</c> if this actor cannot do.
+        /// </summary>
+        public virtual IActorAction HoldingAttackAct => null;
+
+        /// <summary>
+        /// The action performing moving attack. <c>null</c> if this actor cannot do.
+        /// </summary>
+        public virtual IActorAction MovingAttackAct => null;
+
+        /// <summary>
+        /// The list of special actions. <c>null</c> if not exists.
+        /// </summary>
+        public virtual IReadOnlyList<IActorAction> SpecialActs => null;
+
+        /// <summary>
+        /// Whether this <see cref="Actor"/> is controllable by <see cref="Owner"/> or not.
+        /// </summary>
+        public bool IsControllable { get; set; } = true;
 
         /// <summary>
         /// The flag indicating this actor is skipped in this turn.
@@ -100,74 +223,11 @@ namespace CivModel
         }
         private bool _sleepFlag = false;
 
-
         /// <summary>
-        /// The action performing movement. <c>null</c> if this actor cannot do.
+        /// The list of <see cref="Effect"/> objects which affect on this actor.
         /// </summary>
-        public abstract IActorAction MoveAct { get; }
-
-        /// <summary>
-        /// The action performing movement. <c>null</c> if this actor cannot do.
-        /// </summary>
-        public virtual IActorAction HoldingAttackAct => null;
-
-        /// <summary>
-        /// The action performing moving attack. <c>null</c> if this actor cannot do.
-        /// </summary>
-        public virtual IActorAction MovingAttackAct => null;
-
-        /// <summary>
-        /// The list of special actions. <c>null</c> if not exists.
-        /// </summary>
-        public virtual IReadOnlyList<IActorAction> SpecialActs => null;
-
-        /// <summary>
-        /// The attack power.
-        /// </summary>
-        public virtual double AttackPower => 0;
-
-        /// <summary>
-        /// The defence power.
-        /// </summary>
-        public virtual double DefencePower => 0;
-
-        /// <summary>
-        /// The maximum HP. <c>0</c> if this actor is not a combattant.
-        /// </summary>
-        public virtual double MaxHP => 0;
-
-        /// <summary>
-        /// The maximum heal per turn.
-        /// </summary>
-        /// <seealso cref="RemainHP" />
-        public virtual double MaxHealPerTurn => 5;
-
-        /// <summary>
-        /// The remaining AP. It must be in [0, <see cref="MaxHP"/>].
-        /// If this is lower than <see cref="MaxHP"/>,
-        ///  this value is increased to min{<see cref="MaxHP"/>, value + <see cref="MaxHealPerTurn"/>}
-        ///  when <see cref="PreTurn"/> is called.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"><see cref="RemainHP"/> is not in [0, <see cref="MaxHP"/>]</exception>
-        public double RemainHP
-        {
-            get => _remainHP;
-            set
-            {
-                if (value < 0 || value > MaxHP)
-                    throw new ArgumentOutOfRangeException("RemainHP", RemainHP, "RemainHP is not in [0, MaxHP]");
-
-                _remainHP = value;
-                if (_remainHP == 0 && MaxHP != 0)
-                    Die(null);
-            }
-        }
-        private double _remainHP = 0;
-
-        /// <summary>
-        /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
-        /// </summary>
-        public virtual int BattleClassLevel => 0;
+        public IReadOnlyList<Effect> Effects => _effects;
+        private Effect[] _effects;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Actor"/> class.
@@ -179,24 +239,67 @@ namespace CivModel
         public Actor(Player owner, Terrain.Point point, TileTag tag)
             : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
-            Owner = owner;
+            _owner = owner;
             RemainHP = MaxHP;
+
+            _effects = new Effect[Enum.GetNames(typeof(EffectTag)).Length];
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Effect"/> object on this actor by <see cref="EffectTag"/>.
+        /// </summary>
+        /// <param name="tag">The tag.</param>
+        /// <returns>The <see cref="Effect"/> object.</returns>
+        public Effect GetEffectByTag(EffectTag tag)
+        {
+            return _effects[(int)tag];
+        }
+
+        // this method is used by Effect class
+        internal void SetEffect(Effect effect)
+        {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+            if (effect == null)
+                throw new ArgumentNullException(nameof(effect));
+
+            _effects[(int)effect.Tag] = effect;
+        }
+
+        // this method is used by Effect class
+        internal void UnsetEffect(EffectTag tag)
+        {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
+            _effects[(int)tag] = null;
         }
 
         /// <summary>
         /// Changes <see cref="Owner"/>. <see cref="OnBeforeChangeOwner(Player)"/> is called before the property is changed.
         /// </summary>
         /// <param name="newOwner">The new owner.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="newOwner"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// actor is already destroyed
+        /// or
+        /// the ownership of unit on TileBuilding cannot be changed
+        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="newOwner"/> is <c>null</c>.</exception>
+        /// <seealso cref="Owner"/>
         public void ChangeOwner(Player newOwner)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
             if (newOwner == null)
                 throw new ArgumentNullException("newOwner");
+
             if (newOwner == Owner)
                 return;
+            if (PlacedPoint?.TileBuilding != null)
+                throw new InvalidOperationException("the ownership of unit on TileBuilding cannot be changed");
 
             OnBeforeChangeOwner(newOwner);
-            Owner = newOwner;
+            _owner = newOwner;
         }
 
         /// <summary>
@@ -210,15 +313,26 @@ namespace CivModel
         /// <summary>
         /// Destroys this actor. <see cref="OnBeforeDestroy"/> is called before the actor is destroyed.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <remarks>
         /// <strong>postcondition</strong>:
         /// <c><see cref="TileObject.PlacedPoint"/> == null &amp;&amp; <see cref="Owner"/> == null</c>
         /// </remarks>
         public void Destroy()
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             OnBeforeDestroy();
+
+            for (int i = 0; i < _effects.Length; ++i)
+            {
+                _effects[i]?.CallOnTargetDestroy();
+                _effects[i] = null;
+            }
+
             PlacedPoint = null;
-            Owner = null;
+            _owner = null;
         }
 
         /// <summary>
@@ -235,9 +349,12 @@ namespace CivModel
         /// <returns>
         ///   <c>true</c> if this actor can consume the specified amount of AP; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentException"><paramref name="amount"/> is negative</exception>
         public bool CanConsumeAP(int amount)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
             if (amount < 0)
                 throw new ArgumentException("amount is negative", "amount");
 
@@ -248,6 +365,7 @@ namespace CivModel
         /// Consumes the specified amount of AP.
         /// </summary>
         /// <param name="amount">The amount of AP</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="amount"/> is negative
         /// or
@@ -255,31 +373,40 @@ namespace CivModel
         /// </exception>
         public void ConsumeAP(int amount)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
             if (amount < 0)
                 throw new ArgumentException("amount is negative", "amount");
             if (amount > RemainAP)
                 throw new ArgumentException("amount is bigger than RemainAP", "amount");
 
-            _remainAP -= amount;
+            RemainAP -= amount;
         }
 
         /// <summary>
         /// Consumes all of AP which this actor has.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <seealso cref="ConsumeAP(int)"/>
         public void ConsumeAllAP()
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             _remainAP = 0;
         }
 
         /// <summary>
         /// Heals HP of this actor with the specified amount.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="amount"/> is negative.</exception>
         /// <param name="amount">The amount to heal.</param>
         /// <returns>The real amount which this actor was healed.</returns>
         public double Heal(double amount)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
             if (amount < 0)
                 throw new ArgumentOutOfRangeException("amount", amount, "amount is negative");
 
@@ -288,6 +415,47 @@ namespace CivModel
             _remainHP = x;
 
             return heal;
+        }
+
+        /// <summary>
+        /// Check how much labor logistics can be inputed for healing.
+        /// </summary>
+        /// <param name="labor">labor amount which you want to put</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="labor"/> is negative</exception>
+        /// <returns>maximum labor amount possible to put, less than <paramref name="labor"/></returns>
+        public double GetAvailableInputLaborLogistics(double labor)
+        {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+            if (labor < 0)
+                throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
+
+            return Math.Min(labor, BasicLaborLogistics);
+        }
+
+        /// <summary>
+        /// Heals this actor by inputing labor logistics.
+        /// </summary>
+        /// <param name="labor">labor amount to input</param>
+        /// <returns>The amount which is really inputed. It can be different from the argument.</returns>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="labor"/> is negative</exception>
+        /// <seealso cref="GetAvailableInputLaborLogistics(double)"/>
+        public double HealByLogistics(double labor)
+        {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+            if (labor < 0)
+                throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
+
+            labor = GetAvailableInputLaborLogistics(labor);
+            if (AboutEqual(labor, FullLaborLogicstics))
+                Heal(MaxHealPerTurn);
+            else
+                Heal(MaxHealPerTurn * labor / FullLaborLogicstics);
+
+            return labor;
         }
 
         /// <summary>
@@ -327,6 +495,11 @@ namespace CivModel
         /// <param name="isMelee">Whether the battle is melee or not.</param>
         /// <param name="isSkillAttack">Whether the battle </param>
         /// <exception cref="ArgumentNullException"><paramref name="opposite"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// actor is already destroyed
+        /// or
+        /// Opposite actor is already destroyed
+        /// </exception>
         /// <returns>
         ///   <see cref="BattleResult"/> indicating the result of this battle.
         ///   if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.
@@ -343,6 +516,10 @@ namespace CivModel
         {
             if (opposite == null)
                 throw new ArgumentNullException("opposite");
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+            if (opposite.Owner == null)
+                throw new InvalidOperationException("Opposite actor is already destroyed");
 
             double atk = CalculateAttackPower(thisAttack, opposite, isMelee, isSkillAttack);
             double def = opposite.CalculateAttackPower(oppositeDefence, this, isMelee, isSkillAttack);
@@ -433,8 +610,12 @@ namespace CivModel
         /// Make this actor die. This function calls <see cref="OnDie(Player)"/>.
         /// </summary>
         /// <param name="opposite">The opposite who caused the dying of this actor. If not exists, <c>null</c>.</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public void Die(Player opposite)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             OnDie(opposite);
         }
 
@@ -451,36 +632,68 @@ namespace CivModel
         /// <summary>
         /// Called before a turn.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public virtual void PreTurn()
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
             _remainAP = MaxAP;
 
             if (!SleepFlag)
                 SkipFlag = false;
+
+            foreach (var effect in _effects)
+                effect?.PreTurn();
         }
 
         /// <summary>
         /// Called after a turn.
         /// </summary>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public virtual void PostTurn()
         {
-            Heal(MaxHealPerTurn);
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
+            foreach (var effect in _effects)
+                effect?.PostTurn();
         }
 
         /// <summary>
         /// Called before a sub turn.
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public virtual void PrePlayerSubTurn(Player playerInTurn)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
+            foreach (var effect in _effects)
+                effect?.PrePlayerSubTurn(playerInTurn);
         }
 
         /// <summary>
         /// Called after a sub turn.
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         public virtual void PostPlayerSubTurn(Player playerInTurn)
         {
+            if (Owner == null)
+                throw new InvalidOperationException("actor is already destroyed");
+
+            foreach (var effect in _effects)
+                effect?.PostPlayerSubTurn(playerInTurn);
+        }
+
+        // compare floating point with relative error.
+        // https://stackoverflow.com/questions/2411392/double-epsilon-for-equality-greater-than-less-than-less-than-or-equal-to-gre
+        private static bool AboutEqual(double x, double y)
+        {
+            double epsilon = Math.Max(Math.Abs(x), Math.Abs(y)) * 1E-15;
+            return Math.Abs(x - y) <= epsilon;
         }
     }
 }

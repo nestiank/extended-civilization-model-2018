@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="AttackActorAction.cs" />
     <Compile Include="CityBase.cs" />
+    <Compile Include="Effect.cs" />
     <Compile Include="Game.Save.cs" />
     <Compile Include="IBattleObserver.cs" />
     <Compile Include="IGameScheme.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Production.cs" />
+    <Compile Include="SafeIterationCollection.cs" />
     <Compile Include="Terrain.Point.cs" />
     <Compile Include="TerrainType.cs" />
     <Compile Include="TileBuilding.cs" />

@@ -24,7 +24,7 @@ namespace CivModel.Common
             foreach (var pt in PlacedPoint.Value.Adjacents())
             {
                 if (pt.HasValue)
-                    Owner.AddTerritory(pt.Value);
+                    Owner.TryAddTerritory(pt.Value);
             }
         }
     }

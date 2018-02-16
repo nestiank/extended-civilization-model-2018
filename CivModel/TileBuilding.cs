@@ -16,7 +16,17 @@ namespace CivModel
         /// <summary>
         /// The maximum AP. <c>0</c> by default.
         /// </summary>
-        public override int MaxAP => 0;
+        public override double MaxAP => 0;
+
+        /// <summary>
+        /// The amount of gold logistics of this actor.
+        /// </summary>
+        public override double GoldLogistics => 0;
+
+        /// <summary>
+        /// The amount of labor logistics of this actor to get the full heal amount of <see cref="Actor.MaxHealPerTurn" />.
+        /// </summary>
+        public override double FullLaborLogicstics => 0;
 
         /// <summary>
         /// The action performing movement. <c>null</c> by default.
@@ -31,7 +41,7 @@ namespace CivModel
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
         public TileBuilding(Player owner, Terrain.Point point) : base(owner, point, TileTag.TileBuilding)
         {
-            owner.AddTerritory(point);
+            owner.TryAddTerritory(point);
         }
 
         /// <summary>
@@ -43,7 +53,7 @@ namespace CivModel
             base.OnChangePlacedPoint(oldPoint);
 
             if (PlacedPoint is Terrain.Point pt)
-                Owner.AddTerritory(pt);
+                Owner.TryAddTerritory(pt);
         }
     }
 }

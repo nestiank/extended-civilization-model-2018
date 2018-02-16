@@ -40,7 +40,7 @@ namespace CivModel.Common
         {
             for (int i = 0; i < 6; ++i)
             {
-                var production = JediKnightProductionFactory.Instance.Create(Requestee);
+                var production = FakeKnightProductionFactory.Instance.Create(Requestee);
                 production.IsCompleted = true;
                 Requestee.Deployment.AddLast(production);
             }
@@ -50,7 +50,7 @@ namespace CivModel.Common
 
         public void OnBattle(Actor attacker, Actor defender, BattleResult result)
         {
-            if (attacker.Owner == Requestee && attacker is JediKnight)
+            if (attacker.Owner == Requestee && attacker is FakeKnight)
             {
                 Status = QuestStatus.Completed;
             }

@@ -37,10 +37,10 @@ namespace CivModel
             /// <see cref="Player"/> which owns this tile. If no one owns this tile, <c>null</c>.
             /// </summary>
             /// <remarks>
-            /// The setter of this property is wrapper of <see cref="Player.AddTerritory(Point)"/> and <see cref="Player.RemoveTerritory(Point)"/>.
+            /// The setter of this property is wrapper of <see cref="Player.TryAddTerritory(Point)"/> and <see cref="Player.RemoveTerritory(Point)"/>.
             /// See these methods for more details and throwable exceptions.
             /// </remarks>
-            /// <seealso cref="Player.AddTerritory(Point)"/>
+            /// <seealso cref="Player.TryAddTerritory(Point)"/>
             /// <seealso cref="Player.RemoveTerritory(Point)"/>
             public Player TileOwner
             {
@@ -52,7 +52,7 @@ namespace CivModel
                         if (TileOwner != null)
                             TileOwner.RemoveTerritory(this);
                         if (value != null)
-                            value.AddTerritory(this);
+                            value.TryAddTerritory(this);
                     }
                 }
             }
