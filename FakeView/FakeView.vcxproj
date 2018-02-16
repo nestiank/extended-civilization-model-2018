@@ -168,6 +168,12 @@
     <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
       <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\CivModel.Finno\CivModel.Finno.csproj">
+      <Project>{6a09ebc4-cf6d-4ba5-8710-e3d4e7f46ea5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Hwan\CivModel.Hwan.csproj">
+      <Project>{257a17a7-e9db-4d7b-8469-0b3ad9e91937}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
     </ProjectReference>
