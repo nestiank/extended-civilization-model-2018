@@ -10,7 +10,7 @@ namespace CivModel
     /// Represents a player of a game.
     /// </summary>
     /// <seealso cref="ITurnObserver"/>
-    public class Player : ITurnObserver
+    public sealed class Player : ITurnObserver
     {
         /// <summary>
         /// The gold of this player. This value is not negative.

@@ -11,7 +11,7 @@ namespace CivModel
     /// <summary>
     /// Represents one civ game.
     /// </summary>
-    public partial class Game
+    public sealed partial class Game
     {
         /// <summary>
         /// The scheme of this game.

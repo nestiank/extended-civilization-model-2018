@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
-    public sealed partial class Terrain
+    partial class Terrain
     {
         /// <summary>
         /// Represents one tile of a <see cref="Terrain"/>.

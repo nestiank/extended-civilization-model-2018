@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivPresenter
 {
-    public partial class Presenter
+    partial class Presenter
     {
         /// <summary>
         /// Indicates the state of <see cref="Presenter"/>.

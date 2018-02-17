@@ -10,7 +10,7 @@ namespace CivModel
     /// Represents an object observable by observer interface.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Observable<T>
+    public sealed class Observable<T>
     {
         private List<T> _observerList = new List<T>();
         private List<T> _observerRemoveList = new List<T>();

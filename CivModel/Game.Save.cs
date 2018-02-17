@@ -7,7 +7,7 @@ using System.IO;
 
 namespace CivModel
 {
-    public partial class Game
+    partial class Game
     {
         /// <summary>
         /// See remark section of <see cref="Guid.ParseExact(string, string)"/>.

@@ -25,7 +25,7 @@ namespace CivModel
     /// Provides object creation of <see cref="IGuidTaggedObject"/> from Guid
     /// </summary>
     /// <seealso cref="IGuidTaggedObject"/>
-    public class GuidTaggedObjectManager
+    public sealed class GuidTaggedObjectManager
     {
         private Dictionary<Guid, Func<Player, Terrain.Point, IGuidTaggedObject>> _dict = new Dictionary<Guid, Func<Player, Terrain.Point, IGuidTaggedObject>>();
 
