@@ -277,6 +277,28 @@ namespace CivModel
         public bool IsDefeated => !_beforeLandingCity && Cities.Count == 0;
 
         /// <summary>
+        /// Whether this player is controlled by AI.
+        /// </summary>
+        public bool IsAIControlled
+        {
+            get => _aiController != null;
+            set
+            {
+                if (value && !IsAIControlled)
+                {
+                    _aiController = new AIController(this);
+                }
+                else if (!value && IsAIControlled)
+                {
+                    _aiController.Destroy();
+                    _aiController = null;
+                }
+            }
+        }
+
+        private AIController _aiController = null;
+
+        /// <summary>
         /// The game which this player participates.
         /// </summary>
         public Game Game => _game;
@@ -294,6 +316,18 @@ namespace CivModel
             _game = game ?? throw new ArgumentNullException(nameof(game));
 
             game.TurnObservable.AddObserver(this);
+        }
+
+        /// <summary>
+        /// Let AI Controller act.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">this player does not controlled by AI</exception>
+        public Task DoAITurnAction()
+        {
+            if (!IsAIControlled)
+                throw new InvalidOperationException("this player does not controlled by AI");
+
+            return _aiController.DoAction();
         }
 
         // this function is used by Unit class

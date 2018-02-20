@@ -11,6 +11,7 @@ namespace FakeView
 
         virtual void Refocus();
         virtual void Shutdown();
+        virtual void Invoke(System::Action^ action);
 
         virtual void Render();
         virtual void OnKeyStroke(int ch);

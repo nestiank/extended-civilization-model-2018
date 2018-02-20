@@ -31,6 +31,8 @@ namespace FakeView
         }
         if (!m_presenter)
             m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
+
+        m_presenter->Game->Players[0]->IsAIControlled = true;
     }
 
     void View::Refocus()
@@ -41,6 +43,11 @@ namespace FakeView
     void View::Shutdown()
     {
         m_screen->Quit(0);
+    }
+
+    void View::Invoke(System::Action^ action)
+    {
+        m_screen->Invoke(action);
     }
 
     void View::Render()
@@ -194,6 +201,10 @@ namespace FakeView
 
             case CivPresenter::Presenter::States::Deploy:
                 m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Deploy");
+                break;
+
+            case CivPresenter::Presenter::States::AIControl:
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "AI is running ...");
                 break;
         }
     }

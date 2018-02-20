@@ -390,17 +390,24 @@ namespace CivPresenter
                 Game.EndTurn();
             Game.StartTurn();
 
-            SelectNextUnit();
-            if (_selectedActor == null)
+            if (!Game.PlayerInTurn.IsAIControlled)
             {
-                if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
+                SelectNextUnit();
+                if (_selectedActor == null)
                 {
-                    if (city.PlacedPoint is Terrain.Point pt)
-                        FocusedPoint = pt;
+                    if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
+                    {
+                        if (city.PlacedPoint is Terrain.Point pt)
+                            FocusedPoint = pt;
+                    }
                 }
-            }
 
-            StateNormal();
+                StateNormal();
+            }
+            else
+            {
+                StateAIControl();
+            }
         }
 
         private void SelectNextUnit()
@@ -1072,6 +1079,24 @@ namespace CivPresenter
             OnRemove = () => { };
             OnSkip = () => { };
             OnSleep = () => { };
+        }
+
+        private void StateAIControl()
+        {
+            State = States.AIControl;
+
+            OnApply = () => { };
+            OnCancel = () => { };
+            OnArrowKey = direction => { };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+            OnSleep = () => { };
+
+            Game.PlayerInTurn.DoAITurnAction().ContinueWith(
+                task => View.Invoke(() => {
+                    StateNormal();
+                }));
         }
     }
 }
