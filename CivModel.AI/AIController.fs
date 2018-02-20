@@ -1,10 +1,9 @@
 namespace CivModel.AI
 
+open System
+open System.Threading.Tasks
 open Accord.Fuzzy
 open CivModel
-open System
-open System.Collections.Generic;
-open System.Threading.Tasks
 
 type public AIController(player : Player) =
     let ResearchLow = new FuzzySet("ResearchLow", new TrapezoidalFunction(100.f, 200.f, TrapezoidalFunction.EdgeType.Right))
@@ -42,7 +41,7 @@ type public AIController(player : Player) =
 
     let actionMap = [ BuildResearch.Name, DoBuildResearch ] |> Map.ofSeq
 
-    let inference (space : Map<string, (float32 -> unit)>) =
+    let inference space =
         if Map.isEmpty space then
             None
         else
@@ -51,7 +50,7 @@ type public AIController(player : Player) =
                 |> Seq.map (fun (k, v) -> (k, v, rules.Evaluate(k)))
                 |> Seq.maxBy (fun (_, _, x) -> x))
 
-    let rec doJobs (space : Map<string, (float32 -> unit)>) =
+    let rec doJobs space =
         match inference space with
             | Some (k, v, x) ->
                 v x
