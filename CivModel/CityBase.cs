@@ -75,9 +75,9 @@ namespace CivModel
         /// <summary>
         /// The population income of this city.
         /// </summary>
-        /// <seealso cref="IGameScheme.PopulationConstant"/>
-        /// <seealso cref="IGameScheme.PopulationHappinessCoefficient"/>
-        public double PopulationIncome => Owner.Game.Scheme.PopulationConstant + Owner.Game.Scheme.PopulationHappinessCoefficient * Owner.Happiness;
+        /// <seealso cref="IGameConstantScheme.PopulationConstant"/>
+        /// <seealso cref="IGameConstantScheme.PopulationHappinessCoefficient"/>
+        public double PopulationIncome => Owner.Game.Constants.PopulationConstant + Owner.Game.Constants.PopulationHappinessCoefficient * Owner.Happiness;
 
         /// <summary>
         /// The labor which this city offers.

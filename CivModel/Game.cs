@@ -11,12 +11,22 @@ namespace CivModel
     /// <summary>
     /// Represents one civ game.
     /// </summary>
-    public partial class Game
+    public sealed partial class Game
     {
         /// <summary>
-        /// The scheme of this game.
+        /// The <see cref="SchemeLoader"/> of this game.
         /// </summary>
-        public IGameScheme Scheme;
+        public SchemeLoader SchemeLoader;
+
+        /// <summary>
+        /// The constants of this game.
+        /// </summary>
+        /// <remarks>
+        /// For performance purpose, constant values are copied from <see cref="IGameConstantScheme"/> into this property when game starts.
+        /// </remarks>
+        /// <seealso cref="GameConstants"/>
+        /// <seealso cref="IGameConstantScheme"/>
+        public GameConstants Constants;
 
         /// <summary>
         /// The manager object of <see cref="IGuidTaggedObject"/>.
@@ -74,11 +84,24 @@ namespace CivModel
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class, by creating a new game.
         /// </summary>
-        /// <param name="width">The width of the <see cref="Terrain"/> of this game. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultTerrainWidth"/> of the scheme.</param>
-        /// <param name="height">The height of the <see cref="Terrain"/> of this game. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultTerrainHeight"/> of the scheme.</param>
-        /// <param name="numOfPlayer">The number of players. It must be positive. if the value is <c>-1</c>, uses <see cref="IGameScheme.DefaultNumberOfPlayers"/> of the scheme.</param>
-        /// <param name="schemeFactory">The factory for <see cref="IGameScheme"/> of the game.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="schemeFactory"/> is <c>null</c>.</exception>
+        /// <param name="width">
+        /// The width of the <see cref="Terrain"/> of this game. It must be positive.
+        /// if the value is <c>-1</c>, uses <see cref="IGameStartupScheme.DefaultTerrainWidth"/> of the scheme.
+        /// </param>
+        /// <param name="height">
+        /// The height of the <see cref="Terrain"/> of this game. It must be positive.
+        /// if the value is <c>-1</c>, uses <see cref="IGameStartupScheme.DefaultTerrainHeight"/> of the scheme.
+        /// </param>
+        /// <param name="numOfPlayer">
+        /// The number of players. It must be positive.
+        /// if the value is <c>-1</c>, uses <see cref="IGameStartupScheme.DefaultNumberOfPlayers"/> of the scheme.
+        /// </param>
+        /// <param name="rootFactory">The factory for <see cref="IGameScheme"/> of the game.</param>
+        /// <param name="knownSchemes">
+        /// the known factories of <see cref="IGameScheme"/> for the game.
+        /// If <c>null</c>, use only <paramref name="rootFactory"/> and those <paramref name="rootFactory"/> provides.
+        /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="rootFactory"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="width"/> is not positive
         /// or
@@ -88,22 +111,38 @@ namespace CivModel
         /// or
         /// parameter is not equal to default value of scheme, while scheme forces to be.
         /// </exception>
-        public Game(int width, int height, int numOfPlayer, IGameSchemeFactory schemeFactory)
+        public Game(int width, int height, int numOfPlayer, IGameSchemeFactory rootFactory, IEnumerable<IGameSchemeFactory> knownSchemes = null)
         {
-            if (schemeFactory == null)
-                throw new ArgumentNullException("schemeFactory");
+            if (rootFactory == null)
+                throw new ArgumentNullException(nameof(rootFactory));
 
             PreInitialize();
 
-            Scheme = schemeFactory.Create();
-            RegisterGuid();
+            SchemeLoader = new SchemeLoader(rootFactory, knownSchemes);
+            //// TODO: REMOVE HARDCODING
+            foreach (var ff in knownSchemes)
+            {
+                if (ff != rootFactory)
+                {
+                    SchemeLoader.Load(ff, knownSchemes);
+                }
+            }
+            /////////////////////
+            Constants = new GameConstants(SchemeLoader.GetExclusiveScheme<IGameConstantScheme>());
+
+            var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
+
+            foreach (var s in SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>())
+            {
+                s.RegisterGuid(this);
+            }
 
             if (width == -1)
-                width = Scheme.DefaultTerrainWidth;
+                width = startup.DefaultTerrainWidth;
             if (height == -1)
-                height = Scheme.DefaultTerrainWidth;
+                height = startup.DefaultTerrainWidth;
             if (numOfPlayer == -1)
-                numOfPlayer = Scheme.DefaultNumberOfPlayers;
+                numOfPlayer = startup.DefaultNumberOfPlayers;
 
             if (width <= 0)
                 throw new ArgumentException("width is not positive", "width");
@@ -112,16 +151,16 @@ namespace CivModel
             if (numOfPlayer <= 0)
                 throw new ArgumentException("numOfPlayer is not positive", "numOfPlayer");
 
-            if (Scheme.OnlyDefaultTerrain)
+            if (startup.OnlyDefaultTerrain)
             {
-                if (width != Scheme.DefaultTerrainWidth)
+                if (width != startup.DefaultTerrainWidth)
                     throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "width");
-                if (height != Scheme.DefaultTerrainHeight)
+                if (height != startup.DefaultTerrainHeight)
                     throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "height");
             }
-            if (Scheme.OnlyDefaultPlayers)
+            if (startup.OnlyDefaultPlayers)
             {
-                if (numOfPlayer != Scheme.DefaultNumberOfPlayers)
+                if (numOfPlayer != startup.DefaultNumberOfPlayers)
                     throw new ArgumentException("parameter is not equal to default value of scheme, while scheme forces to be", "numOfPlayer");
             }
 
@@ -132,7 +171,18 @@ namespace CivModel
                 _players.Add(new Player(this));
             }
 
-            Initialize(true);
+            var additionalFactory = SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>()
+                .SelectMany(x => x.AdditionalProductionFactory ?? Enumerable.Empty<IProductionFactory>())
+                .Distinct();
+            foreach (var player in Players)
+            {
+                foreach (var factory in additionalFactory)
+                {
+                    player.AvailableProduction.Add(factory);
+                }
+            }
+
+            startup.InitializeGame(this, true);
         }
 
         /// <summary>
@@ -177,16 +227,6 @@ namespace CivModel
             _shouldStartTurnResumeGame = false;
 
             InitializeObservable();
-        }
-
-        private void RegisterGuid()
-        {
-            Scheme.RegisterGuid(this);
-        }
-
-        private void Initialize(bool isNewGame)
-        {
-            Scheme.InitializeGame(this, isNewGame);
         }
 
         /// <summary>

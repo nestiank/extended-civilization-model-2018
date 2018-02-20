@@ -14,8 +14,6 @@ namespace CivModel.Common
         private const int _stealTurn = 2;
         private const int _stunTurn = 1;
 
-        private Action DoOff;
-
         public ControlHijackEffect(Actor target, Player hijacker)
             : base(target, _stealTurn + _stunTurn, EffectTag.Ownership)
         {
@@ -29,7 +27,14 @@ namespace CivModel.Common
 
         protected override void OnEffectOff()
         {
-            DoOff();
+            if (LeftTurn > _stunTurn)
+            {
+                StealOff();
+            }
+            else
+            {
+                StunOff();
+            }
         }
 
         protected override void OnTargetDestroy()
@@ -41,7 +46,7 @@ namespace CivModel.Common
             base.PostTurn();
             if (Enabled && LeftTurn == _stunTurn)
             {
-                DoOff();
+                StealOff();
                 if (Target != null)
                     Stun();
             }
@@ -51,25 +56,31 @@ namespace CivModel.Common
         {
             _hijackee = Target.Owner;
             Target.Owner = _hijacker;
-            DoOff = () => {
-                if (Target.PlacedPoint?.TileBuilding == null)
-                {
-                    Target.Owner = _hijackee;
-                    Target.SkipFlag = false;
-                }
-                else
-                {
-                    // if Target is on TileBuilding of hijacker, Ownership cannot be changed
-                    // Target must be moved to another position or destroyed.
-                    Target.Destroy();
-                }
-            };
+        }
+
+        private void StealOff()
+        {
+            if (Target.PlacedPoint?.TileBuilding == null)
+            {
+                Target.Owner = _hijackee;
+                Target.SkipFlag = false;
+            }
+            else
+            {
+                // if Target is on TileBuilding of hijacker, Ownership cannot be changed
+                // Target must be moved to another position or destroyed.
+                Target.Destroy();
+            }
         }
 
         private void Stun()
         {
             Target.IsControllable = false;
-            DoOff = () => Target.IsControllable = true;
+        }
+
+        private void StunOff()
+        {
+            Target.IsControllable = true;
         }
     }
 }

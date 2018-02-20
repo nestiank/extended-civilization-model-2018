@@ -11,6 +11,7 @@ namespace FakeView
 
         virtual void Refocus();
         virtual void Shutdown();
+        virtual void Invoke(System::Action^ action);
 
         virtual void Render();
         virtual void OnKeyStroke(int ch);
@@ -35,6 +36,7 @@ namespace FakeView
         std::pair<int, int> TerrainToScreen(int x, int y);
 
         CivPresenter::Presenter^ m_presenter;
+        bool m_roundEarth = false;
 
         Screen* m_screen;
     };

@@ -223,10 +223,6 @@ namespace CivModel
         }
         private bool _sleepFlag = false;
 
-        /// <summary>
-        /// The list of <see cref="Effect"/> objects which affect on this actor.
-        /// </summary>
-        public IReadOnlyList<Effect> Effects => _effects;
         private Effect[] _effects;
 
         /// <summary>
@@ -466,6 +462,7 @@ namespace CivModel
         /// This method is wrapper of <see cref="AttackTo(double, Actor, double, bool, bool)"/>.
         /// See <see cref="AttackTo(double, Actor, double, bool, bool)"/> for more information about battle.
         /// </remarks>
+        /// <returns><see cref="BattleResult"/> indicating the result of this battle.</returns>
         /// <seealso cref="AttackTo(double, Actor, double, bool, bool)"/>
         public BattleResult MeleeAttackTo(Actor opposite)
         {
@@ -480,6 +477,7 @@ namespace CivModel
         /// This method is wrapper of <see cref="AttackTo(double, Actor, double, bool, bool)"/>.
         /// See <see cref="AttackTo(double, Actor, double, bool, bool)"/> for more information about battle.
         /// </remarks>
+        /// <returns><see cref="BattleResult"/> indicating the result of this battle.</returns>
         /// <seealso cref="AttackTo(double, Actor, double, bool, bool)"/>
         public BattleResult RangedAttackTo(Actor opposite)
         {

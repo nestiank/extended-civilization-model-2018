@@ -31,6 +31,8 @@ namespace FakeView
         }
         if (!m_presenter)
             m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
+
+        m_presenter->Game->Players[0]->IsAIControlled = true;
     }
 
     void View::Refocus()
@@ -41,6 +43,11 @@ namespace FakeView
     void View::Shutdown()
     {
         m_screen->Quit(0);
+    }
+
+    void View::Invoke(System::Action^ action)
+    {
+        m_screen->Invoke(action);
     }
 
     void View::Render()
@@ -88,7 +95,7 @@ namespace FakeView
                 int x = bx + dx;
                 int y = by + dy;
 
-                if (x < 0 || x >= m_presenter->Game->Terrain->Width)
+                if (!m_roundEarth && (x < 0 || x >= m_presenter->Game->Terrain->Width))
                     continue;
                 if (y < 0 || y >= m_presenter->Game->Terrain->Height)
                     continue;
@@ -116,17 +123,12 @@ namespace FakeView
                         c.color |= 0b0001'0110;
                     }
                 }
-            }
-        }
 
-        if (m_presenter->SelectedActor)
-        {
-            auto point = m_presenter->SelectedActor->PlacedPoint.Value;
-            auto pos = point.Position;
-            auto pt = TerrainToScreen(pos.X, pos.Y);
-            if (auto pc = m_screen->TryGetChar(pt.first, pt.second))
-            {
-                pc->color ^= 0b1111'1111;
+                if (m_presenter->SelectedActor && m_presenter->SelectedActor == point.Unit)
+                {
+                    auto& c = m_screen->GetChar(px, py);
+                    c.color ^= 0b1111'1111;
+                }
             }
         }
 
@@ -199,6 +201,10 @@ namespace FakeView
 
             case CivPresenter::Presenter::States::Deploy:
                 m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Deploy");
+                break;
+
+            case CivPresenter::Presenter::States::AIControl:
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "AI is running ...");
                 break;
         }
     }
@@ -484,6 +490,11 @@ namespace FakeView
                 MessageBox(nullptr, L"Saved", L"", MB_OK);
                 break;
 
+            case '+':
+            case '=':
+                m_roundEarth = !m_roundEarth;
+                break;
+
             case 0x1b: // ESC
                 m_presenter->CommandCancel();
                 break;
@@ -638,16 +649,11 @@ namespace FakeView
         }
         else if (auto u = dynamic_cast<CivModel::Common::FakeKnight^>(unit))
         {
-            c.ch = 'J';
-        }
-        else if (auto u = dynamic_cast<CivModel::Finno::AncientSorcerer^>(unit))
-        {
-            c.ch = 'S';
+            c.ch = 'F';
         }
         else
         {
-            System::Diagnostics::Debug::WriteLine(L"unqualified unit in PrintUnit()");
-            c.ch = 'U';
+            c.ch = cli2str(unit->GetType()->FullName)[0];
         }
     }
 
@@ -656,14 +662,6 @@ namespace FakeView
         auto& c = m_screen->GetChar(px, py);
         c.color &= 0x0f;
         c.color |= GetPlayerColor(tileBuilding->Owner) << 4;
-        if (auto b = dynamic_cast<CivModel::CityBase^>(tileBuilding))
-        {
-            // do nothing
-        }
-        else
-        {
-            System::Diagnostics::Debug::WriteLine(L"unqualified tileBuilding in PrintTileBuilding()");
-        }
     }
 
     unsigned char View::GetPlayerColor(CivModel::Player^ player)
@@ -700,14 +698,9 @@ namespace FakeView
         {
             return "Laboratory";
         }
-        else if (auto product = dynamic_cast<CivModel::Finno::AncientSorcererProductionFactory^>(factory))
-        {
-            return "Ancient Sorceror";
-        }
         else
         {
-            System::Diagnostics::Debug::WriteLine(L"unqualified production in GetFactoryDescription()");
-            return "????";
+            return cli2str(factory->GetType()->FullName);
         }
     }
 

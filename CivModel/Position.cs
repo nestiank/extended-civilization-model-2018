@@ -140,9 +140,13 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Get the distance between two <see cref="Position"/>.
+        /// Get the distance between two <see cref="Position"/> in a flat space.
         /// It is equal to <c>(<paramref name="lhs"/> - <paramref name="rhs"/>).<see cref="Norm"/>()</c>.
         /// </summary>
+        /// <remarks>
+        /// This method does not regard the round Earth.
+        /// Use <see cref="Terrain.Point.Distance(Terrain.Point, Terrain.Point)"/> to calculate a distance in the round Earth.
+        /// </remarks>
         /// <param name="lhs">left hand side parameter</param>
         /// <param name="rhs">right hand side parameter</param>
         /// <returns>The distance between two <see cref="Position"/>.</returns>

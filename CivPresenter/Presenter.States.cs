@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivPresenter
 {
-    public partial class Presenter
+    partial class Presenter
     {
         /// <summary>
         /// Indicates the state of <see cref="Presenter"/>.
@@ -75,7 +75,11 @@ namespace CivPresenter
             /// <summary>
             /// State [defeated]. This state indicates user is viewing a <strong>defeated</strong> screen.
             /// </summary>
-            Defeated
+            Defeated,
+            /// <summary>
+            /// State [AI control]. This state indicates AI player is doing his job now.
+            /// </summary>
+            AIControl
         }
     }
 }

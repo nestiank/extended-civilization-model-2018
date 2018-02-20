@@ -191,7 +191,12 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
 
-            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new GameSchemeFactory());
+            var knownFactory = new IGameSchemeFactory[] {
+                new CivModel.Finno.GameSchemeFactory(),
+                new CivModel.Hwan.GameSchemeFactory()
+            };
+            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new GameSchemeFactory(), knownFactory);
+
             Initialize();
         }
 
@@ -212,7 +217,13 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
-            _game = new Game(saveFile, new IGameSchemeFactory[] { new GameSchemeFactory() });
+            var knownFactory = new IGameSchemeFactory[] {
+                new GameSchemeFactory(),
+                new CivModel.Finno.GameSchemeFactory(),
+                new CivModel.Hwan.GameSchemeFactory()
+            };
+            _game = new Game(saveFile, knownFactory);
+
             Initialize();
         }
 
@@ -224,12 +235,6 @@ namespace CivPresenter
             ProceedTurn();
 
             StateNormal();
-
-            Game.GuidManager.RegisterGuid(CivModel.Finno.AncientSorcerer.ClassGuid, (p, t) => new CivModel.Finno.AncientSorcerer(p, t));
-            foreach (var player in Game.Players)
-            {
-                player.AvailableProduction.Add(CivModel.Finno.AncientSorcererProductionFactory.Instance);
-            }
         }
 
         /// <summary>
@@ -385,17 +390,24 @@ namespace CivPresenter
                 Game.EndTurn();
             Game.StartTurn();
 
-            SelectNextUnit();
-            if (_selectedActor == null)
+            if (!Game.PlayerInTurn.IsAIControlled)
             {
-                if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
+                SelectNextUnit();
+                if (_selectedActor == null)
                 {
-                    if (city.PlacedPoint is Terrain.Point pt)
-                        FocusedPoint = pt;
+                    if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
+                    {
+                        if (city.PlacedPoint is Terrain.Point pt)
+                            FocusedPoint = pt;
+                    }
                 }
-            }
 
-            StateNormal();
+                StateNormal();
+            }
+            else
+            {
+                StateAIControl();
+            }
         }
 
         private void SelectNextUnit()
@@ -482,10 +494,10 @@ namespace CivPresenter
                     pos.Y = Math.Min(pos.Y + 1, Game.Terrain.Height - 1);
                     break;
                 case Direction.Left:
-                    pos.X = Math.Max(pos.X - 1, 0);
+                    pos.X = pos.X - 1;
                     break;
                 case Direction.Right:
-                    pos.X = Math.Min(pos.X + 1, Game.Terrain.Width - 1);
+                    pos.X = pos.X + 1;
                     break;
             }
             FocusedPoint = Game.Terrain.GetPoint(pos);
@@ -1067,6 +1079,24 @@ namespace CivPresenter
             OnRemove = () => { };
             OnSkip = () => { };
             OnSleep = () => { };
+        }
+
+        private void StateAIControl()
+        {
+            State = States.AIControl;
+
+            OnApply = () => { };
+            OnCancel = () => { };
+            OnArrowKey = direction => { };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+            OnSleep = () => { };
+
+            Game.PlayerInTurn.DoAITurnAction().ContinueWith(
+                task => View.Invoke(() => {
+                    StateNormal();
+                }));
         }
     }
 }

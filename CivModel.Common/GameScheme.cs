@@ -8,7 +8,12 @@ namespace CivModel.Common
 {
     public class GameSchemeFactory : IGameSchemeFactory
     {
-        public Guid Guid { get; } = new Guid("AB3CC73A-5756-4266-8DAC-42A610421DDA");
+        public static Guid ClassGuid { get; } = new Guid("AB3CC73A-5756-4266-8DAC-42A610421DDA");
+        public Guid Guid => ClassGuid;
+
+        public Type SchemeType => typeof(GameScheme);
+        public IEnumerable<Guid> Dependencies => Enumerable.Empty<Guid>();
+        public IEnumerable<IGameSchemeFactory> KnownSchemeFactories => Enumerable.Empty<IGameSchemeFactory>();
 
         public IGameScheme Create()
         {
@@ -16,15 +21,10 @@ namespace CivModel.Common
         }
     }
 
-    public class GameScheme : IGameScheme
+    public class GameScheme : IGameConstantScheme, IGameStartupScheme, IGameAdditionScheme, IGameAIScheme
     {
-        private readonly GameSchemeFactory _factory;
         public IGameSchemeFactory Factory => _factory;
-
-        internal GameScheme(GameSchemeFactory factory)
-        {
-            _factory = factory ?? throw new ArgumentNullException("factory");
-        }
+        private readonly GameSchemeFactory _factory;
 
         public bool OnlyDefaultPlayers => false;
         public int DefaultNumberOfPlayers => 2;
@@ -47,6 +47,23 @@ namespace CivModel.Common
         public double EconomicRequireTaxRateConstant => 0.2;
 
         public double ResearchRequireCoefficient => 0.2;
+
+        public IEnumerable<IProductionFactory> AdditionalProductionFactory
+        {
+            get
+            {
+                yield return CityCenterProductionFactory.Instance;
+                yield return PioneerProductionFactory.Instance;
+                yield return FakeKnightProductionFactory.Instance;
+                yield return FactoryBuildingProductionFactory.Instance;
+                yield return LaboratoryBuildingProductionFactory.Instance;
+            }
+        }
+
+        public GameScheme(GameSchemeFactory factory)
+        {
+            _factory = factory ?? throw new ArgumentNullException("factory");
+        }
 
         public void RegisterGuid(Game game)
         {
@@ -84,14 +101,13 @@ namespace CivModel.Common
 
             foreach (var player in game.Players)
             {
-                player.AvailableProduction.Add(CityCenterProductionFactory.Instance);
-                player.AvailableProduction.Add(PioneerProductionFactory.Instance);
-                player.AvailableProduction.Add(FakeKnightProductionFactory.Instance);
-                player.AvailableProduction.Add(FactoryBuildingProductionFactory.Instance);
-                player.AvailableProduction.Add(LaboratoryBuildingProductionFactory.Instance);
-
                 new TestQuest(player).Deploy();
             }
+        }
+
+        public IAIController CreateAI(Player player)
+        {
+            return new AI.AIController(player);
         }
     }
 }
