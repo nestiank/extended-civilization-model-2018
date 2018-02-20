@@ -34,6 +34,21 @@ namespace CivModel
     }
 
     /// <summary>
+    /// The factory interface of <see cref="Production"/> which products <see cref="Actor"/> objects.
+    /// This interface also provides <see cref="IActorConstants"/> of production results.
+    /// </summary>
+    /// <seealso cref="IActorConstants"/>
+    /// <seealso cref="ITileObjectProductionFactory"/>
+    public interface IActorProductionFactory : ITileObjectProductionFactory
+    {
+        /// <summary>
+        /// The constants of production result <see cref="Actor"/>.
+        /// </summary>
+        /// <seealso cref="IActorConstants"/>
+        IActorConstants Constants { get; }
+    }
+
+    /// <summary>
     /// The <see cref="Production"/> class for <see cref="TileObject"/>
     /// </summary>
     /// <seealso cref="CivModel.Production" />

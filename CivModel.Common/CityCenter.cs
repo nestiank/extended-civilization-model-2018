@@ -11,7 +11,8 @@ namespace CivModel.Common
         public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
         public override Guid Guid => ClassGuid;
 
-        public CityCenter(Player player, Terrain.Point point) : base(player, point)
+        public CityCenter(Player player, IActorConstants constants, Terrain.Point point)
+            : base(player, constants ?? new CityBaseConstants(), point)
         {
         }
 
@@ -19,7 +20,7 @@ namespace CivModel.Common
         {
             base.OnProcessCreation();
 
-            new FactoryBuilding(this).ProcessCreation();
+            new FactoryBuilding(this, null).ProcessCreation();
 
             foreach (var pt in PlacedPoint.Value.Adjacents())
             {
@@ -29,7 +30,7 @@ namespace CivModel.Common
         }
     }
 
-    public class CityCenterProductionFactory : ITileObjectProductionFactory
+    public class CityCenterProductionFactory : IActorProductionFactory
     {
         public static CityCenterProductionFactory Instance => _instance.Value;
         private static Lazy<CityCenterProductionFactory> _instance
@@ -38,6 +39,10 @@ namespace CivModel.Common
         private CityCenterProductionFactory()
         {
         }
+
+        public Guid Guid => CityCenter.ClassGuid;
+        public Type ProductionResultType => typeof(CityCenter);
+        public IActorConstants Constants { get; } = new CityBaseConstants();
 
         public Production Create(Player owner)
         {
@@ -56,7 +61,7 @@ namespace CivModel.Common
             // remove pioneer
             point.Unit.Destroy();
 
-            return new CityCenter(owner, point);
+            return new CityCenter(owner, Constants, point);
         }
     }
 }

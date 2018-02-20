@@ -30,6 +30,12 @@ namespace CivModel
         /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
         /// <returns>the created <see cref="InteriorBuilding"/> result.</returns>
         InteriorBuilding CreateInteriorBuilding(CityBase city);
+
+        /// <summary>
+        /// The constants of production result <see cref="InteriorBuilding"/>.
+        /// </summary>
+        /// <seealso cref="IInteriorBuildingConstants"/>
+        IInteriorBuildingConstants Constants { get; }
     }
 
     /// <summary>

@@ -55,21 +55,27 @@ namespace CivModel
         /// The amount of labor this building provides.
         /// </summary>
         /// <seealso cref="CityBase.Labor"/>
-        public virtual double ProvidedLabor => 0;
+        public double ProvidedLabor { get; private set; }
 
         /// <summary>
         /// The amount of research this building provides.
         /// </summary>
         /// <seealso cref="CityBase.ResearchIncome"/>
-        public virtual double ProvidedResearchIncome => 0;
+        public double ProvidedResearchIncome { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
         /// </summary>
         /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
+        /// <param name="constants">constants of this actor. if <c>null</c>, use a default <see cref="InteriorBuildingConstants"/> object.</param>
         /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
-        public InteriorBuilding(CityBase city)
+        public InteriorBuilding(CityBase city, IInteriorBuildingConstants constants)
         {
+            if (constants == null)
+                constants = new InteriorBuildingConstants();
+            ProvidedLabor = constants.ProvidedLabor;
+            ProvidedResearchIncome = constants.ProvidedLabor;
+
             _owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");
         }

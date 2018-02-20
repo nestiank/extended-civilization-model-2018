@@ -55,7 +55,7 @@ namespace CivModel
         /// <summary>
         /// The maximum AP.
         /// </summary>
-        public abstract double MaxAP { get; }
+        public double MaxAP { get; private set; }
 
         /// <summary>
         /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
@@ -87,13 +87,13 @@ namespace CivModel
         /// <summary>
         /// The maximum HP. <c>0</c> if this actor is not a combattant.
         /// </summary>
-        public virtual double MaxHP => 0;
+        public double MaxHP { get; private set; }
 
         /// <summary>
         /// The maximum heal per turn.
         /// </summary>
-        /// <seealso cref="RemainHP" />
-        public virtual double MaxHealPerTurn => 5;
+        /// <seealso cref="Actor.HealByLogistics(double)" />
+        public double MaxHealPerTurn { get; private set; }
 
         /// <summary>
         /// The remaining HP. It must be in [0, <see cref="MaxHP"/>].
@@ -127,22 +127,22 @@ namespace CivModel
         /// <summary>
         /// The attack power.
         /// </summary>
-        public virtual double AttackPower => 0;
+        public double AttackPower { get; private set; }
 
         /// <summary>
         /// The defence power.
         /// </summary>
-        public virtual double DefencePower => 0;
+        public double DefencePower { get; private set; }
 
         /// <summary>
         /// The amount of gold logistics of this actor.
         /// </summary>
-        public abstract double GoldLogistics { get; }
+        public double GoldLogistics { get; private set; }
 
         /// <summary>
         /// The amount of labor logistics of this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
         /// </summary>
-        public abstract double FullLaborLogicstics { get; }
+        public double FullLaborLogicstics { get; private set; }
 
         /// <summary>
         /// The amount of labor logistics of this actor to get the maximum heal mount in this turn.
@@ -229,12 +229,27 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Actor"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this actor.</param>
+        /// <param name="constants">constants of this actor.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <param name="tag">The <seealso cref="TileTag"/> of this actor.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public Actor(Player owner, Terrain.Point point, TileTag tag)
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="owner"/> is <c>null</c>.
+        /// or
+        /// <paramref name="constants"/> is <c>null</c>.
+        /// </exception>
+        public Actor(Player owner, IActorConstants constants, Terrain.Point point, TileTag tag)
             : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
+            if (constants == null)
+                throw new ArgumentNullException(nameof(constants));
+            MaxAP = constants.MaxAP;
+            MaxHP = constants.MaxHP;
+            MaxHealPerTurn = constants.MaxHealPerTurn;
+            AttackPower = constants.AttackPower;
+            DefencePower = constants.DefencePower;
+            GoldLogistics = constants.GoldLogistics;
+            FullLaborLogicstics = constants.FullLaborLogicstics;
+
             _owner = owner;
             RemainHP = MaxHP;
 

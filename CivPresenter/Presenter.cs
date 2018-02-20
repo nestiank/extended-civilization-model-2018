@@ -191,10 +191,7 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
 
-            var knownFactory = new IGameSchemeFactory[] {
-                new CivModel.Finno.GameSchemeFactory(),
-                new CivModel.Hwan.GameSchemeFactory()
-            };
+            var knownFactory = new IGameSchemeFactory[] { };
             _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new GameSchemeFactory(), knownFactory);
 
             Initialize();
@@ -218,9 +215,7 @@ namespace CivPresenter
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
             var knownFactory = new IGameSchemeFactory[] {
-                new GameSchemeFactory(),
-                new CivModel.Finno.GameSchemeFactory(),
-                new CivModel.Hwan.GameSchemeFactory()
+                new GameSchemeFactory()
             };
             _game = new Game(saveFile, knownFactory);
 

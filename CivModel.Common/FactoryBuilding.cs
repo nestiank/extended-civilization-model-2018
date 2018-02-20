@@ -6,14 +6,20 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public sealed class FactoryBuilding : InteriorBuilding
+    public class FactoryBuildingConstants : InteriorBuildingConstants
+    {
+        public override double ProvidedLabor => 1;
+    }
+
+    public class FactoryBuilding : InteriorBuilding
     {
         public static Guid ClassGuid { get; } = new Guid("A2AE33B4-5543-4751-8681-E958DFC1A511");
         public override Guid Guid => ClassGuid;
 
-        public override double ProvidedLabor => 1;
-
-        public FactoryBuilding(CityBase city) : base(city) { }
+        public FactoryBuilding(CityBase city, IInteriorBuildingConstants constants)
+            : base(city, constants ?? new FactoryBuildingConstants())
+        {
+        }
     }
 
     public class FactoryBuildingProductionFactory : IInteriorBuildingProductionFactory
@@ -24,6 +30,9 @@ namespace CivModel.Common
         private FactoryBuildingProductionFactory()
         {
         }
+        public Guid Guid => FactoryBuilding.ClassGuid;
+        public Type ProductionResultType => typeof(FactoryBuilding);
+        public IInteriorBuildingConstants Constants { get; } = new FactoryBuildingConstants();
         public Production Create(Player owner)
         {
             return new InteriorBuildingProduction(this, owner, 5, 2, 5, 2);
@@ -34,7 +43,7 @@ namespace CivModel.Common
         }
         public InteriorBuilding CreateInteriorBuilding(CityBase city)
         {
-            return new FactoryBuilding(city);
+            return new FactoryBuilding(city, Constants);
         }
     }
 }

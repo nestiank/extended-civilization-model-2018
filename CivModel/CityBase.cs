@@ -7,6 +7,33 @@ using System.Threading.Tasks;
 namespace CivModel
 {
     /// <summary>
+    /// Represents a default constants starage of <see cref="CityBase"/>.
+    /// </summary>
+    /// <seealso cref="TileBuildingConstants"/>
+    /// <seealso cref="CityBase"/>
+    /// <seealso cref="CityBase(Player, IActorConstants, Terrain.Point)"/>
+    public class CityBaseConstants : TileBuildingConstants
+    {
+        /// <summary>
+        /// The maximum HP. <c>0</c> if this actor is not a combattant.
+        /// </summary>
+        public override double MaxHP => 9;
+        /// <summary>
+        /// The maximum heal per turn.
+        /// </summary>
+        /// <seealso cref="Actor.RemainHP" />
+        public override double MaxHealPerTurn => 15;
+        /// <summary>
+        /// The attack power.
+        /// </summary>
+        public override double AttackPower => 15;
+        /// <summary>
+        /// The defence power.
+        /// </summary>
+        public override double DefencePower => 21;
+    }
+
+    /// <summary>
     /// Represents a city as <see cref="TileBuilding"/>.
     /// </summary>
     /// <seealso cref="CivModel.TileBuilding" />
@@ -26,27 +53,6 @@ namespace CivModel
         private string _name;
 
         private static int _cityNamePrefix = 1;
-
-        /// <summary>
-        /// The maximum HP. <c>0</c> if this actor is not a combattant.
-        /// </summary>
-        public override double MaxHP => 9;
-
-        /// <summary>
-        /// The maximum heal per turn.
-        /// </summary>
-        /// <seealso cref="Actor.RemainHP" />
-        public override double MaxHealPerTurn => 15;
-
-        /// <summary>
-        /// The attack power.
-        /// </summary>
-        public override double AttackPower => 15;
-
-        /// <summary>
-        /// The defence power.
-        /// </summary>
-        public override double DefencePower => 21;
 
         /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
@@ -103,9 +109,11 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="CityBase"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this city.</param>
+        /// <param name="constants">constants of this actor. if <c>null</c>, use a default <see cref="CityBaseConstants"/> object.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public CityBase(Player owner, Terrain.Point point) : base(owner, point)
+        public CityBase(Player owner, IActorConstants constants, Terrain.Point point)
+            : base(owner, constants ?? new CityBaseConstants(), point)
         {
             string name;
             do
