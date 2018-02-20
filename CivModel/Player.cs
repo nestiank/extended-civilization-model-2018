@@ -286,7 +286,8 @@ namespace CivModel
             {
                 if (value && !IsAIControlled)
                 {
-                    _aiController = new AIController(this);
+                    var scheme = Game.SchemeLoader.GetExclusiveScheme<IGameAIScheme>();
+                    _aiController = scheme.CreateAI(this);
                 }
                 else if (!value && IsAIControlled)
                 {
@@ -296,7 +297,7 @@ namespace CivModel
             }
         }
 
-        private AIController _aiController = null;
+        private IAIController _aiController = null;
 
         /// <summary>
         /// The game which this player participates.

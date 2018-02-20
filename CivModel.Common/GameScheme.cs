@@ -21,7 +21,7 @@ namespace CivModel.Common
         }
     }
 
-    public class GameScheme : IGameConstantScheme, IGameStartupScheme, IGameAdditionScheme
+    public class GameScheme : IGameConstantScheme, IGameStartupScheme, IGameAdditionScheme, IGameAIScheme
     {
         public IGameSchemeFactory Factory => _factory;
         private readonly GameSchemeFactory _factory;
@@ -103,6 +103,11 @@ namespace CivModel.Common
             {
                 new TestQuest(player).Deploy();
             }
+        }
+
+        public IAIController CreateAI(Player player)
+        {
+            return new AI.AIController(player);
         }
     }
 }

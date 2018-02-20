@@ -166,4 +166,18 @@ namespace CivModel
         /// </summary>
         double ResearchRequireCoefficient { get; }
     }
+
+    /// <summary>
+    /// The interface represents <see cref="IGameScheme"/> providing <see cref="IAIController"/>.
+    /// This type of scheme is exclusive, that is, can be applied only once per a game.
+    /// </summary>
+    public interface IGameAIScheme : IGameScheme
+    {
+        /// <summary>
+        /// Creates the <see cref="IAIController"/> object.
+        /// </summary>
+        /// <param name="player">The player for AI to control.</param>
+        /// <returns></returns>
+        IAIController CreateAI(Player player);
+    }
 }

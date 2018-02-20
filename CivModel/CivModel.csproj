@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AIController.cs" />
+    <Compile Include="IAIController.cs" />
     <Compile Include="AttackActorAction.cs" />
     <Compile Include="CityBase.cs" />
     <Compile Include="Effect.cs" />
