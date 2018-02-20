@@ -17,9 +17,24 @@ namespace CivModel
         Guid Guid { get; }
 
         /// <summary>
-        /// Creates the <see cref="IGameScheme"/> object
+        /// <see cref="Type"/> of <see cref="IGameScheme"/> object which this factory creates.
         /// </summary>
-        /// <returns></returns>
+        Type SchemeType { get; }
+
+        /// <summary>
+        /// The list of dependencies of <see cref="IGameScheme"/> which this factory creates.
+        /// </summary>
+        IEnumerable<Guid> Dependencies { get; }
+
+        /// <summary>
+        /// The list of known <see cref="IGameSchemeFactory"/> offered by this object.
+        /// </summary>
+        IEnumerable<IGameSchemeFactory> KnownSchemeFactories { get; }
+
+        /// <summary>
+        /// Creates the <see cref="IGameScheme"/> object.
+        /// </summary>
+        /// <returns>the <see cref="IGameScheme"/> object</returns>
         IGameScheme Create();
     }
 
@@ -32,7 +47,14 @@ namespace CivModel
         /// The factory object of this instance.
         /// </summary>
         IGameSchemeFactory Factory { get; }
+    }
 
+    /// <summary>
+    /// The interface represents <see cref="IGameScheme"/> for startup settings.
+    /// This type of scheme is exclusive, that is, can be applied only once per a game.
+    /// </summary>
+    public interface IGameStartupScheme : IGameScheme
+    {
         /// <summary>
         /// Whether the number of players must be equal to default value or not.
         /// </summary>
@@ -61,6 +83,44 @@ namespace CivModel
         /// </summary>
         int DefaultTerrainHeight { get; }
 
+        /// <summary>
+        /// Initializes the game.
+        /// </summary>
+        /// <param name="game">The game to initialize.</param>
+        /// <param name="isNewGame"><c>true</c> if initializing a new game. <c>false</c> if initializing a game loaded from a save file.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
+        void InitializeGame(Game game, bool isNewGame);
+    }
+
+    /// <summary>
+    /// The interface represents <see cref="IGameScheme"/> for additional objects.
+    /// This type of scheme is overlappable, that is, can be applied multiple time per a game.
+    /// </summary>
+    public interface IGameAdditionScheme : IGameScheme
+    {
+        /// <summary>
+        /// An additional list of <see cref="IProductionFactory"/>. This list will be added to <see cref="Player.AvailableProduction"/>.
+        /// </summary>
+        IEnumerable<IProductionFactory> AdditionalProductionFactory { get; }
+
+        /// <summary>
+        /// Registers <see cref="IGuidTaggedObject"/> for this scheme.
+        /// </summary>
+        /// <param name="game">The <see cref="Game"/> object.</param>
+        void RegisterGuid(Game game);
+    }
+
+    /// <summary>
+    /// The interface represents <see cref="IGameScheme"/> for game constants.
+    /// This type of scheme is exclusive, that is, can be applied only once per a game.
+    /// </summary>
+    /// <remarks>
+    /// For performance purpose, constant values are copied into <see cref="Game.Constants"/> when game starts.
+    /// </remarks>
+    /// <seealso cref="Game.Constants"/>
+    /// <seealso cref="GameConstants"/>
+    public interface IGameConstantScheme : IGameScheme
+    {
         /// <summary>
         /// Coefficient for <see cref="Player.GoldIncome"/>.
         /// </summary>
@@ -105,20 +165,5 @@ namespace CivModel
         /// Coefficient for <see cref="Player.BasicResearchRequire"/>.
         /// </summary>
         double ResearchRequireCoefficient { get; }
-
-        /// <summary>
-        /// Registers <see cref="IGuidTaggedObject"/> for this scheme.
-        /// This method is called before <see cref="InitializeGame(Game, bool)"/>.
-        /// </summary>
-        /// <param name="game">The <see cref="Game"/> object.</param>
-        void RegisterGuid(Game game);
-
-        /// <summary>
-        /// Initializes the game
-        /// </summary>
-        /// <param name="game">The game to initialize.</param>
-        /// <param name="isNewGame"><c>true</c> if initializing a new game. <c>false</c> if initializing a game loaded from a save file.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
-        void InitializeGame(Game game, bool isNewGame);
     }
 }

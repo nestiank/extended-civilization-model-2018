@@ -46,6 +46,7 @@
     <Compile Include="CityBase.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="Game.Save.cs" />
+    <Compile Include="GameConstants.cs" />
     <Compile Include="IBattleObserver.cs" />
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Position.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="SafeIterationCollection.cs" />
+    <Compile Include="SchemeLoader.cs" />
     <Compile Include="Terrain.Point.cs" />
     <Compile Include="TerrainType.cs" />
     <Compile Include="TileBuilding.cs" />

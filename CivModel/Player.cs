@@ -24,8 +24,8 @@ namespace CivModel
         /// <seealso cref="GoldIncomeWithInvestments"/>
         /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
-        /// <seealso cref="IGameScheme.GoldCoefficient"/>
-        public double GoldIncome => Game.Scheme.GoldCoefficient * Population * TaxRate;
+        /// <seealso cref="IGameConstantScheme.GoldCoefficient"/>
+        public double GoldIncome => Game.Constants.GoldCoefficient * Population * TaxRate;
 
         /// <summary>
         /// The gold income with investments.
@@ -53,8 +53,8 @@ namespace CivModel
         /// <summary>
         /// The happiness income of this player.
         /// </summary>
-        /// <seealso cref="IGameScheme.HappinessCoefficient"/>
-        public double HappinessIncome => Game.Scheme.HappinessCoefficient * ((1 - EconomicInvestmentRatio) * BasicEconomicRequire);
+        /// <seealso cref="IGameConstantScheme.HappinessCoefficient"/>
+        public double HappinessIncome => Game.Constants.HappinessCoefficient * ((1 - EconomicInvestmentRatio) * BasicEconomicRequire);
 
         /// <summary>
         /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
@@ -70,7 +70,7 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="OriginalLabor"/>
         /// <seealso cref="CityBase.Labor"/>
-        public double Labor => OriginalLabor * (1 + Game.Scheme.LaborHappinessCoefficient * Happiness);
+        public double Labor => OriginalLabor * (1 + Game.Constants.LaborHappinessCoefficient * Happiness);
 
         /// <summary>
         /// The research per turn of this player, not controlled by <see cref="Happiness"/> and <see cref="ResearchInvestmentRatio"/>.
@@ -89,7 +89,7 @@ namespace CivModel
         /// <seealso cref="ResearchInvestmentRatio"/>
         /// <seealso cref="CityBase.ResearchIncome"/>
         public double ResearchIncome => OriginalResearchIncome * ResearchInvestmentRatio
-            * (1 + Game.Scheme.ResearchHappinessCoefficient * Happiness);
+            * (1 + Game.Constants.ResearchHappinessCoefficient * Happiness);
 
         /// <summary>
         /// The total research of this player.
@@ -151,7 +151,8 @@ namespace CivModel
         /// The basic economic gold requirement.
         /// </summary>
         /// <seealso cref="EconomicInvestmentRatio"/>
-        public double BasicEconomicRequire => Game.Scheme.EconomicRequireCoefficient * Population * (Game.Scheme.EconomicRequireTaxRateConstant + TaxRate);
+        public double BasicEconomicRequire => Game.Constants.EconomicRequireCoefficient * Population
+            * (Game.Constants.EconomicRequireTaxRateConstant + TaxRate);
 
         /// <summary>
         /// The ratio of real amount to basic amount of economic investment. It must be in [<c>0</c>, <c>2</c>].
@@ -179,7 +180,7 @@ namespace CivModel
         /// The basic research gold requirement.
         /// </summary>
         /// <seealso cref="ResearchInvestmentRatio"/>
-        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient * OriginalResearchIncome;
+        public double BasicResearchRequire => Game.Constants.ResearchRequireCoefficient * OriginalResearchIncome;
 
         /// <summary>
         /// The ratio of real amount to basic amount of research investment. It must be in [<c>0</c>, <c>2</c>].

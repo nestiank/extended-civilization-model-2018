@@ -638,12 +638,11 @@ namespace FakeView
         }
         else if (auto u = dynamic_cast<CivModel::Common::FakeKnight^>(unit))
         {
-            c.ch = 'J';
+            c.ch = 'F';
         }
         else
         {
-            System::Diagnostics::Debug::WriteLine(L"unqualified unit in PrintUnit()");
-            c.ch = 'U';
+            c.ch = cli2str(unit->GetType()->FullName)[0];
         }
     }
 
@@ -652,14 +651,6 @@ namespace FakeView
         auto& c = m_screen->GetChar(px, py);
         c.color &= 0x0f;
         c.color |= GetPlayerColor(tileBuilding->Owner) << 4;
-        if (auto b = dynamic_cast<CivModel::CityBase^>(tileBuilding))
-        {
-            // do nothing
-        }
-        else
-        {
-            System::Diagnostics::Debug::WriteLine(L"unqualified tileBuilding in PrintTileBuilding()");
-        }
     }
 
     unsigned char View::GetPlayerColor(CivModel::Player^ player)
@@ -698,8 +689,7 @@ namespace FakeView
         }
         else
         {
-            System::Diagnostics::Debug::WriteLine(L"unqualified production in GetFactoryDescription()");
-            return "????";
+            return cli2str(factory->GetType()->FullName);
         }
     }
 
