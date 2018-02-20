@@ -118,7 +118,10 @@ namespace CivModel
                 Position p1 = lhs.Position;
                 Position p2 = rhs.Position;
                 Position p3 = lhs.Position;
-                p3.X += lhs.Terrain.Width;
+                if (p2.X < p3.X)
+                    p3.X -= lhs.Terrain.Width;
+                else
+                    p3.X += lhs.Terrain.Width;
                 return Math.Min((p1 - p2).Norm(), (p2 - p3).Norm());
             }
 

@@ -117,7 +117,7 @@ namespace FakeView
                     }
                 }
 
-                if (m_presenter->SelectedActor == point.Unit)
+                if (m_presenter->SelectedActor && m_presenter->SelectedActor == point.Unit)
                 {
                     auto& c = m_screen->GetChar(px, py);
                     c.color ^= 0b1111'1111;
