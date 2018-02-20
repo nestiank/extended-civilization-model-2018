@@ -1095,7 +1095,7 @@ namespace CivPresenter
 
             Game.PlayerInTurn.DoAITurnAction().ContinueWith(
                 task => View.Invoke(() => {
-                    StateNormal();
+                    ProceedTurn();
                 }));
         }
     }
