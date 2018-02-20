@@ -30,12 +30,19 @@ namespace CivModel.Common
         private LaboratoryBuildingProductionFactory()
         {
         }
+
         public Guid Guid => LaboratoryBuilding.ClassGuid;
         public Type ProductionResultType => typeof(LaboratoryBuilding);
         public IInteriorBuildingConstants Constants { get; } = new LaboratoryBuildingConstants();
+
+        public double TotalLaborCost => 5;
+        public double LaborCapacityPerTurn => 2;
+        public double TotalGoldCost => 5;
+        public double GoldCapacityPerTurn => 2;
+
         public Production Create(Player owner)
         {
-            return new InteriorBuildingProduction(this, owner, 5, 2, 5, 2);
+            return new InteriorBuildingProduction(this, owner);
         }
         public bool IsPlacable(InteriorBuildingProduction production, CityBase city)
         {

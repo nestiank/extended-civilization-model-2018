@@ -44,9 +44,14 @@ namespace CivModel.Common
         public Type ProductionResultType => typeof(CityCenter);
         public IActorConstants Constants { get; } = new CityBaseConstants();
 
+        public double TotalLaborCost => 5;
+        public double LaborCapacityPerTurn => 2;
+        public double TotalGoldCost => 5;
+        public double GoldCapacityPerTurn => 2;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 5, 2, 5, 2);
+            return new TileObjectProduction(this, owner);
         }
 
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)

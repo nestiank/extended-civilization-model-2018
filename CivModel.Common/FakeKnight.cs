@@ -96,12 +96,19 @@ namespace CivModel.Common
         private FakeKnightProductionFactory()
         {
         }
+
         public Guid Guid => FakeKnight.ClassGuid;
         public Type ProductionResultType => typeof(FakeKnight);
         public IActorConstants Constants { get; } = new FakeKnightConstants();
+
+        public double TotalLaborCost => 7.5;
+        public double LaborCapacityPerTurn => 3;
+        public double TotalGoldCost => 7.5;
+        public double GoldCapacityPerTurn => 3;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 7.5, 3, 7.5, 3);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

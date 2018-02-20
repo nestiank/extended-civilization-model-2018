@@ -61,30 +61,22 @@ namespace CivModel
         /// </summary>
         /// <param name="factory">The factory object of this production kind.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the production.</param>
-        /// <param name="totalLaborCost"><see cref="Production.TotalLaborCost"/> of the production</param>
-        /// <param name="laborCapacityPerTurn"><see cref="Production.LaborCapacityPerTurn"/> of the production.</param>
-        /// <param name="totalGoldCost"><see cref="Production.TotalGoldCost"/> of the production</param>
-        /// <param name="goldCapacityPerTurn"><see cref="Production.GoldCapacityPerTurn"/> of the production.</param>
         /// <exception cref="ArgumentException">
-        /// <paramref name="totalLaborCost"/> is negative
+        /// <see cref="IProductionFactory.TotalLaborCost"/> is negative
         /// or
-        /// <paramref name="totalGoldCost"/> is negative
+        /// <see cref="IProductionFactory.TotalGoldCost"/> is negative
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="laborCapacityPerTurn"/> is not in [0, <see cref="Production.TotalLaborCost"/>]
+        /// <see cref="IProductionFactory.LaborCapacityPerTurn"/> is not in [0, <see cref="Production.TotalLaborCost"/>]
         /// or
-        /// <paramref name="goldCapacityPerTurn"/> is not in [0, <see cref="Production.TotalGoldCost"/>]
+        /// <see cref="IProductionFactory.GoldCapacityPerTurn"/> is not in [0, <see cref="Production.TotalGoldCost"/>]
         /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="factory"/> is <c>null</c>
         /// or
         /// <paramref name="owner"/> is <c>null</c>
         /// </exception>
-        public TileObjectProduction(
-            ITileObjectProductionFactory factory, Player owner,
-            double totalLaborCost, double laborCapacityPerTurn,
-            double totalGoldCost, double goldCapacityPerTurn)
-            : base(factory, owner, totalLaborCost, laborCapacityPerTurn, totalGoldCost, goldCapacityPerTurn)
+        public TileObjectProduction(ITileObjectProductionFactory factory, Player owner) : base(factory, owner)
         {
             _factory = factory;
         }
