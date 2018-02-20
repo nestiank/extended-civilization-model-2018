@@ -320,9 +320,13 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Let AI Controller act.
+        /// Let AI Controller act. This method can be asynchronous.
         /// </summary>
+        /// <remarks>
+        /// Since this method can be asynchronous, the model <strong>must not</strong> changed until the task is completed.
+        /// </remarks>
         /// <exception cref="System.InvalidOperationException">this player does not controlled by AI</exception>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         public Task DoAITurnAction()
         {
             if (!IsAIControlled)

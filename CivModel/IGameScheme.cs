@@ -177,7 +177,7 @@ namespace CivModel
         /// Creates the <see cref="IAIController"/> object.
         /// </summary>
         /// <param name="player">The player for AI to control.</param>
-        /// <returns></returns>
+        /// <returns>the created object</returns>
         IAIController CreateAI(Player player);
     }
 }
