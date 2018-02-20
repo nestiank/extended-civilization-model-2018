@@ -35,6 +35,7 @@ namespace FakeView
         std::pair<int, int> TerrainToScreen(int x, int y);
 
         CivPresenter::Presenter^ m_presenter;
+        bool m_roundEarth = false;
 
         Screen* m_screen;
     };

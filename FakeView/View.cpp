@@ -88,7 +88,7 @@ namespace FakeView
                 int x = bx + dx;
                 int y = by + dy;
 
-                if (x < 0 || x >= m_presenter->Game->Terrain->Width)
+                if (!m_roundEarth && (x < 0 || x >= m_presenter->Game->Terrain->Width))
                     continue;
                 if (y < 0 || y >= m_presenter->Game->Terrain->Height)
                     continue;
@@ -116,17 +116,12 @@ namespace FakeView
                         c.color |= 0b0001'0110;
                     }
                 }
-            }
-        }
 
-        if (m_presenter->SelectedActor)
-        {
-            auto point = m_presenter->SelectedActor->PlacedPoint.Value;
-            auto pos = point.Position;
-            auto pt = TerrainToScreen(pos.X, pos.Y);
-            if (auto pc = m_screen->TryGetChar(pt.first, pt.second))
-            {
-                pc->color ^= 0b1111'1111;
+                if (m_presenter->SelectedActor == point.Unit)
+                {
+                    auto& c = m_screen->GetChar(px, py);
+                    c.color ^= 0b1111'1111;
+                }
             }
         }
 
@@ -482,6 +477,11 @@ namespace FakeView
                     m_presenter->SaveFile = L"map.txt";
                 m_presenter->CommandSave();
                 MessageBox(nullptr, L"Saved", L"", MB_OK);
+                break;
+
+            case '+':
+            case '=':
+                m_roundEarth = !m_roundEarth;
                 break;
 
             case 0x1b: // ESC

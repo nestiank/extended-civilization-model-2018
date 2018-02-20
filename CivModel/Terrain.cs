@@ -143,8 +143,6 @@ namespace CivModel
         /// </returns>
         public bool IsValidPosition(Position pos)
         {
-            if (pos.X < 0 || pos.X >= Width)
-                return false;
             if (pos.Y < 0 || pos.Y >= Height)
                 return false;
             return true;

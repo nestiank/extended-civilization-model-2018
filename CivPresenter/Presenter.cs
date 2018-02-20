@@ -476,10 +476,10 @@ namespace CivPresenter
                     pos.Y = Math.Min(pos.Y + 1, Game.Terrain.Height - 1);
                     break;
                 case Direction.Left:
-                    pos.X = Math.Max(pos.X - 1, 0);
+                    pos.X = pos.X - 1;
                     break;
                 case Direction.Right:
-                    pos.X = Math.Min(pos.X + 1, Game.Terrain.Width - 1);
+                    pos.X = pos.X + 1;
                     break;
             }
             FocusedPoint = Game.Terrain.GetPoint(pos);
