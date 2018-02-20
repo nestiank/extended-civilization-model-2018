@@ -223,10 +223,6 @@ namespace CivModel
         }
         private bool _sleepFlag = false;
 
-        /// <summary>
-        /// The list of <see cref="Effect"/> objects which affect on this actor.
-        /// </summary>
-        public IReadOnlyList<Effect> Effects => _effects;
         private Effect[] _effects;
 
         /// <summary>
