@@ -4,19 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Common
+namespace CivModel.Finno
 {
     public class AutismBeamDrone : Unit
     {
         public static Guid ClassGuid { get; } = new Guid("B1637348-A97F-4D7F-B160-B82E4695F2C3");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 2;
+        public override double MaxAP => 2;
 
         public override double MaxHP => 35;
 
         public override double AttackPower => 20;
         public override double DefencePower => 5;
+
+        public override double GoldLogistics => 2;
+        public override double FullLaborLogicstics => 2;
+
+        public override int BattleClassLevel => 3;
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -24,10 +29,130 @@ namespace CivModel.Common
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
+        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
+
         public AutismBeamDrone(Player owner, Terrain.Point point) : base(owner, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
+            _specialActs[0] = new AutismBeamDroneAction(this);
+        }
+
+        private class AutismBeamDroneAction : IActorAction
+        {
+            public Actor Owner => _owner;
+            private readonly AutismBeamDrone _owner;
+
+            public bool IsParametered => true;
+
+            public AutismBeamDroneAction(AutismBeamDrone owner)
+            {
+                _owner = owner;
+            }
+
+            public int GetRequiredAP(Terrain.Point? pt)
+            {
+                if (CheckError(pt) != null)
+                    return -1;
+
+                return 1;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                new ControlHijackEffect(pt.Value.Unit, Owner.Owner).EffectOn();
+            }
+
+            private Exception CheckError(Terrain.Point? pt)
+            {
+                if (!_owner.PlacedPoint.HasValue)
+                    return new InvalidOperationException("Actor is not placed yet");
+                if (pt == null)
+                    return new ArgumentNullException(nameof(pt));
+
+                if (pt.Value.Unit is Unit unit && unit.Owner != Owner.Owner)
+                {
+                    if (pt.Value.TileBuilding != null)
+                        return new InvalidOperationException("the ownership of unit on TileBuilding cannot be changed");
+
+                    return null;
+                }
+                else
+                {
+                    return new ArgumentException("there is no target of skill");
+                }
+            }
+        }
+    }
+
+    class ControlHijackEffect : Effect
+    {
+        private readonly Player _hijacker;
+        private Player _hijackee;
+
+        private const int _stealTurn = 2;
+        private const int _stunTurn = 1;
+
+        private Action DoOff;
+
+        public ControlHijackEffect(Actor target, Player hijacker)
+            : base(target, _stealTurn + _stunTurn, EffectTag.Ownership)
+        {
+            _hijacker = hijacker;
+        }
+
+        protected override void OnEffectOn()
+        {
+            Steal();
+        }
+
+        protected override void OnEffectOff()
+        {
+            DoOff();
+        }
+
+        protected override void OnTargetDestroy()
+        {
+        }
+
+        public override void PostTurn()
+        {
+            base.PostTurn();
+            if (Enabled && LeftTurn == _stunTurn)
+            {
+                DoOff();
+                if (Target != null)
+                    Stun();
+            }
+        }
+
+        private void Steal()
+        {
+            _hijackee = Target.Owner;
+            Target.Owner = _hijacker;
+            DoOff = () => {
+                if (Target.PlacedPoint?.TileBuilding == null)
+                {
+                    Target.Owner = _hijackee;
+                    Target.SkipFlag = false;
+                }
+                else
+                {
+                    // if Target is on TileBuilding of hijacker, Ownership cannot be changed
+                    // Target must be moved to another position or destroyed.
+                    Target.Destroy();
+                }
+            };
+        }
+
+        private void Stun()
+        {
+            Target.IsControllable = false;
+            DoOff = () => Target.IsControllable = true;
         }
     }
 
@@ -41,12 +166,12 @@ namespace CivModel.Common
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 75, 20);
+            return new TileObjectProduction(this, owner, 75, 20, 50, 10);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CityCenter
+                && point.TileBuilding is CivModel.Common.CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)

@@ -4,19 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Common
+namespace CivModel.Hwan
 {
     public class BrainwashedEMUKnight : Unit
     {
         public static Guid ClassGuid { get; } = new Guid("6C04C360-C1B9-4633-8269-B0911B1D63DA");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 2;
+        public override double MaxAP => 2;
 
         public override double MaxHP => 75;
 
         public override double AttackPower => 10;
         public override double DefencePower => 7;
+
+        public override double GoldLogistics => 0;
+        public override double FullLaborLogicstics => 0;
+
+        public override int BattleClassLevel => 1;
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -41,12 +46,12 @@ namespace CivModel.Common
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 30, 10);
+            return new TileObjectProduction(this, owner, 30, 10, 10, 2);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CityCenter
+                && point.TileBuilding is CivModel.Common.CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)

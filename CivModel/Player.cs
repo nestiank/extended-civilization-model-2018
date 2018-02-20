@@ -334,6 +334,7 @@ namespace CivModel
         /// <c>true</c> if the owner of the tile was successfully changed or already this player.<br/>
         /// <c>false</c> if the owner of the tile is not this player and cannot be changed.
         /// </returns>
+        /// <seealso cref="AddTerritory(Terrain.Point)"/>
         public bool TryAddTerritory(Terrain.Point pt)
         {
             if (pt.TileOwner == this)
@@ -347,6 +348,18 @@ namespace CivModel
             pt.SetTileOwner(this);
             _territory.Add(pt);
             return true;
+        }
+
+        /// <summary>
+        /// Adds the territory of this player.
+        /// </summary>
+        /// <param name="pt">The tile to be in the territory.</param>
+        /// <exception cref="InvalidOperationException">the owner of the tile is not this player and cannot be changed</exception>
+        /// <seealso cref="TryAddTerritory(Terrain.Point)"/>
+        public void AddTerritory(Terrain.Point pt)
+        {
+            if (!TryAddTerritory(pt))
+                throw new InvalidOperationException("the owner of the tile is not this player and cannot be changed");
         }
 
         /// <summary>

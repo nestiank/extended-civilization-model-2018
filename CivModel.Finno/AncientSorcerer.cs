@@ -4,19 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Common
+namespace CivModel.Finno
 {
     public class AncientSorcerer : Unit
     {
         public static Guid ClassGuid { get; } = new Guid("C49FB444-C530-41B8-9D61-A9CF4443A4D6");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 2;
+        public override double MaxAP => 2;
 
         public override double MaxHP => 50;
 
         public override double AttackPower => 15;
         public override double DefencePower => 5;
+
+        public override double GoldLogistics => 1;
+        public override double FullLaborLogicstics => 1;
+
+        public override int BattleClassLevel => 2;
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -49,9 +54,11 @@ namespace CivModel.Common
 
             public int GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt != null)
+                if (pt == null)
                     return -1;
                 if (!_owner.PlacedPoint.HasValue)
+                    return -1;
+                if (pt.Value.Unit == null)
                     return -1;
                 if (pt.Value.Unit.Owner != Owner.Owner)
                     return -1;
@@ -65,8 +72,14 @@ namespace CivModel.Common
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
+                if (pt.Value.Unit == null)
+                    throw new InvalidOperationException("There is no target");
                 if (pt.Value.Unit.Owner != Owner.Owner)
                     throw new InvalidOperationException("The Unit is hostile");
+
+                int Ap = GetRequiredAP(pt);
+                if(!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
 
                 double AmountOfHeal = 0;
 
@@ -74,6 +87,11 @@ namespace CivModel.Common
                 pt.Value.Unit.Heal(AmountOfHeal);
 
                 Owner.RemainHP = Owner.RemainHP - AmountOfHeal;
+                if (Owner.RemainHP <= 0)
+                {
+                    Owner.Destroy();
+                }
+                Owner.ConsumeAP(Ap);
 
             }
         }
@@ -89,12 +107,12 @@ namespace CivModel.Common
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 50, 15);
+            return new TileObjectProduction(this, owner, 50, 15, 20, 4);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CityCenter
+                && point.TileBuilding is CivModel.Common.CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)

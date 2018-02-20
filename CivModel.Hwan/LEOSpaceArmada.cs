@@ -4,19 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Common
+namespace CivModel.Hwan
 {
     public class LEOSpaceArmada : Unit
     {
         public static Guid ClassGuid { get; } = new Guid("A41789C8-823A-4B13-BDE2-3171751FC8BF");
         public override Guid Guid => ClassGuid;
 
-        public override int MaxAP => 2;
+        public override double MaxAP => 2;
 
         public override double MaxHP => 50;
 
         public override double AttackPower => 15;
         public override double DefencePower => 5;
+
+        public override double GoldLogistics => 1;
+        public override double FullLaborLogicstics => 1;
+
+        public override int BattleClassLevel => 2;
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -55,7 +60,7 @@ namespace CivModel.Common
                     return -1;
                 if (!_owner.PlacedPoint.HasValue)
                     return -1;
-                if (Owner.Owner.Game.TurnNumber < LastSkillCalled + 3)
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     return -1;
                 if (pt.Value.Unit == null)
                     return -1;
@@ -69,13 +74,18 @@ namespace CivModel.Common
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
-                if (Owner.Owner.Game.TurnNumber < LastSkillCalled + 3)
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     throw new InvalidOperationException("Skill is not turned on");
                 if (pt.Value.Unit == null)
                     throw new InvalidOperationException("There is no target");
 
-                Owner.RangedAttackTo(pt.Value.Unit);
+                int Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
+                Owner.AttackTo(Owner.AttackPower * 2, pt.Value.Unit, pt.Value.Unit.DefencePower,false, true);
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
+                Owner.ConsumeAP(Ap);
             }
         }
     }
@@ -90,12 +100,12 @@ namespace CivModel.Common
         }
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 50, 15);
+            return new TileObjectProduction(this, owner, 50, 15, 20, 4);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CityCenter
+                && point.TileBuilding is CivModel.Common.CityCenter
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
