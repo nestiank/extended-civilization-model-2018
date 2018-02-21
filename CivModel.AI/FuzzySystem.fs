@@ -1,15 +1,10 @@
 namespace CivModel.AI
 
 open System
-open System.Linq;
-open System.Threading.Tasks
 open Accord.Fuzzy
-open CivModel
 
 type FuzzySystem() =
     let fuzzyDB = new Database()
-    let inferSystem = new InferenceSystem(fuzzyDB, new CentroidDefuzzifier(1000))
-    let mutable ruleNumber = 0
 
     let trapezoidal m1 m2 m3 =
         if m1 = -infinityf then
@@ -18,8 +13,6 @@ type FuzzySystem() =
             new TrapezoidalFunction(m1, m2, TrapezoidalFunction.EdgeType.Left)
         else
             new TrapezoidalFunction(m1, m2, m3)
-
-    member val InferSystem = inferSystem
 
     member this.CreateSet name m1 m2 m3 =
         new FuzzySet(name, trapezoidal m1 m2 m3)
@@ -43,18 +36,29 @@ type FuzzySystem() =
         fuzzyDB.AddVariable(var)
         FuzzyVariable(this, var)
 
+    member this.CreateRule rules =
+        let r = FuzzyRules(fuzzyDB)
+        r.AddRules rules
+        r
+
+and FuzzyRules(fuzzyDB : Database) =
+    let mutable ruleNumber = 0
+    let createRuleName() =
+        let n = ruleNumber
+        ruleNumber <- ruleNumber + 1
+        sprintf "Rule %d" n
+
+    member val InferSystem = new InferenceSystem(fuzzyDB, new CentroidDefuzzifier(1000))
     member this.AddRules rules =
-        rules |> Seq.iter (fun rule ->
-            inferSystem.NewRule(ruleNumber.ToString(), rule) |> ignore
-            ruleNumber <- ruleNumber + 1)
+        rules |> Seq.iter (fun rule -> this.InferSystem.NewRule(createRuleName(), rule) |> ignore)
 
 and FuzzyVariable(system : FuzzySystem, var : LinguisticVariable) =
     member this.Name = var.Name
 
-    member this.SetValue x =
-        system.InferSystem.SetInput(var.Name, x)
-    member this.GetValue() =
-        system.InferSystem.Evaluate(var.Name)
+    member this.SetValue x (rules : FuzzyRules) =
+        rules.InferSystem.SetInput(var.Name, x)
+    member this.GetValue (rules : FuzzyRules) =
+        rules.InferSystem.Evaluate(var.Name)
 
     override this.Equals other =
         match other with

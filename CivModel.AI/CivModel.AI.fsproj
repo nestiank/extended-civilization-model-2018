@@ -54,7 +54,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="FuzzySystem.fs" />
+    <Compile Include="AIFuzzyModule.fs" />
     <Compile Include="AIController.fs" />
+    <Compile Include="GameScheme.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
