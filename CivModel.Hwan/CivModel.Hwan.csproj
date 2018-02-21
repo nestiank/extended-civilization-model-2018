@@ -43,6 +43,8 @@
     <Compile Include="BrainwashedEMUKnight.cs" />
     <Compile Include="DecentralizedMilitary.cs" />
     <Compile Include="GameScheme.cs" />
+    <Compile Include="HwanEmpireCityCentralLab.cs" />
+    <Compile Include="HwanEmpireFIRFactory.cs" />
     <Compile Include="JackieChan.cs" />
     <Compile Include="JediKnight.cs" />
     <Compile Include="LEOSpaceArmada.cs" />

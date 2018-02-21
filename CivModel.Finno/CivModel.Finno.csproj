@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="AncientSorcerer.cs" />
     <Compile Include="AutismBeamDrone.cs" />
+    <Compile Include="AncientFinnoLabortory.cs" />
+    <Compile Include="AncientFinnoFIRFactory.cs" />
     <Compile Include="DecentralizedMilitary.cs" />
     <Compile Include="ElephantCavalry.cs" />
     <Compile Include="EMUHorseArcher.cs" />
