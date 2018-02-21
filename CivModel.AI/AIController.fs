@@ -3,7 +3,6 @@ namespace CivModel.AI
 open System
 open System.Linq;
 open System.Threading.Tasks
-open Accord.Fuzzy
 open CivModel
 
 type public AIController(player : Player) =
@@ -51,27 +50,27 @@ type public AIController(player : Player) =
         else
             ()
 
-    let actionMap = [ BuildResearch, (DoBuildResearch, true) ] |> Map.ofSeq
+    let fuzzyActionList = [ BuildResearch, DoBuildResearch, true ]
 
-    let getAction (space : Map<FuzzyVariable, (float32 -> unit) * bool>) =
-        if Map.isEmpty space then
-            None
-        else
+    let rec doFuzzyAction (space : (FuzzyVariable * (float32 -> unit) * bool) list) =
+        if not space.IsEmpty then
             Research.SetValue (float32 player.Research)
-            let (k, v, x) =
-                space |> Map.toSeq
-                |> Seq.map (fun (k, v) -> (k, v, k.GetValue()))
-                |> Seq.maxBy (fun (_, _, x) -> x)
-            if x > 0.f then Some (k, v, x) else None
-
-    let rec doAction space =
-        match getAction space with
-            | Some (k, v, x) ->
-                (fst v) x
+            let (k, v, d, x) =
+                space
+                |> List.map (fun (k, v, d) -> (k, v, d, k.GetValue()))
+                |> List.maxBy (fun (_, _, _, x) -> x)
+            if x > 0.f then
+                v x
                 let nextSpace =
-                    if snd v then space |> Map.remove k else space
-                doAction nextSpace
-            | None -> ()
+                    if d then
+                        space |> List.filter (fun (k', _, _) -> k <> k')
+                    else
+                        space
+                doFuzzyAction nextSpace
+            else
+                ()
+        else
+            ()
 
     let deploy (x : Production) =
         match x.Factory with
@@ -86,12 +85,16 @@ type public AIController(player : Player) =
     let rec deployList : (Production list -> unit) = function
         | x :: xs -> deploy x; deployList xs
         | [] -> ()
-
+    
+    let mutable _dbg = -infinity
     interface CivModel.IAIController with
         member this.DoAction() =
             async {
                 deployList (player.Deployment |> Seq.toList)
-                doAction actionMap
-                System.Diagnostics.Debug.WriteLine(player.Research)
+                doFuzzyAction fuzzyActionList
+
+                let diff = player.Research - _dbg
+                _dbg <- player.Research
+                System.Diagnostics.Debug.WriteLine(sprintf "%f, diff: %f" player.Research diff)
             } |> Async.StartAsTask :> Task
         member this.Destroy() = ()
