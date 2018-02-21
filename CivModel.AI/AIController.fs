@@ -7,69 +7,41 @@ open Accord.Fuzzy
 open CivModel
 
 type public AIController(player : Player) =
-    let Research = new LinguisticVariable("Research", 0.f, infinityf)
-    let ProductionLaborCost = new LinguisticVariable("ProductionLaborCost", 0.f, infinityf);
-    let ProductionGoldCost = new LinguisticVariable("ProductionGoldCost", 0.f, infinityf);
+    let system = FuzzySystem()
 
-    let ResearchLow = new FuzzySet("ResearchLow", new TrapezoidalFunction(0.f, 100.f, 200.f))
-    let ResearchNormal = new FuzzySet("ResearchNormal", new TrapezoidalFunction(100.f, 200.f, 300.f))
-    let ResearchHigh = new FuzzySet("ResearchHigh", new TrapezoidalFunction(200.f, 300.f, TrapezoidalFunction.EdgeType.Left))
-    let CostLow = new FuzzySet("CostLow", new TrapezoidalFunction(0.f, 5.f, 10.f))
-    let CostNormal = new FuzzySet("CostNormal", new TrapezoidalFunction(10.f, 15.f, 20.f))
-    let CostHigh = new FuzzySet("CostHigh", new TrapezoidalFunction(20.f, 25.f, TrapezoidalFunction.EdgeType.Left))
+    let ResearchSets = system.CreateSetsByLevel "Research" [ "Low"; "Normal"; "High" ] 1 [ 0.f; 100.f; 200.f; 300.f; infinityf ]
+    let Research = system.CreateVariable "Research" 0.f infinityf ResearchSets
 
-    let BuildResearch = new LinguisticVariable("BuildResearch", -1.f, 1.f)
-    let Production = new LinguisticVariable("Production", -1.f, 1.f)
+    let CostSets = system.CreateSetsByLevel "Cost" [ "Low"; "Normal"; "High" ] 2 [ 0.f; 5.f; 10.f; 15.f; 20.f; 25.f; infinityf ]
+    let ProductionLaborCost = system.CreateVariable "ProductionLaborCost" 0.f infinityf CostSets
+    let ProductionGoldCost = system.CreateVariable "ProductionGoldCost" 0.f infinityf CostSets
 
-    let VeryLow = new FuzzySet("VeryLow", new TrapezoidalFunction(-1.f, -0.8f, -0.6f))
-    let Low = new FuzzySet("Low", new TrapezoidalFunction(-1.f, -0.6f, -0.2f))
-    let Normal = new FuzzySet("Normal", new TrapezoidalFunction(-0.6f, -0.2f, 0.2f))
-    let High = new FuzzySet("High", new TrapezoidalFunction(-0.2f, 0.6f, 1.0f))
-    let VeryHigh = new FuzzySet("VeryHigh", new TrapezoidalFunction(0.6f, 0.8f, 1.0f))
+    let ResultSets = system.CreateSetsByLevel "" [ "VeryLow"; "Low"; "Normal"; "High"; "VeryHigh" ] 1 [ -1.0f; -0.8f; -0.6f; -0.2f; 0.2f; 0.8f; 1.0f ]
+    let BuildResearch = system.CreateVariable "BuildResearch" -1.f 1.f ResultSets
+    let Production = system.CreateVariable "Production" -1.f 1.f ResultSets
 
-    let fuzzyDB = new Database()
-    let rules = new InferenceSystem(fuzzyDB, new CentroidDefuzzifier(1000))
+    let rules = [
+        "IF Research is ResearchLow THEN BuildResearch is High";
+        "IF Research is ResearchNormal THEN BuildResearch is Normal";
+        "IF Research is ResearchHigh THEN BuildResearch is VeryLow";
+        "IF BuildResearch is High AND ProductionLaborCost is CostLow AND ProductionGoldCost is CostLow THEN Production is VeryHigh";
+        "IF BuildResearch is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostLow THEN Production is High";
+        "IF BuildResearch is High AND ProductionLaborCost is CostLow AND ProductionGoldCost is CostNormal THEN Production is High";
+        "IF BuildResearch is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostNormal THEN Production is Normal";
+        "IF BuildResearch is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostHigh THEN Production is Low";
+        "IF BuildResearch is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostNormal THEN Production is Low";
+        "IF BuildResearch is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostHigh THEN Production is VeryLow";
+        ]
 
     do
-        Research.AddLabel(ResearchLow)
-        Research.AddLabel(ResearchNormal)
-        Research.AddLabel(ResearchHigh)
-        fuzzyDB.AddVariable(Research)
-
-        for var in [ ProductionLaborCost; ProductionGoldCost ] do
-            var.AddLabel(CostLow)
-            var.AddLabel(CostNormal)
-            var.AddLabel(CostHigh)
-            fuzzyDB.AddVariable(var);
-
-        for var in [ BuildResearch; Production ] do
-            var.AddLabel(VeryLow)
-            var.AddLabel(Low)
-            var.AddLabel(Normal)
-            var.AddLabel(High)
-            var.AddLabel(VeryHigh)
-            fuzzyDB.AddVariable(var)
-
-        let strRules = [
-            "IF Research is ResearchLow THEN BuildResearch is High";
-            "IF Research is ResearchNormal THEN BuildResearch is Normal";
-            "IF Research is ResearchHigh THEN BuildResearch is VeryLow";
-            "IF BuildResearch is High AND ProductionLaborCost is CostLow AND ProductionGoldCost is CostLow THEN Production is VeryHigh";
-            "IF BuildResearch is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostLow THEN Production is High";
-            "IF BuildResearch is High AND ProductionLaborCost is CostLow AND ProductionGoldCost is CostNormal THEN Production is High";
-            "IF BuildResearch is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostNormal THEN Production is Normal";
-            "IF BuildResearch is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostHigh THEN Production is Low";
-            "IF BuildResearch is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostNormal THEN Production is Low";
-            "IF BuildResearch is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostHigh THEN Production is VeryLow";
-            ]
-        strRules |> List.mapi (fun idx str -> rules.NewRule(idx.ToString(), str)) |> ignore
+        system.AddRules rules
 
     let DoBuildResearch (x : float32) =
         let getPoint (p : IInteriorBuildingProductionFactory) =
-            rules.SetInput(BuildResearch.Name, x)
-            rules.SetInput(ProductionLaborCost.Name, float32 p.TotalLaborCost)
-            rules.SetInput(ProductionGoldCost.Name, float32 p.TotalGoldCost)
-            rules.Evaluate(Production.Name)
+            BuildResearch.SetValue x
+            ProductionLaborCost.SetValue (float32 p.TotalLaborCost)
+            ProductionGoldCost.SetValue (float32 p.TotalGoldCost)
+            Production.GetValue()
         let (factory, point) =
             player.AvailableProduction
             |> Enumerable.OfType<IInteriorBuildingProductionFactory>
@@ -79,16 +51,16 @@ type public AIController(player : Player) =
         else
             ()
 
-    let actionMap = [ BuildResearch.Name, (DoBuildResearch, true) ] |> Map.ofSeq
+    let actionMap = [ BuildResearch, (DoBuildResearch, true) ] |> Map.ofSeq
 
-    let getAction space =
+    let getAction (space : Map<FuzzyVariable, (float32 -> unit) * bool>) =
         if Map.isEmpty space then
             None
         else
-            rules.SetInput(Research.Name, float32 player.Research)
+            Research.SetValue (float32 player.Research)
             let (k, v, x) =
                 space |> Map.toSeq
-                |> Seq.map (fun (k, v) -> (k, v, rules.Evaluate(k)))
+                |> Seq.map (fun (k, v) -> (k, v, k.GetValue()))
                 |> Seq.maxBy (fun (_, _, x) -> x)
             if x > 0.f then Some (k, v, x) else None
 
