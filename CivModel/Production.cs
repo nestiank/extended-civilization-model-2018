@@ -226,6 +226,10 @@ namespace CivModel
         /// <summary>
         /// Inputs resources into this production
         /// </summary>
+        /// <remarks>
+        /// The return type of this method is <see cref="ValueTuple{T1, T2}"/> which Unity does not support.<br/>
+        /// Use <c>Item1</c> and <c>Item2</c> if explicit tuple names is unavailable.
+        /// </remarks>
         /// <param name="labor">labor amount to input</param>
         /// <param name="gold">gold amount to input</param>
         /// <returns>The amount which is really inputed. It can be different from the argument.</returns>
@@ -237,7 +241,7 @@ namespace CivModel
         /// </exception>
         /// <seealso cref="GetAvailableInputLabor(double)"/>
         /// <seealso cref="GetAvailableInputGold(double)"/>
-        public Tuple<double, double> InputResources(double labor, double gold)
+        public (double inputedLabor, double inputedGold) InputResources(double labor, double gold)
         {
             if (IsCompleted)
                 throw new InvalidOperationException("production is already completed");
@@ -256,7 +260,7 @@ namespace CivModel
             if (LaborInputed >= TotalLaborCost && GoldInputed >= TotalGoldCost)
                 IsCompleted = true;
 
-            return new Tuple<double, double>(labor, gold);
+            return (labor, gold);
         }
 
         /// <summary>
