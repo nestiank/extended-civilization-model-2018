@@ -79,23 +79,23 @@ module AIFuzzyModule =
             rules |> Labor.SetValue (float32 player.Labor)
 
         let rec doFuzzyAction (space : (FuzzyVariable * (float32 -> unit) * (unit -> bool)) list) =
-            if not space.IsEmpty then
-                setFuzzyInput()
-                let (k, v, d, x) =
-                    space
-                    |> List.map (fun (k, v, d) -> (k, v, d, rules |> k.GetValue))
-                    |> List.maxBy (fun (_, _, _, x) -> x)
-                if x > 0.f then
-                    let nextSpace =
+            seq {
+                if not space.IsEmpty then
+                    setFuzzyInput()
+                    let (k, v, d, x) =
+                        space
+                        |> List.map (fun (k, v, d) -> (k, v, d, rules |> k.GetValue))
+                        |> List.maxBy (fun (_, _, _, x) -> x)
+                    if x > 0.f then
                         if d() then
-                            space |> List.filter (fun (k', _, _) -> k <> k')
+                            yield! doFuzzyAction (space |> List.filter (fun (k', _, _) -> k <> k'))
                         else
-                            v x
-                            space
-                    doFuzzyAction nextSpace
+                            yield v x
+                            yield! doFuzzyAction space
+                    else
+                        ()
                 else
                     ()
-            else
-                ()
+            }
 
         member this.DoFuzzyAction() = doFuzzyAction fuzzyActionList
