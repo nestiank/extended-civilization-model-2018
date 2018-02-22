@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AncientFinnoVigilant.cs" />
+    <Compile Include="AncientFinnoXylitolProductionRegion.cs" />
     <Compile Include="AncientSorcerer.cs" />
     <Compile Include="AutismBeamDrone.cs" />
     <Compile Include="AncientFinnoLabortory.cs" />
