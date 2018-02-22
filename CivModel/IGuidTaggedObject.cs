@@ -25,12 +25,12 @@ namespace CivModel
     /// Provides object creation of <see cref="IGuidTaggedObject"/> from Guid
     /// </summary>
     /// <seealso cref="IGuidTaggedObject"/>
-    public class GuidTaggedObjectManager
+    public sealed class GuidTaggedObjectManager
     {
         private Dictionary<Guid, Func<Player, Terrain.Point, IGuidTaggedObject>> _dict = new Dictionary<Guid, Func<Player, Terrain.Point, IGuidTaggedObject>>();
 
         /// <summary>
-        /// Registers a Guid with <see cref="IGuidTaggedObject"/> supplier.
+        /// Registers a Guid with <see cref="IGuidTaggedObject"/> supplier, which requires <see cref="Player"/> and <see cref="Terrain.Point"/>.
         /// </summary>
         /// <remarks>
         /// <paramref name="supplier"/> creates an object from arguments. If arguments are invalid, supplier can return <c>null</c>.
@@ -45,6 +45,26 @@ namespace CivModel
                 throw new ArgumentNullException("supplier");
 
             _dict.Add(guid, supplier);
+        }
+
+        /// <summary>
+        /// Registers a Guid with <see cref="IGuidTaggedObject"/> supplier, which requires <see cref="CityBase"/>.
+        /// </summary>
+        /// <remarks>
+        /// <paramref name="supplier"/> creates an object from arguments. If arguments are invalid, supplier can return <c>null</c>.
+        /// </remarks>
+        /// <param name="guid">The Guid.</param>
+        /// <param name="supplier">The supplier.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="supplier"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">The same Guid is already registered.</exception>
+        public void RegisterGuid(Guid guid, Func<CityBase, IGuidTaggedObject> supplier)
+        {
+            RegisterGuid(guid, (p, t) => {
+                if (t.TileBuilding is CityBase city && city.Owner == p)
+                    return supplier(city);
+                else
+                    return null;
+            });
         }
 
         /// <summary>

@@ -40,10 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CityCenter.cs" />
+    <Compile Include="ControlHijackEffect.cs" />
+    <Compile Include="FactoryBuilding.cs" />
     <Compile Include="GameScheme.cs" />
-    <Compile Include="JediKnight.cs" />
+    <Compile Include="FakeKnight.cs" />
+    <Compile Include="LaboratoryBuilding.cs" />
     <Compile Include="Pioneer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestQuest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CivModel\CivModel.csproj">

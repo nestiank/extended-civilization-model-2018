@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivPresenter
 {
-    public partial class Presenter
+    partial class Presenter
     {
         /// <summary>
         /// Indicates the state of <see cref="Presenter"/>.
@@ -62,6 +62,12 @@ namespace CivPresenter
             /// In this state, <see cref="Presenter.DeployProduction"/> indicates the production to deploy.
             /// </summary>
             Deploy,
+            /// <summary>
+            /// State [quest]. This state indicates user is viewing the list of quests.
+            /// <see cref="Presenter.CommandQuest"/> method may introduce this state.
+            /// In this state, asdf indicates asdf.
+            /// </summary>
+            Quest,
             /// <summary>
             /// State [victory]. This state indicates user is viewing a <strong>victory</strong> screen.
             /// </summary>

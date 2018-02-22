@@ -43,7 +43,7 @@ namespace CivModel
         /// </summary>
         /// <param name="pt">The parameter.</param>
         /// <exception cref="ArgumentException">the parameter is invalid.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="IReadOnlyActorAction.Owner"/> of this action is not placed yet.</exception>
+        /// <exception cref="InvalidOperationException">Action cannot be done now.</exception>
         void Act(Terrain.Point? pt);
     }
 

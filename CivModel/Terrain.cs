@@ -7,7 +7,7 @@ namespace CivModel
     /// <summary>
     /// Represents a terrain of a game.
     /// </summary>
-    public partial class Terrain
+    public sealed partial class Terrain
     {
         private struct Point_t
         {
@@ -16,7 +16,7 @@ namespace CivModel
             public TileObject[] PlacedObjects;
         }
 
-        private Point_t[,] _points;
+        private Point_t[] _points;
 
         /// <summary>
         /// The width of this terrain.
@@ -50,7 +50,7 @@ namespace CivModel
             _width = width;
             _height = height;
 
-            _points = new Point_t[height, width];
+            _points = new Point_t[width * height];
 
             var random = new Random();
             for (int y = 0; y < height; ++y)
@@ -58,10 +58,10 @@ namespace CivModel
                 for (int x = 0; x < width; ++x)
                 {
                     int len = Enum.GetNames(typeof(TileTag)).Length;
-                    _points[y, x].PlacedObjects = new TileObject[len];
+                    _points[y * width + x].PlacedObjects = new TileObject[len];
 
                     len = Enum.GetNames(typeof(TerrainType)).Length;
-                    _points[y, x].Type = (TerrainType)random.Next(len);
+                    _points[y * width + x].Type = (TerrainType)random.Next(len);
                 }
             }
         }
@@ -143,8 +143,6 @@ namespace CivModel
         /// </returns>
         public bool IsValidPosition(Position pos)
         {
-            if (pos.X < 0 || pos.X >= Width)
-                return false;
             if (pos.Y < 0 || pos.Y >= Height)
                 return false;
             return true;

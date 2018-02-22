@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
     /// <summary>
     /// The factory interface of <see cref="InteriorBuildingProduction"/>.
-    /// This interface additionally provides <see cref="IsPlacable(InteriorBuildingProduction, CityCenter)"/>
-    ///  and <see cref="CreateInteriorBuilding(CityCenter)"/> methods.
+    /// This interface additionally provides <see cref="IsPlacable(InteriorBuildingProduction, CityBase)"/>
+    ///  and <see cref="CreateInteriorBuilding(CityBase)"/> methods.
     /// </summary>
     /// <seealso cref="CivModel.IProductionFactory" />
     public interface IInteriorBuildingProductionFactory : IProductionFactory
@@ -23,14 +22,14 @@ namespace CivModel
         /// <returns>
         ///   <c>true</c> if the production is placable; otherwise, <c>false</c>.
         /// </returns>
-        bool IsPlacable(InteriorBuildingProduction production, CityCenter city);
+        bool IsPlacable(InteriorBuildingProduction production, CityBase city);
 
         /// <summary>
         /// Creates the <see cref="InteriorBuilding"/> which is the production result.
         /// </summary>
-        /// <param name="city">The <see cref="CityCenter"/> who will own the building.</param>
+        /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
         /// <returns>the created <see cref="InteriorBuilding"/> result.</returns>
-        InteriorBuilding CreateInteriorBuilding(CityCenter city);
+        InteriorBuilding CreateInteriorBuilding(CityBase city);
     }
 
     /// <summary>
@@ -46,10 +45,20 @@ namespace CivModel
         /// </summary>
         /// <param name="factory">The factory object of this production kind.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the production.</param>
-        /// <param name="totalCost"><see cref="Production.TotalCost"/> of the production</param>
-        /// <param name="capacityPerTurn"><see cref="Production.CapacityPerTurn"/> of the production.</param>
-        /// <exception cref="ArgumentException">totalCost is not positive</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacityPerTurn"/> is not in [0, <see cref="Production.TotalCost"/>]</exception>
+        /// <param name="totalLaborCost"><see cref="Production.TotalLaborCost"/> of the production</param>
+        /// <param name="laborCapacityPerTurn"><see cref="Production.LaborCapacityPerTurn"/> of the production.</param>
+        /// <param name="totalGoldCost"><see cref="Production.TotalGoldCost"/> of the production</param>
+        /// <param name="goldCapacityPerTurn"><see cref="Production.GoldCapacityPerTurn"/> of the production.</param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="totalLaborCost"/> is negative
+        /// or
+        /// <paramref name="totalGoldCost"/> is negative
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="laborCapacityPerTurn"/> is not in [0, <see cref="Production.TotalLaborCost"/>]
+        /// or
+        /// <paramref name="goldCapacityPerTurn"/> is not in [0, <see cref="Production.TotalGoldCost"/>]
+        /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="factory"/> is <c>null</c>
         /// or
@@ -57,8 +66,9 @@ namespace CivModel
         /// </exception>
         public InteriorBuildingProduction(
             IInteriorBuildingProductionFactory factory, Player owner,
-            double totalCost, double capacityPerTurn)
-            : base(factory, owner, totalCost, capacityPerTurn)
+            double totalLaborCost, double laborCapacityPerTurn,
+            double totalGoldCost, double goldCapacityPerTurn)
+            : base(factory, owner, totalLaborCost, laborCapacityPerTurn, totalGoldCost, goldCapacityPerTurn)
         {
             _factory = factory;
         }
@@ -72,7 +82,7 @@ namespace CivModel
         /// </returns>
         public override bool IsPlacable(Terrain.Point point)
         {
-            if (point.TileBuilding is CityCenter city && city.Owner == Owner)
+            if (point.TileBuilding is CityBase city && city.Owner == Owner)
                 return _factory.IsPlacable(this, city);
             return false;
         }
@@ -85,12 +95,13 @@ namespace CivModel
         /// <exception cref="ArgumentException">point is invalid</exception>
         public override void Place(Terrain.Point point)
         {
-            if (!Completed)
+            if (!IsCompleted)
                 throw new InvalidOperationException("production is not completed yet");
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            _factory.CreateInteriorBuilding((CityCenter)point.TileBuilding);
+            var building = _factory.CreateInteriorBuilding((CityBase)point.TileBuilding);
+            building.ProcessCreation();
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -11,7 +10,7 @@ namespace CivModel
     /// Represents a player of a game.
     /// </summary>
     /// <seealso cref="ITurnObserver"/>
-    public class Player : ITurnObserver
+    public sealed class Player : ITurnObserver
     {
         /// <summary>
         /// The gold of this player. This value is not negative.
@@ -22,16 +21,28 @@ namespace CivModel
         /// <summary>
         /// The gold income of this player. This is not negative, and can be different from <see cref="GoldNetIncome"/>
         /// </summary>
+        /// <seealso cref="GoldIncomeWithInvestments"/>
         /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
         /// <seealso cref="IGameScheme.GoldCoefficient"/>
-        public double GoldIncome => Game.Scheme.GoldCoefficient * TaxRate;
+        public double GoldIncome => Game.Scheme.GoldCoefficient * Population * TaxRate;
 
         /// <summary>
-        /// The net income of gold.
+        /// The gold income with investments.
         /// </summary>
         /// <seealso cref="GoldIncome"/>
-        public double GoldNetIncome => GoldIncome - EconomicInvestment - ResearchInvestment;
+        /// <seealso cref="GoldNetIncome"/>
+        public double GoldIncomeWithInvestments => GoldIncome - EconomicInvestment - ResearchInvestment;
+
+        /// <summary>
+        /// The net income of gold. <see cref="EstimatedUsedGold"/> property is used for calculation.
+        /// Therefore, you must call <see cref="EstimateResourceInputs"/> before use this property.
+        /// </summary>
+        /// <seealso cref="GoldIncome"/>
+        /// <seealso cref="GoldIncomeWithInvestments"/>
+        /// <seealso cref="EstimatedUsedGold"/>
+        /// <seealso cref="EstimateResourceInputs"/>
+        public double GoldNetIncome => GoldIncomeWithInvestments - EstimatedUsedGold;
 
         /// <summary>
         /// The happiness of this player. This value is in [-100, 100].
@@ -43,22 +54,58 @@ namespace CivModel
         /// The happiness income of this player.
         /// </summary>
         /// <seealso cref="IGameScheme.HappinessCoefficient"/>
-        public double HappinessIncome => Game.Scheme.HappinessCoefficient * (EconomicInvestment - BasicEconomicRequire);
+        public double HappinessIncome => Game.Scheme.HappinessCoefficient * ((1 - EconomicInvestmentRatio) * BasicEconomicRequire);
 
         /// <summary>
-        /// The labor per turn of this player. It is equal to sum of all <see cref="CityCenter.Labor"/> of cities of this player.
+        /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
+        /// It is equal to sum of all <see cref="CityBase.Labor"/> of cities of this player.
         /// </summary>
-        /// <seealso cref="CityCenter.Labor"/>
-        public double Labor => Cities.Select(city => city.Labor).Sum();
+        /// <seealso cref="Labor"/>
+        /// <seealso cref="CityBase.Labor"/>
+        public double OriginalLabor => Cities.Select(city => city.Labor).Sum();
 
         /// <summary>
-        /// The whole population which this player has. It is equal to sum of all <see cref="CityCenter.Population"/> of cities of this player.
+        /// The labor per turn of this player.
+        /// It is calculated from <see cref="OriginalLabor"/> with <see cref="Happiness"/>.
         /// </summary>
-        /// <seealso cref="CityCenter.Population"/>
+        /// <seealso cref="OriginalLabor"/>
+        /// <seealso cref="CityBase.Labor"/>
+        public double Labor => OriginalLabor * (1 + Game.Scheme.LaborHappinessCoefficient * Happiness);
+
+        /// <summary>
+        /// The research per turn of this player, not controlled by <see cref="Happiness"/> and <see cref="ResearchInvestmentRatio"/>.
+        /// It is equal to sum of all <see cref="CityBase.ResearchIncome"/> of cities of this player.
+        /// </summary>
+        /// <seealso cref="ResearchIncome"/>
+        /// <seealso cref="ResearchInvestmentRatio"/>
+        /// <seealso cref="CityBase.ResearchIncome"/>
+        public double OriginalResearchIncome => Cities.Select(city => city.ResearchIncome).Sum();
+
+        /// <summary>
+        /// The research per turn of this player.
+        /// It is calculated from <see cref="OriginalResearchIncome"/> with <see cref="Happiness"/> and <see cref="ResearchInvestmentRatio"/>.
+        /// </summary>
+        /// <seealso cref="OriginalResearchIncome"/>
+        /// <seealso cref="ResearchInvestmentRatio"/>
+        /// <seealso cref="CityBase.ResearchIncome"/>
+        public double ResearchIncome => OriginalResearchIncome * ResearchInvestmentRatio
+            * (1 + Game.Scheme.ResearchHappinessCoefficient * Happiness);
+
+        /// <summary>
+        /// The total research of this player.
+        /// </summary>
+        /// <seealso cref="ResearchIncome"/>
+        public double Research { get; private set; } = 0;
+
+        /// <summary>
+        /// The whole population which this player has. It is equal to sum of all <see cref="CityBase.Population"/> of cities of this player.
+        /// </summary>
+        /// <seealso cref="CityBase.Population"/>
         public double Population => Cities.Select(city => city.Population).Sum();
 
         /// <summary>
         /// The tax rate of this player. It affects <see cref="GoldIncome"/> and <see cref="BasicEconomicRequire"/>.
+        /// This value must be in [0, 1]
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><see cref="TaxRate"/> is not in [0, 1]</exception>
         public double TaxRate
@@ -67,69 +114,119 @@ namespace CivModel
             set
             {
                 if (value < 0 && value > 1)
-                    throw new ArgumentOutOfRangeException("TaxRate", value, "TaxRate is not in [0, 1]");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "TaxRate is not in [0, 1]");
                 _taxRate = value;
             }
         }
         private double _taxRate = 1;
 
         /// <summary>
+        /// The ratio of real amount to basic amount of logistic investment. It must be in [<c>0</c>, <c>2</c>].
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">value is not in [<c>0</c>, <c>2</c>].</exception>
+        /// <seealso cref="BasicLogisticRequire"/>
+        public double LogisticInvestmentRatio
+        {
+            get => _logisticInvestmentRatio;
+            set
+            {
+                if (value < 0 || value > 2)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "value is not in [0, 2]");
+                _logisticInvestmentRatio = value;
+            }
+        }
+        private double _logisticInvestmentRatio = 1;
+
+        /// <summary>
+        /// The amount of labor for logistic investment.
+        /// </summary>
+        public double LogisticInvestment => Math.Min(Labor, LogisticInvestmentRatio * BasicLogisticRequire);
+
+        /// <summary>
+        /// The basic logistic labor requirement.
+        /// </summary>
+        public double BasicLogisticRequire => Actors.Select(actor => actor.BasicLaborLogistics).Sum();
+
+        /// <summary>
         /// The basic economic gold requirement.
         /// </summary>
-        /// <seealso cref="EconomicInvestment"/>
+        /// <seealso cref="EconomicInvestmentRatio"/>
         public double BasicEconomicRequire => Game.Scheme.EconomicRequireCoefficient * Population * (Game.Scheme.EconomicRequireTaxRateConstant + TaxRate);
+
+        /// <summary>
+        /// The ratio of real amount to basic amount of economic investment. It must be in [<c>0</c>, <c>2</c>].
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">value is not in [<c>0</c>, <c>2</c>].</exception>
+        /// <seealso cref="BasicEconomicRequire"/>
+        public double EconomicInvestmentRatio
+        {
+            get => _economicInvestmentRatio;
+            set
+            {
+                if (value < 0 || value > 2)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "value is not in [0, 2]");
+                _economicInvestmentRatio = value;
+            }
+        }
+        private double _economicInvestmentRatio = 1;
 
         /// <summary>
         /// The amount of gold for economic investment.
         /// </summary>
-        /// <seealso cref="BasicEconomicRequire"/>
-        public double EconomicInvestment
-        {
-            get => _economicInvestment;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException("EconomicInvestment", value, "EconomicInvest is negative");
-                _economicInvestment = value;
-            }
-        }
-        private double _economicInvestment = 0;
+        public double EconomicInvestment => Math.Min(GoldIncome, EconomicInvestmentRatio * BasicEconomicRequire);
 
         /// <summary>
         /// The basic research gold requirement.
         /// </summary>
-        /// <seealso cref="ResearchInvestment"/>
-        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient;
+        /// <seealso cref="ResearchInvestmentRatio"/>
+        public double BasicResearchRequire => Game.Scheme.ResearchRequireCoefficient * OriginalResearchIncome;
+
+        /// <summary>
+        /// The ratio of real amount to basic amount of research investment. It must be in [<c>0</c>, <c>2</c>].
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">value is not in [<c>0</c>, <c>2</c>].</exception>
+        /// <seealso cref="BasicEconomicRequire"/>
+        public double ResearchInvestmentRatio
+        {
+            get => _researchInvestmentRatio;
+            set
+            {
+                if (value < 0 || value > 2)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "value is not in [0, 2]");
+                _researchInvestmentRatio = value;
+            }
+        }
+        private double _researchInvestmentRatio = 1;
 
         /// <summary>
         /// The amount of gold for research investment.
         /// </summary>
-        /// <seealso cref="BasicResearchRequire"/>
-        public double ResearchInvestment
-        {
-            get => _researchInvestment;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException("ResearchInvestment", value, "ResearchInvest is negative");
-                _researchInvestment = value;
-            }
-        }
-        private double _researchInvestment = 0;
+        public double ResearchInvestment => Math.Min(GoldIncome - EconomicInvestment, ResearchInvestmentRatio * BasicResearchRequire);
 
         /// <summary>
         /// The list of units of this player.
         /// </summary>
         /// <seealso cref="Unit"/>
         public IReadOnlyList<Unit> Units => _units;
-        private readonly List<Unit> _units = new List<Unit>();
+        private readonly SafeEnumerableCollection<Unit> _units = new SafeEnumerableCollection<Unit>();
 
         /// <summary>
         /// The list of cities of this player.
         /// </summary>
-        /// <seealso cref="CityCenter"/>
-        public IReadOnlyList<CityCenter> Cities => _cities;
-        private readonly List<CityCenter> _cities = new List<CityCenter>();
+        /// <seealso cref="CityBase"/>
+        public IReadOnlyList<CityBase> Cities => _cities;
+        private readonly SafeEnumerableCollection<CityBase> _cities = new SafeEnumerableCollection<CityBase>();
+
+        /// <summary>
+        /// <see cref="IEnumerable{T}"/> object which contains <see cref="Actor"/> objects this player owns.
+        /// </summary>
+        public IEnumerable<Actor> Actors => Units.Cast<Actor>().Concat(Cities);
+
+        /// <summary>
+        /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
+        /// </summary>
+        public IReadOnlyList<Quest> Quests => _quests;
+        private readonly SafeEnumerableCollection<Quest> _quests = new SafeEnumerableCollection<Quest>();
 
         /// <summary>
         /// The list of the not-finished productions of this player.
@@ -144,20 +241,28 @@ namespace CivModel
         public LinkedList<Production> Deployment { get; } = new LinkedList<Production>();
 
         /// <summary>
-        /// The list of additional available productions of this player.
-        /// This list will added to the calculation of <see cref="GetAvailableProduction"/>
+        /// The set of available productions of this player.
         /// </summary>
-        public ISet<IProductionFactory> AdditionalAvailableProduction => _additionalAvailableProduction;
-        private readonly HashSet<IProductionFactory> _additionalAvailableProduction = new HashSet<IProductionFactory>();
+        public ISet<IProductionFactory> AvailableProduction => _availableProduction;
+        private readonly HashSet<IProductionFactory> _availableProduction = new HashSet<IProductionFactory>();
 
         /// <summary>
         /// The estimated used labor in this turn.
         /// </summary>
         /// <remarks>
-        /// This property is updated by <see cref="EstimateLaborInputing"/>.
+        /// This property is updated by <see cref="EstimateResourceInputs"/>.
         /// You must call that function before use this property.
         /// </remarks>
         public double EstimatedUsedLabor { get; private set; }
+
+        /// <summary>
+        /// The estimated used gold in this turn.
+        /// </summary>
+        /// <remarks>
+        /// This property is updated by <see cref="EstimateResourceInputs"/>.
+        /// You must call that function before use this property.
+        /// </remarks>
+        public double EstimatedUsedGold { get; private set; }
 
         /// <summary>
         /// The list of tiles which this player owns as territory.
@@ -182,78 +287,79 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Player"/> class.
         /// </summary>
         /// <param name="game">The game which this player participates.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
         public Player(Game game)
         {
-            _game = game;
+            _game = game ?? throw new ArgumentNullException(nameof(game));
+
+            game.TurnObservable.AddObserver(this);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="Unit"/> class
-        /// </summary>
-        /// <param name="unit">unit to add</param>
+        // this function is used by Unit class
         internal void AddUnitToList(Unit unit)
         {
             _units.Add(unit);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="Unit"/> class
-        /// </summary>
-        /// <param name="unit">unit to remove</param>
+        // this function is used by Unit class
         internal void RemoveUnitFromList(Unit unit)
         {
             _units.Remove(unit);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="CityCenter"/> class
-        /// </summary>
-        /// <param name="city">city to add</param>
-        internal void AddCityToList(CityCenter city)
+        /// this function is used by CityBase class
+        internal void AddCityToList(CityBase city)
         {
             _beforeLandingCity = false;
             _cities.Add(city);
         }
 
-        /// <summary>
-        /// this function is used by <see cref="CityCenter"/> class
-        /// </summary>
-        /// <param name="city">city to remove</param>
-        internal void RemoveCityFromList(CityCenter city)
+        // this function is used by CityBase class
+        internal void RemoveCityFromList(CityBase city)
         {
             _cities.Remove(city);
         }
 
-        /// <summary>
-        /// Gets the list of available productions of this player.
-        /// </summary>
-        /// <remarks>
-        /// The return value is the result of
-        /// merging the result of <see cref="CityCenter.AvailableProduction"/> of all cities of this player
-        /// and <see cref="AdditionalAvailableProduction"/>.
-        /// </remarks>
-        /// <returns>the list of available productions</returns>
-        public IReadOnlyList<IProductionFactory> GetAvailableProduction()
+        // this function is used by Quest class
+        internal void AddQuestToList(Quest quest)
         {
-            return Cities.SelectMany(city => city.AvailableProduction).Distinct()
-                .Union(AdditionalAvailableProduction).ToArray();
+            _quests.Add(quest);
+        }
+
+        /// <summary>
+        /// Adds the territory of this player if possible.
+        /// </summary>
+        /// <param name="pt">The tile to be in the territory.</param>
+        /// <returns>
+        /// <c>true</c> if the owner of the tile was successfully changed or already this player.<br/>
+        /// <c>false</c> if the owner of the tile is not this player and cannot be changed.
+        /// </returns>
+        /// <seealso cref="AddTerritory(Terrain.Point)"/>
+        public bool TryAddTerritory(Terrain.Point pt)
+        {
+            if (pt.TileOwner == this)
+                return true;
+            if (pt.TileOwner != null && pt.TileBuilding != null)
+                return false;
+
+            if (pt.TileOwner != null)
+                pt.TileOwner.RemoveTerritory(pt);
+
+            pt.SetTileOwner(this);
+            _territory.Add(pt);
+            return true;
         }
 
         /// <summary>
         /// Adds the territory of this player.
         /// </summary>
         /// <param name="pt">The tile to be in the territory.</param>
-        /// <exception cref="InvalidOperationException">a <see cref="TileBuilding"/> of another player is at <paramref name="pt"/></exception>
+        /// <exception cref="InvalidOperationException">the owner of the tile is not this player and cannot be changed</exception>
+        /// <seealso cref="TryAddTerritory(Terrain.Point)"/>
         public void AddTerritory(Terrain.Point pt)
         {
-            if (pt.TileOwner != this)
-            {
-                if (pt.TileOwner != null)
-                    pt.TileOwner.RemoveTerritory(pt);
-
-                pt.SetTileOwner(this);
-                _territory.Add(pt);
-            }
+            if (!TryAddTerritory(pt))
+                throw new InvalidOperationException("the owner of the tile is not this player and cannot be changed");
         }
 
         /// <summary>
@@ -294,13 +400,16 @@ namespace CivModel
             foreach (var unit in Units)
                 unit.PostTurn();
 
-            var dg = GoldIncome;
-            var dh = HappinessIncome;
-
+            // this will update GoldNetIncome
             productionProcess();
+
+            var dg = GoldNetIncome;
+            var dh = HappinessIncome;
+            var dr = ResearchIncome;
 
             Gold = Math.Max(0, Gold + dg);
             Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
+            Research += dr;
         }
 
         /// <summary>
@@ -328,31 +437,64 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Update <see cref="Production.EstimatedLaborInputing"/> property of all productions
-        /// and <see cref="EstimatedUsedLabor"/> property  of this player.
+        /// Update <see cref="Production.EstimatedLaborInputing"/>, <see cref="Production.EstimatedGoldInputing"/>,
+        ///  <see cref="Actor.EstimatedLaborLogicstics"/>, <see cref="EstimatedUsedLabor"/>
+        ///  and <see cref="EstimatedUsedGold"/> property of this player.
         /// </summary>
-        public void EstimateLaborInputing()
+        public void EstimateResourceInputs()
         {
             var labor = Labor;
+            var gold = Math.Max(0, GoldIncomeWithInvestments);
 
             EstimatedUsedLabor = 0;
+            EstimatedUsedGold = 0;
+
+            var logistics = LogisticInvestment;
+
+            foreach (var actor in Actors)
+            {
+                var estLabor = actor.GetAvailableInputLaborLogistics(logistics);
+                actor.EstimatedLaborLogicstics = estLabor;
+
+                EstimatedUsedLabor += estLabor;
+                EstimatedUsedGold += actor.GoldLogistics;
+
+                logistics -= estLabor;
+                labor -= estLabor;
+                gold = Math.Max(0, gold - actor.GoldLogistics);
+            }
+
             foreach (var production in Production)
             {
-                var input = production.GetAvailableInputLabor(labor);
-                production.EstimatedLaborInputing = input;
-                EstimatedUsedLabor += input;
-                labor -= input;
+                var estLabor = production.GetAvailableInputLabor(labor);
+                var estGold = production.GetAvailableInputGold(gold);
+
+                production.EstimatedLaborInputing = estLabor;
+                production.EstimatedGoldInputing = estGold;
+
+                EstimatedUsedLabor += estLabor;
+                EstimatedUsedGold += estGold;
+
+                labor -= estLabor;
+                gold -= estGold;
             }
         }
 
         private void productionProcess()
         {
-            var labor = Labor;
+            EstimateResourceInputs();
+
+            foreach (var actor in Actors)
+            {
+                actor.HealByLogistics(actor.EstimatedLaborLogicstics);
+            }
 
             for (var node = Production.First; node != null; )
             {
-                labor -= node.Value.InputLabor(labor);
-                if (node.Value.Completed)
+                var prod = node.Value;
+                prod.InputResources(prod.EstimatedLaborInputing, prod.EstimatedGoldInputing);
+
+                if (prod.IsCompleted)
                 {
                     var tmp = node;
                     node = node.Next;

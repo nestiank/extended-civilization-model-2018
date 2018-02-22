@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CivModel.Common;
 
 namespace CivModel
 {
@@ -68,14 +67,14 @@ namespace CivModel
         double GoldCoefficient { get; }
 
         /// <summary>
-        /// Coefficient for <see cref="Common.CityCenter.Population"/>.
+        /// Constant amount of <see cref="CityBase.Population"/>.
         /// </summary>
-        double PopulationCoefficient { get; }
+        double PopulationConstant { get; }
 
         /// <summary>
-        /// Constant amount of <see cref="Player.Happiness"/> for <see cref="Player.Population"/>.
+        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Population"/>.
         /// </summary>
-        double PopulationHappinessConstant { get; }
+        double PopulationHappinessCoefficient { get; }
 
         /// <summary>
         /// Coefficient for <see cref="Player.HappinessIncome"/>.
@@ -83,14 +82,14 @@ namespace CivModel
         double HappinessCoefficient { get; }
 
         /// <summary>
-        /// Coefficient for <see cref="Player.Labor"/>.
+        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Labor"/>.
         /// </summary>
-        double LaborCoefficient { get; }
+        double LaborHappinessCoefficient { get; }
 
         /// <summary>
-        /// Constant amount of <see cref="Player.Happiness"/> for <see cref="Player.Labor"/>.
+        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.ResearchIncome"/>.
         /// </summary>
-        double LaborHappinessConstant { get; }
+        double ResearchHappinessCoefficient { get; }
 
         /// <summary>
         /// Coefficient for <see cref="Player.BasicEconomicRequire"/>.
@@ -121,12 +120,5 @@ namespace CivModel
         /// <param name="isNewGame"><c>true</c> if initializing a new game. <c>false</c> if initializing a game loaded from a save file.</param>
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
         void InitializeGame(Game game, bool isNewGame);
-
-        /// <summary>
-        /// Initializes a newly created city
-        /// </summary>
-        /// <param name="city">The city to initialize.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
-        void InitializeNewCity(CityCenter city);
     }
 }

@@ -40,10 +40,10 @@ namespace WinformView
 
         private void DeploySelector_Load(object sender, EventArgs e)
         {
-            Action<Terrain.Point> wrapper(Action<CityCenter> placer)
+            Action<Terrain.Point> wrapper(Action<CityBase> placer)
             {
                 return pt => {
-                    if (pt.TileBuilding is CityCenter city)
+                    if (pt.TileBuilding is CityBase city)
                         placer(city);
                 };
             }
@@ -51,7 +51,7 @@ namespace WinformView
             var player = _game.PlayerInTurn;
             var ar = new object[] {
                 new SelectionObject("CityCenter", pt => new CityCenter(player, pt)),
-                new SelectionObject("JediKnight", pt => new JediKnight(player, pt)),
+                new SelectionObject("JediKnight", pt => new FakeKnight(player, pt)),
                 new SelectionObject("Pioneer", pt => new Pioneer(player, pt)),
                 new SelectionObject("FactoryBuilding", wrapper(city => new FactoryBuilding(city)))
             };
