@@ -45,6 +45,10 @@
     <Compile Include="GameScheme.cs" />
     <Compile Include="HwanEmpireCityCentralLab.cs" />
     <Compile Include="HwanEmpireFIRFactory.cs" />
+    <Compile Include="HwanEmpireFIRFortress.cs" />
+    <Compile Include="HwanEmpireIbiza.cs" />
+    <Compile Include="HwanEmpireKimchiFactory.cs" />
+    <Compile Include="HwanEmpireLatifundium.cs" />
     <Compile Include="HwanEmpireSungsimdang.cs" />
     <Compile Include="HwanEmpireVigilant.cs" />
     <Compile Include="JackieChan.cs" />
