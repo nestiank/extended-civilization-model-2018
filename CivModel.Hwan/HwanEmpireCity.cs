@@ -27,6 +27,10 @@ namespace CivModel.Hwan
                     Owner.TryAddTerritory(pt.Value);
             }
         }
+        public override void PostTurn()
+        {
+            this.RemainHP = Math.Min(500, (this.RemainHP + 20));
+        }
     }
 
     public class HwanEmpireCityProductionFactory : ITileObjectProductionFactory

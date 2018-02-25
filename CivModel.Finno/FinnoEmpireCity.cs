@@ -27,6 +27,11 @@ namespace CivModel.Finno
                     Owner.TryAddTerritory(pt.Value);
             }
         }
+
+        public override void PostTurn()
+        {
+            this.RemainHP = Math.Min(500, (this.RemainHP + 50));
+        }
     }
 
     public class FinnoEmpireCityProductionFactory : ITileObjectProductionFactory

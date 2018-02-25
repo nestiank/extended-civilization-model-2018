@@ -14,6 +14,11 @@ namespace CivModel.Hwan
         public override double MaxHP => 15;
 
         public HwanEmpireKimchiFactory(Player owner, Terrain.Point point) : base(owner, point) { }
+
+        public override void PostTurn()
+        {
+            this.RemainHP = Math.Min(15, (this.RemainHP + 2));
+        }
     }
 
     public class HwanEmpireKimchiFactoryProductionFactory : ITileObjectProductionFactory

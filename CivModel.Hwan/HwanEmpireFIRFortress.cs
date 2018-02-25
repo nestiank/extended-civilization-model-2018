@@ -15,6 +15,11 @@ namespace CivModel.Hwan
         public override double MaxHP => 30;
 
         public HwanEmpireFIRFortress(Player owner, Terrain.Point point) : base(owner, point) { }
+
+        public override void PostTurn()
+        {
+            this.RemainHP = Math.Min(30, (this.RemainHP + 10));
+        }
     }
 
     public class HwanEmpireFIRFortressProductionFactory : ITileObjectProductionFactory

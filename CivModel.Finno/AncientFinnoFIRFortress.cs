@@ -15,6 +15,11 @@ namespace CivModel.Finno
         public override double MaxHP => 30;
 
         public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, point) { }
+
+        public override void PostTurn()
+        {
+            this.RemainHP = Math.Min(30, (this.RemainHP + 10));
+        }
     }
 
     public class AncientFinnoFIRFortressProductionFactory : ITileObjectProductionFactory

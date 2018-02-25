@@ -14,6 +14,11 @@ namespace CivModel.Finno
         public override double MaxHP => 30;
 
         public AncientFinnoGermaniumMine(Player owner, Terrain.Point point) : base(owner, point) { }
+
+        public override void PostTurn()
+        {
+            this.RemainHP = Math.Min(30, (this.RemainHP + 5));
+        }
     }
 
     public class AncientFinnoGermaniumMineProductionFactory : ITileObjectProductionFactory

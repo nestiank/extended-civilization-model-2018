@@ -14,6 +14,11 @@ namespace CivModel.Finno
         public override double MaxHP => 20;
 
         public AncientFinnoOctagon(Player owner, Terrain.Point point) : base(owner, point) { }
+
+        public override void PostTurn()
+        {
+            this.RemainHP = Math.Min(20, (this.RemainHP + 4));
+        }
     }
 
     public class AncientFinnoOctagonProductionFactory : ITileObjectProductionFactory
