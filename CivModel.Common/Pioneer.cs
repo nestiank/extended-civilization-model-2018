@@ -31,7 +31,7 @@ namespace CivModel.Common
         {
         }
 
-        public ActorConstants Constants => Pioneer.Constants;
+        public ActorConstants ActorConstants => Pioneer.Constants;
 
         public double TotalLaborCost => 5;
         public double LaborCapacityPerTurn => 2;

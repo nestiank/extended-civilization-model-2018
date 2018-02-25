@@ -96,7 +96,7 @@ namespace CivModel.Common
         {
         }
 
-        public ActorConstants Constants => FakeKnight.Constants;
+        public ActorConstants ActorConstants => FakeKnight.Constants;
 
         public double TotalLaborCost => 7.5;
         public double LaborCapacityPerTurn => 3;

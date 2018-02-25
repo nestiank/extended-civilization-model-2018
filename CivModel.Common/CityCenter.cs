@@ -46,7 +46,7 @@ namespace CivModel.Common
         {
         }
 
-        public ActorConstants Constants => CityCenter.Constants;
+        public ActorConstants ActorConstants => CityCenter.Constants;
 
         public double TotalLaborCost => 5;
         public double LaborCapacityPerTurn => 2;
