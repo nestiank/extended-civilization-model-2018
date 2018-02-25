@@ -55,7 +55,8 @@ namespace CivModel
         /// <summary>
         /// The maximum AP.
         /// </summary>
-        public double MaxAP { get; private set; }
+        public double MaxAP => _maxAP;
+        private readonly double _maxAP;
 
         /// <summary>
         /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
@@ -87,13 +88,15 @@ namespace CivModel
         /// <summary>
         /// The maximum HP. <c>0</c> if this actor is not a combattant.
         /// </summary>
-        public double MaxHP { get; private set; }
+        public double MaxHP => _maxHP;
+        private readonly double _maxHP;
 
         /// <summary>
         /// The maximum heal per turn.
         /// </summary>
         /// <seealso cref="Actor.HealByLogistics(double)" />
-        public double MaxHealPerTurn { get; private set; }
+        public double MaxHealPerTurn => _maxHealPerTurn;
+        private readonly double _maxHealPerTurn;
 
         /// <summary>
         /// The remaining HP. It must be in [0, <see cref="MaxHP"/>].
@@ -127,27 +130,31 @@ namespace CivModel
         /// <summary>
         /// The attack power.
         /// </summary>
-        public double AttackPower { get; private set; }
+        public double AttackPower => _attackPower;
+        private readonly double _attackPower;
 
         /// <summary>
         /// The defence power.
         /// </summary>
-        public double DefencePower { get; private set; }
+        public double DefencePower => _defencePower;
+        private readonly double _defencePower;
 
         /// <summary>
         /// The amount of gold logistics of this actor.
         /// </summary>
-        public double GoldLogistics { get; private set; }
+        public double GoldLogistics => _goldLogistics;
+        private readonly double _goldLogistics;
 
         /// <summary>
         /// The amount of labor logistics of this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
         /// </summary>
-        public double FullLaborLogicstics { get; private set; }
+        public double FullLaborLogistics => _fullLaborLogistics;
+        private readonly double _fullLaborLogistics;
 
         /// <summary>
         /// The amount of labor logistics of this actor to get the maximum heal mount in this turn.
         /// </summary>
-        public double BasicLaborLogistics => FullLaborLogicstics * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
+        public double BasicLaborLogistics => FullLaborLogistics * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
 
         /// <summary>
         /// The amount of labor logicstics to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
@@ -157,7 +164,7 @@ namespace CivModel
         /// You must call that function before use this property.
         /// </remarks>
         /// <seealso cref="Player.EstimateResourceInputs"/>
-        public double EstimatedLaborLogicstics { get; internal set; }
+        public double EstimatedLaborLogistics { get; internal set; }
 
         /// <summary>
         /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
@@ -237,18 +244,18 @@ namespace CivModel
         /// or
         /// <paramref name="constants"/> is <c>null</c>.
         /// </exception>
-        public Actor(Player owner, IActorConstants constants, Terrain.Point point, TileTag tag)
+        public Actor(Player owner, ActorConstants constants, Terrain.Point point, TileTag tag)
             : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
             if (constants == null)
                 throw new ArgumentNullException(nameof(constants));
-            MaxAP = constants.MaxAP;
-            MaxHP = constants.MaxHP;
-            MaxHealPerTurn = constants.MaxHealPerTurn;
-            AttackPower = constants.AttackPower;
-            DefencePower = constants.DefencePower;
-            GoldLogistics = constants.GoldLogistics;
-            FullLaborLogicstics = constants.FullLaborLogicstics;
+            _maxAP = constants.MaxAP;
+            _maxHP = constants.MaxHP;
+            _maxHealPerTurn = constants.MaxHealPerTurn;
+            _attackPower = constants.AttackPower;
+            _defencePower = constants.DefencePower;
+            _goldLogistics = constants.GoldLogistics;
+            _fullLaborLogistics = constants.FullLaborLogistics;
 
             _owner = owner;
             RemainHP = MaxHP;
@@ -461,10 +468,10 @@ namespace CivModel
                 throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
 
             labor = GetAvailableInputLaborLogistics(labor);
-            if (AboutEqual(labor, FullLaborLogicstics))
+            if (AboutEqual(labor, FullLaborLogistics))
                 Heal(MaxHealPerTurn);
             else
-                Heal(MaxHealPerTurn * labor / FullLaborLogicstics);
+                Heal(MaxHealPerTurn * labor / FullLaborLogistics);
 
             return labor;
         }

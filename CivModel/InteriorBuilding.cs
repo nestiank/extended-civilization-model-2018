@@ -55,26 +55,32 @@ namespace CivModel
         /// The amount of labor this building provides.
         /// </summary>
         /// <seealso cref="CityBase.Labor"/>
-        public double ProvidedLabor { get; private set; }
+        public double ProvidedLabor => _providedLabor;
+        private readonly double _providedLabor;
 
         /// <summary>
         /// The amount of research this building provides.
         /// </summary>
         /// <seealso cref="CityBase.ResearchIncome"/>
-        public double ProvidedResearchIncome { get; private set; }
+        public double ProvidedResearchIncome => _providedResearchIncome;
+        private readonly double _providedResearchIncome;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
         /// </summary>
         /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
-        /// <param name="constants">constants of this actor. if <c>null</c>, use a default <see cref="InteriorBuildingConstants"/> object.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
-        public InteriorBuilding(CityBase city, IInteriorBuildingConstants constants)
+        /// <param name="constants">constants of this actor.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="constants"/> is <c>null</c>.
+        /// or
+        /// <paramref name="city"/> is <c>null</c>.
+        /// </exception>
+        public InteriorBuilding(CityBase city, InteriorBuildingConstants constants)
         {
             if (constants == null)
-                constants = new InteriorBuildingConstants();
-            ProvidedLabor = constants.ProvidedLabor;
-            ProvidedResearchIncome = constants.ProvidedLabor;
+                throw new ArgumentNullException(nameof(constants));
+            _providedLabor = constants.ProvidedLabor;
+            _providedResearchIncome = constants.ProvidedLabor;
 
             _owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");

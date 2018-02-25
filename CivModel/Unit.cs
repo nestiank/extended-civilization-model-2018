@@ -29,7 +29,8 @@ namespace CivModel
         /// or
         /// <paramref name="constants"/> is <c>null</c>.
         /// </exception>
-        public Unit(Player owner, IActorConstants constants, Terrain.Point point) : base(owner, constants, point, TileTag.Unit)
+        public Unit(Player owner, ActorConstants constants, Terrain.Point point)
+            : base(owner, constants, point, TileTag.Unit)
         {
             Owner.AddUnitToList(this);
             _moveAct = new MoveActorAction(this);

@@ -34,8 +34,8 @@ namespace CivModel
         /// <summary>
         /// The constants of production result <see cref="InteriorBuilding"/>.
         /// </summary>
-        /// <seealso cref="IInteriorBuildingConstants"/>
-        IInteriorBuildingConstants Constants { get; }
+        /// <seealso cref="InteriorBuildingConstants"/>
+        InteriorBuildingConstants Constants { get; }
     }
 
     /// <summary>

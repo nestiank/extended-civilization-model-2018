@@ -6,20 +6,18 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public class PioneerConstants : ActorConstants
-    {
-        public override double MaxAP => 2;
-        public override double GoldLogistics => 5;
-        public override double FullLaborLogicstics => 0.5;
-    }
-
     public class Pioneer : Unit
     {
         public static Guid ClassGuid { get; } = new Guid("487BBF97-538A-45CB-A62D-B33E173F8E6F");
         public override Guid Guid => ClassGuid;
 
-        public Pioneer(Player owner, IActorConstants constants, Terrain.Point point)
-            : base(owner, constants ?? new PioneerConstants(), point)
+        public static readonly ActorConstants Constants = new ActorConstants {
+            MaxAP = 2,
+            GoldLogistics = 5,
+            FullLaborLogistics = 0.5
+        };
+
+        public Pioneer(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
         }
     }
@@ -33,9 +31,7 @@ namespace CivModel.Common
         {
         }
 
-        public Guid Guid => Pioneer.ClassGuid;
-        public Type ProductionResultType => typeof(Pioneer);
-        public IActorConstants Constants { get; } = new PioneerConstants();
+        public ActorConstants Constants => Pioneer.Constants;
 
         public double TotalLaborCost => 5;
         public double LaborCapacityPerTurn => 2;
@@ -54,7 +50,7 @@ namespace CivModel.Common
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new Pioneer(owner, Constants, point);
+            return new Pioneer(owner, point);
         }
     }
 }

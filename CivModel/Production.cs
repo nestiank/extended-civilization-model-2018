@@ -13,23 +13,6 @@ namespace CivModel
     public interface IProductionFactory
     {
         /// <summary>
-        /// The unique identifier of this factory.
-        /// This value is equal to <see cref="IGuidTaggedObject.Guid"/> of the production result.
-        /// </summary>
-        /// <remarks>
-        /// The <i>production result</i> is not the return value of <see cref="Create(Player)"/>,
-        /// but its production by <see cref="Production.Place(Terrain.Point)"/>
-        /// </remarks>
-        Guid Guid { get; }
-        /// <summary>
-        /// The type of the production result. <c>null</c> if the production creates no object.
-        /// </summary>
-        /// <remarks>
-        /// The <i>production result</i> is not the return value of <see cref="Create(Player)"/>,
-        /// but its production by <see cref="Production.Place(Terrain.Point)"/>
-        /// </remarks>
-        Type ProductionResultType { get; }
-        /// <summary>
         /// The total labor cost to finish this production.
         /// </summary>
         double TotalLaborCost { get; }

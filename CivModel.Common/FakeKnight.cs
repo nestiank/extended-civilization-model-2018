@@ -6,20 +6,19 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public class FakeKnightConstants : ActorConstants
-    {
-        public override double MaxAP => 4;
-        public override double MaxHP => 30;
-        public override double AttackPower => 25;
-        public override double DefencePower => 5;
-        public override double GoldLogistics => 5;
-        public override double FullLaborLogicstics => 0.5;
-    }
-
     public class FakeKnight : Unit
     {
         public static Guid ClassGuid { get; } = new Guid("8209396E-45E3-441C-879F-29EFE9EDC23C");
         public override Guid Guid => ClassGuid;
+
+        public static readonly ActorConstants Constants = new ActorConstants {
+            MaxAP = 4,
+            MaxHP = 30,
+            AttackPower = 25,
+            DefencePower = 5,
+            GoldLogistics = 5,
+            FullLaborLogistics = 0.5
+        };
 
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
         private readonly IActorAction _holdingAttackAct;
@@ -30,8 +29,7 @@ namespace CivModel.Common
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public FakeKnight(Player owner, IActorConstants constants, Terrain.Point point)
-            : base(owner, constants ?? new FakeKnightConstants(), point)
+        public FakeKnight(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -97,9 +95,7 @@ namespace CivModel.Common
         {
         }
 
-        public Guid Guid => FakeKnight.ClassGuid;
-        public Type ProductionResultType => typeof(FakeKnight);
-        public IActorConstants Constants { get; } = new FakeKnightConstants();
+        public ActorConstants Constants => FakeKnight.Constants;
 
         public double TotalLaborCost => 7.5;
         public double LaborCapacityPerTurn => 3;
@@ -118,7 +114,7 @@ namespace CivModel.Common
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new FakeKnight(owner, Constants, point);
+            return new FakeKnight(owner, point);
         }
     }
 }

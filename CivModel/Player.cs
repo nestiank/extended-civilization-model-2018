@@ -209,14 +209,14 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="Unit"/>
         public IReadOnlyList<Unit> Units => _units;
-        private readonly SafeEnumerableCollection<Unit> _units = new SafeEnumerableCollection<Unit>();
+        private readonly SafeIterationCollection<Unit> _units = new SafeIterationCollection<Unit>();
 
         /// <summary>
         /// The list of cities of this player.
         /// </summary>
         /// <seealso cref="CityBase"/>
         public IReadOnlyList<CityBase> Cities => _cities;
-        private readonly SafeEnumerableCollection<CityBase> _cities = new SafeEnumerableCollection<CityBase>();
+        private readonly SafeIterationCollection<CityBase> _cities = new SafeIterationCollection<CityBase>();
 
         /// <summary>
         /// <see cref="IEnumerable{T}"/> object which contains <see cref="Actor"/> objects this player owns.
@@ -227,7 +227,7 @@ namespace CivModel
         /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
         /// </summary>
         public IReadOnlyList<Quest> Quests => _quests;
-        private readonly SafeEnumerableCollection<Quest> _quests = new SafeEnumerableCollection<Quest>();
+        private readonly SafeIterationCollection<Quest> _quests = new SafeIterationCollection<Quest>();
 
         /// <summary>
         /// The list of the not-finished productions of this player.
@@ -478,7 +478,7 @@ namespace CivModel
 
         /// <summary>
         /// Update <see cref="Production.EstimatedLaborInputing"/>, <see cref="Production.EstimatedGoldInputing"/>,
-        ///  <see cref="Actor.EstimatedLaborLogicstics"/>, <see cref="EstimatedUsedLabor"/>
+        ///  <see cref="Actor.EstimatedLaborLogistics"/>, <see cref="EstimatedUsedLabor"/>
         ///  and <see cref="EstimatedUsedGold"/> property of this player.
         /// </summary>
         public void EstimateResourceInputs()
@@ -494,7 +494,7 @@ namespace CivModel
             foreach (var actor in Actors)
             {
                 var estLabor = actor.GetAvailableInputLaborLogistics(logistics);
-                actor.EstimatedLaborLogicstics = estLabor;
+                actor.EstimatedLaborLogistics = estLabor;
 
                 EstimatedUsedLabor += estLabor;
                 EstimatedUsedGold += actor.GoldLogistics;
@@ -526,7 +526,7 @@ namespace CivModel
 
             foreach (var actor in Actors)
             {
-                actor.HealByLogistics(actor.EstimatedLaborLogicstics);
+                actor.HealByLogistics(actor.EstimatedLaborLogistics);
             }
 
             for (var node = Production.First; node != null; )

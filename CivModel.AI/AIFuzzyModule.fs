@@ -45,7 +45,7 @@ module AIFuzzyModule =
                 "IF NeedProduction is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostHigh THEN BuildProduction is VeryLow";
                 ]
 
-        let DoBuildInterior (getProfit : IInteriorBuildingConstants -> float) (x : float32) =
+        let DoBuildInterior (getProfit : InteriorBuildingConstants -> float) (x : float32) =
             let getPoint (p : IInteriorBuildingProductionFactory) =
                 let profit = getProfit p.Constants |> float32
                 if profit > 0.f then

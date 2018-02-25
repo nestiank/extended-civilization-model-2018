@@ -11,8 +11,14 @@ namespace CivModel.Common
         public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
         public override Guid Guid => ClassGuid;
 
-        public CityCenter(Player player, IActorConstants constants, Terrain.Point point)
-            : base(player, constants ?? new CityBaseConstants(), point)
+        public static readonly ActorConstants Constants = new ActorConstants() {
+            MaxHP = 5,
+            MaxHealPerTurn = 15,
+            AttackPower = 15,
+            DefencePower = 21
+        };
+
+        public CityCenter(Player player, Terrain.Point point) : base(player, Constants, point)
         {
         }
 
@@ -20,7 +26,7 @@ namespace CivModel.Common
         {
             base.OnProcessCreation();
 
-            new FactoryBuilding(this, null).ProcessCreation();
+            new FactoryBuilding(this).ProcessCreation();
 
             foreach (var pt in PlacedPoint.Value.Adjacents())
             {
@@ -40,9 +46,7 @@ namespace CivModel.Common
         {
         }
 
-        public Guid Guid => CityCenter.ClassGuid;
-        public Type ProductionResultType => typeof(CityCenter);
-        public IActorConstants Constants { get; } = new CityBaseConstants();
+        public ActorConstants Constants => CityCenter.Constants;
 
         public double TotalLaborCost => 5;
         public double LaborCapacityPerTurn => 2;
@@ -66,7 +70,7 @@ namespace CivModel.Common
             // remove pioneer
             point.Unit.Destroy();
 
-            return new CityCenter(owner, Constants, point);
+            return new CityCenter(owner, point);
         }
     }
 }
