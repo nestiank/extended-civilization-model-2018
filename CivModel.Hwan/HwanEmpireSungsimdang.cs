@@ -12,6 +12,32 @@ namespace CivModel.Hwan
         public override Guid Guid => ClassGuid;
 
         public HwanEmpireSungsimdang(CityBase city) : base(city) { }
+
+        public int SoBoRo = 0;
+
+        public override void PostTurn()
+        {
+            Random r = new Random();
+
+            int GetSoBoRo = r.Next(1, 100);
+
+            if (GetSoBoRo <= 30)
+                this.SoBoRo = this.SoBoRo + 1;
+
+            if(this.SoBoRo >= 3)
+            {
+                this.SoBoRo = 0;
+                if (GetSoBoRo % 2 == 0)
+                {
+                    
+                }
+
+                else if(GetSoBoRo % 2 == 1)
+                {
+                    City.Population = City.Population + 1;
+                }
+            }
+        }
     }
 
     public class HwanEmpireSungsimdangProductionFactory : IInteriorBuildingProductionFactory
