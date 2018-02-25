@@ -68,6 +68,8 @@ namespace CivModel.Common
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             // remove pioneer
+            if (!(point.Unit is Pioneer))
+                throw new InvalidOperationException("city can be placed only where Pionner is");
             point.Unit.Destroy();
 
             return new CityCenter(owner, point);
