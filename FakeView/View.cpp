@@ -117,7 +117,7 @@ namespace FakeView
 
                 if (m_presenter->RunningAction != nullptr)
                 {
-                    if (CivModel::ActorAction::IsActable(m_presenter->RunningAction, point))
+                    if (CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, point))
                     {
                         auto& c = m_screen->GetChar(px, py);
                         c.color |= 0b0001'0110;
@@ -144,7 +144,7 @@ namespace FakeView
         if (m_presenter->RunningAction != nullptr)
         {
             auto pt = m_presenter->Game->Terrain->GetPoint(posCenter);
-            if (!CivModel::ActorAction::IsActable(m_presenter->RunningAction, pt))
+            if (!CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, pt))
             {
                 chCenter.color ^= 0b0111'0111;
                 chCenter.color |= 0b1100'1110;
@@ -492,7 +492,19 @@ namespace FakeView
 
             case '+':
             case '=':
-                m_roundEarth = !m_roundEarth;
+                if (m_presenter->State == CivPresenter::Presenter::States::Normal)
+                {
+                    m_roundEarth = !m_roundEarth;
+                }
+                break;
+
+            case '-':
+            case '_':
+                if (m_presenter->State == CivPresenter::Presenter::States::Normal)
+                {
+                    auto player = m_presenter->Game->Players[0];
+                    player->IsAIControlled = !player->IsAIControlled;
+                }
                 break;
 
             case 0x1b: // ESC

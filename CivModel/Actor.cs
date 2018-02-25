@@ -383,7 +383,7 @@ namespace CivModel
         /// </returns>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentException"><paramref name="amount"/> is negative</exception>
-        public bool CanConsumeAP(int amount)
+        public bool CanConsumeAP(double amount)
         {
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
@@ -403,7 +403,7 @@ namespace CivModel
         /// or
         /// <paramref name="amount"/> is bigger than <see cref="RemainAP"/>
         /// </exception>
-        public void ConsumeAP(int amount)
+        public void ConsumeAP(double amount)
         {
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
@@ -419,7 +419,7 @@ namespace CivModel
         /// Consumes all of AP which this actor has.
         /// </summary>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        /// <seealso cref="ConsumeAP(int)"/>
+        /// <seealso cref="ConsumeAP(double)"/>
         public void ConsumeAllAP()
         {
             if (Owner == null)
@@ -635,9 +635,21 @@ namespace CivModel
         /// </summary>
         /// <param name="target">The target point</param>
         /// <returns>the required AP. if this actor cannot move to <paramref name="target"/>, <c>-1</c>.</returns>
-        public virtual int GetRequiredAPToMove(Terrain.Point target)
+        public virtual double GetRequiredAPToMove(Terrain.Point target)
         {
-            return 1;
+            // POMFSTIH
+            switch (target.Type)
+            {
+                case TerrainType.Plain: return 1;
+                case TerrainType.Ocean: return 0.5;
+                case TerrainType.Mount: return 3;
+                case TerrainType.Forest: return 2;
+                case TerrainType.Swamp: return 2;
+                case TerrainType.Tundra: return 1;
+                case TerrainType.Ice: return 2;
+                case TerrainType.Hill: return 2;
+                default: throw new NotImplementedException("unqualified TerrainType at Actor.GetRequiredAPToMove()");
+            }
         }
 
         /// <summary>
