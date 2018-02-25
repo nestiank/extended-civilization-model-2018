@@ -7,7 +7,7 @@ using System.IO;
 
 namespace CivModel
 {
-    public partial class Game
+    partial class Game
     {
         /// <summary>
         /// See remark section of <see cref="Guid.ParseExact(string, string)"/>.
@@ -18,22 +18,21 @@ namespace CivModel
         /// Re-initializes the <see cref="Game"/> object, by loading a existing save file.
         /// </summary>
         /// <param name="stream"><see cref="StreamReader"/> object which contains a save file.</param>
-        /// <param name="schemeFactories">
-        /// the candidates of factories for <see cref="IGameScheme"/> of the game.
-        /// If <c>null</c>, use <see cref="Scheme"/> property.
+        /// <param name="knownSchemes">
+        /// the known factories of <see cref="IGameScheme"/> for the game.
+        /// If <c>null</c>, use previous scheme.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="schemeFactories"/> is <c>null</c> and <see cref="Scheme"/> is not initialized yet
-        /// </exception>
+        /// <paramref name="knownSchemes"/> is <c>null</c> and scheme is not initialized yet</exception>
         /// <exception cref="InvalidDataException">
         /// save file or stream is invalid
         /// or
         /// there is no <see cref="IGameSchemeFactory"/> for this save file.
         /// </exception>
-        public void Load(StreamReader stream, IEnumerable<IGameSchemeFactory> schemeFactories)
+        public void Load(StreamReader stream, IEnumerable<IGameSchemeFactory> knownSchemes)
         {
-            if (schemeFactories == null && Scheme == null)
-                throw new ArgumentNullException(nameof(schemeFactories), "schemeFactories is null and Scheme is not initialized yet");
+            if (knownSchemes == null && SchemeLoader == null)
+                throw new ArgumentNullException(nameof(knownSchemes), "knownSchemes is null and scheme is not initialized yet");
 
             string errmsg = "save file or stream is invalid";
 
@@ -60,23 +59,38 @@ namespace CivModel
             {
                 guid = Guid.ParseExact(readLine(), _guidSaveFormat);
 
-                IGameSchemeFactory factory;
-                if (schemeFactories != null)
+                IGameSchemeFactory rootFactory;
+                if (knownSchemes != null)
                 {
-                    factory = schemeFactories.Where(f => f != null && f.Guid == guid).FirstOrDefault();
-                    if (factory == null)
+                    rootFactory = knownSchemes.Where(f => f != null && f.Guid == guid).FirstOrDefault();
+                    if (rootFactory == null)
                         throw new InvalidDataException("there is no IGameSchemeFactory for this save file");
                 }
                 else
                 {
-                    if (guid != Scheme.Factory.Guid)
+                    rootFactory = SchemeLoader.RootScheme.Factory;
+                    if (guid != rootFactory.Guid)
                         throw new InvalidDataException("Scheme is not appropriate for this save file");
-
-                    factory = Scheme.Factory;
                 }
 
-                Scheme = factory.Create();
-                RegisterGuid();
+                SchemeLoader = new SchemeLoader(rootFactory, knownSchemes);
+                //// TODO: REMOVE HARDCODING
+                foreach (var ff in knownSchemes)
+                {
+                    if (ff != rootFactory)
+                    {
+                        SchemeLoader.Load(ff, knownSchemes);
+                    }
+                }
+                /////////////////////
+                Constants = new GameConstants(SchemeLoader.GetExclusiveScheme<IGameConstantScheme>());
+
+                var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
+
+                foreach (var s in SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>())
+                {
+                    s.RegisterGuid(this);
+                }
 
                 SubTurnNumber = Convert.ToInt32(readLine());
                 if (SubTurnNumber < 0)
@@ -172,7 +186,19 @@ namespace CivModel
 
                 _shouldStartTurnResumeGame = true;
 
-                Initialize(false);
+
+                var additionalFactory = SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>()
+                    .SelectMany(x => x.AdditionalProductionFactory ?? Enumerable.Empty<IProductionFactory>())
+                    .Distinct();
+                foreach (var player in Players)
+                {
+                    foreach (var factory in additionalFactory)
+                    {
+                        player.AvailableProduction.Add(factory);
+                    }
+                }
+
+                startup.InitializeGame(this, false);
             }
             catch (InvalidCastException)
             {
@@ -200,7 +226,7 @@ namespace CivModel
         {
             using (var file = File.CreateText(saveFile))
             {
-                file.WriteLine(Scheme.Factory.Guid.ToString(_guidSaveFormat));
+                file.WriteLine(SchemeLoader.RootScheme.Factory.Guid.ToString(_guidSaveFormat));
 
                 file.WriteLine(SubTurnNumber);
                 file.WriteLine(Players.Count + " " + Terrain.Width + " " + Terrain.Height);

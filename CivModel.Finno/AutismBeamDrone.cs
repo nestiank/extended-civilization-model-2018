@@ -89,7 +89,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class ControlHijackEffect : Effect
+    class ControlHijackEffect : Effect
     {
         private readonly Player _hijacker;
         private Player _hijackee;

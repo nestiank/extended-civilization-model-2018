@@ -40,13 +40,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AncientFinnoFineDustFactory.cs" />
+    <Compile Include="AncientFinnoFIRFortress.cs" />
+    <Compile Include="AncientFinnoGermaniumMine.cs" />
+    <Compile Include="AncientFinnoOctagon.cs" />
+    <Compile Include="AncientFinnoVigilant.cs" />
+    <Compile Include="AncientFinnoXylitolProductionRegion.cs" />
     <Compile Include="AncientSorcerer.cs" />
     <Compile Include="AutismBeamDrone.cs" />
+    <Compile Include="AncientFinnoLabortory.cs" />
+    <Compile Include="AncientFinnoFIRFactory.cs" />
     <Compile Include="DecentralizedMilitary.cs" />
     <Compile Include="ElephantCavalry.cs" />
     <Compile Include="EMUHorseArcher.cs" />
+    <Compile Include="FinnoEmpireCity.cs" />
+    <Compile Include="GameScheme.cs" />
     <Compile Include="GenghisKhan.cs" />
     <Compile Include="JediKnight.cs" />
+    <Compile Include="Pioneer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

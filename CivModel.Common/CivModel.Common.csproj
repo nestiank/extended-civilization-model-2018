@@ -51,6 +51,10 @@
     <Compile Include="TestQuest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CivModel.AI\CivModel.AI.fsproj">
+      <Project>{0bd1baed-aa59-4707-8de5-bdde4c28e3b2}</Project>
+      <Name>CivModel.AI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
       <Name>CivModel</Name>

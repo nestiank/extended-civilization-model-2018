@@ -9,8 +9,8 @@ namespace CivModel
     /// <summary>
     /// Represents an object observable by observer interface.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class Observable<T>
+    /// <typeparam name="T">The observer interface to receive</typeparam>
+    public sealed class Observable<T>
     {
         private List<T> _observerList = new List<T>();
         private List<T> _observerRemoveList = new List<T>();
@@ -19,7 +19,7 @@ namespace CivModel
         /// Registers an observer object.
         /// </summary>
         /// <param name="observer">The observer.</param>
-        /// <seealso cref="M:CivModel.IObservable`1.RemoveObserver(`0)" />
+        /// <seealso cref="RemoveObserver(T)"/>
         public void AddObserver(T observer)
         {
             if (_observerRemoveList.Contains(observer))
@@ -37,7 +37,7 @@ namespace CivModel
         /// </summary>
         /// <param name="observer">The observer.</param>
         /// <exception cref="ArgumentException">observer is not registered</exception>
-        /// <seealso cref="M:CivModel.IObservable`1.AddObserver(`0)" />
+        /// <seealso cref="AddObserver(T)"/>
         public void RemoveObserver(T observer)
         {
             if (!_observerList.Contains(observer) || _observerRemoveList.Contains(observer))

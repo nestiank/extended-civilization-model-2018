@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel
 {
-    public partial class Game
+    partial class Game
     {
         /// <summary>
         /// An <see cref="Observable{ITurnObserver}"/> which can be observed by <see cref="ITurnObserver"/>.

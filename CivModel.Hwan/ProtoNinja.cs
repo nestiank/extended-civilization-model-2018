@@ -103,30 +103,30 @@ namespace CivModel.Hwan
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);
             }
-        }
+        }        
+    }
 
-        public class ProtoNinjaProductionFactory : ITileObjectProductionFactory
+    public class ProtoNinjaProductionFactory : ITileObjectProductionFactory
+    {
+        private static Lazy<ProtoNinjaProductionFactory> _instance
+            = new Lazy<ProtoNinjaProductionFactory>(() => new ProtoNinjaProductionFactory());
+        public static ProtoNinjaProductionFactory Instance => _instance.Value;
+        private ProtoNinjaProductionFactory()
         {
-            private static Lazy<ProtoNinjaProductionFactory> _instance
-                = new Lazy<ProtoNinjaProductionFactory>(() => new ProtoNinjaProductionFactory());
-            public static ProtoNinjaProductionFactory Instance => _instance.Value;
-            private ProtoNinjaProductionFactory()
-            {
-            }
-            public Production Create(Player owner)
-            {
-                return new TileObjectProduction(this, owner, 75, 20, 50, 10);
-            }
-            public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
-            {
-                return point.Unit == null
-                    && point.TileBuilding is CivModel.Common.CityCenter
-                    && point.TileBuilding.Owner == production.Owner;
-            }
-            public TileObject CreateTileObject(Player owner, Terrain.Point point)
-            {
-                return new ProtoNinja(owner, point);
-            }
+        }
+        public Production Create(Player owner)
+        {
+            return new TileObjectProduction(this, owner, 75, 20, 50, 10);
+        }
+        public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
+        {
+            return point.Unit == null
+                && point.TileBuilding is CivModel.Common.CityCenter
+                && point.TileBuilding.Owner == production.Owner;
+        }
+        public TileObject CreateTileObject(Player owner, Terrain.Point point)
+        {
+            return new ProtoNinja(owner, point);
         }
     }
 }

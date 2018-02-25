@@ -20,17 +20,18 @@ namespace WinformView
         [DllImport("user32.dll")]
         private static extern short GetAsyncKeyState(int keyCode);
 
-        private Presenter presenter_;
+        private Presenter _presenter;
 
-        private float blockSize_ = 24;
+        private float _blockSize = 24;
 
-        private int sightDx_ = 0;
-        private int sightDy_ = 0;
+        private bool _roundEarth = false;
+        private int _sightDx = 0;
+        private int _sightDy = 0;
 
-        private Point? selectedPoint_;
-        private Terrain.Point? selectedTile_;
+        private Point? _selectedPoint;
+        private Terrain.Point? _selectedTile;
 
-        public DeploySelector deploySelector_;
+        public DeploySelector _deploySelector;
 
         public MainForm()
         {
@@ -48,21 +49,26 @@ namespace WinformView
             Close();
         }
 
+        void IView.Invoke(Action act)
+        {
+            base.Invoke(act);
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             ClientSize = new Size(640, 480);
 
-            presenter_ = null;
+            _presenter = null;
             if (File.Exists("map.txt"))
             {
                 if (MessageBox.Show("Save file is found. Do you want to load it?",
                     "Save file is found", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    presenter_ = new Presenter(this, "map.txt");
+                    _presenter = new Presenter(this, "map.txt");
                 }
             }
-            if (presenter_ == null)
-                presenter_ = new Presenter(this);
+            if (_presenter == null)
+                _presenter = new Presenter(this);
 
             RefreshTitle();
 
@@ -71,18 +77,18 @@ namespace WinformView
 
         private void RefreshTitle()
         {
-            Text = "WinformView - Player " + presenter_.Game.PlayerNumberInTurn;
+            Text = "WinformView - Player " + _presenter.Game.PlayerNumberInTurn;
         }
 
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.FillRectangle(Brushes.SkyBlue, ClientRectangle);
 
-            int sx = (int)Math.Ceiling(ClientSize.Width / (blockSize_ * (float)Math.Sqrt(3)));
-            int sy = (int)Math.Ceiling(ClientSize.Height / (blockSize_ * 1.5f));
+            int sx = (int)Math.Ceiling(ClientSize.Width / (_blockSize * (float)Math.Sqrt(3)));
+            int sy = (int)Math.Ceiling(ClientSize.Height / (_blockSize * 1.5f));
 
-            int bx = presenter_.FocusedPoint.Position.X - sx / 2;
-            int by = presenter_.FocusedPoint.Position.Y - sy / 2;
+            int bx = _presenter.FocusedPoint.Position.X - sx / 2;
+            int by = _presenter.FocusedPoint.Position.Y - sy / 2;
 
             for (int dy = -1; dy < sy + 1; ++dy)
             {
@@ -91,16 +97,16 @@ namespace WinformView
                     int x = bx + dx;
                     int y = by + dy;
 
-                    if (x < 0 || x >= presenter_.Game.Terrain.Width)
+                    if (!_roundEarth && (x < 0 || x >= _presenter.Game.Terrain.Width))
                         continue;
-                    if (y < 0 || y >= presenter_.Game.Terrain.Height)
+                    if (y < 0 || y >= _presenter.Game.Terrain.Height)
                         continue;
 
-                    float ax = blockSize_ * (float)Math.Sqrt(3) / 2.0f;
-                    float ay = blockSize_ / 2.0f;
+                    float ax = _blockSize * (float)Math.Sqrt(3) / 2.0f;
+                    float ay = _blockSize / 2.0f;
 
-                    float px = -sightDx_ + dx * ax * 2 + (1 - y % 2) * ax;
-                    float py = -sightDy_ + dy * ay * 3;
+                    float px = -_sightDx + dx * ax * 2 + (1 - y % 2) * ax;
+                    float py = -_sightDy + dy * ay * 3;
 
                     PointF[] polygon = new PointF[] {
                         new PointF(px + ax, py),
@@ -111,7 +117,7 @@ namespace WinformView
                         new PointF(px, py + ay),
                     };
 
-                    var point = presenter_.Game.Terrain.GetPoint(x, y);
+                    var point = _presenter.Game.Terrain.GetPoint(x, y);
 
                     int[] tbl;
                     unchecked
@@ -137,7 +143,7 @@ namespace WinformView
                         var brush = new SolidBrush(color);
                         float cx = px + ax;
                         float cy = py + 2 * ay;
-                        float radius = blockSize_ * 0.625f;
+                        float radius = _blockSize * 0.625f;
                         e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
                     }
 
@@ -148,7 +154,7 @@ namespace WinformView
                         var pen = new Pen(Color.White, 2);
                         float cx = px + ax;
                         float cy = py + 2 * ay;
-                        float radius = blockSize_ * 0.33f;
+                        float radius = _blockSize * 0.33f;
                         e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
                         e.Graphics.DrawEllipse(pen, cx - radius, cy - radius, radius * 2, radius * 2);
                     }
@@ -159,7 +165,7 @@ namespace WinformView
                         var pen = new Pen(Color.HotPink, 2);
                         float cx = px + ax;
                         float cy = py + 2 * ay;
-                        float radius = blockSize_ * 0.25f;
+                        float radius = _blockSize * 0.25f;
                         e.Graphics.FillRectangle(brush, cx - radius, cy - radius, radius * 2, radius * 2);
                         e.Graphics.DrawRectangle(pen, cx - radius, cy - radius, radius * 2, radius * 2);
                     }
@@ -171,7 +177,7 @@ namespace WinformView
                         var pen = new Pen(Color.Red, 2);
                         float cx = px + ax;
                         float cy = py + 2 * ay;
-                        float radius = blockSize_ * 0.20f;
+                        float radius = _blockSize * 0.20f;
                         var poly = new PointF[] {
                             new PointF(cx - radius, cy),
                             new PointF(cx, cy + radius),
@@ -182,20 +188,20 @@ namespace WinformView
                         e.Graphics.DrawPolygon(pen, poly);
                     }
 
-                    if (selectedPoint_ is Point ptm && IsInPolygon(polygon, new PointF(ptm.X, ptm.Y)))
+                    if (_selectedPoint is Point ptm && IsInPolygon(polygon, new PointF(ptm.X, ptm.Y)))
                     {
-                        selectedPoint_ = null;
-                        selectedTile_ = point;
+                        _selectedPoint = null;
+                        _selectedTile = point;
                     }
 
-                    if (selectedTile_.HasValue && selectedTile_.Value == point)
+                    if (_selectedTile.HasValue && _selectedTile.Value == point)
                     {
                         var brush = new SolidBrush(Color.FromArgb(0x1fffffff));
                         var pen = new Pen(new SolidBrush(Color.FromArgb(0x1f0000ff)), 3);
 
                         float cx = px + ax;
                         float cy = py + 2 * ay;
-                        float radius = blockSize_ * 0.75f;
+                        float radius = _blockSize * 0.75f;
                         e.Graphics.FillEllipse(brush, cx - radius, cy - radius, radius * 2, radius * 2);
                         e.Graphics.DrawEllipse(pen, cx - radius, cy - radius, radius * 2, radius * 2);
                     }
@@ -206,7 +212,7 @@ namespace WinformView
         private Color[] playerColors_;
         private void InitPlayerColor()
         {
-            playerColors_ = new Color[presenter_.Game.Players.Count];
+            playerColors_ = new Color[_presenter.Game.Players.Count];
             for (int idx = 0; idx < playerColors_.Length; ++idx)
             {
                 unchecked
@@ -220,8 +226,8 @@ namespace WinformView
         private Color GetPlayerColor(Player player, int alpha = 0xff)
         {
             int idx = 0;
-            for (; idx < presenter_.Game.Players.Count; ++idx)
-                if (presenter_.Game.Players[idx] == player)
+            for (; idx < _presenter.Game.Players.Count; ++idx)
+                if (_presenter.Game.Players[idx] == player)
                     break;
 
             var c = playerColors_[idx];
@@ -250,9 +256,9 @@ namespace WinformView
         {
             void foo(int i)
             { 
-                if (selectedTile_.HasValue)
+                if (_selectedTile.HasValue)
                 {
-                    var pt = selectedTile_.Value;
+                    var pt = _selectedTile.Value;
                     pt.Type = (TerrainType)i;
                 }
             }
@@ -260,50 +266,54 @@ namespace WinformView
             switch (e.KeyCode)
             {
                 case Keys.Enter:
-                    presenter_.CommandApply();
+                    _presenter.CommandApply();
                     RefreshTitle();
                     Invalidate();
                     break;
 
                 case Keys.Escape:
-                    presenter_.CommandCancel();
+                    _presenter.CommandCancel();
                     Invalidate();
                     break;
 
                 case Keys.Oemcomma:
-                    if (presenter_.SaveFile == null)
-                        presenter_.SaveFile = "map.txt";
-                    presenter_.CommandSave();
+                    if (_presenter.SaveFile == null)
+                        _presenter.SaveFile = "map.txt";
+                    _presenter.CommandSave();
                     MessageBox.Show("Saved");
                     break;
 
                 case Keys.F1:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
-                        new TileInfo(presenter_.Game, selectedTile_.Value).ShowDialog();
+                        new TileInfo(_presenter.Game, _selectedTile.Value).ShowDialog();
                     }
                     break;
 
                 case Keys.F2:
-                    if (deploySelector_ == null)
+                    if (_deploySelector == null)
                     {
-                        deploySelector_ = new DeploySelector(
-                            presenter_.Game, () => deploySelector_ = null);
-                        deploySelector_.Show();
+                        _deploySelector = new DeploySelector(
+                            _presenter.Game, () => _deploySelector = null);
+                        _deploySelector.Show();
                     }
                     break;
 
                 case Keys.F3:
-                    if (selectedTile_.HasValue && deploySelector_ != null)
+                    if (_selectedTile.HasValue && _deploySelector != null)
                     {
-                        deploySelector_.Deploy(selectedTile_.Value);
+                        _deploySelector.Deploy(_selectedTile.Value);
                     }
+                    break;
+
+                case Keys.F11:
+                    _roundEarth = !_roundEarth;
                     break;
 
                 case Keys.F12:
                     {
                         string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
-                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < _presenter.Game.Players.Count)
                         {
                             var dialog = new ColorDialog();
                             dialog.Color = playerColors_[idx];
@@ -320,59 +330,59 @@ namespace WinformView
                     break;
 
                 case Keys.C:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
-                        if (selectedTile_.Value.TileBuilding is CityBase)
+                        if (_selectedTile.Value.TileBuilding is CityBase)
                         {
-                            selectedTile_.Value.TileBuilding.PlacedPoint = null;
+                            _selectedTile.Value.TileBuilding.PlacedPoint = null;
                         }
                         else
                         {
-                            var city = new CityCenter(presenter_.Game.PlayerInTurn, selectedTile_.Value);
+                            var city = new CityCenter(_presenter.Game.PlayerInTurn, _selectedTile.Value);
                         }
                         Invalidate();
                     }
                     break;
 
                 case Keys.Left:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
-                        var pos = selectedTile_.Value.Position;
+                        var pos = _selectedTile.Value.Position;
                         pos.X -= 1;
-                        if (presenter_.Game.Terrain.IsValidPosition(pos))
-                            selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
+                        if (_presenter.Game.Terrain.IsValidPosition(pos))
+                            _selectedTile = _presenter.Game.Terrain.GetPoint(pos);
                     }
                     break;
                 case Keys.Right:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
-                        var pos = selectedTile_.Value.Position;
+                        var pos = _selectedTile.Value.Position;
                         pos.X += 1;
-                        if (presenter_.Game.Terrain.IsValidPosition(pos))
-                            selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
+                        if (_presenter.Game.Terrain.IsValidPosition(pos))
+                            _selectedTile = _presenter.Game.Terrain.GetPoint(pos);
                     }
                     break;
                 case Keys.Up:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
-                        var pos = selectedTile_.Value.Position;
+                        var pos = _selectedTile.Value.Position;
                         pos.Y -= 1;
-                        if (presenter_.Game.Terrain.IsValidPosition(pos))
-                            selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
+                        if (_presenter.Game.Terrain.IsValidPosition(pos))
+                            _selectedTile = _presenter.Game.Terrain.GetPoint(pos);
                     }
                     break;
                 case Keys.Down:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
-                        var pos = selectedTile_.Value.Position;
+                        var pos = _selectedTile.Value.Position;
                         pos.Y += 1;
-                        if (presenter_.Game.Terrain.IsValidPosition(pos))
-                            selectedTile_ = presenter_.Game.Terrain.GetPoint(pos);
+                        if (_presenter.Game.Terrain.IsValidPosition(pos))
+                            _selectedTile = _presenter.Game.Terrain.GetPoint(pos);
                     }
                     break;
 
                 case Keys.D1:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
                         string kind = Microsoft.VisualBasic.Interaction.InputBox("타일 종류");
                         string[] tbl = { "P", "O", "M", "F", "S", "T", "I", "H" };
@@ -383,14 +393,14 @@ namespace WinformView
                             {
                                 string strn = Microsoft.VisualBasic.Interaction.InputBox("몇개");
                                 int n = Convert.ToInt32(strn);
-                                var pos = selectedTile_.Value.Position;
+                                var pos = _selectedTile.Value.Position;
                                 do
                                 {
-                                    var pt = presenter_.Game.Terrain.GetPoint(pos);
+                                    var pt = _presenter.Game.Terrain.GetPoint(pos);
                                     pt.Type = (TerrainType)idx;
                                     pos.X += 1;
                                 }
-                                while (--n > 0 && presenter_.Game.Terrain.IsValidPosition(pos));
+                                while (--n > 0 && _presenter.Game.Terrain.IsValidPosition(pos));
                             }
                             catch (Exception ex) when (ex is FormatException || ex is OverflowException)
                             {
@@ -404,7 +414,7 @@ namespace WinformView
                     }
                     break;
                 case Keys.D2:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
                         string kind = Microsoft.VisualBasic.Interaction.InputBox("타일 종류");
                         string[] tbl = { "P", "O", "M", "F", "S", "T", "I", "H" };
@@ -413,10 +423,10 @@ namespace WinformView
                         {
                             if (MessageBox.Show("채우기 고고혓?", "ㄱㄱ?", MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
-                                var type = selectedTile_.Value.Type;
+                                var type = _selectedTile.Value.Type;
                                 if (type == (TerrainType)idx)
                                     break;
-                                RecursiveFill(type, (TerrainType)idx, selectedTile_.Value);
+                                RecursiveFill(type, (TerrainType)idx, _selectedTile.Value);
                             }
                         }
                         else
@@ -427,23 +437,23 @@ namespace WinformView
                     break;
 
                 case Keys.D3:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
                         string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
-                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < _presenter.Game.Players.Count)
                         {
                             try
                             {
                                 string strn = Microsoft.VisualBasic.Interaction.InputBox("몇개");
                                 int n = Convert.ToInt32(strn);
-                                var pos = selectedTile_.Value.Position;
+                                var pos = _selectedTile.Value.Position;
                                 do
                                 {
-                                    var pt = presenter_.Game.Terrain.GetPoint(pos);
-                                    pt.TileOwner = presenter_.Game.Players[idx];
+                                    var pt = _presenter.Game.Terrain.GetPoint(pos);
+                                    pt.TileOwner = _presenter.Game.Players[idx];
                                     pos.X += 1;
                                 }
-                                while (--n > 0 && presenter_.Game.Terrain.IsValidPosition(pos));
+                                while (--n > 0 && _presenter.Game.Terrain.IsValidPosition(pos));
                             }
                             catch (Exception ex) when (ex is FormatException || ex is OverflowException)
                             {
@@ -457,18 +467,18 @@ namespace WinformView
                     }
                     break;
                 case Keys.D4:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
                         string stridx = Microsoft.VisualBasic.Interaction.InputBox("몇번 플레이어?");
-                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < presenter_.Game.Players.Count)
+                        if (Int32.TryParse(stridx, out int idx) && 0 <= idx && idx < _presenter.Game.Players.Count)
                         {
                             if (MessageBox.Show("채우기 고고혓?", "ㄱㄱ?", MessageBoxButtons.YesNo) == DialogResult.Yes)
                             {
-                                var newOwner = presenter_.Game.Players[idx];
-                                var origin = selectedTile_.Value.TileOwner;
+                                var newOwner = _presenter.Game.Players[idx];
+                                var origin = _selectedTile.Value.TileOwner;
                                 if (newOwner == origin)
                                     break;
-                                RecursiveOwn(origin, newOwner, selectedTile_.Value);
+                                RecursiveOwn(origin, newOwner, _selectedTile.Value);
                             }
                         }
                         else
@@ -479,12 +489,12 @@ namespace WinformView
                     break;
 
                 case Keys.B:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
-                        var tile = selectedTile_.Value;
+                        var tile = _selectedTile.Value;
                         try
                         {
-                            tile.TileOwner = presenter_.Game.PlayerInTurn;
+                            tile.TileOwner = _presenter.Game.PlayerInTurn;
                         }
                         catch (InvalidOperationException)
                         {
@@ -493,9 +503,9 @@ namespace WinformView
                     }
                     break;
                 case Keys.N:
-                    if (selectedTile_.HasValue)
+                    if (_selectedTile.HasValue)
                     {
-                        var tile = selectedTile_.Value;
+                        var tile = _selectedTile.Value;
                         try
                         {
                             tile.TileOwner = null;
@@ -561,25 +571,25 @@ namespace WinformView
 
         private void SyncSight()
         {
-            while (-sightDx_ > blockSize_ * (float)Math.Sqrt(3) / 2)
+            while (-_sightDx > _blockSize * (float)Math.Sqrt(3) / 2)
             {
-                sightDx_ += (int)Math.Floor(blockSize_ * (float)Math.Sqrt(3));
-                presenter_.CommandArrowKey(Direction.Left);
+                _sightDx += (int)Math.Floor(_blockSize * (float)Math.Sqrt(3));
+                _presenter.CommandArrowKey(Direction.Left);
             }
-            while (sightDx_ > blockSize_ * (float)Math.Sqrt(3) / 2)
+            while (_sightDx > _blockSize * (float)Math.Sqrt(3) / 2)
             {
-                sightDx_ -= (int)Math.Floor(blockSize_ * (float)Math.Sqrt(3));
-                presenter_.CommandArrowKey(Direction.Right);
+                _sightDx -= (int)Math.Floor(_blockSize * (float)Math.Sqrt(3));
+                _presenter.CommandArrowKey(Direction.Right);
             }
-            while (-sightDy_ > blockSize_ * 0.75f)
+            while (-_sightDy > _blockSize * 0.75f)
             {
-                sightDy_ += (int)Math.Floor(blockSize_ * 1.5f);
-                presenter_.CommandArrowKey(Direction.Up);
+                _sightDy += (int)Math.Floor(_blockSize * 1.5f);
+                _presenter.CommandArrowKey(Direction.Up);
             }
-            while (sightDy_ * 2 > blockSize_ * 0.75f)
+            while (_sightDy * 2 > _blockSize * 0.75f)
             {
-                sightDy_ -= (int)Math.Floor(blockSize_ * 1.5f);
-                presenter_.CommandArrowKey(Direction.Down);
+                _sightDy -= (int)Math.Floor(_blockSize * 1.5f);
+                _presenter.CommandArrowKey(Direction.Down);
             }
 
             Invalidate();
@@ -602,8 +612,8 @@ namespace WinformView
                 var dx = e.Location.X - prevMouse_.Value.X;
                 var dy = e.Location.Y - prevMouse_.Value.Y;
 
-                sightDx_ += -dx;
-                sightDy_ += -dy;
+                _sightDx += -dx;
+                _sightDy += -dy;
                 prevMouse_ = e.Location;
 
                 SyncSight();
@@ -619,13 +629,13 @@ namespace WinformView
             }
             else if (e.Button == MouseButtons.Right)
             {
-                selectedPoint_ = e.Location;
+                _selectedPoint = e.Location;
             }
         }
 
         private void MainForm_MouseWheel(object sender, MouseEventArgs e)
         {
-            blockSize_ *= (float)Math.Pow(1.02, e.Delta / 64.0f);
+            _blockSize *= (float)Math.Pow(1.02, e.Delta / 64.0f);
         }
     }
 }

@@ -44,5 +44,11 @@ namespace CivPresenter
         /// Called when the game should be shutdown.
         /// </summary>
         void Shutdown();
+
+        /// <summary>
+        /// Invokes the specified action in the UI thread. This method must be thread-safe.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        void Invoke(Action action);
     }
 }

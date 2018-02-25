@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +29,7 @@ namespace CivModel.Hwan
         {
             if (this.SkillDurationTime >= this.Owner.Game.TurnNumber)
             {
-                AttackTo(originalDamage, this, opposite.DefencePower, false, true);
+                AttackTo(originalDamage, opposite, opposite.DefencePower, false, true);
                 return 0;
             }
             else
