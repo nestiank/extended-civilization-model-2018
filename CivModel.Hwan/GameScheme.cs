@@ -35,7 +35,7 @@ namespace CivModel.Hwan
                 yield return JackieChanProductionFactory.Instance;
                 yield return JediKnightProductionFactory.Instance;
                 yield return LEOSpaceArmadaProductionFactory.Instance;
-                yield return ProtoNinja.ProtoNinjaProductionFactory.Instance;
+                yield return ProtoNinjaProductionFactory.Instance;
                 yield return UnicornOrderProductionFactory.Instance;
             }
         }
