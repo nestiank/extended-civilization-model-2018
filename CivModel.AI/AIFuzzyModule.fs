@@ -27,23 +27,24 @@ module AIFuzzyModule =
     let NeedProduction = fuzzy.CreateVariable "NeedProduction" -1.f 1.f ResultSets
     let BuildProduction = fuzzy.CreateVariable "BuildProduction" -1.f 1.f ResultSets
 
+    let RuleString = """
+IF Research is ResearchLow THEN NeedLaboratory is High
+IF Research is ResearchNormal THEN NeedLaboratory is Normal
+IF Research is ResearchHigh THEN NeedLaboratory is VeryLow
+IF Labor is LaborLow THEN NeedFactory is VeryHigh
+IF Labor is LaborNormal THEN NeedFactory is High
+IF Labor is LaborHigh THEN NeedFactory is VeryLow
+IF NeedProduction is High AND ProductionLaborCost is CostLow AND ProductionGoldCost is CostLow THEN BuildProduction is VeryHigh
+IF NeedProduction is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostLow THEN BuildProduction is High
+IF NeedProduction is High AND ProductionLaborCost is CostLow AND ProductionGoldCost is CostNormal THEN BuildProduction is High
+IF NeedProduction is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostNormal THEN BuildProduction is Normal
+IF NeedProduction is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostHigh THEN BuildProduction is Low
+IF NeedProduction is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostNormal THEN BuildProduction is Low
+IF NeedProduction is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostHigh THEN BuildProduction is VeryLow
+"""
+
     type Rules(player : CivModel.Player) =
-        let rules =
-            fuzzy.CreateRule [
-                "IF Research is ResearchLow THEN NeedLaboratory is High";
-                "IF Research is ResearchNormal THEN NeedLaboratory is Normal";
-                "IF Research is ResearchHigh THEN NeedLaboratory is VeryLow";
-                "IF Labor is LaborLow THEN NeedFactory is VeryHigh";
-                "IF Labor is LaborNormal THEN NeedFactory is High";
-                "IF Labor is LaborHigh THEN NeedFactory is VeryLow";
-                "IF NeedProduction is High AND ProductionLaborCost is CostLow AND ProductionGoldCost is CostLow THEN BuildProduction is VeryHigh";
-                "IF NeedProduction is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostLow THEN BuildProduction is High";
-                "IF NeedProduction is High AND ProductionLaborCost is CostLow AND ProductionGoldCost is CostNormal THEN BuildProduction is High";
-                "IF NeedProduction is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostNormal THEN BuildProduction is Normal";
-                "IF NeedProduction is High AND ProductionLaborCost is CostNormal AND ProductionGoldCost is CostHigh THEN BuildProduction is Low";
-                "IF NeedProduction is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostNormal THEN BuildProduction is Low";
-                "IF NeedProduction is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostHigh THEN BuildProduction is VeryLow";
-                ]
+        let rules = fuzzy.CreateRule <| RuleString.Split([| "\n"; "\r"; "\r\n" |], StringSplitOptions.RemoveEmptyEntries)
 
         let DoBuildInterior (getProfit : InteriorBuildingConstants -> float) (x : float32) =
             let getPoint (p : IInteriorBuildingProductionFactory) =
