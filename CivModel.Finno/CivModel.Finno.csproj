@@ -53,9 +53,11 @@
     <Compile Include="DecentralizedMilitary.cs" />
     <Compile Include="ElephantCavalry.cs" />
     <Compile Include="EMUHorseArcher.cs" />
+    <Compile Include="FinnoEmpireCity.cs" />
     <Compile Include="GameScheme.cs" />
     <Compile Include="GenghisKhan.cs" />
     <Compile Include="JediKnight.cs" />
+    <Compile Include="Pioneer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

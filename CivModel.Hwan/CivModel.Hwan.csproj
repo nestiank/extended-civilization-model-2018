@@ -43,6 +43,7 @@
     <Compile Include="BrainwashedEMUKnight.cs" />
     <Compile Include="DecentralizedMilitary.cs" />
     <Compile Include="GameScheme.cs" />
+    <Compile Include="HwanEmpireCity.cs" />
     <Compile Include="HwanEmpireCityCentralLab.cs" />
     <Compile Include="HwanEmpireFIRFactory.cs" />
     <Compile Include="HwanEmpireFIRFortress.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="JackieChan.cs" />
     <Compile Include="JediKnight.cs" />
     <Compile Include="LEOSpaceArmada.cs" />
+    <Compile Include="Pioneer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtoNinja.cs" />
     <Compile Include="UnicornOrder.cs" />
