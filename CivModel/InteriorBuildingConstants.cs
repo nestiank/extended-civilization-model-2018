@@ -13,14 +13,20 @@ namespace CivModel
     public class InteriorBuildingConstants
     {
         /// <summary>
+        /// The amount of gold logistics of this actor.
+        /// </summary>
+        public double GoldLogistics { get; set; } = 0;
+        /// <summary>
         /// The amount of labor this building provides.
         /// </summary>
-        /// <seealso cref="CityBase.Labor"/>
         public double ProvidedLabor { get; set; } = 0;
         /// <summary>
-        /// The amount of research this building provides.
+        /// The amount of research capacity this building provides.
         /// </summary>
-        /// <seealso cref="CityBase.ResearchIncome"/>
-        public double ProvidedResearchIncome { get; set; } = 0;
+        public double ResearchCapacity { get; set; } = 0;
+        /// <summary>
+        /// The amount of research income per turn this building provides.
+        /// </summary>
+        public double ResearchIncome { get; set; } = 0;
     }
 }

@@ -71,7 +71,7 @@ IF NeedProduction is High AND ProductionLaborCost is CostHigh AND ProductionGold
             player.GoldNetIncome <= 0.0 || player.Labor <= player.EstimatedUsedLabor
 
         let fuzzyActionList = [
-            NeedLaboratory, DoBuildInterior (fun c -> c.ProvidedResearchIncome), isProductionFull;
+            NeedLaboratory, DoBuildInterior (fun c -> c.ResearchIncome), isProductionFull;
             NeedFactory, DoBuildInterior (fun c -> c.ProvidedLabor), isProductionFull
         ]
 

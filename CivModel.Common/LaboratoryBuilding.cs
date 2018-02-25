@@ -12,7 +12,8 @@ namespace CivModel.Common
         public override Guid Guid => ClassGuid;
 
         public static readonly InteriorBuildingConstants Constants = new InteriorBuildingConstants {
-            ProvidedResearchIncome = 10
+            ResearchIncome = 10,
+            ResearchCapacity = 100,
         };
 
         public LaboratoryBuilding(CityBase city) : base(city, Constants)

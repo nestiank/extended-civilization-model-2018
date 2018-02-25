@@ -52,6 +52,12 @@ namespace CivModel
         private CityBase _city = null;
 
         /// <summary>
+        /// The amount of gold logistics of this actor.
+        /// </summary>
+        public double GoldLogistics => _goldLogistics;
+        private readonly double _goldLogistics;
+
+        /// <summary>
         /// The amount of labor this building provides.
         /// </summary>
         /// <seealso cref="CityBase.Labor"/>
@@ -59,11 +65,54 @@ namespace CivModel
         private readonly double _providedLabor;
 
         /// <summary>
-        /// The amount of research this building provides.
+        /// The amount of research capacity this building provides.
         /// </summary>
-        /// <seealso cref="CityBase.ResearchIncome"/>
-        public double ProvidedResearchIncome => _providedResearchIncome;
-        private readonly double _providedResearchIncome;
+        public double ResearchCapacity => _researchCapacity;
+        private readonly double _researchCapacity;
+
+        /// <summary>
+        /// The amount of basic research income per turn this building provides.
+        /// </summary>
+        /// <see cref="ResearchIncome"/>
+        public double BasicResearchIncome => _basicResearchIncome;
+        private readonly double _basicResearchIncome;
+
+        /// <summary>
+        /// The amount of research income per turn this building provides.
+        /// This value is calculated with <see cref="Player.Happiness"/> and <see cref="Player.ResearchInvestmentRatio"/>.
+        /// </summary>
+        /// <see cref="BasicResearchIncome"/>
+        public double ResearchIncome
+        {
+            get
+            {
+                var x = BasicResearchIncome* Owner.ResearchInvestmentRatio
+                    * (1 + Owner.Game.Constants.ResearchHappinessCoefficient * Owner.Happiness);
+                if (x + Research > ResearchCapacity)
+                    return ResearchCapacity - Research;
+                else
+                    return x;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the research.
+        /// </summary>
+        /// <value>
+        /// The research.
+        /// </value>
+        /// <exception cref="System.ArgumentOutOfRangeException">value - value is not in [0, ResearchCapacity]</exception>
+        public double Research
+        {
+            get => _research;
+            set
+            {
+                if (value < 0 || value > ResearchCapacity)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "value is not in [0, ResearchCapacity]");
+                _research = value;
+            }
+        }
+        private double _research = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
@@ -79,8 +128,10 @@ namespace CivModel
         {
             if (constants == null)
                 throw new ArgumentNullException(nameof(constants));
+            _goldLogistics = constants.GoldLogistics;
             _providedLabor = constants.ProvidedLabor;
-            _providedResearchIncome = constants.ProvidedLabor;
+            _basicResearchIncome = constants.ResearchIncome;
+            _researchCapacity = constants.ResearchCapacity;
 
             _owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");
@@ -149,6 +200,7 @@ namespace CivModel
         /// </summary>
         public virtual void PostTurn()
         {
+            Research += ResearchIncome;
         }
 
         /// <summary>

@@ -66,13 +66,6 @@ namespace CivModel
         public double Labor => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
 
         /// <summary>
-        /// The research per turn which this city offers.
-        /// </summary>
-        /// <seealso cref="InteriorBuilding.ProvidedResearchIncome"/>
-        /// <seealso cref="Player.Labor"/>
-        public double ResearchIncome => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedResearchIncome).Sum());
-
-        /// <summary>
         /// The list of <see cref="InteriorBuilding"/> this city owns.
         /// </summary>
         public IReadOnlyList<InteriorBuilding> InteriorBuildings => _interiorBuildings;
@@ -214,6 +207,17 @@ namespace CivModel
         }
 
         /// <summary>
+        /// Called before a turn.
+        /// </summary>
+        public override void PreTurn()
+        {
+            base.PreTurn();
+
+            foreach (var building in InteriorBuildings)
+                building.PreTurn();
+        }
+
+        /// <summary>
         /// Called after a turn.
         /// </summary>
         public override void PostTurn()
@@ -225,6 +229,33 @@ namespace CivModel
             {
                 Destroy();
             }
+
+            foreach (var building in InteriorBuildings)
+                building.PostTurn();
+        }
+
+        /// <summary>
+        /// Called before a sub turn.
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        public override void PrePlayerSubTurn(Player playerInTurn)
+        {
+            base.PrePlayerSubTurn(playerInTurn);
+
+            foreach (var building in InteriorBuildings)
+                building.PrePlayerSubTurn(playerInTurn);
+        }
+
+        /// <summary>
+        /// Called after a sub turn.
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        public override void PostPlayerSubTurn(Player playerInTurn)
+        {
+            base.PostPlayerSubTurn(playerInTurn);
+
+            foreach (var building in InteriorBuildings)
+                building.PostPlayerSubTurn(playerInTurn);
         }
     }
 }
