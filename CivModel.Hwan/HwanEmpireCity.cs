@@ -104,7 +104,13 @@ namespace CivModel.Hwan
                 if (pt.HasValue)
                     Owner.TryAddTerritory(pt.Value);
             }
-        }     
+        }
+
+        protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        {
+            AttackTo(15, opposite, opposite.DefencePower, false, true);
+            return originalDamage;
+        }
     }
 
     public class HwanEmpireCityProductionFactory : ITileObjectProductionFactory
