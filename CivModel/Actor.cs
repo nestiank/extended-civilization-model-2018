@@ -169,7 +169,8 @@ namespace CivModel
         /// <summary>
         /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
         /// </summary>
-        public virtual int BattleClassLevel => 0;
+        public int BattleClassLevel => _battleClassLevel;
+        private readonly int _battleClassLevel;
 
         /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
@@ -256,6 +257,7 @@ namespace CivModel
             _defencePower = constants.DefencePower;
             _goldLogistics = constants.GoldLogistics;
             _fullLaborLogistics = constants.FullLaborLogistics;
+            _battleClassLevel = constants.BattleClassLevel;
 
             _owner = owner;
             RemainHP = MaxHP;

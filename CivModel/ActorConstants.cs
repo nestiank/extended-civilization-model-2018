@@ -42,5 +42,9 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="Actor.HealByLogistics(double)" />
         public double FullLaborLogistics { get; set; } = 0;
+        /// <summary>
+        /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
+        /// </summary>
+        public int BattleClassLevel { get; set; } = 0;
     }
 }

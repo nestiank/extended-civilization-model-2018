@@ -17,7 +17,8 @@ namespace CivModel.Common
             AttackPower = 25,
             DefencePower = 5,
             GoldLogistics = 5,
-            FullLaborLogistics = 0.5
+            FullLaborLogistics = 0.5,
+            BattleClassLevel = 2
         };
 
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
