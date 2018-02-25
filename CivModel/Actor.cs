@@ -302,7 +302,7 @@ namespace CivModel
         /// <exception cref="InvalidOperationException">
         /// actor is already destroyed
         /// or
-        /// the ownership of unit on TileBuilding cannot be changed
+        /// the ownership of actor on TileBuilding cannot be changed
         /// </exception>
         /// <exception cref="ArgumentNullException"><paramref name="newOwner"/> is <c>null</c>.</exception>
         /// <seealso cref="Owner"/>
@@ -315,11 +315,15 @@ namespace CivModel
 
             if (newOwner == Owner)
                 return;
-            if (PlacedPoint?.TileBuilding != null)
-                throw new InvalidOperationException("the ownership of unit on TileBuilding cannot be changed");
+
+            var tileBuilding = PlacedPoint?.TileBuilding;
+            if (tileBuilding != null && tileBuilding != this)
+                throw new InvalidOperationException("the ownership of actor on TileBuilding cannot be changed");
 
             OnBeforeChangeOwner(newOwner);
+            var prevOwner = _owner;
             _owner = newOwner;
+            OnAfterChangeOwner(prevOwner);
         }
 
         /// <summary>
@@ -327,6 +331,14 @@ namespace CivModel
         /// </summary>
         /// <param name="newOwner">The new owner.</param>
         protected virtual void OnBeforeChangeOwner(Player newOwner)
+        {
+        }
+
+        /// <summary>
+        /// Called after [change owner], by <see cref="ChangeOwner"/>.
+        /// </summary>
+        /// <param name="prevOwner">The previous owner.</param>
+        protected virtual void OnAfterChangeOwner(Player prevOwner)
         {
         }
 

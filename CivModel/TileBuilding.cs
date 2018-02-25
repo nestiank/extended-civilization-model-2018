@@ -46,5 +46,21 @@ namespace CivModel
             if (PlacedPoint is Terrain.Point pt)
                 Owner.TryAddTerritory(pt);
         }
+
+        /// <summary>
+        /// Called after [change owner], by <see cref="Actor.ChangeOwner" />.
+        /// </summary>
+        /// <param name="prevOwner">The previous owner.</param>
+        protected override void OnAfterChangeOwner(Player prevOwner)
+        {
+            base.OnAfterChangeOwner(prevOwner);
+            if (PlacedPoint is Terrain.Point pt)
+            {
+                // Player.RemoveTerritory 코드 내 주석 참조
+                prevOwner.RemoveTerritory(pt);
+
+                Owner.AddTerritory(pt);
+            }
+        }
     }
 }
