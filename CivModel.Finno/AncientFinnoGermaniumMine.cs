@@ -20,6 +20,30 @@ namespace CivModel.Finno
         };
 
         public AncientFinnoGermaniumMine(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+
+        public override void PostTurn()
+        {
+            base.PostTurn();
+
+            Random r = new Random();
+
+            int GetGold = r.Next(1, 100);
+
+            if (GetGold < 6)
+            {
+                Owner.Gold += 5;
+            }
+
+            else if (GetGold < 75)
+            {
+                Owner.Gold += 10;
+            }
+
+            else
+            {
+                Owner.Gold += 20;
+            }
+        }
     }
 
     public class AncientFinnoGermaniumMineProductionFactory : ITileObjectProductionFactory
