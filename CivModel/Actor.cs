@@ -631,14 +631,14 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Gets the required AP to move to the specified target point from the near.
+        /// Gets the required AP to move to point of the specified type
         /// </summary>
-        /// <param name="target">The target point</param>
-        /// <returns>the required AP. if this actor cannot move to <paramref name="target"/>, <c>-1</c>.</returns>
-        public virtual double GetRequiredAPToMove(Terrain.Point target)
+        /// <param name="type">The type of <see cref="Terrain.Point"/></param>
+        /// <returns>the required AP.</returns>
+        public virtual double GetRequiredAPToMove(TerrainType type)
         {
             // POMFSTIH
-            switch (target.Type)
+            switch (type)
             {
                 case TerrainType.Plain: return 1;
                 case TerrainType.Ocean: return 0.5;

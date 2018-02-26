@@ -57,7 +57,7 @@ namespace CivModel
                 if (targetObject != null && targetObject.Owner != _owner.Owner)
                 {
                     if (Terrain.Point.Distance(origin, target) == 1)
-                        return _owner.GetRequiredAPToMove(target);
+                        return _owner.GetRequiredAPToMove(target.Type);
                 }
             }
 
