@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public sealed class CityCenter : CityBase
+    public class CityCenter : CityBase
     {
         public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
         public override Guid Guid => ClassGuid;
