@@ -11,17 +11,16 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("87710C32-94A3-4A9D-92ED-8BB29EE2B475");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxAP => 2;
-
-        public override double MaxHP => 35;
-
-        public override double AttackPower => 20;
-        public override double DefencePower => 5;
-
-        public override double GoldLogistics => 2;
-        public override double FullLaborLogicstics => 2;
-
-        public override int BattleClassLevel => 3;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            MaxHP = 35,
+            AttackPower = 20,
+            DefencePower = 5,
+            GoldLogistics = 30,
+            FullLaborLogistics = 2,
+            BattleClassLevel = 3
+        };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -32,7 +31,7 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public ProtoNinja(Player owner, Terrain.Point point) : base(owner, point)
+        public ProtoNinja(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -53,46 +52,45 @@ namespace CivModel.Hwan
 
             public int LastSkillCalled = -3;
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt == null)
-                    return -1;
-                if (!_owner.PlacedPoint.HasValue)
-                    return -1;
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
-                    return -1;
-                if (pt.Value.Unit == null)
-                    return -1;
-                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) > 2)
-                    return -1;
-                if (pt.Value.Unit.Owner == Owner.Owner)
-                    return -1;
-                if (pt.Value.Unit.BattleClassLevel > 3)
-                    return -1;
+                if (CheckError(pt) != null)
+                    return double.NaN;
 
                 return 1;
             }
 
-            public void Act(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point? pt)
             {
                 if (pt == null)
-                    throw new ArgumentException("pt is invalid");
+                    return new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
+                    return new InvalidOperationException("Actor is not placed yet");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
-                    throw new InvalidOperationException("Skill is not turned on");
+                    return new InvalidOperationException("Skill is not turned on");
                 if (pt.Value.Unit == null)
-                    throw new InvalidOperationException("There is no target");
+                    return new InvalidOperationException("There is no target");
                 if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) > 2)
-                    throw new InvalidOperationException("Too far to attack");
+                    return new InvalidOperationException("Too far to attack");
                 if (pt.Value.Unit.Owner == Owner.Owner)
-                    throw new InvalidOperationException("The Unit is friendly");
+                    return new InvalidOperationException("The Unit is friendly");
                 if (pt.Value.Unit.BattleClassLevel > 3)
-                    throw new InvalidOperationException("The Unit's ClassLevel is more then limit");
+                    return new InvalidOperationException("The Unit's ClassLevel is more then limit");
 
-                int Ap = GetRequiredAP(pt);
+                double Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
-                    throw new InvalidOperationException("Not enough Ap");
+                    return new InvalidOperationException("Not enough Ap");
+
+                return null;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                double Ap = GetRequiredAP(pt);
+                
 
                 Owner.AttackTo(pt.Value.Unit.MaxHP, pt.Value.Unit, 0, true, true);
 
@@ -114,9 +112,17 @@ namespace CivModel.Hwan
         private ProtoNinjaProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => ProtoNinja.Constants;
+
+        public double TotalLaborCost => 50;
+        public double LaborCapacityPerTurn => 20;
+        public double TotalGoldCost => 75;
+        public double GoldCapacityPerTurn => 11;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 75, 20, 50, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

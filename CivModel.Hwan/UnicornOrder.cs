@@ -11,17 +11,16 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("06128735-B62C-4A40-AC4E-35F26C49A6EC");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxAP => 2;
-
-        public override double MaxHP => 50;
-
-        public override double AttackPower => 17;
-        public override double DefencePower => 5;
-
-        public override double GoldLogistics => 1;
-        public override double FullLaborLogicstics => 1;
-
-        public override int BattleClassLevel => 2;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            MaxHP = 50,
+            AttackPower = 17,
+            DefencePower = 5,
+            GoldLogistics = 20,
+            FullLaborLogistics = 2,
+            BattleClassLevel = 2
+        };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -32,7 +31,7 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public UnicornOrder(Player owner, Terrain.Point point) : base(owner, point)
+        public UnicornOrder(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -53,10 +52,10 @@ namespace CivModel.Hwan
 
             public int LastSkillCalled = -2;
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
             {
                 if (CheckError(pt) != null)
-                    return -1;
+                    return double.NaN;
 
                 return 1;
             }
@@ -66,7 +65,7 @@ namespace CivModel.Hwan
                 if (CheckError(pt) is Exception e)
                     throw e;
 
-                int Ap = GetRequiredAP(pt);
+                double Ap = GetRequiredAP(pt);
 
 
                 Owner.PlacedPoint = pt;
@@ -88,7 +87,7 @@ namespace CivModel.Hwan
                 if (!this.DirectionCheck(pt))
                     return new InvalidOperationException("Can't go that way");
 
-                int Ap = GetRequiredAP(pt);
+                double Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
@@ -119,9 +118,17 @@ namespace CivModel.Hwan
         private UnicornOrderProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => UnicornOrder.Constants;
+
+        public double TotalLaborCost => 30;
+        public double LaborCapacityPerTurn => 15;
+        public double TotalGoldCost => 50;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 50, 15, 25, 5);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
