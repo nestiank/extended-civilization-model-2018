@@ -47,8 +47,11 @@ namespace CivModel
             {
                 if (target.Unit == null)
                 {
-                    if (Terrain.Point.Distance(origin, target) == 1)
-                        return _owner.GetRequiredAPToMove(target);
+                    if (!(target.TileBuilding is TileBuilding building && building.Owner != Owner.Owner))
+                    {
+                        if (Terrain.Point.Distance(origin, target) == 1)
+                            return _owner.GetRequiredAPToMove(target);
+                    }
                 }
             }
 

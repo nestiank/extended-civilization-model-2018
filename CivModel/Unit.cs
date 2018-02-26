@@ -55,5 +55,22 @@ namespace CivModel
             Owner.RemoveUnitFromList(this);
             base.OnBeforeDestroy();
         }
+
+        /// <summary>
+        /// Called after <see cref="TileObject.PlacedPoint"/> is changed.
+        /// </summary>
+        /// <param name="oldPoint">The old value of <see cref="TileObject.PlacedPoint"/>.</param>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected override void OnChangePlacedPoint(Terrain.Point? oldPoint)
+        {
+            base.OnChangePlacedPoint(oldPoint);
+            if (PlacedPoint is Terrain.Point pt)
+            {
+                if (pt.TileBuilding is TileBuilding building && building.Owner != Owner)
+                {
+                    throw new InvalidOperationException("unit cannot be placed on a TileBuilding of other players");
+                }
+            }
+        }
     }
 }
