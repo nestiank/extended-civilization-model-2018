@@ -118,9 +118,25 @@ namespace CivModel.Hwan
             }
         }
 
+        protected override void OnDie(Player opposite)
+        {
+            Owner.Gold += 200*InteriorBuildings.OfType<HwanEmpireVigilant>().Count();
+
+            IEnumerable<HwanEmpireVigilant> query1 = InteriorBuildings.OfType<HwanEmpireVigilant>();
+            foreach (HwanEmpireVigilant Vigilant in query1)
+            {
+                Vigilant.Destroy();
+            }
+
+            base.OnDie(opposite);
+        }
+
+
+
         protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
         {
-            AttackTo(15, opposite, opposite.DefencePower, false, true);
+            double damage = 15 + 30 *InteriorBuildings.OfType<HwanEmpireVigilant>().Count();
+            AttackTo(damage, opposite, opposite.DefencePower, false, true);
             return originalDamage;
         }
     }

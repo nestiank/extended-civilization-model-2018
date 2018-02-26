@@ -21,11 +21,6 @@ namespace CivModel.Hwan
         };
 
         public HwanEmpireFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
-
-        public override void PostTurn()
-        {
-            this.RemainHP = Math.Min(30, (this.RemainHP + 10));
-        }
     }
 
     public class HwanEmpireFIRFortressProductionFactory : ITileObjectProductionFactory

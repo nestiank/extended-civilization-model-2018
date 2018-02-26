@@ -20,11 +20,6 @@ namespace CivModel.Hwan
         };
 
         public HwanEmpireKimchiFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
-
-        public override void PostTurn()
-        {
-            this.RemainHP = Math.Min(15, (this.RemainHP + 2));
-        }
     }
 
     public class HwanEmpireKimchiFactoryProductionFactory : ITileObjectProductionFactory

@@ -23,8 +23,9 @@ namespace CivModel.Hwan
 
         public override void PostTurn()
         {
-            this.RemainHP = Math.Min(30, (this.RemainHP + 5));
-        }   
+            base.PostTurn();
+            Owner.Happiness += 1;
+        }
     }
 
     public class HwanEmpireIbizaProductionFactory : ITileObjectProductionFactory
