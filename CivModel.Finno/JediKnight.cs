@@ -92,10 +92,6 @@ namespace CivModel.Finno
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     return new InvalidOperationException("Skill is not turned on");
 
-                double Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
-
                 return null;
             }
 
@@ -105,6 +101,8 @@ namespace CivModel.Finno
                     throw e;
 
                 double Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
 
 
                 _owner.SkillDurationTime = Owner.Owner.Game.TurnNumber + 1;

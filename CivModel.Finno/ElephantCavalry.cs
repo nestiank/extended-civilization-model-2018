@@ -88,9 +88,6 @@ namespace CivModel.Finno
                 if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 3)
                     return new InvalidOperationException("Can't go that way");
 
-                double Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
 
                 return null;
             }
@@ -101,6 +98,8 @@ namespace CivModel.Finno
                     throw e;
 
                 double Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    return new InvalidOperationException("Not enough Ap");
 
 
                 Owner.PlacedPoint = pt;

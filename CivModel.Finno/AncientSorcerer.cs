@@ -71,10 +71,6 @@ namespace CivModel.Finno
                 if (pt.Value.Unit.Owner != Owner.Owner)
                     return new InvalidOperationException("The Unit is hostile");
 
-                double Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
-
                 return null;
             }
 
@@ -84,6 +80,8 @@ namespace CivModel.Finno
                     throw e;
 
                 double Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
 
                 double AmountOfHeal = 0;
 

@@ -69,12 +69,7 @@ namespace CivModel.Hwan
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 4)
                     return new InvalidOperationException("Skill is not turned on");
 
-                double Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
-
                 return null;
-
             }
 
             public void Act(Terrain.Point? pt)
@@ -82,11 +77,13 @@ namespace CivModel.Hwan
                 if (CheckError(pt) is Exception e)
                     throw e;
 
+                double Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
                 int A = Owner.PlacedPoint.Value.Position.A;
                 int B = Owner.PlacedPoint.Value.Position.B;
                 int C = Owner.PlacedPoint.Value.Position.C;
-
-                double Ap = GetRequiredAP(pt);
 
                 if (B + (C - 1 + Math.Sign(C - 1)) / 2 >= 0 && C - 1 >= 0)
                 {

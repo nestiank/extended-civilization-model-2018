@@ -77,10 +77,6 @@ namespace CivModel.Hwan
                 if (pt.Value.Unit.BattleClassLevel > 3)
                     return new InvalidOperationException("The Unit's ClassLevel is more then limit");
 
-                double Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
-
                 return null;
             }
 
@@ -90,7 +86,9 @@ namespace CivModel.Hwan
                     throw e;
 
                 double Ap = GetRequiredAP(pt);
-                
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
 
                 Owner.AttackTo(pt.Value.Unit.MaxHP, pt.Value.Unit, 0, true, true);
 

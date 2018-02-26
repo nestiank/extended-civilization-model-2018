@@ -72,10 +72,6 @@ namespace CivModel.Hwan
                 if (pt.Value.Unit == null)
                     return new InvalidOperationException("There is no target");
 
-                double Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
-
                 return null;
             }
 
@@ -85,7 +81,9 @@ namespace CivModel.Hwan
                     throw e;
 
                 double Ap = GetRequiredAP(pt);
-                
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
 
                 Owner.AttackTo(Owner.AttackPower * 2, pt.Value.Unit, pt.Value.Unit.DefencePower,false, true);
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;

@@ -66,6 +66,8 @@ namespace CivModel.Hwan
                     throw e;
 
                 double Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
 
 
                 Owner.PlacedPoint = pt;
@@ -86,10 +88,6 @@ namespace CivModel.Hwan
                     return new InvalidOperationException("Can't go that way");
                 if (!this.DirectionCheck(pt))
                     return new InvalidOperationException("Can't go that way");
-
-                double Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    throw new InvalidOperationException("Not enough Ap");
 
                 return null;
             }

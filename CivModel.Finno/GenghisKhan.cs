@@ -71,10 +71,6 @@ namespace CivModel.Finno
                 if (Owner.PlacedPoint.Value.TileOwner == Owner.Owner)
                     return new InvalidOperationException("You have the Territory");
 
-                double Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
-
                 return null;
             }
 
@@ -84,7 +80,9 @@ namespace CivModel.Finno
                     throw e;
 
                 double Ap = GetRequiredAP(pt);
-                
+                if (!Owner.CanConsumeAP(Ap))
+                    return new InvalidOperationException("Not enough Ap");
+
 
                 Owner.Owner.AddTerritory(Owner.PlacedPoint.Value);
                 if (Owner.PlacedPoint.Value.TileBuilding != null)

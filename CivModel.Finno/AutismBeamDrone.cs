@@ -66,6 +66,8 @@ namespace CivModel.Finno
                     throw e;
 
                 double Ap = GetRequiredAP(pt);
+                if (!_owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
 
 
                 new ControlHijackEffect(pt.Value.Unit, Owner.Owner).EffectOn();
@@ -81,11 +83,7 @@ namespace CivModel.Finno
                 if (pt == null)
                     return new ArgumentNullException(nameof(pt));
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
-                    throw new InvalidOperationException("Skill is not turned on");
-
-                double Ap = GetRequiredAP(pt);
-                if (!_owner.CanConsumeAP(Ap))
-                    throw new InvalidOperationException("Not enough Ap");
+                    return new InvalidOperationException("Skill is not turned on");
 
                 if (pt.Value.Unit is Unit unit && unit.Owner != Owner.Owner)
                 {
