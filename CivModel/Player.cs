@@ -16,7 +16,17 @@ namespace CivModel
         /// The gold of this player. This value is not negative.
         /// </summary>
         /// <seealso cref="GoldIncome"/>
-        public double Gold { get; private set; } = 0;
+        public double Gold
+        {
+            get => _gold;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "gold is negative");
+                _gold = value;
+            }
+        }
+        private double _gold = 0;
 
         /// <summary>
         /// The gold income of this player. This is not negative, and can be different from <see cref="GoldNetIncome"/>
@@ -48,7 +58,17 @@ namespace CivModel
         /// The happiness of this player. This value is in [-100, 100].
         /// </summary>
         /// <seealso cref="HappinessIncome"/>
-        public double Happiness { get; private set; } = 100;
+        public double Happiness
+        {
+            get => _happiness;
+            set
+            {
+                if (value < -100 || value > 100)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "Happiness is not in [-100, 100]");
+                _happiness = value;
+            }
+        }
+        private double _happiness = 0;
 
         /// <summary>
         /// The happiness income of this player.
