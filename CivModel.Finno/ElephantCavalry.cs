@@ -11,17 +11,16 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("8AC71759-3B58-4637-9F09-4F483EB0F4B8");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxAP => 2;
-
-        public override double MaxHP => 50;
-
-        public override double AttackPower => 17;
-        public override double DefencePower => 5;
-
-        public override double GoldLogistics => 1;
-        public override double FullLaborLogicstics => 1;
-
-        public override int BattleClassLevel => 2;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            MaxHP = 50,
+            AttackPower = 17,
+            DefencePower = 5,
+            GoldLogistics = 20,
+            FullLaborLogistics = 2,
+            BattleClassLevel = 2
+        };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -32,7 +31,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public ElephantCavalry(Player owner, Terrain.Point point) : base(owner, point)
+        public ElephantCavalry(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -53,20 +52,10 @@ namespace CivModel.Finno
 
             public int LastSkillCalled = -2;
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt == null)
-                    return -1;
-                if (!_owner.PlacedPoint.HasValue)
-                    return -1;
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
-                    return -1;
-                if (pt.Value.Unit != null)
-                    return -1;
-                if (pt.Value.Position.A != Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
-                    return -1;
-                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 3)
-                    return -1;
+                if (CheckError(pt) != null)
+                    return double.NaN;
 
 
                 return 1;
@@ -84,24 +73,35 @@ namespace CivModel.Finno
                 }
             }
 
-            public void Act(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point? pt)
             {
                 if (pt == null)
-                    throw new ArgumentException("pt is invalid");
+                    return new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
+                    return new InvalidOperationException("Actor is not placed yet");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
-                    throw new InvalidOperationException("Skill is not turned on");
+                    return new InvalidOperationException("Skill is not turned on");
                 if (pt.Value.Unit != null)
-                    throw new InvalidOperationException("Can't go that way");
+                    return new InvalidOperationException("Can't go that way");
                 if (pt.Value.Position.A != Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
-                    throw new InvalidOperationException("Can't go that way");
+                    return new InvalidOperationException("Can't go that way");
                 if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 3)
-                    throw new InvalidOperationException("Can't go that way");
+                    return new InvalidOperationException("Can't go that way");
 
-                int Ap = GetRequiredAP(pt);
+                double Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
-                    throw new InvalidOperationException("Not enough Ap");
+                    return new InvalidOperationException("Not enough Ap");
+
+                return null;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                double Ap = GetRequiredAP(pt);
+
 
                 Owner.PlacedPoint = pt;
 
@@ -168,9 +168,17 @@ namespace CivModel.Finno
         private ElephantCavalryProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => ElephantCavalry.Constants;
+
+        public double TotalLaborCost => 30;
+        public double LaborCapacityPerTurn => 15;
+        public double TotalGoldCost => 50;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 50, 15, 25, 5);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

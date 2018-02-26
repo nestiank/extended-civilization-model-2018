@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,17 +11,17 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("C49FB444-C530-41B8-9D61-A9CF4443A4D6");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxAP => 2;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            MaxHP = 50,
+            AttackPower = 15,
+            DefencePower = 5,
+            GoldLogistics = 20,
+            FullLaborLogistics = 2,
+            BattleClassLevel = 2
+        };
 
-        public override double MaxHP => 50;
-
-        public override double AttackPower => 15;
-        public override double DefencePower => 5;
-
-        public override double GoldLogistics => 1;
-        public override double FullLaborLogicstics => 1;
-
-        public override int BattleClassLevel => 2;
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -32,7 +32,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public AncientSorcerer(Player owner, Terrain.Point point) : base(owner, point)
+        public AncientSorcerer(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -52,34 +52,38 @@ namespace CivModel.Finno
             }
 
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt == null)
-                    return -1;
-                if (!_owner.PlacedPoint.HasValue)
-                    return -1;
-                if (pt.Value.Unit == null)
-                    return -1;
-                if (pt.Value.Unit.Owner != Owner.Owner)
-                    return -1;
+                if (CheckError(pt) != null)
+                    return double.NaN;
 
                 return 1;
             }
 
-            public void Act(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point? pt)
             {
                 if (pt == null)
-                    throw new ArgumentException("pt is invalid");
+                    return new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
+                    return new InvalidOperationException("Actor is not placed yet");
                 if (pt.Value.Unit == null)
-                    throw new InvalidOperationException("There is no target");
+                    return new InvalidOperationException("There is no target");
                 if (pt.Value.Unit.Owner != Owner.Owner)
-                    throw new InvalidOperationException("The Unit is hostile");
+                    return new InvalidOperationException("The Unit is hostile");
 
-                int Ap = GetRequiredAP(pt);
-                if(!Owner.CanConsumeAP(Ap))
-                    throw new InvalidOperationException("Not enough Ap");
+                double Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    return new InvalidOperationException("Not enough Ap");
+
+                return null;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                double Ap = GetRequiredAP(pt);
 
                 double AmountOfHeal = 0;
 
@@ -105,9 +109,17 @@ namespace CivModel.Finno
         private AncientSorcererProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => AncientSorcerer.Constants;
+
+        public double TotalLaborCost => 35;
+        public double LaborCapacityPerTurn => 15;
+        public double TotalGoldCost => 50;
+        public double GoldCapacityPerTurn => 20;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 50, 15, 20, 4);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

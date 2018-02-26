@@ -11,17 +11,16 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("D4B8D80D-4C68-45AD-9EA3-B40CD3377A60");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxAP => 2;
-
-        public override double MaxHP => 30;
-
-        public override double AttackPower => 25;
-        public override double DefencePower => 5;
-
-        public override double GoldLogistics => 2;
-        public override double FullLaborLogicstics => 2;
-
-        public override int BattleClassLevel => 3;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            MaxHP = 30,
+            AttackPower = 25,
+            DefencePower = 5,
+            GoldLogistics = 30,
+            FullLaborLogistics = 2,
+            BattleClassLevel = 3
+        };
 
         public int SkillDurationTime = -1;
 
@@ -55,7 +54,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public JediKnight(Player owner, Terrain.Point point) : base(owner, point)
+        public JediKnight(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -76,31 +75,37 @@ namespace CivModel.Finno
 
             public int LastSkillCalled = -3;
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt != null)
-                    return -1;
-                if (!_owner.PlacedPoint.HasValue)
-                    return -1;
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
-                    return -1;
-
+                if (CheckError(pt) != null)
+                    return double.NaN;
 
                 return 2;
             }
 
-            public void Act(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point? pt)
             {
                 if (pt != null)
-                    throw new ArgumentException("pt is invalid");
+                    return new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
+                    return new InvalidOperationException("Actor is not placed yet");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
-                    throw new InvalidOperationException("Skill is not turned on");
+                    return new InvalidOperationException("Skill is not turned on");
 
-                int Ap = GetRequiredAP(pt);
+                double Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
-                    throw new InvalidOperationException("Not enough Ap");
+                    return new InvalidOperationException("Not enough Ap");
+
+                return null;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                double Ap = GetRequiredAP(pt);
+
 
                 _owner.SkillDurationTime = Owner.Owner.Game.TurnNumber + 1;
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
@@ -117,9 +122,17 @@ namespace CivModel.Finno
         private JediKnightProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => JediKnight.Constants;
+
+        public double TotalLaborCost => 50;
+        public double LaborCapacityPerTurn => 20;
+        public double TotalGoldCost => 75;
+        public double GoldCapacityPerTurn => 11;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 75, 20, 50, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
