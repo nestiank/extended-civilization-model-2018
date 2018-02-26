@@ -72,7 +72,7 @@ namespace CivModel.Finno
                 return 1;
             }
 
-            public void Stamping(int A,int B, int C)
+            private void Stamping(int A,int B, int C)
             {
                 if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null)
                 {

@@ -83,7 +83,7 @@ namespace CivModel.Hwan
                 RealAction(A + 1, B - 2, C + 1);
             }
 
-            public void RealAction(int A,int B,int C)
+            private void RealAction(int A,int B,int C)
             {
                 if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < Owner.PlacedPoint.Value.Terrain.Width && 0 <= C && C < Owner.PlacedPoint.Value.Terrain.Height)
                 {
