@@ -53,7 +53,7 @@ namespace CivModel.Finno
             game.GuidManager.RegisterGuid(ElephantCavalry.ClassGuid, (p, t) => new ElephantCavalry(p, t));
             game.GuidManager.RegisterGuid(EMUHorseArcher.ClassGuid, (p, t) => new EMUHorseArcher(p, t));
             game.GuidManager.RegisterGuid(GenghisKhan.ClassGuid, (p, t) => new GenghisKhan(p, t));
-            game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
+            game.GuidManager.RegisterGuid(FinnoJediKnight.ClassGuid, (p, t) => new FinnoJediKnight(p, t));
         }
     }
 }
