@@ -11,6 +11,7 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("10B85454-07B8-4D6A-8FF2-157870C41AF6");
         public override Guid Guid => ClassGuid;
 
+
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 20,
@@ -19,7 +20,18 @@ namespace CivModel.Hwan
             MaxHealPerTurn = 4
         };
 
+
+
         public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+
+       
+
+        public override void PostTurn()
+        {
+            base.PostTurn();
+
+            Owner.Gold += 10;
+        }
     }
 
     public class HwanEmpireLatifundiumProductionFactory : ITileObjectProductionFactory
