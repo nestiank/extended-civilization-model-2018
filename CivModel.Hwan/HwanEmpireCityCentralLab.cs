@@ -13,7 +13,7 @@ namespace CivModel.Hwan
 
         public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
         {
-            ResearchCapacity = 100,
+            ResearchCapacity = 200,
             ResearchIncome = 20,
             GoldLogistics = 50
         };

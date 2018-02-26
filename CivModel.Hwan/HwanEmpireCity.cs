@@ -15,15 +15,11 @@ namespace CivModel.Hwan
         {
             MaxHP = 500,
             GoldLogistics = 0,
-            FullLaborLogistics = 0
+            FullLaborLogistics = 0,
+            MaxHealPerTurn = 20
+
         };
 
-        public override void PostTurn()
-        {
-            this.RemainHP = Math.Min(500, (this.RemainHP + 20));
-
-            this.Population += 0.3 * (1 + 1 * (this.Owner.Happiness));
-        }
 
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];

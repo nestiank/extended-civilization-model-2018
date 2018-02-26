@@ -15,7 +15,8 @@ namespace CivModel.Hwan
         {
             MaxHP = 30,
             GoldLogistics = 20,
-            FullLaborLogistics = 10
+            FullLaborLogistics = 10,
+            MaxHealPerTurn = 5
         };
 
         public HwanEmpireIbiza(Player owner, Terrain.Point point) : base(owner, Constants, point) { }

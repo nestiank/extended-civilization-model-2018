@@ -15,7 +15,8 @@ namespace CivModel.Hwan
         {
             MaxHP = 20,
             GoldLogistics = 20,
-            FullLaborLogistics = 10
+            FullLaborLogistics = 10,
+            MaxHealPerTurn = 4
         };
 
         public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point) { }

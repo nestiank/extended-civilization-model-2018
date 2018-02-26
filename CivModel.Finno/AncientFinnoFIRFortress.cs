@@ -16,7 +16,8 @@ namespace CivModel.Finno
         {
             MaxHP = 30,
             GoldLogistics = 20,
-            FullLaborLogistics = 10
+            FullLaborLogistics = 10,
+            MaxHealPerTurn = 10
         };
 
 

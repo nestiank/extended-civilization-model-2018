@@ -15,7 +15,8 @@ namespace CivModel.Hwan
         {
             MaxHP = 15,
             GoldLogistics = 20,
-            FullLaborLogistics = 10
+            FullLaborLogistics = 10,
+            MaxHealPerTurn = 2
         };
 
         public HwanEmpireKimchiFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
