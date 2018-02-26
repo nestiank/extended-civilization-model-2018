@@ -11,7 +11,13 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("300E06FD-B656-46DC-A668-BB36C75E3086");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxHP => 500;
+
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxHP = 500,
+            GoldLogistics = 0,
+            FullLaborLogistics = 0
+        };
 
         public override void PostTurn()
         {
@@ -23,7 +29,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public FinnoEmpireCity(Player player, Terrain.Point point) : base(player, point)
+        public FinnoEmpireCity(Player player, Terrain.Point point) : base(player, Constants, point)
         {
             this.Population = 5;
             _specialActs[0] = new FinnoEmpireCityAction(this);
@@ -36,17 +42,21 @@ namespace CivModel.Finno
 
             public bool IsParametered => false;
 
+            public int LastSkillCalled = -1;
+
             public FinnoEmpireCityAction(FinnoEmpireCity owner)
             {
                 _owner = owner;
             }
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
             {
                 if (pt != null)
-                    return -1;
+                    return double.NaN;
                 if (!_owner.PlacedPoint.HasValue)
-                    return -1;
+                    return double.NaN;
+                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
+                    return double.NaN;
 
                 return 0;
             }
@@ -57,6 +67,8 @@ namespace CivModel.Finno
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
+                    throw new InvalidOperationException("Skill is not turned on");
 
                 int A = Owner.PlacedPoint.Value.Position.A;
                 int B = Owner.PlacedPoint.Value.Position.B;
@@ -81,6 +93,8 @@ namespace CivModel.Finno
                 RealAction(A - 1, B - 1, C + 2);
                 RealAction(A, B - 2, C + 2);
                 RealAction(A + 1, B - 2, C + 1);
+
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
             }
 
             private void RealAction(int A, int B, int C)
@@ -126,9 +140,16 @@ namespace CivModel.Finno
         {
         }
 
+        public ActorConstants Constants => FinnoEmpireCity.Constants;
+
+        public double TotalLaborCost => 200;
+        public double LaborCapacityPerTurn => 20;
+        public double TotalGoldCost => 300;
+        public double GoldCapacityPerTurn => 50;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 200, 20, 300, 50);
+            return new TileObjectProduction(this, owner);
         }
 
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)

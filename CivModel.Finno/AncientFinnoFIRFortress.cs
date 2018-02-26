@@ -12,9 +12,15 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("F5AC55CF-C095-4525-9B87-111ED58856A2");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxHP => 30;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxHP = 30,
+            GoldLogistics = 20,
+            FullLaborLogistics = 10
+        };
 
-        public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, point) { }
+
+        public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
 
         public override void PostTurn()
         {
@@ -30,9 +36,17 @@ namespace CivModel.Finno
         private AncientFinnoFIRFortressProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => AncientFinnoFIRFortress.Constants;
+
+        public double TotalLaborCost => 20;
+        public double LaborCapacityPerTurn => 10;
+        public double TotalGoldCost => 20;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 20, 10, 20, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

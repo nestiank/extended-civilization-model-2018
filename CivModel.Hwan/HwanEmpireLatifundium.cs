@@ -11,9 +11,14 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("10B85454-07B8-4D6A-8FF2-157870C41AF6");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxHP => 20;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxHP = 20,
+            GoldLogistics = 20,
+            FullLaborLogistics = 10
+        };
 
-        public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, point) { }
+        public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
 
         public override void PostTurn()
         {
@@ -29,9 +34,17 @@ namespace CivModel.Hwan
         private HwanEmpireLatifundiumProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => HwanEmpireLatifundium.Constants;
+
+        public double TotalLaborCost => 30;
+        public double LaborCapacityPerTurn => 10;
+        public double TotalGoldCost => 30;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 30, 10, 30, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

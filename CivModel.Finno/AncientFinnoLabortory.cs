@@ -11,9 +11,15 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("2E5AF09B-7E81-451F-ADBE-11A44EDA49A6");
         public override Guid Guid => ClassGuid;
 
-        public override double ProvidedResearchIncome => 20;
 
-        public AncientFinnoLabortory(CityBase city) : base(city) { }
+        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
+        {
+            ResearchCapacity = 200,
+            ResearchIncome = 20,
+            GoldLogistics = 50
+        };
+
+        public AncientFinnoLabortory(CityBase city) : base(city, Constants) { }
     }
 
     public class AncientFinnoLabortoryProductionFactory : IInteriorBuildingProductionFactory
@@ -24,9 +30,19 @@ namespace CivModel.Finno
         private AncientFinnoLabortoryProductionFactory()
         {
         }
+
+
+        public InteriorBuildingConstants Constants => AncientFinnoLabortory.Constants;
+
+        public double TotalLaborCost => 120;
+        public double LaborCapacityPerTurn => 20;
+        public double TotalGoldCost => 100;
+        public double GoldCapacityPerTurn => 25;
+
+
         public Production Create(Player owner)
         {
-            return new InteriorBuildingProduction(this, owner, 120, 20, 100, 25);
+            return new InteriorBuildingProduction(this, owner);
         }
         public bool IsPlacable(InteriorBuildingProduction production, CityBase city)
         {

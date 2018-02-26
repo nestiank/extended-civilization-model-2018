@@ -11,7 +11,12 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("D6AE6381-5B65-47EB-B99B-B3BE2C232772");
         public override Guid Guid => ClassGuid;
 
-        public HwanEmpireSungsimdang(CityBase city) : base(city) { }
+        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
+        {
+            GoldLogistics = 50
+        };
+
+        public HwanEmpireSungsimdang(CityBase city) : base(city, Constants) { }
 
         public int SoBoRo = 0;
 
@@ -29,7 +34,7 @@ namespace CivModel.Hwan
                 this.SoBoRo = 0;
                 if (GetSoBoRo % 2 == 0)
                 {
-                    
+                    Owner.Gold += 30;
                 }
 
                 else if(GetSoBoRo % 2 == 1)
@@ -48,9 +53,17 @@ namespace CivModel.Hwan
         private HwanEmpireSungsimdangProductionFactory()
         {
         }
+
+        public InteriorBuildingConstants Constants => HwanEmpireSungsimdang.Constants;
+
+        public double TotalLaborCost => 30;
+        public double LaborCapacityPerTurn => 5;
+        public double TotalGoldCost => 50;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new InteriorBuildingProduction(this, owner, 30, 5, 50, 10);
+            return new InteriorBuildingProduction(this, owner);
         }
         public bool IsPlacable(InteriorBuildingProduction production, CityBase city)
         {

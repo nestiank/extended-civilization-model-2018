@@ -11,7 +11,12 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("7A9A9079-361D-4ED6-92C1-24A0546AC029");
         public override Guid Guid => ClassGuid;
 
-        public AncientFinnoVigilant(CityBase city) : base(city) { }
+        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
+        {
+            GoldLogistics = 50
+        };
+
+        public AncientFinnoVigilant(CityBase city) : base(city, Constants) { }
     }
 
     public class AncientFinnoVigilantProductionFactory : IInteriorBuildingProductionFactory
@@ -22,9 +27,17 @@ namespace CivModel.Finno
         private AncientFinnoVigilantProductionFactory()
         {
         }
+
+        public InteriorBuildingConstants Constants => AncientFinnoVigilant.Constants;
+
+        public double TotalLaborCost => 100;
+        public double LaborCapacityPerTurn => 20;
+        public double TotalGoldCost => 100;
+        public double GoldCapacityPerTurn => 20;
+
         public Production Create(Player owner)
         {
-            return new InteriorBuildingProduction(this, owner, 120, 20, 100, 25);
+            return new InteriorBuildingProduction(this, owner);
         }
         public bool IsPlacable(InteriorBuildingProduction production, CityBase city)
         {
