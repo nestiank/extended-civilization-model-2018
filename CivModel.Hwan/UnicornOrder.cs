@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -55,46 +55,58 @@ namespace CivModel.Hwan
 
             public int GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt == null)
+                if (CheckError(pt) != null)
                     return -1;
-                if (!_owner.PlacedPoint.HasValue)
-                    return -1;
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
-                    return -1;
-                if (pt.Value.Unit != null)
-                    return -1;
-                if (pt.Value.Position.A !=  Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
-                    return -1;
-                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 5)
-                    return -1;
-
 
                 return 1;
             }
 
             public void Act(Terrain.Point? pt)
             {
-                if (pt == null)
-                    throw new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
-                    throw new InvalidOperationException("Skill is not turned on");
-                if (pt.Value.Unit != null)
-                    throw new InvalidOperationException("Can't go that way");
-                if (pt.Value.Position.A != Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
-                    throw new InvalidOperationException("Can't go that way");
-                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 5)
-                    throw new InvalidOperationException("Can't go that way");
+                if (CheckError(pt) is Exception e)
+                    throw e;
 
                 int Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    throw new InvalidOperationException("Not enough Ap");
+
 
                 Owner.PlacedPoint = pt;
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);
+            }
+
+            private Exception CheckError(Terrain.Point? pt)
+            {
+                if (pt == null)
+                    return new ArgumentException("pt is invalid");
+                if (!_owner.PlacedPoint.HasValue)
+                    return new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
+                    return new InvalidOperationException("Skill is not turned on");
+                if (pt.Value.Unit != null)
+                    return new InvalidOperationException("Can't go that way");
+                if (!this.DirectionCheck(pt))
+                    return new InvalidOperationException("Can't go that way");
+
+                int Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
+                return null;
+            }
+
+           private bool DirectionCheck(Terrain.Point? pt)
+            {
+                if (pt.Value.Position.A != Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
+                    return false;
+                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 5)
+                {
+                    if (Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B) !=  Owner.PlacedPoint.Value.Terrain.Width - 5)
+                        return false;
+                }
+
+
+                return true;
             }
         }
     }
