@@ -32,7 +32,7 @@ namespace CivModel.Hwan
         {
         }
 
-        public ActorConstants ActorConstants => LEOSpaceArmada.Constants;
+        public ActorConstants ActorConstants => Pioneer.Constants;
 
         public double TotalLaborCost => 5;
         public double LaborCapacityPerTurn => 2;
