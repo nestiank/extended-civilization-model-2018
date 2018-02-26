@@ -74,7 +74,7 @@ namespace CivModel
         /// The happiness income of this player.
         /// </summary>
         /// <seealso cref="IGameConstantScheme.HappinessCoefficient"/>
-        public double HappinessIncome => Game.Constants.HappinessCoefficient * ((1 - EconomicInvestmentRatio) * BasicEconomicRequire);
+        public double HappinessIncome => Game.Constants.HappinessCoefficient * ((EconomicInvestmentRatio - 1) * BasicEconomicRequire);
 
         /// <summary>
         /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
