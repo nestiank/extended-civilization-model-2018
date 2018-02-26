@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -75,7 +75,7 @@ namespace CivModel.Hwan
 
             public void Act(Terrain.Point? pt)
             {
-                if (pt != null)
+                if (pt == null)
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");

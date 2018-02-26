@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -109,6 +109,14 @@ namespace CivModel.Finno
                                 Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 1, C + 1)).Unit, 0, false, true);
                             }
                         }
+                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 2, C + 2)).Unit != null)
+                        {
+                            if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 2, C + 2)).Unit.Owner != Owner.Owner)
+                            {
+                                double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 2, C + 2)).Unit.MaxHP * 0.2;
+                                Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 2, C + 2)).Unit, 0, false, true);
+                            }
+                        }
                     }
 
                     if (pt.Value.Position.B > Owner.PlacedPoint.Value.Position.B)
@@ -119,6 +127,14 @@ namespace CivModel.Finno
                             {
                                 double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 1, C - 1)).Unit.MaxHP * 0.2;
                                 Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 1, C - 1)).Unit, 0, false, true);
+                            }
+                        }
+                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 2, C - 2)).Unit != null)
+                        {
+                            if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 2, C - 2)).Unit.Owner != Owner.Owner)
+                            {
+                                double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 2, C - 2)).Unit.MaxHP * 0.2;
+                                Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 2, C - 2)).Unit, 0, false, true);
                             }
                         }
                     }
@@ -136,6 +152,14 @@ namespace CivModel.Finno
                                 Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B, C + 1)).Unit, 0, false, true);
                             }
                         }
+                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A - 2, B, C + 2)).Unit != null)
+                        {
+                            if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A - 2, B, C + 2)).Unit.Owner != Owner.Owner)
+                            {
+                                double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 2, B, C + 2)).Unit.MaxHP * 0.2;
+                                Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 2, B, C + 2)).Unit, 0, false, true);
+                            }
+                        }
                     }
 
                     if (pt.Value.Position.A > Owner.PlacedPoint.Value.Position.A)
@@ -146,6 +170,14 @@ namespace CivModel.Finno
                             {
                                 double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B, C - 1)).Unit.MaxHP * 0.2;
                                 Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B, C - 1)).Unit, 0, false, true);
+                            }
+                        }
+                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A + 2, B, C - 2)).Unit != null)
+                        {
+                            if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A + 2, B, C - 2)).Unit.Owner != Owner.Owner)
+                            {
+                                double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 2, B, C - 2)).Unit.MaxHP * 0.2;
+                                Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 2, B, C - 2)).Unit, 0, false, true);
                             }
                         }
                     }
@@ -163,6 +195,14 @@ namespace CivModel.Finno
                                 Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B + 1, C)).Unit, 0, false, true);
                             }
                         }
+                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A - 2, B + 2, C)).Unit != null)
+                        {
+                            if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A - 2, B + 2, C)).Unit.Owner != Owner.Owner)
+                            {
+                                double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 2, B + 2, C)).Unit.MaxHP * 0.2;
+                                Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 2, B + 2, C)).Unit, 0, false, true);
+                            }
+                        }
                     }
 
                     if (pt.Value.Position.A > Owner.PlacedPoint.Value.Position.A)
@@ -173,6 +213,14 @@ namespace CivModel.Finno
                             {
                                 double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B - 1, C)).Unit.MaxHP * 0.2;
                                 Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B - 1, C)).Unit, 0, false, true);
+                            }
+                        }
+                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A + 2, B - 2, C)).Unit != null)
+                        {
+                            if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A + 2, B - 2, C)).Unit.Owner != Owner.Owner)
+                            {
+                                double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 2, B - 2, C)).Unit.MaxHP * 0.2;
+                                Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 2, B - 2, C)).Unit, 0, false, true);
                             }
                         }
                     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,12 +51,14 @@ namespace CivModel.Finno
                 _owner = owner;
             }
 
+            public int LastSkillCalled = -3;
+
             public int GetRequiredAP(Terrain.Point? pt)
             {
                 if (CheckError(pt) != null)
                     return -1;
 
-                return 1;
+                return 2;
             }
 
             public void Act(Terrain.Point? pt)
@@ -64,7 +66,13 @@ namespace CivModel.Finno
                 if (CheckError(pt) is Exception e)
                     throw e;
 
+                int Ap = GetRequiredAP(pt);
+
+
                 new ControlHijackEffect(pt.Value.Unit, Owner.Owner).EffectOn();
+
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
+                Owner.ConsumeAP(Ap);
             }
 
             private Exception CheckError(Terrain.Point? pt)
@@ -73,6 +81,12 @@ namespace CivModel.Finno
                     return new InvalidOperationException("Actor is not placed yet");
                 if (pt == null)
                     return new ArgumentNullException(nameof(pt));
+                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
+                    throw new InvalidOperationException("Skill is not turned on");
+
+                int Ap = GetRequiredAP(pt);
+                if (!_owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
 
                 if (pt.Value.Unit is Unit unit && unit.Owner != Owner.Owner)
                 {
@@ -85,6 +99,7 @@ namespace CivModel.Finno
                 {
                     return new ArgumentException("there is no target of skill");
                 }
+
             }
         }
     }

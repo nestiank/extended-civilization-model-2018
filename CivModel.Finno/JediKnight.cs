@@ -78,7 +78,7 @@ namespace CivModel.Finno
                     return -1;
 
 
-                return 1;
+                return 2;
             }
 
             public void Act(Terrain.Point? pt)

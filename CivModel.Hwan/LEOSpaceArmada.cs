@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -65,7 +65,7 @@ namespace CivModel.Hwan
                 if (pt.Value.Unit == null)
                     return -1;
 
-                return 1;
+                return 2;
             }
 
             public void Act(Terrain.Point? pt)
