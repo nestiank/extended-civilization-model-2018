@@ -6,12 +6,19 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public sealed class CityCenter : CityBase
+    public class CityCenter : CityBase
     {
         public static Guid ClassGuid { get; } = new Guid("E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019");
         public override Guid Guid => ClassGuid;
 
-        public CityCenter(Player player, Terrain.Point point) : base(player, point)
+        public static readonly ActorConstants Constants = new ActorConstants() {
+            MaxHP = 5,
+            MaxHealPerTurn = 15,
+            AttackPower = 15,
+            DefencePower = 21
+        };
+
+        public CityCenter(Player player, Terrain.Point point) : base(player, Constants, point)
         {
         }
 
@@ -29,7 +36,7 @@ namespace CivModel.Common
         }
     }
 
-    public class CityCenterProductionFactory : ITileObjectProductionFactory
+    public class CityCenterProductionFactory : IActorProductionFactory
     {
         public static CityCenterProductionFactory Instance => _instance.Value;
         private static Lazy<CityCenterProductionFactory> _instance
@@ -39,9 +46,16 @@ namespace CivModel.Common
         {
         }
 
+        public ActorConstants ActorConstants => CityCenter.Constants;
+
+        public double TotalLaborCost => 5;
+        public double LaborCapacityPerTurn => 2;
+        public double TotalGoldCost => 5;
+        public double GoldCapacityPerTurn => 2;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 5, 2, 5, 2);
+            return new TileObjectProduction(this, owner);
         }
 
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
@@ -54,6 +68,8 @@ namespace CivModel.Common
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             // remove pioneer
+            if (!(point.Unit is Pioneer))
+                throw new InvalidOperationException("city can be placed only where Pionner is");
             point.Unit.Destroy();
 
             return new CityCenter(owner, point);

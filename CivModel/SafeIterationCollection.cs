@@ -16,7 +16,7 @@ namespace CivModel
     /// <seealso cref="System.Collections.Generic.IReadOnlyCollection{T}" />
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(CollectionDebuggerView<>))]
-    public class SafeEnumerableCollection<T> : ICollection<T>, IReadOnlyList<T>
+    public class SafeIterationCollection<T> : ICollection<T>, IReadOnlyList<T>
     {
         private readonly List<T> _list = new List<T>();
         private readonly List<T> _removeList = new List<T>();
@@ -34,7 +34,7 @@ namespace CivModel
         public bool IsReadOnly => false;
 
         /// <summary>
-        /// 이 <see cref="SafeEnumerableCollection{T}"/> 개체에 대해 <see cref="GetEnumerator"/>를 호출하지 못하게 잠기었는지 여부를 나타냅니다.
+        /// 이 <see cref="SafeIterationCollection{T}"/> 개체에 대해 <see cref="GetEnumerator"/>를 호출하지 못하게 잠기었는지 여부를 나타냅니다.
         /// </summary>
         /// <remarks>
         /// 이 값이 <c>true</c>이면 <see cref="UnderlyingList"/>를 사용할 수 있지만, <see cref="GetEnumerator"/>를 사용할 수 없게 되어
@@ -59,7 +59,7 @@ namespace CivModel
         private bool _locked = false;
 
         /// <summary>
-        /// 이 <see cref="SafeEnumerableCollection{T}"/> 개체의 요소를 갖고있는 <see cref="List{T}"/> 개체를 가져옵니다.
+        /// 이 <see cref="SafeIterationCollection{T}"/> 개체의 요소를 갖고있는 <see cref="List{T}"/> 개체를 가져옵니다.
         /// </summary>
         /// <remarks>
         /// 이 속성은 오직 <see cref="Locked"/>가 <c>true</c>일 때만 사용될 수 있습니다.

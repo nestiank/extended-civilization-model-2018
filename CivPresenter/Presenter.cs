@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CivModel;
-using CivModel.Common;
 
 namespace CivPresenter
 {
@@ -191,11 +190,11 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
 
+            var factory = new CivModel.Common.GameSchemeFactory();
             var knownFactory = new IGameSchemeFactory[] {
-                new CivModel.Finno.GameSchemeFactory(),
-                new CivModel.Hwan.GameSchemeFactory()
+                new CivModel.AI.GameSchemeFactory()
             };
-            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new GameSchemeFactory(), knownFactory);
+            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, factory, knownFactory);
 
             Initialize();
         }
@@ -218,9 +217,8 @@ namespace CivPresenter
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
             var knownFactory = new IGameSchemeFactory[] {
-                new GameSchemeFactory(),
-                new CivModel.Finno.GameSchemeFactory(),
-                new CivModel.Hwan.GameSchemeFactory()
+                new CivModel.Common.GameSchemeFactory(),
+                new CivModel.AI.GameSchemeFactory()
             };
             _game = new Game(saveFile, knownFactory);
 
@@ -1095,7 +1093,7 @@ namespace CivPresenter
 
             Game.PlayerInTurn.DoAITurnAction().ContinueWith(
                 task => View.Invoke(() => {
-                    StateNormal();
+                    ProceedTurn();
                 }));
         }
     }

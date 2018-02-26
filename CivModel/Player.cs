@@ -16,7 +16,17 @@ namespace CivModel
         /// The gold of this player. This value is not negative.
         /// </summary>
         /// <seealso cref="GoldIncome"/>
-        public double Gold { get; private set; } = 0;
+        public double Gold
+        {
+            get => _gold;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "gold is negative");
+                _gold = value;
+            }
+        }
+        private double _gold = 0;
 
         /// <summary>
         /// The gold income of this player. This is not negative, and can be different from <see cref="GoldNetIncome"/>
@@ -48,13 +58,23 @@ namespace CivModel
         /// The happiness of this player. This value is in [-100, 100].
         /// </summary>
         /// <seealso cref="HappinessIncome"/>
-        public double Happiness { get; private set; } = 100;
+        public double Happiness
+        {
+            get => _happiness;
+            set
+            {
+                if (value < -100 || value > 100)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "Happiness is not in [-100, 100]");
+                _happiness = value;
+            }
+        }
+        private double _happiness = 0;
 
         /// <summary>
         /// The happiness income of this player.
         /// </summary>
         /// <seealso cref="IGameConstantScheme.HappinessCoefficient"/>
-        public double HappinessIncome => Game.Constants.HappinessCoefficient * ((1 - EconomicInvestmentRatio) * BasicEconomicRequire);
+        public double HappinessIncome => Game.Constants.HappinessCoefficient * ((EconomicInvestmentRatio - 1) * BasicEconomicRequire);
 
         /// <summary>
         /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
@@ -73,29 +93,34 @@ namespace CivModel
         public double Labor => OriginalLabor * (1 + Game.Constants.LaborHappinessCoefficient * Happiness);
 
         /// <summary>
-        /// The research per turn of this player, not controlled by <see cref="Happiness"/> and <see cref="ResearchInvestmentRatio"/>.
-        /// It is equal to sum of all <see cref="CityBase.ResearchIncome"/> of cities of this player.
+        /// The total basic research income per turn of this player.
         /// </summary>
+        /// <seealso cref="Research"/>
         /// <seealso cref="ResearchIncome"/>
         /// <seealso cref="ResearchInvestmentRatio"/>
-        /// <seealso cref="CityBase.ResearchIncome"/>
-        public double OriginalResearchIncome => Cities.Select(city => city.ResearchIncome).Sum();
+        /// <seealso cref="InteriorBuilding.BasicResearchIncome"/>
+        public double BasicResearchIncome =>
+            Cities.SelectMany(city => city.InteriorBuildings).Select(b => b.BasicResearchIncome).Sum();
 
         /// <summary>
-        /// The research per turn of this player.
-        /// It is calculated from <see cref="OriginalResearchIncome"/> with <see cref="Happiness"/> and <see cref="ResearchInvestmentRatio"/>.
+        /// The total actual research income per turn of this player.
         /// </summary>
-        /// <seealso cref="OriginalResearchIncome"/>
+        /// <seealso cref="Research"/>
+        /// <seealso cref="BasicResearchIncome"/>
         /// <seealso cref="ResearchInvestmentRatio"/>
-        /// <seealso cref="CityBase.ResearchIncome"/>
-        public double ResearchIncome => OriginalResearchIncome * ResearchInvestmentRatio
-            * (1 + Game.Constants.ResearchHappinessCoefficient * Happiness);
+        /// <seealso cref="InteriorBuilding.ResearchIncome"/>
+        public double ResearchIncome =>
+            Cities.SelectMany(city => city.InteriorBuildings).Select(b => b.ResearchIncome).Sum();
 
         /// <summary>
         /// The total research of this player.
         /// </summary>
         /// <seealso cref="ResearchIncome"/>
-        public double Research { get; private set; } = 0;
+        /// <seealso cref="BasicResearchIncome"/>
+        /// <seealso cref="ResearchInvestmentRatio"/>
+        /// <seealso cref="InteriorBuilding.Research"/>
+        public double Research =>
+            Cities.SelectMany(city => city.InteriorBuildings).Select(b => b.Research).Sum();
 
         /// <summary>
         /// The whole population which this player has. It is equal to sum of all <see cref="CityBase.Population"/> of cities of this player.
@@ -180,7 +205,7 @@ namespace CivModel
         /// The basic research gold requirement.
         /// </summary>
         /// <seealso cref="ResearchInvestmentRatio"/>
-        public double BasicResearchRequire => Game.Constants.ResearchRequireCoefficient * OriginalResearchIncome;
+        public double BasicResearchRequire => Game.Constants.ResearchRequireCoefficient * BasicResearchIncome;
 
         /// <summary>
         /// The ratio of real amount to basic amount of research investment. It must be in [<c>0</c>, <c>2</c>].
@@ -209,14 +234,14 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="Unit"/>
         public IReadOnlyList<Unit> Units => _units;
-        private readonly SafeEnumerableCollection<Unit> _units = new SafeEnumerableCollection<Unit>();
+        private readonly SafeIterationCollection<Unit> _units = new SafeIterationCollection<Unit>();
 
         /// <summary>
         /// The list of cities of this player.
         /// </summary>
         /// <seealso cref="CityBase"/>
         public IReadOnlyList<CityBase> Cities => _cities;
-        private readonly SafeEnumerableCollection<CityBase> _cities = new SafeEnumerableCollection<CityBase>();
+        private readonly SafeIterationCollection<CityBase> _cities = new SafeIterationCollection<CityBase>();
 
         /// <summary>
         /// <see cref="IEnumerable{T}"/> object which contains <see cref="Actor"/> objects this player owns.
@@ -227,7 +252,7 @@ namespace CivModel
         /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
         /// </summary>
         public IReadOnlyList<Quest> Quests => _quests;
-        private readonly SafeEnumerableCollection<Quest> _quests = new SafeEnumerableCollection<Quest>();
+        private readonly SafeIterationCollection<Quest> _quests = new SafeIterationCollection<Quest>();
 
         /// <summary>
         /// The list of the not-finished productions of this player.
@@ -412,7 +437,10 @@ namespace CivModel
         {
             if (pt.TileOwner != this)
                 throw new ArgumentException("pt is not in the territoriy of this player", "pt");
-            if (pt.TileBuilding != null)
+
+            // if (pt.TileBuilding == null) 은 사용할 수 없음
+            // TileBuilding.OnAfterChangeOwner에서 RemoveTerritory할 때 실패하면 안 됌.
+            if (pt.TileBuilding?.Owner == this)
                 throw new InvalidOperationException("the tile where a TileBuilding is cannot be removed from the territory");
 
             _territory.Remove(pt);
@@ -445,11 +473,9 @@ namespace CivModel
 
             var dg = GoldNetIncome;
             var dh = HappinessIncome;
-            var dr = ResearchIncome;
 
             Gold = Math.Max(0, Gold + dg);
             Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
-            Research += dr;
         }
 
         /// <summary>
@@ -478,7 +504,7 @@ namespace CivModel
 
         /// <summary>
         /// Update <see cref="Production.EstimatedLaborInputing"/>, <see cref="Production.EstimatedGoldInputing"/>,
-        ///  <see cref="Actor.EstimatedLaborLogicstics"/>, <see cref="EstimatedUsedLabor"/>
+        ///  <see cref="Actor.EstimatedLaborLogistics"/>, <see cref="EstimatedUsedLabor"/>
         ///  and <see cref="EstimatedUsedGold"/> property of this player.
         /// </summary>
         public void EstimateResourceInputs()
@@ -494,7 +520,7 @@ namespace CivModel
             foreach (var actor in Actors)
             {
                 var estLabor = actor.GetAvailableInputLaborLogistics(logistics);
-                actor.EstimatedLaborLogicstics = estLabor;
+                actor.EstimatedLaborLogistics = estLabor;
 
                 EstimatedUsedLabor += estLabor;
                 EstimatedUsedGold += actor.GoldLogistics;
@@ -526,7 +552,7 @@ namespace CivModel
 
             foreach (var actor in Actors)
             {
-                actor.HealByLogistics(actor.EstimatedLaborLogicstics);
+                actor.HealByLogistics(actor.EstimatedLaborLogistics);
             }
 
             for (var node = Production.First; node != null; )

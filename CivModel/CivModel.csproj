@@ -32,11 +32,11 @@
     <DocumentationFile>bin\Release\CivModel.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Accord.Fuzzy">
-      <HintPath>..\external\Accord.NET\Accord.Fuzzy.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActorConstants.cs" />
     <Compile Include="IAIController.cs" />
     <Compile Include="AttackActorAction.cs" />
     <Compile Include="CityBase.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
     <Compile Include="IGuidTaggedObject.cs" />
+    <Compile Include="InteriorBuildingConstants.cs" />
     <Compile Include="InteriorBuilding.cs" />
     <Compile Include="InteriorBuildingProduction.cs" />
     <Compile Include="ITileObjectObserver.cs" />
@@ -81,6 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.Observers.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

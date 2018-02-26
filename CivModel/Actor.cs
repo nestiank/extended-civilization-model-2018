@@ -55,7 +55,8 @@ namespace CivModel
         /// <summary>
         /// The maximum AP.
         /// </summary>
-        public abstract double MaxAP { get; }
+        public double MaxAP => _maxAP;
+        private readonly double _maxAP;
 
         /// <summary>
         /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
@@ -87,13 +88,15 @@ namespace CivModel
         /// <summary>
         /// The maximum HP. <c>0</c> if this actor is not a combattant.
         /// </summary>
-        public virtual double MaxHP => 0;
+        public double MaxHP => _maxHP;
+        private readonly double _maxHP;
 
         /// <summary>
         /// The maximum heal per turn.
         /// </summary>
-        /// <seealso cref="RemainHP" />
-        public virtual double MaxHealPerTurn => 5;
+        /// <seealso cref="Actor.HealByLogistics(double)" />
+        public double MaxHealPerTurn => _maxHealPerTurn;
+        private readonly double _maxHealPerTurn;
 
         /// <summary>
         /// The remaining HP. It must be in [0, <see cref="MaxHP"/>].
@@ -127,27 +130,31 @@ namespace CivModel
         /// <summary>
         /// The attack power.
         /// </summary>
-        public virtual double AttackPower => 0;
+        public double AttackPower => _attackPower;
+        private readonly double _attackPower;
 
         /// <summary>
         /// The defence power.
         /// </summary>
-        public virtual double DefencePower => 0;
+        public double DefencePower => _defencePower;
+        private readonly double _defencePower;
 
         /// <summary>
         /// The amount of gold logistics of this actor.
         /// </summary>
-        public abstract double GoldLogistics { get; }
+        public double GoldLogistics => _goldLogistics;
+        private readonly double _goldLogistics;
 
         /// <summary>
         /// The amount of labor logistics of this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
         /// </summary>
-        public abstract double FullLaborLogicstics { get; }
+        public double FullLaborLogistics => _fullLaborLogistics;
+        private readonly double _fullLaborLogistics;
 
         /// <summary>
         /// The amount of labor logistics of this actor to get the maximum heal mount in this turn.
         /// </summary>
-        public double BasicLaborLogistics => FullLaborLogicstics * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
+        public double BasicLaborLogistics => FullLaborLogistics * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
 
         /// <summary>
         /// The amount of labor logicstics to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
@@ -157,12 +164,13 @@ namespace CivModel
         /// You must call that function before use this property.
         /// </remarks>
         /// <seealso cref="Player.EstimateResourceInputs"/>
-        public double EstimatedLaborLogicstics { get; internal set; }
+        public double EstimatedLaborLogistics { get; internal set; }
 
         /// <summary>
         /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
         /// </summary>
-        public virtual int BattleClassLevel => 0;
+        public int BattleClassLevel => _battleClassLevel;
+        private readonly int _battleClassLevel;
 
         /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
@@ -229,12 +237,28 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Actor"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this actor.</param>
+        /// <param name="constants">constants of this actor.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <param name="tag">The <seealso cref="TileTag"/> of this actor.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public Actor(Player owner, Terrain.Point point, TileTag tag)
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="owner"/> is <c>null</c>.
+        /// or
+        /// <paramref name="constants"/> is <c>null</c>.
+        /// </exception>
+        public Actor(Player owner, ActorConstants constants, Terrain.Point point, TileTag tag)
             : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
+            if (constants == null)
+                throw new ArgumentNullException(nameof(constants));
+            _maxAP = constants.MaxAP;
+            _maxHP = constants.MaxHP;
+            _maxHealPerTurn = constants.MaxHealPerTurn;
+            _attackPower = constants.AttackPower;
+            _defencePower = constants.DefencePower;
+            _goldLogistics = constants.GoldLogistics;
+            _fullLaborLogistics = constants.FullLaborLogistics;
+            _battleClassLevel = constants.BattleClassLevel;
+
             _owner = owner;
             RemainHP = MaxHP;
 
@@ -278,7 +302,7 @@ namespace CivModel
         /// <exception cref="InvalidOperationException">
         /// actor is already destroyed
         /// or
-        /// the ownership of unit on TileBuilding cannot be changed
+        /// the ownership of actor on TileBuilding cannot be changed
         /// </exception>
         /// <exception cref="ArgumentNullException"><paramref name="newOwner"/> is <c>null</c>.</exception>
         /// <seealso cref="Owner"/>
@@ -291,11 +315,15 @@ namespace CivModel
 
             if (newOwner == Owner)
                 return;
-            if (PlacedPoint?.TileBuilding != null)
-                throw new InvalidOperationException("the ownership of unit on TileBuilding cannot be changed");
+
+            var tileBuilding = PlacedPoint?.TileBuilding;
+            if (tileBuilding != null && tileBuilding != this)
+                throw new InvalidOperationException("the ownership of actor on TileBuilding cannot be changed");
 
             OnBeforeChangeOwner(newOwner);
+            var prevOwner = _owner;
             _owner = newOwner;
+            OnAfterChangeOwner(prevOwner);
         }
 
         /// <summary>
@@ -303,6 +331,14 @@ namespace CivModel
         /// </summary>
         /// <param name="newOwner">The new owner.</param>
         protected virtual void OnBeforeChangeOwner(Player newOwner)
+        {
+        }
+
+        /// <summary>
+        /// Called after [change owner], by <see cref="ChangeOwner"/>.
+        /// </summary>
+        /// <param name="prevOwner">The previous owner.</param>
+        protected virtual void OnAfterChangeOwner(Player prevOwner)
         {
         }
 
@@ -347,7 +383,7 @@ namespace CivModel
         /// </returns>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentException"><paramref name="amount"/> is negative</exception>
-        public bool CanConsumeAP(int amount)
+        public bool CanConsumeAP(double amount)
         {
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
@@ -367,7 +403,7 @@ namespace CivModel
         /// or
         /// <paramref name="amount"/> is bigger than <see cref="RemainAP"/>
         /// </exception>
-        public void ConsumeAP(int amount)
+        public void ConsumeAP(double amount)
         {
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
@@ -383,7 +419,7 @@ namespace CivModel
         /// Consumes all of AP which this actor has.
         /// </summary>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        /// <seealso cref="ConsumeAP(int)"/>
+        /// <seealso cref="ConsumeAP(double)"/>
         public void ConsumeAllAP()
         {
             if (Owner == null)
@@ -446,10 +482,10 @@ namespace CivModel
                 throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
 
             labor = GetAvailableInputLaborLogistics(labor);
-            if (AboutEqual(labor, FullLaborLogicstics))
+            if (AboutEqual(labor, FullLaborLogistics))
                 Heal(MaxHealPerTurn);
             else
-                Heal(MaxHealPerTurn * labor / FullLaborLogicstics);
+                Heal(MaxHealPerTurn * labor / FullLaborLogistics);
 
             return labor;
         }
@@ -595,13 +631,25 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Gets the required AP to move to the specified target point from the near.
+        /// Gets the required AP to move to point of the specified type
         /// </summary>
-        /// <param name="target">The target point</param>
-        /// <returns>the required AP. if this actor cannot move to <paramref name="target"/>, <c>-1</c>.</returns>
-        public virtual int GetRequiredAPToMove(Terrain.Point target)
+        /// <param name="type">The type of <see cref="Terrain.Point"/></param>
+        /// <returns>the required AP.</returns>
+        public virtual double GetRequiredAPToMove(TerrainType type)
         {
-            return 1;
+            // POMFSTIH
+            switch (type)
+            {
+                case TerrainType.Plain: return 1;
+                case TerrainType.Ocean: return 0.5;
+                case TerrainType.Mount: return 3;
+                case TerrainType.Forest: return 2;
+                case TerrainType.Swamp: return 2;
+                case TerrainType.Tundra: return 1;
+                case TerrainType.Ice: return 2;
+                case TerrainType.Hill: return 2;
+                default: throw new NotImplementedException("unqualified TerrainType at Actor.GetRequiredAPToMove()");
+            }
         }
 
         /// <summary>
