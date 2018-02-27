@@ -28,6 +28,10 @@ namespace CivModel
         /// The amount of research income per turn this building provides.
         /// </summary>
         public double ResearchIncome { get; set; } = 0;
+        /// <summary>
+        /// The population coefficient for the city where this building is.
+        /// </summary>
+        public double PopulationCoefficient { get; set; } = 1;
 
         /// <summary>
         /// Create the copy of this object.

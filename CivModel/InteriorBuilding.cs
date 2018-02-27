@@ -165,6 +165,12 @@ namespace CivModel
         private double _research = 0;
 
         /// <summary>
+        /// The population coefficient for the city where this building is.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">PopulationCoefficient is negative</exception>
+        public double PopulationCoefficient { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
         /// </summary>
         /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
@@ -192,6 +198,7 @@ namespace CivModel
             _providedLabor = constants.ProvidedLabor;
             _basicResearchIncome = constants.ResearchIncome;
             _researchCapacity = constants.ResearchCapacity;
+            PopulationCoefficient = constants.PopulationCoefficient;
         }
 
         /// <summary>
