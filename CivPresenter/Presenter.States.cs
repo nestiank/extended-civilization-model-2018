@@ -79,7 +79,11 @@ namespace CivPresenter
             /// <summary>
             /// State [AI control]. This state indicates AI player is doing his job now.
             /// </summary>
-            AIControl
+            AIControl,
+            /// <summary>
+            /// State [city view]. This state indicates player is viewint the city.
+            /// </summary>
+            CityView
         }
     }
 }

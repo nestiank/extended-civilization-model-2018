@@ -151,6 +151,12 @@ namespace CivPresenter
         public int SelectedQuest { get; private set; } = -1;
         private int _questsCount = -1;
 
+        /// <summary>
+        /// The selected city.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.CityView"/></c>.
+        /// </summary>
+        public CityBase SelectedCity { get; private set; }
+
         private bool[] _victoryNotified = null;
 
         /// <summary>
@@ -379,6 +385,18 @@ namespace CivPresenter
             if (State == States.Normal)
                 StateQuest();
             else if (State == States.Quest)
+                OnCancel();
+        }
+
+        /// <summary>
+        /// Gives the command [city view].
+        /// This method may introduce <see cref="States.CityView"/> state.
+        /// </summary>
+        public void CommandCityView()
+        {
+            if (State == States.Normal && FocusedPoint.TileBuilding is CityBase city)
+                StateCityView(city);
+            else if (State == States.CityView)
                 OnCancel();
         }
 
@@ -1095,6 +1113,26 @@ namespace CivPresenter
                 task => View.Invoke(() => {
                     ProceedTurn();
                 }));
+        }
+
+        private void StateCityView(CityBase city)
+        {
+            State = States.CityView;
+
+            SelectedCity = city;
+
+            OnApply = () => {
+                OnCancel();
+            };
+            OnCancel = () => {
+                SelectedCity = null;
+                StateNormal();
+            };
+            OnArrowKey = direction => { };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+            OnSleep = () => { };
         }
     }
 }
