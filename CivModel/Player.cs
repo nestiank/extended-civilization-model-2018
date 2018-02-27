@@ -64,7 +64,7 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="GoldIncome"/>
         /// <seealso cref="GoldNetIncome"/>
-        public double GoldNetIncomeWithoutConsumption => GoldIncome - EconomicInvestment - ResearchInvestment - CalculateLogistics().gold;
+        public double GoldNetIncomeWithoutConsumption => CalculateLogistics().gold;
 
         /// <summary>
         /// The net income of gold. <see cref="EstimatedUsedGold"/> property is used for calculation.
@@ -97,7 +97,7 @@ namespace CivModel
         /// The labor per turn with logistics consumption.
         /// </summary>
         /// <seealso cref="LaborWithoutLogistics"/>
-        public double Labor => LaborWithoutLogistics - CalculateLogistics().labor;
+        public double Labor => CalculateLogistics().labor;
 
         /// <summary>
         /// The total basic research income per turn of this player.
@@ -670,7 +670,7 @@ namespace CivModel
         internal (double labor, double gold) CalculateLogistics()
         {
             double labor = LaborWithoutLogistics;
-            double gold = GoldIncome;
+            double gold = GoldIncome - EconomicInvestment - ResearchInvestment;
             foreach (var actor in Actors)
             {
                 if (actor.LaborLogistics <= actor.LaborLogistics)
