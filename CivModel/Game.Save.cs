@@ -120,9 +120,10 @@ namespace CivModel
                     }
                 }
 
+                TeamCount = numOfPlayer;
                 for (int i = 0; i < numOfPlayer; ++i)
                 {
-                    _players.Add(new Player(this));
+                    _players.Add(new Player(this, i));
 
                     var territory = readLine().Split(':')
                         .Where(str => str != "")

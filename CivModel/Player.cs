@@ -339,16 +339,27 @@ namespace CivModel
         public Game Game => _game;
         private readonly Game _game;
 
+        /// <summary>
+        /// The team of this player.
+        /// </summary>
+        public int Team => _team;
+        private readonly int _team;
+
         private bool _beforeLandingCity = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Player"/> class.
         /// </summary>
         /// <param name="game">The game which this player participates.</param>
+        /// <param name="team">The team of this player.</param>
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
-        public Player(Game game)
+        public Player(Game game, int team)
         {
             _game = game ?? throw new ArgumentNullException(nameof(game));
+
+            if (team < 0 || team >= game.TeamCount)
+                throw new ArgumentOutOfRangeException(nameof(team), team, "team number is invalid");
+            _team = team;
 
             _specialResourceProxy = new SpecialResourceProxy { thiz = this };
 
