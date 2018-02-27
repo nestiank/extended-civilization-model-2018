@@ -53,10 +53,28 @@ namespace CivModel
         public virtual string Name => "";
 
         /// <summary>
+        /// The original constants of this actor. The actual values can be different from the values of this property.
+        /// </summary>
+        public ActorConstants OriginalConstants => _originalConstants;
+        private readonly ActorConstants _originalConstants;
+
+        /// <summary>
         /// The maximum AP.
         /// </summary>
-        public double MaxAP => _maxAP;
-        private readonly double _maxAP;
+        /// <exception cref="ArgumentOutOfRangeException">MaxAP is negative</exception>
+        public double MaxAP
+        {
+            get => _maxAP;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "MaxAP is negative");
+                if (value < RemainAP)
+                    RemainAP = value;
+                _maxAP = value;
+            }
+        }
+        private double _maxAP;
 
         /// <summary>
         /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
@@ -88,15 +106,37 @@ namespace CivModel
         /// <summary>
         /// The maximum HP. <c>0</c> if this actor is not a combattant.
         /// </summary>
-        public double MaxHP => _maxHP;
-        private readonly double _maxHP;
+        /// <exception cref="ArgumentOutOfRangeException">MaxHP is negative</exception>
+        public double MaxHP
+        {
+            get => _maxHP;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "MaxHP is negative");
+                if (value < RemainHP)
+                    RemainHP = value;
+                _maxHP = value;
+            }
+        }
+        private double _maxHP;
 
         /// <summary>
         /// The maximum heal per turn.
         /// </summary>
-        /// <seealso cref="Actor.HealByLogistics(double)" />
-        public double MaxHealPerTurn => _maxHealPerTurn;
-        private readonly double _maxHealPerTurn;
+        /// <exception cref="ArgumentOutOfRangeException">MaxHealPerTurn is negative</exception>
+        /// <seealso cref="HealByLogistics(double)"/>
+        public double MaxHealPerTurn
+        {
+            get => _maxHealPerTurn;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "MaxHealPerTurn is negative");
+                _maxHealPerTurn = value;
+            }
+        }
+        private double _maxHealPerTurn;
 
         /// <summary>
         /// The remaining HP. It must be in [0, <see cref="MaxHP"/>].
@@ -130,26 +170,44 @@ namespace CivModel
         /// <summary>
         /// The attack power.
         /// </summary>
-        public double AttackPower => _attackPower;
-        private readonly double _attackPower;
+        public double AttackPower { get; set; }
 
         /// <summary>
         /// The defence power.
         /// </summary>
-        public double DefencePower => _defencePower;
-        private readonly double _defencePower;
+        public double DefencePower { get; set; }
 
         /// <summary>
         /// The amount of gold logistics of this actor.
         /// </summary>
-        public double GoldLogistics => _goldLogistics;
-        private readonly double _goldLogistics;
+        /// <exception cref="ArgumentOutOfRangeException">GoldLogistics is negative</exception>
+        public double GoldLogistics
+        {
+            get => _goldLogistics;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "GoldLogistics is negative");
+                _goldLogistics = value;
+            }
+        }
+        private double _goldLogistics;
 
         /// <summary>
         /// The amount of labor logistics of this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
         /// </summary>
-        public double FullLaborLogistics => _fullLaborLogistics;
-        private readonly double _fullLaborLogistics;
+        /// <exception cref="ArgumentOutOfRangeException">FullLaborLogistics is negative</exception>
+        public double FullLaborLogistics
+        {
+            get => _fullLaborLogistics;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "FullLaborLogistics is negative");
+                _fullLaborLogistics = value;
+            }
+        }
+        private double _fullLaborLogistics;
 
         /// <summary>
         /// The amount of labor logistics of this actor to get the maximum heal mount in this turn.
@@ -169,8 +227,7 @@ namespace CivModel
         /// <summary>
         /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
         /// </summary>
-        public int BattleClassLevel => _battleClassLevel;
-        private readonly int _battleClassLevel;
+        public int BattleClassLevel { get; set; }
 
         /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
@@ -248,21 +305,28 @@ namespace CivModel
         public Actor(Player owner, ActorConstants constants, Terrain.Point point, TileTag tag)
             : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
-            if (constants == null)
-                throw new ArgumentNullException(nameof(constants));
-            _maxAP = constants.MaxAP;
-            _maxHP = constants.MaxHP;
-            _maxHealPerTurn = constants.MaxHealPerTurn;
-            _attackPower = constants.AttackPower;
-            _defencePower = constants.DefencePower;
-            _goldLogistics = constants.GoldLogistics;
-            _fullLaborLogistics = constants.FullLaborLogistics;
-            _battleClassLevel = constants.BattleClassLevel;
+            CopyConstants(constants);
+            _originalConstants = constants.Clone();
 
             _owner = owner;
             RemainHP = MaxHP;
 
             _effects = new Effect[Enum.GetNames(typeof(EffectTag)).Length];
+        }
+
+        private void CopyConstants(ActorConstants constants)
+        {
+            if (constants == null)
+                throw new ArgumentNullException(nameof(constants));
+
+            _maxAP = constants.MaxAP;
+            _maxHP = constants.MaxHP;
+            _maxHealPerTurn = constants.MaxHealPerTurn;
+            AttackPower = constants.AttackPower;
+            DefencePower = constants.DefencePower;
+            _goldLogistics = constants.GoldLogistics;
+            _fullLaborLogistics = constants.FullLaborLogistics;
+            BattleClassLevel = constants.BattleClassLevel;
         }
 
         /// <summary>

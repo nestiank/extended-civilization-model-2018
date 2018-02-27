@@ -52,36 +52,86 @@ namespace CivModel
         private CityBase _city = null;
 
         /// <summary>
+        /// The original constants of this building. The actual values can be different from the values of this property.
+        /// </summary>
+        public InteriorBuildingConstants OriginalConstants => _originalConstants;
+        private readonly InteriorBuildingConstants _originalConstants;
+
+        /// <summary>
         /// The amount of gold logistics of this actor.
         /// </summary>
-        public double GoldLogistics => _goldLogistics;
-        private readonly double _goldLogistics;
+        /// <exception cref="ArgumentOutOfRangeException">GoldLogistics is negative</exception>
+        public double GoldLogistics
+        {
+            get => _goldLogistics;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "GoldLogistics is negative");
+                _goldLogistics = value;
+            }
+        }
+        private double _goldLogistics;
 
         /// <summary>
         /// The amount of labor this building provides.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">ProvidedLabor is negative</exception>
         /// <seealso cref="CityBase.Labor"/>
-        public double ProvidedLabor => _providedLabor;
-        private readonly double _providedLabor;
+        public double ProvidedLabor
+        {
+            get => _providedLabor;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "ProvidedLabor is negative");
+                _providedLabor = value;
+            }
+        }
+        private double _providedLabor;
 
         /// <summary>
         /// The amount of research capacity this building provides.
         /// </summary>
-        public double ResearchCapacity => _researchCapacity;
-        private readonly double _researchCapacity;
+        /// <exception cref="ArgumentOutOfRangeException">ResearchCapacity is negative</exception>
+        /// <seealso cref="BasicResearchIncome"/>
+        /// <seealso cref="ResearchIncome"/>
+        public double ResearchCapacity
+        {
+            get => _researchCapacity;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "ResearchCapacity is negative");
+                _researchCapacity = value;
+            }
+        }
+        private double _researchCapacity;
 
         /// <summary>
         /// The amount of basic research income per turn this building provides.
         /// </summary>
-        /// <see cref="ResearchIncome"/>
-        public double BasicResearchIncome => _basicResearchIncome;
-        private readonly double _basicResearchIncome;
+        /// <exception cref="ArgumentOutOfRangeException">BasicResearchIncome is negative</exception>
+        /// <seealso cref="ResearchCapacity"/>
+        /// <seealso cref="ResearchIncome"/>
+        public double BasicResearchIncome
+        {
+            get => _basicResearchIncome;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "BasicResearchIncome is negative");
+                _basicResearchIncome = value;
+            }
+        }
+        private double _basicResearchIncome;
 
         /// <summary>
         /// The amount of research income per turn this building provides.
         /// This value is calculated with <see cref="Player.Happiness"/> and <see cref="Player.ResearchInvestmentRatio"/>.
         /// </summary>
-        /// <see cref="BasicResearchIncome"/>
+        /// <seealso cref="ResearchCapacity"/>
+        /// <seealso cref="BasicResearchIncome"/>
         public double ResearchIncome
         {
             get
@@ -126,15 +176,22 @@ namespace CivModel
         /// </exception>
         public InteriorBuilding(CityBase city, InteriorBuildingConstants constants)
         {
+            CopyConstants(constants);
+            _originalConstants = constants.Clone();
+
+            _owner = city.Owner;
+            City = city ?? throw new ArgumentNullException("city");
+        }
+
+        private void CopyConstants(InteriorBuildingConstants constants)
+        {
             if (constants == null)
                 throw new ArgumentNullException(nameof(constants));
+
             _goldLogistics = constants.GoldLogistics;
             _providedLabor = constants.ProvidedLabor;
             _basicResearchIncome = constants.ResearchIncome;
             _researchCapacity = constants.ResearchCapacity;
-
-            _owner = city.Owner;
-            City = city ?? throw new ArgumentNullException("city");
         }
 
         /// <summary>
