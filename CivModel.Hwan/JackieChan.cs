@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,18 +10,16 @@ namespace CivModel.Hwan
     {
         public static Guid ClassGuid { get; } = new Guid("3FE5F3BA-29AC-4BFD-99D7-ABA7CE9F706A");
         public override Guid Guid => ClassGuid;
-
-        public override double MaxAP => 2;
-
-        public override double MaxHP => 50;
-
-        public override double AttackPower => 35;
-        public override double DefencePower => 10;
-
-        public override double GoldLogistics => 3;
-        public override double FullLaborLogicstics => 3;
-
-        public override int BattleClassLevel => 4;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            MaxHP = 50,
+            AttackPower = 35,
+            DefencePower = 10,
+            GoldLogistics = 50,
+            FullLaborForRepair = 3,
+            BattleClassLevel = 4
+        };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -33,7 +31,7 @@ namespace CivModel.Hwan
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
 
-        public JackieChan(Player owner, Terrain.Point point) : base(owner, point)
+        public JackieChan(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -54,27 +52,32 @@ namespace CivModel.Hwan
 
             public int LastSkillCalled = -5;
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
+            {
+                if (CheckError(pt) != null)
+                    return double.NaN;
+
+                return 1;
+            }
+
+            private Exception CheckError(Terrain.Point? pt)
             {
                 if (pt != null)
-                    return -1;
+                    return new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
-                    return -1;
+                    return new InvalidOperationException("Actor is not placed yet");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 4)
-                    return -1;
-                return 1;
+                    return new InvalidOperationException("Skill is not turned on");
+
+                return null;
             }
 
             public void Act(Terrain.Point? pt)
             {
-                if (pt != null)
-                    throw new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 4)
-                    throw new InvalidOperationException("Skill is not turned on");
+                if (CheckError(pt) is Exception e)
+                    throw e;
 
-                int Ap = GetRequiredAP(pt);
+                double Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
@@ -170,9 +173,17 @@ namespace CivModel.Hwan
         private JackieChanProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => JackieChan.Constants;
+
+        public double TotalLaborCost => 100;
+        public double LaborCapacityPerTurn => 20;
+        public double TotalGoldCost => 100;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 100, 20, 50, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

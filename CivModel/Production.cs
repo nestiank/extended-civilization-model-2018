@@ -13,6 +13,22 @@ namespace CivModel
     public interface IProductionFactory
     {
         /// <summary>
+        /// The total labor cost to finish this production.
+        /// </summary>
+        double TotalLaborCost { get; }
+        /// <summary>
+        /// The maximum labor which can put into this production per turn.
+        /// </summary>
+        double LaborCapacityPerTurn { get; }
+        /// <summary>
+        /// The total gold cost to finish this production.
+        /// </summary>
+        double TotalGoldCost { get; }
+        /// <summary>
+        /// The maximum gold which can put into this production per turn.
+        /// </summary>
+        double GoldCapacityPerTurn { get; }
+        /// <summary>
         /// Creates the <see cref="Production"/> object
         /// </summary>
         /// <param name="owner">The player who owns the <see cref="Production"/> object.</param>
@@ -40,19 +56,17 @@ namespace CivModel
         /// <summary>
         /// The total labor cost to finish this production.
         /// </summary>
-        public double TotalLaborCost => _totalLaborCost;
-        private readonly double _totalLaborCost;
-
-        /// <summary>
-        /// The total gold cost to finish this production.
-        /// </summary>
-        public double TotalGoldCost => _totalGoldCost;
-        private readonly double _totalGoldCost;
+        public double TotalLaborCost { get; private set; }
 
         /// <summary>
         /// The maximum labor which can put into this production per turn.
         /// </summary>
         public double LaborCapacityPerTurn { get; private set; }
+
+        /// <summary>
+        /// The total gold cost to finish this production.
+        /// </summary>
+        public double TotalGoldCost { get; private set; }
 
         /// <summary>
         /// The maximum gold which can put into this production per turn.
@@ -116,48 +130,40 @@ namespace CivModel
         /// </summary>
         /// <param name="factory">The factory object of this production kind.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the production.</param>
-        /// <param name="totalLaborCost"><see cref="TotalLaborCost"/> of the production</param>
-        /// <param name="laborCapacityPerTurn"><see cref="LaborCapacityPerTurn"/> of the production.</param>
-        /// <param name="totalGoldCost"><see cref="TotalGoldCost"/> of the production</param>
-        /// <param name="goldCapacityPerTurn"><see cref="GoldCapacityPerTurn"/> of the production.</param>
         /// <exception cref="ArgumentException">
-        /// <paramref name="totalLaborCost"/> is negative
+        /// <see cref="IProductionFactory.TotalLaborCost"/> is negative
         /// or
-        /// <paramref name="totalGoldCost"/> is negative
+        /// <see cref="IProductionFactory.TotalGoldCost"/> is negative
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="laborCapacityPerTurn"/> is not in [0, <see cref="Production.TotalLaborCost"/>]
+        /// <see cref="IProductionFactory.LaborCapacityPerTurn"/> is not in [0, <see cref="Production.TotalLaborCost"/>]
         /// or
-        /// <paramref name="goldCapacityPerTurn"/> is not in [0, <see cref="Production.TotalGoldCost"/>]
+        /// <see cref="IProductionFactory.GoldCapacityPerTurn"/> is not in [0, <see cref="Production.TotalGoldCost"/>]
         /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="factory"/> is <c>null</c>
         /// or
         /// <paramref name="owner"/> is <c>null</c>
         /// </exception>
-        public Production(
-            IProductionFactory factory, Player owner,
-            double totalLaborCost, double laborCapacityPerTurn,
-            double totalGoldCost, double goldCapacityPerTurn)
+        public Production(IProductionFactory factory, Player owner)
         {
-            if (totalLaborCost < 0)
-                throw new ArgumentException("totalLaborCost is negative", "totalLaborCost");
-            if (laborCapacityPerTurn < 0 || laborCapacityPerTurn > totalLaborCost)
-                throw new ArgumentOutOfRangeException("laborCapacityPerTurn", laborCapacityPerTurn, 
-                    "laborCapacityPerTurn is not in [0, TotalLaborCost]");
-
-            if (totalGoldCost < 0)
-                throw new ArgumentException("totalGoldCost is negative", "totalGoldCost");
-            if (goldCapacityPerTurn < 0 || goldCapacityPerTurn > totalGoldCost)
-                throw new ArgumentOutOfRangeException("goldCapacityPerTurn", goldCapacityPerTurn,
-                    "goldCapacityPerTurn is not in [0, TotalGoldCost]");
-
             _factory = factory ?? throw new ArgumentNullException("factory");
             _owner = owner ?? throw new ArgumentNullException("owner");
-            _totalLaborCost = totalLaborCost;
-            LaborCapacityPerTurn = laborCapacityPerTurn;
-            _totalGoldCost = totalGoldCost;
-            GoldCapacityPerTurn = goldCapacityPerTurn;
+
+            if (factory.TotalLaborCost < 0)
+                throw new ArgumentException("TotalLaborCost is negative", nameof(factory));
+            if (factory.LaborCapacityPerTurn < 0 || factory.LaborCapacityPerTurn > factory.TotalLaborCost)
+                throw new ArgumentOutOfRangeException(nameof(factory), factory.LaborCapacityPerTurn, "LaborCapacityPerTurn is not in [0, TotalLaborCost]");
+
+            if (factory.TotalGoldCost < 0)
+                throw new ArgumentException("TotalGoldCost is negative", nameof(factory));
+            if (factory.GoldCapacityPerTurn < 0 || factory.GoldCapacityPerTurn > factory.TotalGoldCost)
+                throw new ArgumentOutOfRangeException(nameof(factory), factory.GoldCapacityPerTurn, "GoldCapacityPerTurn is not in [0, TotalGoldCost]");
+
+            TotalLaborCost = factory.TotalLaborCost;
+            LaborCapacityPerTurn = factory.LaborCapacityPerTurn;
+            TotalGoldCost = factory.TotalGoldCost;
+            GoldCapacityPerTurn = factory.GoldCapacityPerTurn;
         }
 
         /// <summary>
@@ -203,6 +209,10 @@ namespace CivModel
         /// <summary>
         /// Inputs resources into this production
         /// </summary>
+        /// <remarks>
+        /// The return type of this method is <see cref="ValueTuple{T1, T2}"/> which Unity does not support.<br/>
+        /// Use <c>Item1</c> and <c>Item2</c> if explicit tuple names is unavailable.
+        /// </remarks>
         /// <param name="labor">labor amount to input</param>
         /// <param name="gold">gold amount to input</param>
         /// <returns>The amount which is really inputed. It can be different from the argument.</returns>
@@ -214,7 +224,7 @@ namespace CivModel
         /// </exception>
         /// <seealso cref="GetAvailableInputLabor(double)"/>
         /// <seealso cref="GetAvailableInputGold(double)"/>
-        public Tuple<double, double> InputResources(double labor, double gold)
+        public (double inputedLabor, double inputedGold) InputResources(double labor, double gold)
         {
             if (IsCompleted)
                 throw new InvalidOperationException("production is already completed");
@@ -233,7 +243,7 @@ namespace CivModel
             if (LaborInputed >= TotalLaborCost && GoldInputed >= TotalGoldCost)
                 IsCompleted = true;
 
-            return new Tuple<double, double>(labor, gold);
+            return (labor, gold);
         }
 
         /// <summary>

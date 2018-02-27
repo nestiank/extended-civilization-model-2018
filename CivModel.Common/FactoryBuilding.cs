@@ -6,14 +6,18 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public sealed class FactoryBuilding : InteriorBuilding
+    public class FactoryBuilding : InteriorBuilding
     {
         public static Guid ClassGuid { get; } = new Guid("A2AE33B4-5543-4751-8681-E958DFC1A511");
         public override Guid Guid => ClassGuid;
 
-        public override double ProvidedLabor => 1;
+        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants {
+            ProvidedLabor = 1
+        };
 
-        public FactoryBuilding(CityBase city) : base(city) { }
+        public FactoryBuilding(CityBase city) : base(city, Constants)
+        {
+        }
     }
 
     public class FactoryBuildingProductionFactory : IInteriorBuildingProductionFactory
@@ -24,9 +28,17 @@ namespace CivModel.Common
         private FactoryBuildingProductionFactory()
         {
         }
+
+        public InteriorBuildingConstants Constants => FactoryBuilding.Constants;
+
+        public double TotalLaborCost => 5;
+        public double LaborCapacityPerTurn => 2;
+        public double TotalGoldCost => 5;
+        public double GoldCapacityPerTurn => 2;
+
         public Production Create(Player owner)
         {
-            return new InteriorBuildingProduction(this, owner, 5, 2, 5, 2);
+            return new InteriorBuildingProduction(this, owner);
         }
         public bool IsPlacable(InteriorBuildingProduction production, CityBase city)
         {

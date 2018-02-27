@@ -28,27 +28,6 @@ namespace CivModel
         private static int _cityNamePrefix = 1;
 
         /// <summary>
-        /// The maximum HP. <c>0</c> if this actor is not a combattant.
-        /// </summary>
-        public override double MaxHP => 9;
-
-        /// <summary>
-        /// The maximum heal per turn.
-        /// </summary>
-        /// <seealso cref="Actor.RemainHP" />
-        public override double MaxHealPerTurn => 15;
-
-        /// <summary>
-        /// The attack power.
-        /// </summary>
-        public override double AttackPower => 15;
-
-        /// <summary>
-        /// The defence power.
-        /// </summary>
-        public override double DefencePower => 21;
-
-        /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
         /// </summary>
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -77,7 +56,9 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="IGameConstantScheme.PopulationConstant"/>
         /// <seealso cref="IGameConstantScheme.PopulationHappinessCoefficient"/>
-        public double PopulationIncome => Owner.Game.Constants.PopulationConstant + Owner.Game.Constants.PopulationHappinessCoefficient * Owner.Happiness;
+        public double PopulationIncome =>
+            (Owner.Game.Constants.PopulationConstant + Owner.Game.Constants.PopulationHappinessCoefficient * Owner.Happiness)
+            * InteriorBuildings.Select(b => b.PopulationCoefficient).Aggregate((a, x) => a * x);
 
         /// <summary>
         /// The labor which this city offers.
@@ -87,25 +68,24 @@ namespace CivModel
         public double Labor => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
 
         /// <summary>
-        /// The research per turn which this city offers.
-        /// </summary>
-        /// <seealso cref="InteriorBuilding.ProvidedResearchIncome"/>
-        /// <seealso cref="Player.Labor"/>
-        public double ResearchIncome => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedResearchIncome).Sum());
-
-        /// <summary>
         /// The list of <see cref="InteriorBuilding"/> this city owns.
         /// </summary>
         public IReadOnlyList<InteriorBuilding> InteriorBuildings => _interiorBuildings;
-        private readonly SafeEnumerableCollection<InteriorBuilding> _interiorBuildings = new SafeEnumerableCollection<InteriorBuilding>();
+        private readonly SafeIterationCollection<InteriorBuilding> _interiorBuildings = new SafeIterationCollection<InteriorBuilding>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CityBase"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this city.</param>
+        /// <param name="constants">constants of this actor.</param>
         /// <param name="point">The tile where the object will be.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public CityBase(Player owner, Terrain.Point point) : base(owner, point)
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="owner"/> is <c>null</c>.
+        /// or
+        /// <paramref name="constants"/> is <c>null</c>.
+        /// </exception>
+        public CityBase(Player owner, ActorConstants constants, Terrain.Point point)
+            : base(owner, constants, point)
         {
             string name;
             do
@@ -115,8 +95,9 @@ namespace CivModel
             }
             while (!TrySetCityName(name));
 
-            Owner.AddCityToList(this);
             _holdingAttackAct = new AttackActorAction(this, false);
+
+            Owner.BeforeLandingCity = false;
         }
 
         /// <summary>
@@ -185,26 +166,6 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Called before [change owner], by <see cref="Actor.ChangeOwner" />.
-        /// </summary>
-        /// <param name="newOwner">The new owner.</param>
-        protected override void OnBeforeChangeOwner(Player newOwner)
-        {
-            base.OnBeforeChangeOwner(newOwner);
-            Owner.RemoveCityFromList(this);
-            newOwner.AddCityToList(this);
-        }
-
-        /// <summary>
-        /// Called before [destroy], by <see cref="Actor.Destroy" />
-        /// </summary>
-        protected override void OnBeforeDestroy()
-        {
-            Owner.RemoveCityFromList(this);
-            base.OnBeforeDestroy();
-        }
-
-        /// <summary>
         /// Called when [die] by <see cref="Actor.Die(Player)" />.
         /// </summary>
         /// <param name="opposite">The opposite who caused the dying of this actor. If not exists, <c>null</c>.</param>
@@ -229,6 +190,17 @@ namespace CivModel
         }
 
         /// <summary>
+        /// Called before a turn.
+        /// </summary>
+        public override void PreTurn()
+        {
+            base.PreTurn();
+
+            foreach (var building in InteriorBuildings)
+                building.PreTurn();
+        }
+
+        /// <summary>
         /// Called after a turn.
         /// </summary>
         public override void PostTurn()
@@ -240,6 +212,33 @@ namespace CivModel
             {
                 Destroy();
             }
+
+            foreach (var building in InteriorBuildings)
+                building.PostTurn();
+        }
+
+        /// <summary>
+        /// Called before a sub turn.
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        public override void PrePlayerSubTurn(Player playerInTurn)
+        {
+            base.PrePlayerSubTurn(playerInTurn);
+
+            foreach (var building in InteriorBuildings)
+                building.PrePlayerSubTurn(playerInTurn);
+        }
+
+        /// <summary>
+        /// Called after a sub turn.
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        public override void PostPlayerSubTurn(Player playerInTurn)
+        {
+            base.PostPlayerSubTurn(playerInTurn);
+
+            foreach (var building in InteriorBuildings)
+                building.PostPlayerSubTurn(playerInTurn);
         }
     }
 }

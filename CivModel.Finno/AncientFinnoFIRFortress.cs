@@ -7,18 +7,57 @@ using System.Threading.Tasks;
 
 namespace CivModel.Finno
 {
-    public sealed class AncientFinnoFIRFortress : TileBuilding
+    public sealed class AncientFinnoFIRFortress : TileBuilding, ITileObjectObserver
     {
         public static Guid ClassGuid { get; } = new Guid("F5AC55CF-C095-4525-9B87-111ED58856A2");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxHP => 30;
-
-        public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, point) { }
-
-        public override void PostTurn()
+        public static readonly ActorConstants Constants = new ActorConstants
         {
-            this.RemainHP = Math.Min(30, (this.RemainHP + 10));
+            MaxHP = 30,
+            GoldLogistics = 20,
+            LaborLogistics =10,
+            MaxHealPerTurn = 10
+        };
+
+        public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        {
+            owner.Game.TileObjectObservable.AddObserver(this);
+        }
+
+        protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        {
+            AttackTo(5, opposite, opposite.DefencePower, false, true);
+            return originalDamage;
+        }
+
+        protected override void OnBeforeDestroy()
+        {
+            Owner.Game.TileObjectObservable.RemoveObserver(this);
+            base.OnBeforeDestroy();
+        }
+
+        private Unit AboveUnit = null;
+
+        public void TileObjectCreated(TileObject obj) { }
+
+        public void TileObjectPlaced(TileObject obj)
+        {
+            if (obj is Unit unit && unit.PlacedPoint != null
+                && unit.PlacedPoint == this.PlacedPoint
+                && unit.Owner == this.Owner && AboveUnit == null)
+            {
+                AboveUnit = unit;
+                AboveUnit.AttackPower += 5;
+                AboveUnit.DefencePower += 5;
+            }
+
+            else if (AboveUnit != null && obj == AboveUnit && obj.PlacedPoint != this.PlacedPoint)
+            {
+                AboveUnit.AttackPower -= 5;
+                AboveUnit.DefencePower -= 5;
+                AboveUnit = null;
+            }
         }
     }
 
@@ -30,15 +69,22 @@ namespace CivModel.Finno
         private AncientFinnoFIRFortressProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => AncientFinnoFIRFortress.Constants;
+
+        public double TotalLaborCost => 20;
+        public double LaborCapacityPerTurn => 10;
+        public double TotalGoldCost => 20;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 20, 10, 20, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.Unit == null
-                 && point.TileBuilding is CityBase
-                 && point.TileBuilding.Owner == production.Owner;
+            return point.TileBuilding == null
+                 && point.TileOwner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {

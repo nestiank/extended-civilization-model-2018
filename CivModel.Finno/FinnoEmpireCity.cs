@@ -11,19 +11,133 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("300E06FD-B656-46DC-A668-BB36C75E3086");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxHP => 500;
+
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxHP = 500,
+            GoldLogistics = 0,
+            LaborLogistics = 0,
+            MaxHealPerTurn = 20
+        };
 
         public override void PostTurn()
         {
-            this.RemainHP = Math.Min(500, (this.RemainHP + 50));
+            base.PostTurn();
+            Random r = new Random();
 
-            this.Population += 0.3 * (1 + 1 * (this.Owner.Happiness));
+            int GetUnit = r.Next(1, 100);
+
+            if (GetUnit <= 10)
+            {
+
+            }
+        }
+
+        private void SendUnit(int rand)
+        {
+            int A = this.PlacedPoint.Value.Position.A;
+            int B = this.PlacedPoint.Value.Position.B;
+            int C = this.PlacedPoint.Value.Position.C;
+
+            bool IsItOk = false;
+
+            int PointA = A;
+            int PointB = B ;
+            int PointC = C;
+
+            if (!CheckUnit(A + 1, B - 1, C))
+            {
+                IsItOk = true;
+
+                PointA = A + 1;
+                PointB = B - 1;
+                PointC = C;
+            }
+
+            else if (!CheckUnit(A + 1, B, C - 1))
+            {
+                IsItOk = true;
+
+                PointA = A + 1;
+                PointB = B;
+                PointC = C - 1;
+            }
+
+            else if (!CheckUnit(A, B + 1, C - 1))
+            {
+                IsItOk = true;
+
+                PointA = A;
+                PointB = B + 1;
+                PointC = C - 1;
+            }
+
+            else if (!CheckUnit(A - 1, B + 1, C))
+            {
+                IsItOk = true;
+
+                PointA = A - 1;
+                PointB = B + 1;
+                PointC = C;
+            }
+            
+            else if (!CheckUnit(A - 1, B, C + 1))
+            {
+                IsItOk = true;
+
+                PointA = A - 1;
+                PointB = B;
+                PointC = C + 1;
+            }
+
+            else if (!CheckUnit(A, B - 1, C + 1))
+            {
+                IsItOk = true;
+
+                PointA = A;
+                PointB = B - 1;
+                PointC = C + 1;
+            }
+
+            if (IsItOk)
+            {
+                if (rand <= 2)
+                    new DecentralizedMilitary(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+
+
+                else if(rand <= 4)
+                    new EMUHorseArcher(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+
+
+                else if(rand <= 6)
+                    new ElephantCavalry(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+
+                else if(rand <= 8)
+                    new AncientSorcerer(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+
+                else
+                    new JediKnight(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+            }
+        }
+
+        private bool CheckUnit (int A, int B, int C)
+        {
+            if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < this.PlacedPoint.Value.Terrain.Width && 0 <= C && C < this.PlacedPoint.Value.Terrain.Height)
+            {
+                if ((this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null)
+                    return false;
+
+                else
+                    return true;
+            }
+
+            return false;
         }
 
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public FinnoEmpireCity(Player player, Terrain.Point point) : base(player, point)
+        public FinnoEmpireCity(Player player, Terrain.Point point) : base(player, Constants, point)
         {
             this.Population = 5;
             _specialActs[0] = new FinnoEmpireCityAction(this);
@@ -36,17 +150,21 @@ namespace CivModel.Finno
 
             public bool IsParametered => false;
 
+            public int LastSkillCalled = -1;
+
             public FinnoEmpireCityAction(FinnoEmpireCity owner)
             {
                 _owner = owner;
             }
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
             {
                 if (pt != null)
-                    return -1;
+                    return double.NaN;
                 if (!_owner.PlacedPoint.HasValue)
-                    return -1;
+                    return double.NaN;
+                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
+                    return double.NaN;
 
                 return 0;
             }
@@ -57,6 +175,8 @@ namespace CivModel.Finno
                     throw new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     throw new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
+                    throw new InvalidOperationException("Skill is not turned on");
 
                 int A = Owner.PlacedPoint.Value.Position.A;
                 int B = Owner.PlacedPoint.Value.Position.B;
@@ -81,9 +201,11 @@ namespace CivModel.Finno
                 RealAction(A - 1, B - 1, C + 2);
                 RealAction(A, B - 2, C + 2);
                 RealAction(A + 1, B - 2, C + 1);
+
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
             }
 
-            public void RealAction(int A, int B, int C)
+            private void RealAction(int A, int B, int C)
             {
                 if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < Owner.PlacedPoint.Value.Terrain.Width && 0 <= C && C < Owner.PlacedPoint.Value.Terrain.Height)
                 {
@@ -111,7 +233,8 @@ namespace CivModel.Finno
 
         protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
         {
-            AttackTo(15, opposite, opposite.DefencePower, false, true);
+            double damage = 15 + 15 * InteriorBuildings.OfType<AncientFinnoVigilant>().Count();
+            AttackTo(damage, opposite, opposite.DefencePower, false, true);
             return originalDamage;
         }
     }
@@ -126,9 +249,16 @@ namespace CivModel.Finno
         {
         }
 
+        public ActorConstants Constants => FinnoEmpireCity.Constants;
+
+        public double TotalLaborCost => 200;
+        public double LaborCapacityPerTurn => 20;
+        public double TotalGoldCost => 300;
+        public double GoldCapacityPerTurn => 50;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 200, 20, 300, 50);
+            return new TileObjectProduction(this, owner);
         }
 
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)

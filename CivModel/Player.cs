@@ -13,89 +13,121 @@ namespace CivModel
     public sealed class Player : ITurnObserver
     {
         /// <summary>
+        /// The happiness of this player. This value is in [-100, 100].
+        /// </summary>
+        /// <seealso cref="HappinessIncome"/>
+        public double Happiness
+        {
+            get => _happiness;
+            set
+            {
+                if (value < -100 || value > 100)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "Happiness is not in [-100, 100]");
+                _happiness = value;
+            }
+        }
+        private double _happiness = 0;
+
+        /// <summary>
+        /// The happiness income of this player.
+        /// </summary>
+        /// <seealso cref="IGameConstantScheme.HappinessCoefficient"/>
+        public double HappinessIncome => Game.Constants.HappinessCoefficient * ((EconomicInvestmentRatio - 1) * BasicEconomicRequire);
+
+        /// <summary>
         /// The gold of this player. This value is not negative.
         /// </summary>
         /// <seealso cref="GoldIncome"/>
-        public double Gold { get; private set; } = 0;
+        public double Gold
+        {
+            get => _gold;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "gold is negative");
+                _gold = value;
+            }
+        }
+        private double _gold = 0;
 
         /// <summary>
         /// The gold income of this player. This is not negative, and can be different from <see cref="GoldNetIncome"/>
         /// </summary>
-        /// <seealso cref="GoldIncomeWithInvestments"/>
+        /// <seealso cref="GoldNetIncomeWithoutConsumption"/>
         /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
         /// <seealso cref="IGameConstantScheme.GoldCoefficient"/>
         public double GoldIncome => Game.Constants.GoldCoefficient * Population * TaxRate;
 
         /// <summary>
-        /// The gold income with investments.
+        /// The gold net income without repair/production consumption.
         /// </summary>
         /// <seealso cref="GoldIncome"/>
         /// <seealso cref="GoldNetIncome"/>
-        public double GoldIncomeWithInvestments => GoldIncome - EconomicInvestment - ResearchInvestment;
+        public double GoldNetIncomeWithoutConsumption => GoldIncome - EconomicInvestment - ResearchInvestment - CalculateLogistics().gold;
 
         /// <summary>
         /// The net income of gold. <see cref="EstimatedUsedGold"/> property is used for calculation.
         /// Therefore, you must call <see cref="EstimateResourceInputs"/> before use this property.
         /// </summary>
         /// <seealso cref="GoldIncome"/>
-        /// <seealso cref="GoldIncomeWithInvestments"/>
+        /// <seealso cref="GoldNetIncomeWithoutConsumption"/>
         /// <seealso cref="EstimatedUsedGold"/>
         /// <seealso cref="EstimateResourceInputs"/>
-        public double GoldNetIncome => GoldIncomeWithInvestments - EstimatedUsedGold;
-
-        /// <summary>
-        /// The happiness of this player. This value is in [-100, 100].
-        /// </summary>
-        /// <seealso cref="HappinessIncome"/>
-        public double Happiness { get; private set; } = 100;
-
-        /// <summary>
-        /// The happiness income of this player.
-        /// </summary>
-        /// <seealso cref="IGameConstantScheme.HappinessCoefficient"/>
-        public double HappinessIncome => Game.Constants.HappinessCoefficient * ((1 - EconomicInvestmentRatio) * BasicEconomicRequire);
+        public double GoldNetIncome => GoldNetIncomeWithoutConsumption - EstimatedUsedGold;
 
         /// <summary>
         /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
         /// It is equal to sum of all <see cref="CityBase.Labor"/> of cities of this player.
         /// </summary>
+        /// <seealso cref="LaborWithoutLogistics"/>
         /// <seealso cref="Labor"/>
         /// <seealso cref="CityBase.Labor"/>
         public double OriginalLabor => Cities.Select(city => city.Labor).Sum();
 
         /// <summary>
-        /// The labor per turn of this player.
+        /// The labor per turn of this player without logistics consumption.
         /// It is calculated from <see cref="OriginalLabor"/> with <see cref="Happiness"/>.
         /// </summary>
         /// <seealso cref="OriginalLabor"/>
-        /// <seealso cref="CityBase.Labor"/>
-        public double Labor => OriginalLabor * (1 + Game.Constants.LaborHappinessCoefficient * Happiness);
+        /// <seealso cref="Labor"/>
+        public double LaborWithoutLogistics => OriginalLabor * (1 + Game.Constants.LaborHappinessCoefficient * Happiness);
 
         /// <summary>
-        /// The research per turn of this player, not controlled by <see cref="Happiness"/> and <see cref="ResearchInvestmentRatio"/>.
-        /// It is equal to sum of all <see cref="CityBase.ResearchIncome"/> of cities of this player.
+        /// The labor per turn with logistics consumption.
         /// </summary>
+        /// <seealso cref="LaborWithoutLogistics"/>
+        public double Labor => LaborWithoutLogistics - CalculateLogistics().labor;
+
+        /// <summary>
+        /// The total basic research income per turn of this player.
+        /// </summary>
+        /// <seealso cref="Research"/>
         /// <seealso cref="ResearchIncome"/>
         /// <seealso cref="ResearchInvestmentRatio"/>
-        /// <seealso cref="CityBase.ResearchIncome"/>
-        public double OriginalResearchIncome => Cities.Select(city => city.ResearchIncome).Sum();
+        /// <seealso cref="InteriorBuilding.BasicResearchIncome"/>
+        public double BasicResearchIncome =>
+            Cities.SelectMany(city => city.InteriorBuildings).Select(b => b.BasicResearchIncome).Sum();
 
         /// <summary>
-        /// The research per turn of this player.
-        /// It is calculated from <see cref="OriginalResearchIncome"/> with <see cref="Happiness"/> and <see cref="ResearchInvestmentRatio"/>.
+        /// The total actual research income per turn of this player.
         /// </summary>
-        /// <seealso cref="OriginalResearchIncome"/>
+        /// <seealso cref="Research"/>
+        /// <seealso cref="BasicResearchIncome"/>
         /// <seealso cref="ResearchInvestmentRatio"/>
-        /// <seealso cref="CityBase.ResearchIncome"/>
-        public double ResearchIncome => OriginalResearchIncome * ResearchInvestmentRatio
-            * (1 + Game.Constants.ResearchHappinessCoefficient * Happiness);
+        /// <seealso cref="InteriorBuilding.ResearchIncome"/>
+        public double ResearchIncome =>
+            Cities.SelectMany(city => city.InteriorBuildings).Select(b => b.ResearchIncome).Sum();
 
         /// <summary>
         /// The total research of this player.
         /// </summary>
         /// <seealso cref="ResearchIncome"/>
-        public double Research { get; private set; } = 0;
+        /// <seealso cref="BasicResearchIncome"/>
+        /// <seealso cref="ResearchInvestmentRatio"/>
+        /// <seealso cref="InteriorBuilding.Research"/>
+        public double Research =>
+            Cities.SelectMany(city => city.InteriorBuildings).Select(b => b.Research).Sum();
 
         /// <summary>
         /// The whole population which this player has. It is equal to sum of all <see cref="CityBase.Population"/> of cities of this player.
@@ -121,31 +153,31 @@ namespace CivModel
         private double _taxRate = 1;
 
         /// <summary>
-        /// The ratio of real amount to basic amount of logistic investment. It must be in [<c>0</c>, <c>2</c>].
+        /// The ratio of real amount to basic amount of repair investment. It must be in [<c>0</c>, <c>1</c>].
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">value is not in [<c>0</c>, <c>2</c>].</exception>
-        /// <seealso cref="BasicLogisticRequire"/>
-        public double LogisticInvestmentRatio
+        /// <exception cref="ArgumentOutOfRangeException">value is not in [<c>0</c>, <c>1</c>].</exception>
+        /// <seealso cref="BasicLaborForRepair"/>
+        public double RepairInvestmentRatio
         {
-            get => _logisticInvestmentRatio;
+            get => _repairInvestmentRatio;
             set
             {
-                if (value < 0 || value > 2)
-                    throw new ArgumentOutOfRangeException(nameof(value), value, "value is not in [0, 2]");
-                _logisticInvestmentRatio = value;
+                if (value < 0 || value > 1)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "value is not in [0, 1]");
+                _repairInvestmentRatio = value;
             }
         }
-        private double _logisticInvestmentRatio = 1;
+        private double _repairInvestmentRatio = 1;
 
         /// <summary>
-        /// The amount of labor for logistic investment.
+        /// The amount of labor for repair investment.
         /// </summary>
-        public double LogisticInvestment => Math.Min(Labor, LogisticInvestmentRatio * BasicLogisticRequire);
+        public double RepairInvestment => Math.Min(Labor, RepairInvestmentRatio * BasicLaborForRepair);
 
         /// <summary>
-        /// The basic logistic labor requirement.
+        /// The basic labor requirement for repair.
         /// </summary>
-        public double BasicLogisticRequire => Actors.Select(actor => actor.BasicLaborLogistics).Sum();
+        public double BasicLaborForRepair => Actors.Select(actor => actor.BasicLaborForRepair).Sum();
 
         /// <summary>
         /// The basic economic gold requirement.
@@ -180,7 +212,7 @@ namespace CivModel
         /// The basic research gold requirement.
         /// </summary>
         /// <seealso cref="ResearchInvestmentRatio"/>
-        public double BasicResearchRequire => Game.Constants.ResearchRequireCoefficient * OriginalResearchIncome;
+        public double BasicResearchRequire => Game.Constants.ResearchRequireCoefficient * BasicResearchIncome;
 
         /// <summary>
         /// The ratio of real amount to basic amount of research investment. It must be in [<c>0</c>, <c>2</c>].
@@ -209,25 +241,32 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="Unit"/>
         public IReadOnlyList<Unit> Units => _units;
-        private readonly SafeEnumerableCollection<Unit> _units = new SafeEnumerableCollection<Unit>();
+        private readonly SafeIterationCollection<Unit> _units = new SafeIterationCollection<Unit>();
 
         /// <summary>
-        /// The list of cities of this player.
+        /// The list of tile buildings of this player.
+        /// </summary>
+        /// <seealso cref="TileBuilding"/>
+        public IReadOnlyList<TileBuilding> TileBuildings => _tileBuildings;
+        private readonly SafeIterationCollection<TileBuilding> _tileBuildings = new SafeIterationCollection<TileBuilding>();
+
+        /// <summary>
+        /// <see cref="IEnumerable{T}"/> object which contains cities this player owns.
         /// </summary>
         /// <seealso cref="CityBase"/>
-        public IReadOnlyList<CityBase> Cities => _cities;
-        private readonly SafeEnumerableCollection<CityBase> _cities = new SafeEnumerableCollection<CityBase>();
+        public IEnumerable<CityBase> Cities => TileBuildings.OfType<CityBase>();
 
         /// <summary>
         /// <see cref="IEnumerable{T}"/> object which contains <see cref="Actor"/> objects this player owns.
         /// </summary>
+        /// <seealso cref="Actor"/>
         public IEnumerable<Actor> Actors => Units.Cast<Actor>().Concat(Cities);
 
         /// <summary>
         /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
         /// </summary>
         public IReadOnlyList<Quest> Quests => _quests;
-        private readonly SafeEnumerableCollection<Quest> _quests = new SafeEnumerableCollection<Quest>();
+        private readonly SafeIterationCollection<Quest> _quests = new SafeIterationCollection<Quest>();
 
         /// <summary>
         /// The list of the not-finished productions of this player.
@@ -274,7 +313,7 @@ namespace CivModel
         /// <summary>
         /// Whether this player is defeated.
         /// </summary>
-        public bool IsDefeated => !_beforeLandingCity && Cities.Count == 0;
+        public bool IsDefeated => !BeforeLandingCity && Cities.Count() == 0;
 
         /// <summary>
         /// Whether this player is controlled by AI.
@@ -296,8 +335,10 @@ namespace CivModel
                 }
             }
         }
-
         private IAIController _aiController = null;
+
+        private Dictionary<ISpecialResource, (object data, int count)> _specialResources
+            = new Dictionary<ISpecialResource, (object, int)>();
 
         /// <summary>
         /// The game which this player participates.
@@ -305,16 +346,30 @@ namespace CivModel
         public Game Game => _game;
         private readonly Game _game;
 
-        private bool _beforeLandingCity = true;
+        /// <summary>
+        /// The team of this player.
+        /// </summary>
+        public int Team => _team;
+        private readonly int _team;
+
+        // this property is used by CityBase class
+        internal bool BeforeLandingCity { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Player"/> class.
         /// </summary>
         /// <param name="game">The game which this player participates.</param>
+        /// <param name="team">The team of this player.</param>
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
-        public Player(Game game)
+        public Player(Game game, int team)
         {
             _game = game ?? throw new ArgumentNullException(nameof(game));
+
+            if (team < 0 || team >= game.TeamCount)
+                throw new ArgumentOutOfRangeException(nameof(team), team, "team number is invalid");
+            _team = team;
+
+            _specialResourceProxy = new SpecialResourceProxy { thiz = this };
 
             game.TurnObservable.AddObserver(this);
         }
@@ -335,6 +390,71 @@ namespace CivModel
             return _aiController.DoAction();
         }
 
+        /// <summary>
+        /// The indexer proxy for special resources of this player.
+        /// </summary>
+        /// <remarks>
+        /// Usage: <code>player.SpecialResource[res]</code>
+        /// </remarks>
+        public SpecialResourceProxy SpecialResource => _specialResourceProxy;
+        private readonly SpecialResourceProxy _specialResourceProxy;
+        /// <summary>
+        /// The proxy class for <see cref="SpecialResource"/>
+        /// </summary>
+        /// <seealso cref="SpecialResource"/>
+        public class SpecialResourceProxy
+        {
+            internal Player thiz;
+            /// <summary>
+            /// Gets or sets the amount of the specified special resource.
+            /// </summary>
+            /// <value>
+            /// The amount of the specified special resource.
+            /// </value>
+            /// <param name="resource">The resource.</param>
+            /// <returns>The amount of the specified special resource.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">value - the amount of resource is out of range</exception>
+            public int this[ISpecialResource resource]
+            {
+                get
+                {
+                    if (thiz._specialResources.TryGetValue(resource, out var x))
+                        return x.count;
+                    else
+                        return 0;
+                }
+                set
+                {
+                    if (value < 0 || value > resource.MaxCount)
+                        throw new ArgumentOutOfRangeException(nameof(value), value, "the amount of resource is out of range");
+
+                    if (thiz._specialResources.TryGetValue(resource, out var x))
+                    {
+                        x.count = value;
+                    }
+                    else
+                    {
+                        thiz._specialResources[resource] = (null, value);
+                        var data = resource.EnablePlayer(thiz);
+                        thiz._specialResources[resource] = (data, value);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the additional data of the specified special resource.
+        /// </summary>
+        /// <param name="resource">The special resource.</param>
+        /// <returns>The additional data.</returns>
+        public object GetSpecialResourceData(ISpecialResource resource)
+        {
+            if (_specialResources.TryGetValue(resource, out var x))
+                return x.data;
+            else
+                return null;
+        }
+
         // this function is used by Unit class
         internal void AddUnitToList(Unit unit)
         {
@@ -347,17 +467,16 @@ namespace CivModel
             _units.Remove(unit);
         }
 
-        /// this function is used by CityBase class
-        internal void AddCityToList(CityBase city)
+        /// this function is used by TileBuilding class
+        internal void AddTileBuildingToList(TileBuilding city)
         {
-            _beforeLandingCity = false;
-            _cities.Add(city);
+            _tileBuildings.Add(city);
         }
 
-        // this function is used by CityBase class
-        internal void RemoveCityFromList(CityBase city)
+        // this function is used by TileBuilding class
+        internal void RemoveTileBuildingFromList(TileBuilding city)
         {
-            _cities.Remove(city);
+            _tileBuildings.Remove(city);
         }
 
         // this function is used by Quest class
@@ -412,7 +531,10 @@ namespace CivModel
         {
             if (pt.TileOwner != this)
                 throw new ArgumentException("pt is not in the territoriy of this player", "pt");
-            if (pt.TileBuilding != null)
+
+            // if (pt.TileBuilding == null) 은 사용할 수 없음
+            // TileBuilding.OnAfterChangeOwner에서 RemoveTerritory할 때 실패하면 안 됌.
+            if (pt.TileBuilding?.Owner == this)
                 throw new InvalidOperationException("the tile where a TileBuilding is cannot be removed from the territory");
 
             _territory.Remove(pt);
@@ -445,11 +567,9 @@ namespace CivModel
 
             var dg = GoldNetIncome;
             var dh = HappinessIncome;
-            var dr = ResearchIncome;
 
             Gold = Math.Max(0, Gold + dg);
             Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
-            Research += dr;
         }
 
         /// <summary>
@@ -478,30 +598,28 @@ namespace CivModel
 
         /// <summary>
         /// Update <see cref="Production.EstimatedLaborInputing"/>, <see cref="Production.EstimatedGoldInputing"/>,
-        ///  <see cref="Actor.EstimatedLaborLogicstics"/>, <see cref="EstimatedUsedLabor"/>
+        ///  <see cref="Actor.EstimatedLaborForRepair"/>, <see cref="EstimatedUsedLabor"/>
         ///  and <see cref="EstimatedUsedGold"/> property of this player.
         /// </summary>
         public void EstimateResourceInputs()
         {
             var labor = Labor;
-            var gold = Math.Max(0, GoldIncomeWithInvestments);
+            var gold = Math.Max(0, GoldNetIncomeWithoutConsumption);
 
             EstimatedUsedLabor = 0;
             EstimatedUsedGold = 0;
 
-            var logistics = LogisticInvestment;
+            var laborForRepair = RepairInvestment;
 
             foreach (var actor in Actors)
             {
-                var estLabor = actor.GetAvailableInputLaborLogistics(logistics);
-                actor.EstimatedLaborLogicstics = estLabor;
+                var estLabor = Math.Min(laborForRepair, actor.BasicLaborForRepair);
+                actor.EstimatedLaborForRepair = estLabor;
 
                 EstimatedUsedLabor += estLabor;
-                EstimatedUsedGold += actor.GoldLogistics;
 
-                logistics -= estLabor;
+                laborForRepair -= estLabor;
                 labor -= estLabor;
-                gold = Math.Max(0, gold - actor.GoldLogistics);
             }
 
             foreach (var production in Production)
@@ -526,7 +644,7 @@ namespace CivModel
 
             foreach (var actor in Actors)
             {
-                actor.HealByLogistics(actor.EstimatedLaborLogicstics);
+                actor.HealByRepair(actor.EstimatedLaborForRepair);
             }
 
             for (var node = Production.First; node != null; )
@@ -546,6 +664,27 @@ namespace CivModel
                     node = node.Next;
                 }
             }
+        }
+
+        // this method is used in Actor.IsStarved getter
+        internal (double labor, double gold) CalculateLogistics()
+        {
+            double labor = LaborWithoutLogistics;
+            double gold = GoldIncome;
+            foreach (var actor in Actors)
+            {
+                if (actor.LaborLogistics <= actor.LaborLogistics)
+                {
+                    labor -= actor.LaborLogistics;
+                    gold -= actor.GoldLogistics;
+                    actor.IsStarved = false;
+                }
+                else
+                {
+                    actor.IsStarved = true;
+                }
+            }
+            return (labor, gold);
         }
     }
 }

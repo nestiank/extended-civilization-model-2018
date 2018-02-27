@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,17 +11,16 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("E9A92842-AADA-4700-BCE3-6BEC543F5BC7");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxAP => 2;
-
-        public override double MaxHP => 75;
-
-        public override double AttackPower => 10;
-        public override double DefencePower => 7;
-
-        public override double GoldLogistics => 0;
-        public override double FullLaborLogicstics => 0;
-
-        public override int BattleClassLevel => 1;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            MaxHP = 50,
+            AttackPower = 13,
+            DefencePower = 5,
+            GoldLogistics = 10,
+            FullLaborForRepair = 2,
+            BattleClassLevel = 1
+        };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -29,7 +28,7 @@ namespace CivModel.Hwan
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public DecentralizedMilitary(Player owner, Terrain.Point point) : base(owner, point)
+        public DecentralizedMilitary(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -44,9 +43,17 @@ namespace CivModel.Hwan
         private DecentralizedMilitaryProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => DecentralizedMilitary.Constants;
+
+        public double TotalLaborCost => 15;
+        public double LaborCapacityPerTurn => 8;
+        public double TotalGoldCost => 30;
+        public double GoldCapacityPerTurn => 15;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 30, 10, 10, 2);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

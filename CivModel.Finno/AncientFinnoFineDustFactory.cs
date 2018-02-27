@@ -11,14 +11,16 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("26F24220-2B77-4E81-A985-77F3BBC77832");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxHP => 20;
-
-        public AncientFinnoFineDustFactory(Player owner, Terrain.Point point) : base(owner, point) { }
-
-        public override void PostTurn()
+        public static readonly ActorConstants Constants = new ActorConstants
         {
-            this.RemainHP = Math.Min(20, (this.RemainHP + 4));
-        }
+            MaxHP = 20,
+            GoldLogistics = 20,
+            LaborLogistics = 10,
+            MaxHealPerTurn = 4
+        };
+
+
+        public AncientFinnoFineDustFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
     }
 
     public class AncientFinnoFineDustFactoryProductionFactory : ITileObjectProductionFactory
@@ -29,15 +31,22 @@ namespace CivModel.Finno
         private AncientFinnoFineDustFactoryProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => AncientFinnoFineDustFactory.Constants;
+
+        public double TotalLaborCost => 20;
+        public double LaborCapacityPerTurn => 10;
+        public double TotalGoldCost => 20;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 20, 10, 20, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.Unit == null
-                 && point.TileBuilding is CityBase
-                 && point.TileBuilding.Owner == production.Owner;
+            return point.TileBuilding == null
+                 && point.TileOwner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {

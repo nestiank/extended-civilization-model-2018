@@ -11,12 +11,14 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("487BBF97-538A-45CB-A62D-B33E173F8E6F");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxAP => 2;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            GoldLogistics = 5,
+            FullLaborForRepair = 0.5
+        };
 
-        public override double GoldLogistics => 5;
-        public override double FullLaborLogicstics => 0.5;
-
-        public Pioneer(Player owner, Terrain.Point point) : base(owner, point)
+        public Pioneer(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
         }
     }
@@ -29,9 +31,17 @@ namespace CivModel.Hwan
         private PioneerProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => Pioneer.Constants;
+
+        public double TotalLaborCost => 5;
+        public double LaborCapacityPerTurn => 2;
+        public double TotalGoldCost => 5;
+        public double GoldCapacityPerTurn => 2;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 5, 2, 5, 2);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {

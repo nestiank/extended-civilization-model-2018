@@ -11,13 +11,38 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("3F74C92A-A927-489E-AD81-D18D14BDF65B");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxHP => 30;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxHP = 30,
+            GoldLogistics = 20,
+            LaborLogistics = 10,
+            MaxHealPerTurn = 5
+        };
 
-        public AncientFinnoGermaniumMine(Player owner, Terrain.Point point) : base(owner, point) { }
+        public AncientFinnoGermaniumMine(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
 
         public override void PostTurn()
         {
-            this.RemainHP = Math.Min(30, (this.RemainHP + 5));
+            base.PostTurn();
+
+            Random r = new Random();
+
+            int GetGold = r.Next(1, 100);
+
+            if (GetGold < 6)
+            {
+                Owner.Gold += 5;
+            }
+
+            else if (GetGold < 75)
+            {
+                Owner.Gold += 10;
+            }
+
+            else
+            {
+                Owner.Gold += 20;
+            }
         }
     }
 
@@ -29,15 +54,22 @@ namespace CivModel.Finno
         private AncientFinnoGermaniumMineProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => AncientFinnoGermaniumMine.Constants;
+
+        public double TotalLaborCost => 10;
+        public double LaborCapacityPerTurn => 10;
+        public double TotalGoldCost => 10;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 10, 10, 10, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.Unit == null
-                 && point.TileBuilding is CityBase
-                 && point.TileBuilding.Owner == production.Owner;
+            return point.TileBuilding == null
+                 && point.TileOwner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {

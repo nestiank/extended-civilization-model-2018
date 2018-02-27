@@ -69,6 +69,9 @@ namespace FakeView
             case CivPresenter::Presenter::States::Defeated:
                 RenderDefeated();
                 break;
+            case CivPresenter::Presenter::States::CityView:
+                RenderCityView();
+                break;
             default:
                 RenderNormal();
                 break;
@@ -117,7 +120,7 @@ namespace FakeView
 
                 if (m_presenter->RunningAction != nullptr)
                 {
-                    if (CivModel::ActorAction::IsActable(m_presenter->RunningAction, point))
+                    if (CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, point))
                     {
                         auto& c = m_screen->GetChar(px, py);
                         c.color |= 0b0001'0110;
@@ -144,7 +147,7 @@ namespace FakeView
         if (m_presenter->RunningAction != nullptr)
         {
             auto pt = m_presenter->Game->Terrain->GetPoint(posCenter);
-            if (!CivModel::ActorAction::IsActable(m_presenter->RunningAction, pt))
+            if (!CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, pt))
             {
                 chCenter.color ^= 0b0111'0111;
                 chCenter.color |= 0b1100'1110;
@@ -223,6 +226,12 @@ namespace FakeView
             y += 2;
             if (y >= scrsz.height)
                 return;
+            color = 0b0000'1111;
+            m_screen->PrintString(0, y, color, "Player Team  " + std::to_string(player->Team));
+
+            y += 2;
+            if (y >= scrsz.height)
+                return;
             color = 0b0000'0111;
             m_screen->PrintString(0, y, color,
                 "Total Gold: " + std::to_string(player->Gold)
@@ -296,8 +305,8 @@ namespace FakeView
             else
                 color = 0b0000'0111;
             m_screen->PrintString(0, y, color,
-                "Logistic Investment: " + std::to_string(player->LogisticInvestmentRatio * 100) + "%"
-                + " [ " + std::to_string(player->LogisticInvestment) + " / " + std::to_string(player->BasicLogisticRequire) + " ]");
+                "Repair Investment: " + std::to_string(player->RepairInvestmentRatio * 100) + "%"
+                + " [ " + std::to_string(player->RepairInvestment) + " / " + std::to_string(player->BasicLaborForRepair) + " ]");
 
             y += 2;
             if (m_presenter->SelectedInvestment == -1 && m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
@@ -478,6 +487,64 @@ namespace FakeView
             m_screen->PrintString(10, y, 0b1000'1111, "YOU ARE LOSER");
     }
 
+    void View::RenderCityView()
+    {
+        auto scrsz = m_screen->GetSize();
+
+        auto city = m_presenter->SelectedCity;
+        int y = 0;
+        m_screen->PrintString(0, y, 0b0000'1111, "City View: \"" + cli2str(city->Name) + "\"");
+
+        {
+            unsigned char color = 0b0000'0111;
+
+            int playerNum = 0;
+            auto players = m_presenter->Game->Players;
+            for (; playerNum < players->Count; ++playerNum)
+                if (city->Owner == players[playerNum])
+                    break;
+
+            y += 2;
+            if (y >= scrsz.height)
+                return;
+            color = 0b0000'0111;
+            m_screen->PrintString(0, y, color, "Owner: Player " + std::to_string(playerNum));
+
+            y += 1;
+            if (y >= scrsz.height)
+                return;
+            color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "Population: " + std::to_string(city->Population)
+                + "(+ " + std::to_string(city->PopulationIncome) + ")");
+
+            y += 1;
+            if (y >= scrsz.height)
+                return;
+            color = 0b0000'0111;
+            m_screen->PrintString(0, y, color, "Labor: " + std::to_string(city->Labor));
+
+            y += 1;
+            if (y >= scrsz.height)
+                return;
+            color = 0b0000'0111;
+            m_screen->PrintString(0, y, color,
+                "HP: " + std::to_string(city->RemainHP)
+                + " / " + std::to_string(city->MaxHP));
+
+            y += 2;
+            for each (auto building in city->InteriorBuildings)
+            {
+                if (y >= scrsz.height)
+                    return;
+                color = 0b0000'0111;
+                m_screen->PrintString(0, y, color, cli2str(building->GetType()->FullName));
+
+                ++y;
+            }
+        }
+    }
+
     void View::OnKeyStroke(int ch)
     {
         switch (ch)
@@ -492,7 +559,19 @@ namespace FakeView
 
             case '+':
             case '=':
-                m_roundEarth = !m_roundEarth;
+                if (m_presenter->State == CivPresenter::Presenter::States::Normal)
+                {
+                    m_roundEarth = !m_roundEarth;
+                }
+                break;
+
+            case '-':
+            case '_':
+                if (m_presenter->State == CivPresenter::Presenter::States::Normal)
+                {
+                    auto player = m_presenter->Game->Players[0];
+                    player->IsAIControlled = !player->IsAIControlled;
+                }
                 break;
 
             case 0x1b: // ESC
@@ -560,6 +639,11 @@ namespace FakeView
             case 'o':
             case 'O':
                 m_presenter->CommandQuest();
+                break;
+
+            case 'i':
+            case 'I':
+                m_presenter->CommandCityView();
                 break;
 
             case '\r':

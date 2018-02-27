@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CivModel;
-using CivModel.Common;
 
 namespace CivPresenter
 {
@@ -67,7 +66,7 @@ namespace CivPresenter
         ///  <item><c>0</c> if <see cref="Player.TaxRate"/> is selected.</item>
         ///  <item><c>1</c> if <see cref="Player.EconomicInvestmentRatio"/> is selected.</item>
         ///  <item><c>2</c> if <see cref="Player.ResearchInvestmentRatio"/> is selected.</item>
-        ///  <item><c>3</c> if <see cref="Player.LogisticInvestmentRatio"/> is selected.</item>
+        ///  <item><c>3</c> if <see cref="Player.RepairInvestmentRatio"/> is selected.</item>
         ///  <item><c>-1</c> if there is no selected deploy.</item>
         /// </list>
         /// </remarks>
@@ -152,6 +151,12 @@ namespace CivPresenter
         public int SelectedQuest { get; private set; } = -1;
         private int _questsCount = -1;
 
+        /// <summary>
+        /// The selected city.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.CityView"/></c>.
+        /// </summary>
+        public CityBase SelectedCity { get; private set; }
+
         private bool[] _victoryNotified = null;
 
         /// <summary>
@@ -191,11 +196,11 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
 
+            var factory = new CivModel.Common.GameSchemeFactory();
             var knownFactory = new IGameSchemeFactory[] {
-                new CivModel.Finno.GameSchemeFactory(),
-                new CivModel.Hwan.GameSchemeFactory()
+                new CivModel.AI.GameSchemeFactory()
             };
-            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new GameSchemeFactory(), knownFactory);
+            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, factory, knownFactory);
 
             Initialize();
         }
@@ -218,9 +223,8 @@ namespace CivPresenter
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
             var knownFactory = new IGameSchemeFactory[] {
-                new GameSchemeFactory(),
-                new CivModel.Finno.GameSchemeFactory(),
-                new CivModel.Hwan.GameSchemeFactory()
+                new CivModel.Common.GameSchemeFactory(),
+                new CivModel.AI.GameSchemeFactory()
             };
             _game = new Game(saveFile, knownFactory);
 
@@ -381,6 +385,18 @@ namespace CivPresenter
             if (State == States.Normal)
                 StateQuest();
             else if (State == States.Quest)
+                OnCancel();
+        }
+
+        /// <summary>
+        /// Gives the command [city view].
+        /// This method may introduce <see cref="States.CityView"/> state.
+        /// </summary>
+        public void CommandCityView()
+        {
+            if (State == States.Normal && FocusedPoint.TileBuilding is CityBase city)
+                StateCityView(city);
+            else if (State == States.CityView)
                 OnCancel();
         }
 
@@ -868,7 +884,7 @@ namespace CivPresenter
                     else if (SelectedInvestment == 2)
                         player.ResearchInvestmentRatio = value;
                     else if (SelectedInvestment == 3)
-                        player.LogisticInvestmentRatio = value;
+                        player.RepairInvestmentRatio = value;
                 }
                 else if (index < Game.PlayerInTurn.Deployment.Count)
                 {
@@ -1095,8 +1111,28 @@ namespace CivPresenter
 
             Game.PlayerInTurn.DoAITurnAction().ContinueWith(
                 task => View.Invoke(() => {
-                    StateNormal();
+                    ProceedTurn();
                 }));
+        }
+
+        private void StateCityView(CityBase city)
+        {
+            State = States.CityView;
+
+            SelectedCity = city;
+
+            OnApply = () => {
+                OnCancel();
+            };
+            OnCancel = () => {
+                SelectedCity = null;
+                StateNormal();
+            };
+            OnArrowKey = direction => { };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+            OnSleep = () => { };
         }
     }
 }

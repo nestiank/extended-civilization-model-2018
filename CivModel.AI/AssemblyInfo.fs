@@ -1,4 +1,4 @@
-﻿namespace CivModel.AI.AssemblyInfo
+namespace CivModel.AI.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -12,7 +12,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
 [<assembly: AssemblyProduct("CivModel.AI")>]
-[<assembly: AssemblyCopyright("Copyright ©  2018")>]
+[<assembly: AssemblyCopyright("Copyright © CAT&DOG (https://catdog.korea.ac.kr/) 2018")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 

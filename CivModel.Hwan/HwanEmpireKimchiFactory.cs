@@ -11,14 +11,15 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("E491B144-C222-42ED-8617-C59A32E902AD");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxHP => 15;
-
-        public HwanEmpireKimchiFactory(Player owner, Terrain.Point point) : base(owner, point) { }
-
-        public override void PostTurn()
+        public static readonly ActorConstants Constants = new ActorConstants
         {
-            this.RemainHP = Math.Min(15, (this.RemainHP + 2));
-        }
+            MaxHP = 15,
+            GoldLogistics = 20,
+            LaborLogistics = 10,
+            MaxHealPerTurn = 2
+        };
+
+        public HwanEmpireKimchiFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
     }
 
     public class HwanEmpireKimchiFactoryProductionFactory : ITileObjectProductionFactory
@@ -29,15 +30,22 @@ namespace CivModel.Hwan
         private HwanEmpireKimchiFactoryProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => HwanEmpireKimchiFactory.Constants;
+
+        public double TotalLaborCost => 20;
+        public double LaborCapacityPerTurn => 10;
+        public double TotalGoldCost => 20;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 20, 10, 20, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.Unit == null
-                 && point.TileBuilding is CityBase
-                 && point.TileBuilding.Owner == production.Owner;
+            return point.TileBuilding == null
+                 && point.TileOwner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {

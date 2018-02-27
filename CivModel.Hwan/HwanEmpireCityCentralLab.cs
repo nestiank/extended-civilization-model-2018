@@ -11,9 +11,15 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("BE574FAE-BB83-4D8C-9547-BDA426F24C4A");
         public override Guid Guid => ClassGuid;
 
-        public override double ProvidedResearchIncome => 20;
+        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
+        {
+            ResearchCapacity = 200,
+            ResearchIncome = 20,
+            GoldLogistics = 50
+        };
 
-        public HwanEmpireCityCentralLab(CityBase city) : base(city) { }
+
+        public HwanEmpireCityCentralLab(CityBase city) : base(city, Constants) { }
     }
 
     public class HwanEmpireCityCentralLabProductionFactory : IInteriorBuildingProductionFactory
@@ -24,9 +30,17 @@ namespace CivModel.Hwan
         private HwanEmpireCityCentralLabProductionFactory()
         {
         }
+
+        public InteriorBuildingConstants Constants => HwanEmpireCityCentralLab.Constants;
+
+        public double TotalLaborCost => 50;
+        public double LaborCapacityPerTurn => 10;
+        public double TotalGoldCost => 100;
+        public double GoldCapacityPerTurn => 20;
+
         public Production Create(Player owner)
         {
-            return new InteriorBuildingProduction(this, owner, 50, 10, 100, 20);
+            return new InteriorBuildingProduction(this, owner);
         }
         public bool IsPlacable(InteriorBuildingProduction production, CityBase city)
         {

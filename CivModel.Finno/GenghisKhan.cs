@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,17 +11,16 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("DCB724DA-430E-4B13-8703-9517F173FE4B");
         public override Guid Guid => ClassGuid;
 
-        public override double MaxAP => 2;
-
-        public override double MaxHP => 50;
-
-        public override double AttackPower => 35;
-        public override double DefencePower => 10;
-
-        public override double GoldLogistics => 3;
-        public override double FullLaborLogicstics => 3;
-
-        public override int BattleClassLevel => 4;
+        public static readonly ActorConstants Constants = new ActorConstants
+        {
+            MaxAP = 2,
+            MaxHP = 50,
+            AttackPower = 35,
+            DefencePower = 10,
+            GoldLogistics = 50,
+            FullLaborForRepair = 3,
+            BattleClassLevel = 4
+        };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -32,7 +31,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public GenghisKhan(Player owner, Terrain.Point point) : base(owner, point)
+        public GenghisKhan(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -53,38 +52,45 @@ namespace CivModel.Finno
 
             public int LastSkillCalled = -2;
 
-            public int GetRequiredAP(Terrain.Point? pt)
+            public double GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt != null)
-                    return -1;
-                if (!_owner.PlacedPoint.HasValue)
-                    return -1;
-                if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
-                    return -1;
+                if (CheckError(pt) != null)
+                    return double.NaN;
 
                 return 1;
             }
 
-            public void Act(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point? pt)
             {
                 if (pt != null)
-                    throw new ArgumentException("pt is invalid");
+                    return new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
+                    return new InvalidOperationException("Actor is not placed yet");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
-                    throw new InvalidOperationException("Skill is not turned on");
+                    return new InvalidOperationException("Skill is not turned on");
                 if (Owner.PlacedPoint.Value.TileOwner == Owner.Owner)
-                    throw new InvalidOperationException("You have the Territory");
+                    return new InvalidOperationException("You have the Territory");
 
-                int Ap = GetRequiredAP(pt);
+                return null;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                double Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
+
 
                 Owner.Owner.AddTerritory(Owner.PlacedPoint.Value);
                 if (Owner.PlacedPoint.Value.TileBuilding != null)
                 {
                     Owner.PlacedPoint.Value.TileBuilding.Destroy();
                 }
+
+                new AncientFinnoFIRFortress(Owner.Owner, Owner.PlacedPoint.Value);
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);
@@ -100,9 +106,17 @@ namespace CivModel.Finno
         private GenghisKhanProductionFactory()
         {
         }
+
+        public ActorConstants ActorConstants => GenghisKhan.Constants;
+
+        public double TotalLaborCost => 100;
+        public double LaborCapacityPerTurn => 20;
+        public double TotalGoldCost => 100;
+        public double GoldCapacityPerTurn => 10;
+
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner, 100, 20, 50, 10);
+            return new TileObjectProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
