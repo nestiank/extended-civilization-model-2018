@@ -21,6 +21,12 @@ namespace CivModel.Hwan
         };
 
         public HwanEmpireFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+
+        protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        {
+            AttackTo(5, opposite, opposite.DefencePower, false, true);
+            return originalDamage;
+        }
     }
 
     public class HwanEmpireFIRFortressProductionFactory : ITileObjectProductionFactory
