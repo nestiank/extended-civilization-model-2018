@@ -8,7 +8,7 @@ namespace CivModel.Hwan
 {
     public class Spy : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("B4F8293E-EBF2-47A0-A1BB-DF6A6ECCD766");
+        public static Guid ClassGuid { get; } = new Guid("A3037080-69D5-4B90-8B35-44CAB18B7867");
         public override Guid Guid => ClassGuid;
 
         public static readonly ActorConstants Constants = new ActorConstants
