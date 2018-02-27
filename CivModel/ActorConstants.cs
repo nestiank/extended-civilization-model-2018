@@ -46,5 +46,14 @@ namespace CivModel
         /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
         /// </summary>
         public int BattleClassLevel { get; set; } = 0;
+
+        /// <summary>
+        /// Create the copy of this object.
+        /// </summary>
+        /// <returns>The copy of this object.</returns>
+        public ActorConstants Clone()
+        {
+            return (ActorConstants)MemberwiseClone();
+        }
     }
 }

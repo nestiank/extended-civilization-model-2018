@@ -28,5 +28,14 @@ namespace CivModel
         /// The amount of research income per turn this building provides.
         /// </summary>
         public double ResearchIncome { get; set; } = 0;
+
+        /// <summary>
+        /// Create the copy of this object.
+        /// </summary>
+        /// <returns>The copy of this object.</returns>
+        public InteriorBuildingConstants Clone()
+        {
+            return (InteriorBuildingConstants)MemberwiseClone();
+        }
     }
 }

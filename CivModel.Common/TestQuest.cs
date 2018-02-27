@@ -45,6 +45,8 @@ namespace CivModel.Common
                 Requestee.Deployment.AddLast(production);
             }
 
+            Requestee.SpecialResource[TestResource.Instance] = 1;
+
             Cleanup();
         }
 
