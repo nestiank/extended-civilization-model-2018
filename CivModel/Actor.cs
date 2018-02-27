@@ -322,6 +322,11 @@ namespace CivModel
         }
         private bool _sleepFlag = false;
 
+        /// <summary>
+        /// Whether this actor is cloacking.
+        /// </summary>
+        public bool IsCloacking { get; set; }
+
         private Effect[] _effects;
 
         /// <summary>
