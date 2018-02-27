@@ -321,8 +321,10 @@ namespace CivModel
                 }
             }
         }
-
         private IAIController _aiController = null;
+
+        private Dictionary<ISpecialResource, (object data, int count)> _specialResources
+            = new Dictionary<ISpecialResource, (object, int)>();
 
         /// <summary>
         /// The game which this player participates.
@@ -341,6 +343,8 @@ namespace CivModel
         {
             _game = game ?? throw new ArgumentNullException(nameof(game));
 
+            _specialResourceProxy = new SpecialResourceProxy { thiz = this };
+
             game.TurnObservable.AddObserver(this);
         }
 
@@ -358,6 +362,71 @@ namespace CivModel
                 throw new InvalidOperationException("this player does not controlled by AI");
 
             return _aiController.DoAction();
+        }
+
+        /// <summary>
+        /// The indexer proxy for special resources of this player.
+        /// </summary>
+        /// <remarks>
+        /// Usage: <code>player.SpecialResource[res]</code>
+        /// </remarks>
+        public SpecialResourceProxy SpecialResource => _specialResourceProxy;
+        private readonly SpecialResourceProxy _specialResourceProxy;
+        /// <summary>
+        /// The proxy class for <see cref="SpecialResource"/>
+        /// </summary>
+        /// <seealso cref="SpecialResource"/>
+        public class SpecialResourceProxy
+        {
+            internal Player thiz;
+            /// <summary>
+            /// Gets or sets the amount of the specified special resource.
+            /// </summary>
+            /// <value>
+            /// The amount of the specified special resource.
+            /// </value>
+            /// <param name="resource">The resource.</param>
+            /// <returns>The amount of the specified special resource.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">value - the amount of resource is out of range</exception>
+            public int this[ISpecialResource resource]
+            {
+                get
+                {
+                    if (thiz._specialResources.TryGetValue(resource, out var x))
+                        return x.count;
+                    else
+                        return 0;
+                }
+                set
+                {
+                    if (value < 0 || value > resource.MaxCount)
+                        throw new ArgumentOutOfRangeException(nameof(value), value, "the amount of resource is out of range");
+
+                    if (thiz._specialResources.TryGetValue(resource, out var x))
+                    {
+                        x.count = value;
+                    }
+                    else
+                    {
+                        thiz._specialResources[resource] = (null, value);
+                        var data = resource.EnablePlayer(thiz);
+                        thiz._specialResources[resource] = (data, value);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the additional data of the specified special resource.
+        /// </summary>
+        /// <param name="resource">The special resource.</param>
+        /// <returns>The additional data.</returns>
+        public object GetSpecialResourceData(ISpecialResource resource)
+        {
+            if (_specialResources.TryGetValue(resource, out var x))
+                return x.data;
+            else
+                return null;
         }
 
         // this function is used by Unit class

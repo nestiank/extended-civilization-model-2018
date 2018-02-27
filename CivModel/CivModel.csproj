@@ -69,6 +69,7 @@
     <Compile Include="Production.cs" />
     <Compile Include="SafeIterationCollection.cs" />
     <Compile Include="SchemeLoader.cs" />
+    <Compile Include="ISpecialResource.cs" />
     <Compile Include="Terrain.Point.cs" />
     <Compile Include="TerrainType.cs" />
     <Compile Include="TileBuilding.cs" />
