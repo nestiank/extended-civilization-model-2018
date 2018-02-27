@@ -58,6 +58,7 @@
     <Compile Include="Pioneer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtoNinja.cs" />
+    <Compile Include="Spy.cs" />
     <Compile Include="UnicornOrder.cs" />
   </ItemGroup>
   <ItemGroup>
