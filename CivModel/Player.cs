@@ -13,48 +13,6 @@ namespace CivModel
     public sealed class Player : ITurnObserver
     {
         /// <summary>
-        /// The gold of this player. This value is not negative.
-        /// </summary>
-        /// <seealso cref="GoldIncome"/>
-        public double Gold
-        {
-            get => _gold;
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), value, "gold is negative");
-                _gold = value;
-            }
-        }
-        private double _gold = 0;
-
-        /// <summary>
-        /// The gold income of this player. This is not negative, and can be different from <see cref="GoldNetIncome"/>
-        /// </summary>
-        /// <seealso cref="GoldIncomeWithInvestments"/>
-        /// <seealso cref="GoldNetIncome"/>
-        /// <seealso cref="TaxRate"/>
-        /// <seealso cref="IGameConstantScheme.GoldCoefficient"/>
-        public double GoldIncome => Game.Constants.GoldCoefficient * Population * TaxRate;
-
-        /// <summary>
-        /// The gold income with investments.
-        /// </summary>
-        /// <seealso cref="GoldIncome"/>
-        /// <seealso cref="GoldNetIncome"/>
-        public double GoldIncomeWithInvestments => GoldIncome - EconomicInvestment - ResearchInvestment;
-
-        /// <summary>
-        /// The net income of gold. <see cref="EstimatedUsedGold"/> property is used for calculation.
-        /// Therefore, you must call <see cref="EstimateResourceInputs"/> before use this property.
-        /// </summary>
-        /// <seealso cref="GoldIncome"/>
-        /// <seealso cref="GoldIncomeWithInvestments"/>
-        /// <seealso cref="EstimatedUsedGold"/>
-        /// <seealso cref="EstimateResourceInputs"/>
-        public double GoldNetIncome => GoldIncomeWithInvestments - EstimatedUsedGold;
-
-        /// <summary>
         /// The happiness of this player. This value is in [-100, 100].
         /// </summary>
         /// <seealso cref="HappinessIncome"/>
@@ -77,20 +35,69 @@ namespace CivModel
         public double HappinessIncome => Game.Constants.HappinessCoefficient * ((EconomicInvestmentRatio - 1) * BasicEconomicRequire);
 
         /// <summary>
+        /// The gold of this player. This value is not negative.
+        /// </summary>
+        /// <seealso cref="GoldIncome"/>
+        public double Gold
+        {
+            get => _gold;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "gold is negative");
+                _gold = value;
+            }
+        }
+        private double _gold = 0;
+
+        /// <summary>
+        /// The gold income of this player. This is not negative, and can be different from <see cref="GoldNetIncome"/>
+        /// </summary>
+        /// <seealso cref="GoldNetIncomeWithoutConsumption"/>
+        /// <seealso cref="GoldNetIncome"/>
+        /// <seealso cref="TaxRate"/>
+        /// <seealso cref="IGameConstantScheme.GoldCoefficient"/>
+        public double GoldIncome => Game.Constants.GoldCoefficient * Population * TaxRate;
+
+        /// <summary>
+        /// The gold net income without repair/production consumption.
+        /// </summary>
+        /// <seealso cref="GoldIncome"/>
+        /// <seealso cref="GoldNetIncome"/>
+        public double GoldNetIncomeWithoutConsumption => GoldIncome - EconomicInvestment - ResearchInvestment - CalculateLogistics().gold;
+
+        /// <summary>
+        /// The net income of gold. <see cref="EstimatedUsedGold"/> property is used for calculation.
+        /// Therefore, you must call <see cref="EstimateResourceInputs"/> before use this property.
+        /// </summary>
+        /// <seealso cref="GoldIncome"/>
+        /// <seealso cref="GoldNetIncomeWithoutConsumption"/>
+        /// <seealso cref="EstimatedUsedGold"/>
+        /// <seealso cref="EstimateResourceInputs"/>
+        public double GoldNetIncome => GoldNetIncomeWithoutConsumption - EstimatedUsedGold;
+
+        /// <summary>
         /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
         /// It is equal to sum of all <see cref="CityBase.Labor"/> of cities of this player.
         /// </summary>
+        /// <seealso cref="LaborWithoutLogistics"/>
         /// <seealso cref="Labor"/>
         /// <seealso cref="CityBase.Labor"/>
         public double OriginalLabor => Cities.Select(city => city.Labor).Sum();
 
         /// <summary>
-        /// The labor per turn of this player.
+        /// The labor per turn of this player without logistics consumption.
         /// It is calculated from <see cref="OriginalLabor"/> with <see cref="Happiness"/>.
         /// </summary>
         /// <seealso cref="OriginalLabor"/>
-        /// <seealso cref="CityBase.Labor"/>
-        public double Labor => OriginalLabor * (1 + Game.Constants.LaborHappinessCoefficient * Happiness);
+        /// <seealso cref="Labor"/>
+        public double LaborWithoutLogistics => OriginalLabor * (1 + Game.Constants.LaborHappinessCoefficient * Happiness);
+
+        /// <summary>
+        /// The labor per turn with logistics consumption.
+        /// </summary>
+        /// <seealso cref="LaborWithoutLogistics"/>
+        public double Labor => LaborWithoutLogistics - CalculateLogistics().labor;
 
         /// <summary>
         /// The total basic research income per turn of this player.
@@ -146,31 +153,31 @@ namespace CivModel
         private double _taxRate = 1;
 
         /// <summary>
-        /// The ratio of real amount to basic amount of logistic investment. It must be in [<c>0</c>, <c>2</c>].
+        /// The ratio of real amount to basic amount of repair investment. It must be in [<c>0</c>, <c>1</c>].
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">value is not in [<c>0</c>, <c>2</c>].</exception>
-        /// <seealso cref="BasicLogisticRequire"/>
-        public double LogisticInvestmentRatio
+        /// <exception cref="ArgumentOutOfRangeException">value is not in [<c>0</c>, <c>1</c>].</exception>
+        /// <seealso cref="BasicLaborForRepair"/>
+        public double RepairInvestmentRatio
         {
-            get => _logisticInvestmentRatio;
+            get => _repairInvestmentRatio;
             set
             {
-                if (value < 0 || value > 2)
-                    throw new ArgumentOutOfRangeException(nameof(value), value, "value is not in [0, 2]");
-                _logisticInvestmentRatio = value;
+                if (value < 0 || value > 1)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "value is not in [0, 1]");
+                _repairInvestmentRatio = value;
             }
         }
-        private double _logisticInvestmentRatio = 1;
+        private double _repairInvestmentRatio = 1;
 
         /// <summary>
-        /// The amount of labor for logistic investment.
+        /// The amount of labor for repair investment.
         /// </summary>
-        public double LogisticInvestment => Math.Min(Labor, LogisticInvestmentRatio * BasicLogisticRequire);
+        public double RepairInvestment => Math.Min(Labor, RepairInvestmentRatio * BasicLaborForRepair);
 
         /// <summary>
-        /// The basic logistic labor requirement.
+        /// The basic labor requirement for repair.
         /// </summary>
-        public double BasicLogisticRequire => Actors.Select(actor => actor.BasicLaborLogistics).Sum();
+        public double BasicLaborForRepair => Actors.Select(actor => actor.BasicLaborForRepair).Sum();
 
         /// <summary>
         /// The basic economic gold requirement.
@@ -332,16 +339,27 @@ namespace CivModel
         public Game Game => _game;
         private readonly Game _game;
 
+        /// <summary>
+        /// The team of this player.
+        /// </summary>
+        public int Team => _team;
+        private readonly int _team;
+
         private bool _beforeLandingCity = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Player"/> class.
         /// </summary>
         /// <param name="game">The game which this player participates.</param>
+        /// <param name="team">The team of this player.</param>
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
-        public Player(Game game)
+        public Player(Game game, int team)
         {
             _game = game ?? throw new ArgumentNullException(nameof(game));
+
+            if (team < 0 || team >= game.TeamCount)
+                throw new ArgumentOutOfRangeException(nameof(team), team, "team number is invalid");
+            _team = team;
 
             _specialResourceProxy = new SpecialResourceProxy { thiz = this };
 
@@ -573,30 +591,28 @@ namespace CivModel
 
         /// <summary>
         /// Update <see cref="Production.EstimatedLaborInputing"/>, <see cref="Production.EstimatedGoldInputing"/>,
-        ///  <see cref="Actor.EstimatedLaborLogistics"/>, <see cref="EstimatedUsedLabor"/>
+        ///  <see cref="Actor.EstimatedLaborForRepair"/>, <see cref="EstimatedUsedLabor"/>
         ///  and <see cref="EstimatedUsedGold"/> property of this player.
         /// </summary>
         public void EstimateResourceInputs()
         {
             var labor = Labor;
-            var gold = Math.Max(0, GoldIncomeWithInvestments);
+            var gold = Math.Max(0, GoldNetIncomeWithoutConsumption);
 
             EstimatedUsedLabor = 0;
             EstimatedUsedGold = 0;
 
-            var logistics = LogisticInvestment;
+            var laborForRepair = RepairInvestment;
 
             foreach (var actor in Actors)
             {
-                var estLabor = actor.GetAvailableInputLaborLogistics(logistics);
-                actor.EstimatedLaborLogistics = estLabor;
+                var estLabor = Math.Min(laborForRepair, actor.BasicLaborForRepair);
+                actor.EstimatedLaborForRepair = estLabor;
 
                 EstimatedUsedLabor += estLabor;
-                EstimatedUsedGold += actor.GoldLogistics;
 
-                logistics -= estLabor;
+                laborForRepair -= estLabor;
                 labor -= estLabor;
-                gold = Math.Max(0, gold - actor.GoldLogistics);
             }
 
             foreach (var production in Production)
@@ -621,7 +637,7 @@ namespace CivModel
 
             foreach (var actor in Actors)
             {
-                actor.HealByLogistics(actor.EstimatedLaborLogistics);
+                actor.HealByRepair(actor.EstimatedLaborForRepair);
             }
 
             for (var node = Production.First; node != null; )
@@ -641,6 +657,27 @@ namespace CivModel
                     node = node.Next;
                 }
             }
+        }
+
+        // this method is used in Actor.IsStarved getter
+        internal (double labor, double gold) CalculateLogistics()
+        {
+            double labor = LaborWithoutLogistics;
+            double gold = GoldIncome;
+            foreach (var actor in Actors)
+            {
+                if (actor.LaborLogistics <= actor.LaborLogistics)
+                {
+                    labor -= actor.LaborLogistics;
+                    gold -= actor.GoldLogistics;
+                    actor.IsStarved = false;
+                }
+                else
+                {
+                    actor.IsStarved = true;
+                }
+            }
+            return (labor, gold);
         }
     }
 }

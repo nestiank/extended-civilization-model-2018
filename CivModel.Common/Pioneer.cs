@@ -14,7 +14,7 @@ namespace CivModel.Common
         public static readonly ActorConstants Constants = new ActorConstants {
             MaxAP = 2,
             GoldLogistics = 5,
-            FullLaborLogistics = 0.5
+            FullLaborForRepair = 0.5
         };
 
         public Pioneer(Player owner, Terrain.Point point) : base(owner, Constants, point)

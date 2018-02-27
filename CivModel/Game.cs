@@ -73,6 +73,11 @@ namespace CivModel
         /// </summary>
         public Player PlayerInTurn => Players[PlayerNumberInTurn];
 
+        /// <summary>
+        /// The count of teams of this game.
+        /// </summary>
+        public int TeamCount { get; private set; }
+
         // if this value is true, StartTurn resume the loaded game rather than start a new turn.
         // see StartTurn() comment
         private bool _shouldStartTurnResumeGame; // init by PreInitialize
@@ -166,9 +171,10 @@ namespace CivModel
 
             Terrain = new Terrain(width, height);
 
+            TeamCount = numOfPlayer;
             for (int i = 0; i < numOfPlayer; ++i)
             {
-                _players.Add(new Player(this));
+                _players.Add(new Player(this, i));
             }
 
             var additionalFactory = SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>()
