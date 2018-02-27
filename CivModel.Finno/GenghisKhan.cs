@@ -81,7 +81,7 @@ namespace CivModel.Finno
 
                 double Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
+                    throw new InvalidOperationException("Not enough Ap");
 
 
                 Owner.Owner.AddTerritory(Owner.PlacedPoint.Value);
@@ -89,6 +89,8 @@ namespace CivModel.Finno
                 {
                     Owner.PlacedPoint.Value.TileBuilding.Destroy();
                 }
+
+                new AncientFinnoFIRFortress(Owner.Owner, Owner.PlacedPoint.Value);
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);

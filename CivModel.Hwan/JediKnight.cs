@@ -28,7 +28,11 @@ namespace CivModel.Hwan
 
         protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
         {
-            if (this.SkillDurationTime >= this.Owner.Game.TurnNumber && this.SkillFlag > 0)
+            if (opposite.BattleClassLevel >= 4 && isSkillAttack)
+            {
+                return originalDamage;
+            }
+            else if (this.SkillDurationTime >= this.Owner.Game.TurnNumber && this.SkillFlag > 0)
             {
                 AttackTo(originalDamage, opposite, opposite.DefencePower, false, true);
                 this.SkillFlag -= 1;

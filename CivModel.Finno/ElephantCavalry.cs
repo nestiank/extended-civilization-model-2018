@@ -99,7 +99,7 @@ namespace CivModel.Finno
 
                 double Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
-                    return new InvalidOperationException("Not enough Ap");
+                    throw new InvalidOperationException("Not enough Ap");
 
 
                 Owner.PlacedPoint = pt;
