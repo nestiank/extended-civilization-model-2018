@@ -5,6 +5,7 @@ namespace FakeView
 {
     Screen::Screen()
     {
+        ::InitializeCriticalSection(&m_crit);
         ClearBuffer();
     }
 
@@ -51,11 +52,19 @@ namespace FakeView
 
                 view->OnKeyStroke(ch);
             }
-            else //if (!m_invokee.empty())
+            else if (!m_invokee.empty())
             {
-                System::Action^ act = m_invokee.front();
-                m_invokee.pop_front();
-                act();
+                try
+                {
+                    ::EnterCriticalSection(&m_crit);
+                    System::Action^ act = m_invokee.front();
+                    m_invokee.pop_front();
+                    act();
+                }
+                finally
+                {
+                    ::LeaveCriticalSection(&m_crit);
+                }
             }
         }
 
@@ -64,7 +73,15 @@ namespace FakeView
 
     void Screen::Invoke(System::Action^ act)
     {
-        m_invokee.push_back(act);
+        try
+        {
+            ::EnterCriticalSection(&m_crit);
+            m_invokee.push_back(act);
+        }
+        finally
+        {
+            ::LeaveCriticalSection(&m_crit);
+        }
     }
 
     void Screen::ClearBuffer()

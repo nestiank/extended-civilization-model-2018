@@ -49,6 +49,11 @@ namespace WinformView
             Close();
         }
 
+        void IView.Invoke(Action act)
+        {
+            base.Invoke(act);
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             ClientSize = new Size(640, 480);

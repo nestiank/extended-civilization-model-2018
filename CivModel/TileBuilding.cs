@@ -14,21 +14,6 @@ namespace CivModel
     public abstract class TileBuilding : Actor
     {
         /// <summary>
-        /// The maximum AP. <c>0</c> by default.
-        /// </summary>
-        public override double MaxAP => 0;
-
-        /// <summary>
-        /// The amount of gold logistics of this actor.
-        /// </summary>
-        public override double GoldLogistics => 0;
-
-        /// <summary>
-        /// The amount of labor logistics of this actor to get the full heal amount of <see cref="Actor.MaxHealPerTurn" />.
-        /// </summary>
-        public override double FullLaborLogicstics => 0;
-
-        /// <summary>
         /// The action performing movement. <c>null</c> by default.
         /// </summary>
         public override IActorAction MoveAct => null;
@@ -37,9 +22,15 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="TileBuilding"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this TileBuilding.</param>
+        /// <param name="constants">constants of this actor.</param>
         /// <param name="point">The tile where the object will be.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
-        public TileBuilding(Player owner, Terrain.Point point) : base(owner, point, TileTag.TileBuilding)
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="owner"/> is <c>null</c>.
+        /// or
+        /// <paramref name="constants"/> is <c>null</c>.
+        /// </exception>
+        public TileBuilding(Player owner, ActorConstants constants, Terrain.Point point)
+            : base(owner, constants, point, TileTag.TileBuilding)
         {
             owner.TryAddTerritory(point);
         }
@@ -54,6 +45,22 @@ namespace CivModel
 
             if (PlacedPoint is Terrain.Point pt)
                 Owner.TryAddTerritory(pt);
+        }
+
+        /// <summary>
+        /// Called after [change owner], by <see cref="Actor.ChangeOwner" />.
+        /// </summary>
+        /// <param name="prevOwner">The previous owner.</param>
+        protected override void OnAfterChangeOwner(Player prevOwner)
+        {
+            base.OnAfterChangeOwner(prevOwner);
+            if (PlacedPoint is Terrain.Point pt)
+            {
+                // Player.RemoveTerritory 코드 내 주석 참조
+                prevOwner.RemoveTerritory(pt);
+
+                Owner.AddTerritory(pt);
+            }
         }
     }
 }

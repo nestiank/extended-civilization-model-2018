@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CivModel;
-using CivModel.Common;
 
 namespace CivPresenter
 {
@@ -67,7 +66,7 @@ namespace CivPresenter
         ///  <item><c>0</c> if <see cref="Player.TaxRate"/> is selected.</item>
         ///  <item><c>1</c> if <see cref="Player.EconomicInvestmentRatio"/> is selected.</item>
         ///  <item><c>2</c> if <see cref="Player.ResearchInvestmentRatio"/> is selected.</item>
-        ///  <item><c>3</c> if <see cref="Player.LogisticInvestmentRatio"/> is selected.</item>
+        ///  <item><c>3</c> if <see cref="Player.RepairInvestmentRatio"/> is selected.</item>
         ///  <item><c>-1</c> if there is no selected deploy.</item>
         /// </list>
         /// </remarks>
@@ -191,7 +190,12 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
 
-            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, new GameSchemeFactory());
+            var factory = new CivModel.Common.GameSchemeFactory();
+            var knownFactory = new IGameSchemeFactory[] {
+                new CivModel.AI.GameSchemeFactory()
+            };
+            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, factory, knownFactory);
+
             Initialize();
         }
 
@@ -212,7 +216,12 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
-            _game = new Game(saveFile, new IGameSchemeFactory[] { new GameSchemeFactory() });
+            var knownFactory = new IGameSchemeFactory[] {
+                new CivModel.Common.GameSchemeFactory(),
+                new CivModel.AI.GameSchemeFactory()
+            };
+            _game = new Game(saveFile, knownFactory);
+
             Initialize();
         }
 
@@ -379,17 +388,24 @@ namespace CivPresenter
                 Game.EndTurn();
             Game.StartTurn();
 
-            SelectNextUnit();
-            if (_selectedActor == null)
+            if (!Game.PlayerInTurn.IsAIControlled)
             {
-                if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
+                SelectNextUnit();
+                if (_selectedActor == null)
                 {
-                    if (city.PlacedPoint is Terrain.Point pt)
-                        FocusedPoint = pt;
+                    if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
+                    {
+                        if (city.PlacedPoint is Terrain.Point pt)
+                            FocusedPoint = pt;
+                    }
                 }
-            }
 
-            StateNormal();
+                StateNormal();
+            }
+            else
+            {
+                StateAIControl();
+            }
         }
 
         private void SelectNextUnit()
@@ -850,7 +866,7 @@ namespace CivPresenter
                     else if (SelectedInvestment == 2)
                         player.ResearchInvestmentRatio = value;
                     else if (SelectedInvestment == 3)
-                        player.LogisticInvestmentRatio = value;
+                        player.RepairInvestmentRatio = value;
                 }
                 else if (index < Game.PlayerInTurn.Deployment.Count)
                 {
@@ -1061,6 +1077,24 @@ namespace CivPresenter
             OnRemove = () => { };
             OnSkip = () => { };
             OnSleep = () => { };
+        }
+
+        private void StateAIControl()
+        {
+            State = States.AIControl;
+
+            OnApply = () => { };
+            OnCancel = () => { };
+            OnArrowKey = direction => { };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+            OnSleep = () => { };
+
+            Game.PlayerInTurn.DoAITurnAction().ContinueWith(
+                task => View.Invoke(() => {
+                    ProceedTurn();
+                }));
         }
     }
 }

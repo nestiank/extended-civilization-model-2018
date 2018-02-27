@@ -49,7 +49,9 @@ namespace FakeView
         int m_exitcode = -1;
         bool m_quit = false;
 
+        CRITICAL_SECTION m_crit;
         std::deque<gcroot<System::Action^>> m_invokee;
+
         std::array<Character, 150 * 45> m_buffer;
     };
 }

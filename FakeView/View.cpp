@@ -31,6 +31,8 @@ namespace FakeView
         }
         if (!m_presenter)
             m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
+
+        m_presenter->Game->Players[0]->IsAIControlled = true;
     }
 
     void View::Refocus()
@@ -41,6 +43,11 @@ namespace FakeView
     void View::Shutdown()
     {
         m_screen->Quit(0);
+    }
+
+    void View::Invoke(System::Action^ action)
+    {
+        m_screen->Invoke(action);
     }
 
     void View::Render()
@@ -110,7 +117,7 @@ namespace FakeView
 
                 if (m_presenter->RunningAction != nullptr)
                 {
-                    if (CivModel::ActorAction::IsActable(m_presenter->RunningAction, point))
+                    if (CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, point))
                     {
                         auto& c = m_screen->GetChar(px, py);
                         c.color |= 0b0001'0110;
@@ -137,7 +144,7 @@ namespace FakeView
         if (m_presenter->RunningAction != nullptr)
         {
             auto pt = m_presenter->Game->Terrain->GetPoint(posCenter);
-            if (!CivModel::ActorAction::IsActable(m_presenter->RunningAction, pt))
+            if (!CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, pt))
             {
                 chCenter.color ^= 0b0111'0111;
                 chCenter.color |= 0b1100'1110;
@@ -194,6 +201,10 @@ namespace FakeView
 
             case CivPresenter::Presenter::States::Deploy:
                 m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Deploy");
+                break;
+
+            case CivPresenter::Presenter::States::AIControl:
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "AI is running ...");
                 break;
         }
     }
@@ -285,8 +296,8 @@ namespace FakeView
             else
                 color = 0b0000'0111;
             m_screen->PrintString(0, y, color,
-                "Logistic Investment: " + std::to_string(player->LogisticInvestmentRatio * 100) + "%"
-                + " [ " + std::to_string(player->LogisticInvestment) + " / " + std::to_string(player->BasicLogisticRequire) + " ]");
+                "Repair Investment: " + std::to_string(player->RepairInvestmentRatio * 100) + "%"
+                + " [ " + std::to_string(player->RepairInvestment) + " / " + std::to_string(player->BasicLaborForRepair) + " ]");
 
             y += 2;
             if (m_presenter->SelectedInvestment == -1 && m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
@@ -481,7 +492,19 @@ namespace FakeView
 
             case '+':
             case '=':
-                m_roundEarth = !m_roundEarth;
+                if (m_presenter->State == CivPresenter::Presenter::States::Normal)
+                {
+                    m_roundEarth = !m_roundEarth;
+                }
+                break;
+
+            case '-':
+            case '_':
+                if (m_presenter->State == CivPresenter::Presenter::States::Normal)
+                {
+                    auto player = m_presenter->Game->Players[0];
+                    player->IsAIControlled = !player->IsAIControlled;
+                }
                 break;
 
             case 0x1b: // ESC
@@ -638,12 +661,11 @@ namespace FakeView
         }
         else if (auto u = dynamic_cast<CivModel::Common::FakeKnight^>(unit))
         {
-            c.ch = 'J';
+            c.ch = 'F';
         }
         else
         {
-            System::Diagnostics::Debug::WriteLine(L"unqualified unit in PrintUnit()");
-            c.ch = 'U';
+            c.ch = cli2str(unit->GetType()->FullName)[0];
         }
     }
 
@@ -652,14 +674,6 @@ namespace FakeView
         auto& c = m_screen->GetChar(px, py);
         c.color &= 0x0f;
         c.color |= GetPlayerColor(tileBuilding->Owner) << 4;
-        if (auto b = dynamic_cast<CivModel::CityBase^>(tileBuilding))
-        {
-            // do nothing
-        }
-        else
-        {
-            System::Diagnostics::Debug::WriteLine(L"unqualified tileBuilding in PrintTileBuilding()");
-        }
     }
 
     unsigned char View::GetPlayerColor(CivModel::Player^ player)
@@ -698,8 +712,7 @@ namespace FakeView
         }
         else
         {
-            System::Diagnostics::Debug::WriteLine(L"unqualified production in GetFactoryDescription()");
-            return "????";
+            return cli2str(factory->GetType()->FullName);
         }
     }
 
