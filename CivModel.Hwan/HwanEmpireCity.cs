@@ -15,7 +15,7 @@ namespace CivModel.Hwan
         {
             MaxHP = 500,
             GoldLogistics = 0,
-            FullLaborLogistics = 0,
+            LaborLogistics = 0,
             MaxHealPerTurn = 20
 
         };

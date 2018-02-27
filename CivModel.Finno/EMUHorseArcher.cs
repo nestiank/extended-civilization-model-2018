@@ -18,7 +18,7 @@ namespace CivModel.Finno
             AttackPower = 10,
             DefencePower = 7,
             GoldLogistics = 10,
-            FullLaborLogistics = 2,
+            LaborLogistics = 2,
             BattleClassLevel = 1
         };
 

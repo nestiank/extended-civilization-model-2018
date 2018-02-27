@@ -18,7 +18,7 @@ namespace CivModel.Hwan
             AttackPower = 25,
             DefencePower = 5,
             GoldLogistics = 30,
-            FullLaborLogistics = 2,
+            LaborLogistics = 2,
             BattleClassLevel = 3
         };
 

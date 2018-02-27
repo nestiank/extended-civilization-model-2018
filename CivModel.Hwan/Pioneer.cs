@@ -15,7 +15,7 @@ namespace CivModel.Hwan
         {
             MaxAP = 2,
             GoldLogistics = 5,
-            FullLaborLogistics = 0.5
+            LaborLogistics = 0.5
         };
 
         public Pioneer(Player owner, Terrain.Point point) : base(owner, Constants, point)
