@@ -13,7 +13,8 @@ namespace CivModel.Finno
 
         public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
         {
-            GoldLogistics = 50
+            GoldLogistics = 50,
+            PopulationCoefficient = 1.3
         };
 
         public AncientFinnoXylitolProductionRegion(CityBase city) : base(city, Constants) { }

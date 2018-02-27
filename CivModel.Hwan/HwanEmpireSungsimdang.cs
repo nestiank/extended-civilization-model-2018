@@ -13,7 +13,8 @@ namespace CivModel.Hwan
 
         public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
         {
-            GoldLogistics = 50
+            GoldLogistics = 50,
+            PopulationCoefficient = 1.2
         };
 
         public HwanEmpireSungsimdang(CityBase city) : base(city, Constants) { }

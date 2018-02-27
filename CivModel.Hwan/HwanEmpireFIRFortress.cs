@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Hwan
 {
-    public sealed class HwanEmpireFIRFortress : TileBuilding
+    public sealed class HwanEmpireFIRFortress : TileBuilding, ITileObjectObserver
     {
         public static Guid ClassGuid { get; } = new Guid("B6BBF4C9-26F4-48C7-87EE-15E6F21B2DC2");
         public override Guid Guid => ClassGuid;
@@ -20,12 +20,44 @@ namespace CivModel.Hwan
             MaxHealPerTurn = 10
         };
 
-        public HwanEmpireFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public HwanEmpireFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        {
+            owner.Game.TileObjectObservable.AddObserver(this);
+        }
 
         protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
         {
             AttackTo(5, opposite, opposite.DefencePower, false, true);
             return originalDamage;
+        }
+
+        protected override void OnBeforeDestroy()
+        {
+            Owner.Game.TileObjectObservable.RemoveObserver(this);
+            base.OnBeforeDestroy();
+        }
+
+        private Unit AboveUnit = null;
+
+        public void TileObjectCreated(TileObject obj) { }
+
+        public void TileObjectPlaced(TileObject obj)
+        {
+            if (obj is Unit unit && unit.PlacedPoint != null
+                && unit.PlacedPoint == this.PlacedPoint
+                && unit.Owner == this.Owner && AboveUnit == null)
+            {
+                AboveUnit = unit;
+                AboveUnit.AttackPower += 5;
+                AboveUnit.DefencePower += 5;
+            }
+
+            else if (AboveUnit != null && obj == AboveUnit && obj.PlacedPoint != this.PlacedPoint)
+            {
+                AboveUnit.AttackPower -= 5;
+                AboveUnit.DefencePower -= 5;
+                AboveUnit = null;
+            }
         }
     }
 

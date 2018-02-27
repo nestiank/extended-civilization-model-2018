@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Finno
 {
-    public sealed class AncientFinnoFIRFortress : TileBuilding
+    public sealed class AncientFinnoFIRFortress : TileBuilding, ITileObjectObserver
     {
         public static Guid ClassGuid { get; } = new Guid("F5AC55CF-C095-4525-9B87-111ED58856A2");
         public override Guid Guid => ClassGuid;
@@ -20,13 +20,44 @@ namespace CivModel.Finno
             MaxHealPerTurn = 10
         };
 
-
-        public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        {
+            owner.Game.TileObjectObservable.AddObserver(this);
+        }
 
         protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
         {
             AttackTo(5, opposite, opposite.DefencePower, false, true);
             return originalDamage;
+        }
+
+        protected override void OnBeforeDestroy()
+        {
+            Owner.Game.TileObjectObservable.RemoveObserver(this);
+            base.OnBeforeDestroy();
+        }
+
+        private Unit AboveUnit = null;
+
+        public void TileObjectCreated(TileObject obj) { }
+
+        public void TileObjectPlaced(TileObject obj)
+        {
+            if (obj is Unit unit && unit.PlacedPoint != null
+                && unit.PlacedPoint == this.PlacedPoint
+                && unit.Owner == this.Owner && AboveUnit == null)
+            {
+                AboveUnit = unit;
+                AboveUnit.AttackPower += 5;
+                AboveUnit.DefencePower += 5;
+            }
+
+            else if (AboveUnit != null && obj == AboveUnit && obj.PlacedPoint != this.PlacedPoint)
+            {
+                AboveUnit.AttackPower -= 5;
+                AboveUnit.DefencePower -= 5;
+                AboveUnit = null;
+            }
         }
     }
 
