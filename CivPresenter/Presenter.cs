@@ -66,7 +66,7 @@ namespace CivPresenter
         ///  <item><c>0</c> if <see cref="Player.TaxRate"/> is selected.</item>
         ///  <item><c>1</c> if <see cref="Player.EconomicInvestmentRatio"/> is selected.</item>
         ///  <item><c>2</c> if <see cref="Player.ResearchInvestmentRatio"/> is selected.</item>
-        ///  <item><c>3</c> if <see cref="Player.LogisticInvestmentRatio"/> is selected.</item>
+        ///  <item><c>3</c> if <see cref="Player.RepairInvestmentRatio"/> is selected.</item>
         ///  <item><c>-1</c> if there is no selected deploy.</item>
         /// </list>
         /// </remarks>
@@ -866,7 +866,7 @@ namespace CivPresenter
                     else if (SelectedInvestment == 2)
                         player.ResearchInvestmentRatio = value;
                     else if (SelectedInvestment == 3)
-                        player.LogisticInvestmentRatio = value;
+                        player.RepairInvestmentRatio = value;
                 }
                 else if (index < Game.PlayerInTurn.Deployment.Count)
                 {

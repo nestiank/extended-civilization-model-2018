@@ -23,7 +23,7 @@ namespace CivModel
         /// <summary>
         /// The maximum heal per turn.
         /// </summary>
-        /// <seealso cref="Actor.HealByLogistics(double)" />
+        /// <seealso cref="Actor.HealByRepair(double)" />
         public double MaxHealPerTurn { get; set; } = 5;
         /// <summary>
         /// The attack power.
@@ -38,10 +38,14 @@ namespace CivModel
         /// </summary>
         public double GoldLogistics { get; set; } = 0;
         /// <summary>
-        /// The amount of labor logistics of this actor to get the full heal amount of <see cref="Actor.MaxHealPerTurn"/>.
+        /// The amount of labor logistics of this actor.
         /// </summary>
-        /// <seealso cref="Actor.HealByLogistics(double)" />
-        public double FullLaborLogistics { get; set; } = 0;
+        public double LaborLogistics { get; set; } = 0;
+        /// <summary>
+        /// The amount of labor for this actor to get the full heal amount of <see cref="Actor.MaxHealPerTurn"/>.
+        /// </summary>
+        /// <seealso cref="Actor.HealByRepair(double)" />
+        public double FullLaborForRepair { get; set; } = 0;
         /// <summary>
         /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
         /// </summary>

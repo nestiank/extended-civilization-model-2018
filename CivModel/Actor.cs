@@ -125,7 +125,7 @@ namespace CivModel
         /// The maximum heal per turn.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">MaxHealPerTurn is negative</exception>
-        /// <seealso cref="HealByLogistics(double)"/>
+        /// <seealso cref="HealByRepair(double)"/>
         public double MaxHealPerTurn
         {
             get => _maxHealPerTurn;
@@ -194,35 +194,69 @@ namespace CivModel
         private double _goldLogistics;
 
         /// <summary>
-        /// The amount of labor logistics of this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
+        /// The amount of labor logistics of this actor.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">FullLaborLogistics is negative</exception>
-        public double FullLaborLogistics
+        /// <exception cref="ArgumentOutOfRangeException">LaborLogistics is negative</exception>
+        public double LaborLogistics
         {
-            get => _fullLaborLogistics;
+            get => _laborLogistics;
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), value, "FullLaborLogistics is negative");
-                _fullLaborLogistics = value;
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "LaborLogistics is negative");
+                _laborLogistics = value;
             }
         }
-        private double _fullLaborLogistics;
+        private double _laborLogistics;
 
         /// <summary>
-        /// The amount of labor logistics of this actor to get the maximum heal mount in this turn.
+        /// Whether this actor is provided with appropriate amount of logistics.
         /// </summary>
-        public double BasicLaborLogistics => FullLaborLogistics * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
+        public bool IsStarved
+        {
+            get
+            {
+                if (Owner == null)
+                    throw new InvalidOperationException("actor is already destroyed");
+                Owner.CalculateLogistics();
+                return _isStarved;
+            }
+            // this setter is used by Player class
+            internal set =>_isStarved = value;
+        }
+        private bool _isStarved = false;
 
         /// <summary>
-        /// The amount of labor logicstics to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
+        /// The amount of labor for this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">FullLaborForRepair is negative</exception>
+        /// <seealso cref="HealByRepair(double)" />
+        public double FullLaborForRepair
+        {
+            get => _fullLaborForRepair;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "FullLaborForRepair is negative");
+                _fullLaborForRepair = value;
+            }
+        }
+        private double _fullLaborForRepair;
+
+        /// <summary>
+        /// The amount of labor for repair of this actor to get the maximum heal mount in this turn.
+        /// </summary>
+        public double BasicLaborForRepair => FullLaborForRepair * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
+
+        /// <summary>
+        /// The amount of labor for repair to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
         /// </summary>
         /// <remarks>
         /// This property is updated by <see cref="Player.EstimateResourceInputs"/>.
         /// You must call that function before use this property.
         /// </remarks>
         /// <seealso cref="Player.EstimateResourceInputs"/>
-        public double EstimatedLaborLogistics { get; internal set; }
+        public double EstimatedLaborForRepair { get; internal set; }
 
         /// <summary>
         /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
@@ -319,13 +353,14 @@ namespace CivModel
             if (constants == null)
                 throw new ArgumentNullException(nameof(constants));
 
-            _maxAP = constants.MaxAP;
-            _maxHP = constants.MaxHP;
-            _maxHealPerTurn = constants.MaxHealPerTurn;
+            MaxAP = constants.MaxAP;
+            MaxHP = constants.MaxHP;
+            MaxHealPerTurn = constants.MaxHealPerTurn;
             AttackPower = constants.AttackPower;
             DefencePower = constants.DefencePower;
-            _goldLogistics = constants.GoldLogistics;
-            _fullLaborLogistics = constants.FullLaborLogistics;
+            GoldLogistics = constants.GoldLogistics;
+            LaborLogistics = constants.LaborLogistics;
+            FullLaborForRepair = constants.FullLaborForRepair;
             BattleClassLevel = constants.BattleClassLevel;
         }
 
@@ -514,42 +549,24 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Check how much labor logistics can be inputed for healing.
-        /// </summary>
-        /// <param name="labor">labor amount which you want to put</param>
-        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="labor"/> is negative</exception>
-        /// <returns>maximum labor amount possible to put, less than <paramref name="labor"/></returns>
-        public double GetAvailableInputLaborLogistics(double labor)
-        {
-            if (Owner == null)
-                throw new InvalidOperationException("actor is already destroyed");
-            if (labor < 0)
-                throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
-
-            return Math.Min(labor, BasicLaborLogistics);
-        }
-
-        /// <summary>
-        /// Heals this actor by inputing labor logistics.
+        /// Heals this actor by inputing labor for repair.
         /// </summary>
         /// <param name="labor">labor amount to input</param>
         /// <returns>The amount which is really inputed. It can be different from the argument.</returns>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="labor"/> is negative</exception>
-        /// <seealso cref="GetAvailableInputLaborLogistics(double)"/>
-        public double HealByLogistics(double labor)
+        public double HealByRepair(double labor)
         {
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
             if (labor < 0)
                 throw new ArgumentOutOfRangeException(nameof(labor), labor, "labor is negative");
 
-            labor = GetAvailableInputLaborLogistics(labor);
-            if (AboutEqual(labor, FullLaborLogistics))
+            labor = Math.Min(labor, BasicLaborForRepair);
+            if (AboutEqual(labor, FullLaborForRepair))
                 Heal(MaxHealPerTurn);
             else
-                Heal(MaxHealPerTurn * labor / FullLaborLogistics);
+                Heal(MaxHealPerTurn * labor / FullLaborForRepair);
 
             return labor;
         }

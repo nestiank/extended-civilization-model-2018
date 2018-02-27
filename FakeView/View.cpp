@@ -296,8 +296,8 @@ namespace FakeView
             else
                 color = 0b0000'0111;
             m_screen->PrintString(0, y, color,
-                "Logistic Investment: " + std::to_string(player->LogisticInvestmentRatio * 100) + "%"
-                + " [ " + std::to_string(player->LogisticInvestment) + " / " + std::to_string(player->BasicLogisticRequire) + " ]");
+                "Repair Investment: " + std::to_string(player->RepairInvestmentRatio * 100) + "%"
+                + " [ " + std::to_string(player->RepairInvestment) + " / " + std::to_string(player->BasicLaborForRepair) + " ]");
 
             y += 2;
             if (m_presenter->SelectedInvestment == -1 && m_presenter->SelectedDeploy == -1 && m_presenter->SelectedProduction == -1)
