@@ -22,11 +22,73 @@ namespace CivModel.Hwan
             BattleClassLevel = 1
         };
 
+        private readonly IActorAction _holdingAttackAct;
+        public override IActorAction HoldingAttackAct => _holdingAttackAct;
+
+        private readonly IActorAction _movingAttackAct;
+        public override IActorAction MovingAttackAct => _movingAttackAct;
+
+        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
+
         public Spy(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
-
+            _holdingAttackAct = new AttackActorAction(this, false);
+            _movingAttackAct = new AttackActorAction(this, true);
+            _specialActs[0] = new SpyAction(this);
         }
 
+        private class SpyAction : IActorAction
+        {
+            private readonly Spy _owner;
+            public Actor Owner => _owner;
+
+            public bool IsParametered => false;
+
+            public SpyAction(Spy owner)
+            {
+                _owner = owner;
+            }
+
+
+            public double GetRequiredAP(Terrain.Point? pt)
+            {
+                if (CheckError(pt) != null)
+                    return double.NaN;
+
+                return 1;
+            }
+
+            private Exception CheckError(Terrain.Point? pt)
+            {
+                if (pt != null)
+                    return new ArgumentException("pt is invalid");
+                if (!_owner.PlacedPoint.HasValue)
+                    return new InvalidOperationException("Actor is not placed yet");
+
+                return null;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                double Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
+                foreach(var ProjectCthulhu in Owner.Owner.Quests)
+                {
+                    if(ProjectCthulhu is QuestPorjectCthulhu && ProjectCthulhu.Status == QuestStatus.Accepted)
+                    {
+                        ProjectCthulhu.Status = QuestStatus.Completed;
+                    }
+                }
+
+                Owner.ConsumeAP(Ap);
+            }
+        }
     }
 
     public class SpyProductionFactory : IActorProductionFactory

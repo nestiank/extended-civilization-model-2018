@@ -59,6 +59,12 @@
     <Compile Include="Preternaturality.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtoNinja.cs" />
+    <Compile Include="QuestAutismBeamReflex.cs" />
+    <Compile Include="QuestEgyptKingdom.cs" />
+    <Compile Include="QuestPorjectCthulhu.cs" />
+    <Compile Include="SpecialResourceAlienCommunication.cs" />
+    <Compile Include="SpecialResourceAutismBeamReflex.cs" />
+    <Compile Include="SpecialResourceCthulhuProjectInfo.cs" />
     <Compile Include="Spy.cs" />
     <Compile Include="UnicornOrder.cs" />
   </ItemGroup>
