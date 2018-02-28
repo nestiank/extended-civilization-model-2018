@@ -49,8 +49,17 @@ namespace CivModel.Finno
         {
             if (obj is AutismBeamDrone Drone && Drone.Owner == Requestee)
             {
-                Status = QuestStatus.Completed;
+                if (flag < 2)
+                    flag += 1;
+
+                else if(flag >= 2)
+                {
+                    Status = QuestStatus.Completed;
+                    flag = 0;
+                }                    
             }
+
+
         }
 
         public void TileObjectPlaced(TileObject obj) { }
