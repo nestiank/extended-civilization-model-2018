@@ -95,8 +95,9 @@ namespace CivModel
             }
             while (!TrySetCityName(name));
 
-            Owner.AddCityToList(this);
             _holdingAttackAct = new AttackActorAction(this, false);
+
+            Owner.BeforeLandingCity = false;
         }
 
         /// <summary>
@@ -162,26 +163,6 @@ namespace CivModel
                 throw new ArgumentException("building is not placed in this city", "building");
 
             _interiorBuildings.Remove(building);
-        }
-
-        /// <summary>
-        /// Called before [change owner], by <see cref="Actor.ChangeOwner" />.
-        /// </summary>
-        /// <param name="newOwner">The new owner.</param>
-        protected override void OnBeforeChangeOwner(Player newOwner)
-        {
-            base.OnBeforeChangeOwner(newOwner);
-            Owner.RemoveCityFromList(this);
-            newOwner.AddCityToList(this);
-        }
-
-        /// <summary>
-        /// Called before [destroy], by <see cref="Actor.Destroy" />
-        /// </summary>
-        protected override void OnBeforeDestroy()
-        {
-            Owner.RemoveCityFromList(this);
-            base.OnBeforeDestroy();
         }
 
         /// <summary>

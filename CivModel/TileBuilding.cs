@@ -33,6 +33,7 @@ namespace CivModel
             : base(owner, constants, point, TileTag.TileBuilding)
         {
             owner.TryAddTerritory(point);
+            Owner.AddTileBuildingToList(this);
         }
 
         /// <summary>
@@ -45,6 +46,17 @@ namespace CivModel
 
             if (PlacedPoint is Terrain.Point pt)
                 Owner.TryAddTerritory(pt);
+        }
+
+        /// <summary>
+        /// Called before [change owner], by <see cref="Actor.ChangeOwner" />.
+        /// </summary>
+        /// <param name="newOwner">The new owner.</param>
+        protected override void OnBeforeChangeOwner(Player newOwner)
+        {
+            base.OnBeforeChangeOwner(newOwner);
+            Owner.RemoveTileBuildingFromList(this);
+            newOwner.AddTileBuildingToList(this);
         }
 
         /// <summary>
@@ -61,6 +73,15 @@ namespace CivModel
 
                 Owner.AddTerritory(pt);
             }
+        }
+
+        /// <summary>
+        /// Called before [destroy], by <see cref="Actor.Destroy" />
+        /// </summary>
+        protected override void OnBeforeDestroy()
+        {
+            Owner.RemoveTileBuildingFromList(this);
+            base.OnBeforeDestroy();
         }
     }
 }

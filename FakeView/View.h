@@ -24,6 +24,7 @@ namespace FakeView
         void RenderQuest();
         void RenderVictory();
         void RenderDefeated();
+        void RenderCityView();
 
         void PrintTerrain(int px, int py, CivModel::Terrain::Point point);
         void PrintUnit(int px, int py, CivModel::Unit^ unit);

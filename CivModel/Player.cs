@@ -64,7 +64,7 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="GoldIncome"/>
         /// <seealso cref="GoldNetIncome"/>
-        public double GoldNetIncomeWithoutConsumption => GoldIncome - EconomicInvestment - ResearchInvestment - CalculateLogistics().gold;
+        public double GoldNetIncomeWithoutConsumption => CalculateLogistics().gold;
 
         /// <summary>
         /// The net income of gold. <see cref="EstimatedUsedGold"/> property is used for calculation.
@@ -97,7 +97,7 @@ namespace CivModel
         /// The labor per turn with logistics consumption.
         /// </summary>
         /// <seealso cref="LaborWithoutLogistics"/>
-        public double Labor => LaborWithoutLogistics - CalculateLogistics().labor;
+        public double Labor => CalculateLogistics().labor;
 
         /// <summary>
         /// The total basic research income per turn of this player.
@@ -244,15 +244,22 @@ namespace CivModel
         private readonly SafeIterationCollection<Unit> _units = new SafeIterationCollection<Unit>();
 
         /// <summary>
-        /// The list of cities of this player.
+        /// The list of tile buildings of this player.
+        /// </summary>
+        /// <seealso cref="TileBuilding"/>
+        public IReadOnlyList<TileBuilding> TileBuildings => _tileBuildings;
+        private readonly SafeIterationCollection<TileBuilding> _tileBuildings = new SafeIterationCollection<TileBuilding>();
+
+        /// <summary>
+        /// <see cref="IEnumerable{T}"/> object which contains cities this player owns.
         /// </summary>
         /// <seealso cref="CityBase"/>
-        public IReadOnlyList<CityBase> Cities => _cities;
-        private readonly SafeIterationCollection<CityBase> _cities = new SafeIterationCollection<CityBase>();
+        public IEnumerable<CityBase> Cities => TileBuildings.OfType<CityBase>();
 
         /// <summary>
         /// <see cref="IEnumerable{T}"/> object which contains <see cref="Actor"/> objects this player owns.
         /// </summary>
+        /// <seealso cref="Actor"/>
         public IEnumerable<Actor> Actors => Units.Cast<Actor>().Concat(Cities);
 
         /// <summary>
@@ -306,7 +313,7 @@ namespace CivModel
         /// <summary>
         /// Whether this player is defeated.
         /// </summary>
-        public bool IsDefeated => !_beforeLandingCity && Cities.Count == 0;
+        public bool IsDefeated => !BeforeLandingCity && Cities.Count() == 0;
 
         /// <summary>
         /// Whether this player is controlled by AI.
@@ -345,7 +352,8 @@ namespace CivModel
         public int Team => _team;
         private readonly int _team;
 
-        private bool _beforeLandingCity = true;
+        // this property is used by CityBase class
+        internal bool BeforeLandingCity { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Player"/> class.
@@ -459,17 +467,16 @@ namespace CivModel
             _units.Remove(unit);
         }
 
-        /// this function is used by CityBase class
-        internal void AddCityToList(CityBase city)
+        /// this function is used by TileBuilding class
+        internal void AddTileBuildingToList(TileBuilding city)
         {
-            _beforeLandingCity = false;
-            _cities.Add(city);
+            _tileBuildings.Add(city);
         }
 
-        // this function is used by CityBase class
-        internal void RemoveCityFromList(CityBase city)
+        // this function is used by TileBuilding class
+        internal void RemoveTileBuildingFromList(TileBuilding city)
         {
-            _cities.Remove(city);
+            _tileBuildings.Remove(city);
         }
 
         // this function is used by Quest class
@@ -663,7 +670,7 @@ namespace CivModel
         internal (double labor, double gold) CalculateLogistics()
         {
             double labor = LaborWithoutLogistics;
-            double gold = GoldIncome;
+            double gold = GoldIncome - EconomicInvestment - ResearchInvestment;
             foreach (var actor in Actors)
             {
                 if (actor.LaborLogistics <= actor.LaborLogistics)
