@@ -263,14 +263,14 @@ namespace CivModel
         /// <summary>
         /// Called before a turn.
         /// </summary>
-        public void PreTurn()
+        public virtual void PreTurn()
         {
         }
 
         /// <summary>
         /// Called after a turn.
         /// </summary>
-        public void PostTurn()
+        public virtual void PostTurn()
         {
             if (LeftTurn >= 0)
             {
@@ -288,7 +288,7 @@ namespace CivModel
         /// Called before a sub turn.
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public void PrePlayerSubTurn(Player playerInTurn)
+        public virtual void PrePlayerSubTurn(Player playerInTurn)
         {
         }
 
@@ -296,7 +296,7 @@ namespace CivModel
         /// Called after a sub turn.
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public void PostPlayerSubTurn(Player playerInTurn)
+        public virtual void PostPlayerSubTurn(Player playerInTurn)
         {
         }
 
