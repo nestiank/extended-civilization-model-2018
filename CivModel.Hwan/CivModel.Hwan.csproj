@@ -62,9 +62,13 @@
     <Compile Include="QuestAutismBeamReflex.cs" />
     <Compile Include="QuestEgyptKingdom.cs" />
     <Compile Include="QuestPorjectCthulhu.cs" />
+    <Compile Include="QuestSubAirspaceDomination.cs" />
+    <Compile Include="QuestSubMoaiForceField.cs" />
+    <Compile Include="SpecialResourceAirspaceDomination.cs" />
     <Compile Include="SpecialResourceAlienCommunication.cs" />
     <Compile Include="SpecialResourceAutismBeamReflex.cs" />
     <Compile Include="SpecialResourceCthulhuProjectInfo.cs" />
+    <Compile Include="SpecialResourceMoaiForceField.cs" />
     <Compile Include="Spy.cs" />
     <Compile Include="UnicornOrder.cs" />
   </ItemGroup>
