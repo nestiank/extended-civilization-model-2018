@@ -38,7 +38,7 @@ namespace CivModel
         /// <summary>
         /// The requester of this quest. <c>null</c> if not exists.
         /// </summary>
-        public Player Requester => Requester;
+        public Player Requester => _requester;
         private readonly Player _requester;
 
         /// <summary>
