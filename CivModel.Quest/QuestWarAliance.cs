@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Finno
+namespace CivModel.Quests
 {
     public class QuestWarAliance : Quest, ITileObjectObserver
     {
@@ -41,13 +41,24 @@ namespace CivModel.Finno
         protected override void OnComplete()
         {
             Requestee.SpecialResource[AutismBeamAmplificationCrystal.Instance] = 1;
+            foreach(var Player in Game.Players)
+            {
+                foreach(var TheQuest in Player.Quests)
+                {
+                    if (TheQuest is QuestAutismBeamReflex)
+                    {
+                        TheQuest.Status = QuestStatus.Deployed;
+                    }
+                }
+            }
+
 
             Cleanup();
         }
 
         public void TileObjectCreated(TileObject obj)
         {
-            if (obj is AutismBeamDrone Drone && Drone.Owner == Requestee)
+            if (obj is CivModel.Finno.AutismBeamDrone Drone && Drone.Owner == Requestee)
             {
                 if (flag < 2)
                     flag += 1;

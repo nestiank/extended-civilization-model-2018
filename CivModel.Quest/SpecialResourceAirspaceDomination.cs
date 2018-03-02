@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
-    public class SpecialResourceAlienCommunication : ISpecialResource
+    public class SpecialResourceAirspaceDomination : ISpecialResource
     {
-        public static SpecialResourceAlienCommunication Instance => _instance.Value;
-        private static Lazy<SpecialResourceAlienCommunication> _instance
-            = new Lazy<SpecialResourceAlienCommunication>(() => new SpecialResourceAlienCommunication());
-
-        private SpecialResourceAlienCommunication() { }
+        public static SpecialResourceAirspaceDomination Instance => _instance.Value;
+        private static Lazy<SpecialResourceAirspaceDomination> _instance
+            = new Lazy<SpecialResourceAirspaceDomination>(() => new SpecialResourceAirspaceDomination());
+        private SpecialResourceAirspaceDomination()
+        {
+        }
 
         public int MaxCount => 1;
 
@@ -32,7 +33,11 @@ namespace CivModel.Hwan
                 player.Game.TurnObservable.AddObserver(this);
             }
 
-            public void PostTurn() { }
+            public void PostTurn()
+            {
+
+            }
+
             public void PostPlayerSubTurn(Player playerInTurn) { }
             public void PrePlayerSubTurn(Player playerInTurn) { }
             public void PreTurn() { }

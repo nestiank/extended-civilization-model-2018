@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
-    public class SpecialResourceCthulhuProjectInfo : ISpecialResource
+    public class SpecialResourceAlienCommunication : ISpecialResource
     {
-        public static SpecialResourceCthulhuProjectInfo Instance => _instance.Value;
-        private static Lazy<SpecialResourceCthulhuProjectInfo> _instance
-            = new Lazy<SpecialResourceCthulhuProjectInfo>(() => new SpecialResourceCthulhuProjectInfo());
+        public static SpecialResourceAlienCommunication Instance => _instance.Value;
+        private static Lazy<SpecialResourceAlienCommunication> _instance
+            = new Lazy<SpecialResourceAlienCommunication>(() => new SpecialResourceAlienCommunication());
 
-        private SpecialResourceCthulhuProjectInfo() { }
+        private SpecialResourceAlienCommunication() { }
 
         public int MaxCount => 1;
 

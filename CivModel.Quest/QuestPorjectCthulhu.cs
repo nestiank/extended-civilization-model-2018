@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
-    public class QuestPorjectCthulhu : Quest
+    public class QuestPorjectCthulhu : Quest, ITileObjectObserver
     {
         public override string Name => "첩보 - 크툴루 계획";
 
@@ -24,11 +24,13 @@ namespace CivModel.Hwan
         protected override void OnAccept()
         {
             Game.TurnObservable.AddObserver(this);
+            Game.TileObjectObservable.AddObserver(this);
         }
 
         private void Cleanup()
         {
             Game.TurnObservable.RemoveObserver(this);
+            Game.TileObjectObservable.RemoveObserver(this);
         }
 
         protected override void OnGiveup()
@@ -39,8 +41,28 @@ namespace CivModel.Hwan
         protected override void OnComplete()
         {
             Requestee.SpecialResource[SpecialResourceCthulhuProjectInfo.Instance] = 1;
+            foreach (var TheQuest in Requestee.Quests)
+            {
+                if (TheQuest is QuestEgyptKingdom)
+                {
+                    TheQuest.Status = QuestStatus.Deployed;
+                }
+            }
 
             Cleanup();
+        }
+
+        public void TileObjectCreated(TileObject obj) { }
+
+        public void TileObjectPlaced(TileObject obj)
+        {
+            if (obj is CivModel.Hwan.Spy Spy && Spy.Owner == Requestee && Spy.PlacedPoint.Value.TileOwner != Requestee)
+            {
+                if (Spy.QuestFlag)
+                {
+                    Status = QuestStatus.Completed;
+                }
+            }
         }
 
     }

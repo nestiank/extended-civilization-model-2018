@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Finno
+namespace CivModel.Quests
 {
     public class QuestAtlantis : Quest, ITileObjectObserver
     {
@@ -41,13 +41,20 @@ namespace CivModel.Finno
         protected override void OnComplete()
         {
             Requestee.SpecialResource[Necronomicon.Instance] = 1;
+            foreach (var TheQuest in Requestee.Quests)
+            {
+                if (TheQuest is QuestRlyeh)
+                {
+                    TheQuest.Status = QuestStatus.Deployed;
+                }
+            }
 
             Cleanup();
         }
 
         public void TileObjectCreated(TileObject obj)
         {
-            if (obj is Preternaturality Atlantis && Atlantis.Owner == Requestee)
+            if (obj is CivModel.Finno.Preternaturality Atlantis && Atlantis.Owner == Requestee)
             {
                 Status = QuestStatus.Completed;
             }

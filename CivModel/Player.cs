@@ -673,7 +673,7 @@ namespace CivModel
             double gold = GoldIncome - EconomicInvestment - ResearchInvestment;
             foreach (var actor in Actors)
             {
-                if (actor.LaborLogistics <= actor.LaborLogistics)
+                if (actor.LaborLogistics <= labor)
                 {
                     labor -= actor.LaborLogistics;
                     gold -= actor.GoldLogistics;

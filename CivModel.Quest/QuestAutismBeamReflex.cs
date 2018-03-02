@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
     public class QuestAutismBeamReflex : Quest
     {
@@ -39,6 +39,25 @@ namespace CivModel.Hwan
         protected override void OnComplete()
         {
             Requestee.SpecialResource[SpecialResourceAutismBeamReflex.Instance] = 1;
+
+            foreach(var TheQuest in Requestee.Quests)
+            {
+                if(TheQuest is QuestPorjectCthulhu)
+                {
+                    TheQuest.Status = QuestStatus.Deployed;
+                }
+            }
+
+            foreach (var Player in Game.Players)
+            {
+                foreach (var TheQuest in Player.Quests)
+                {
+                    if (TheQuest is QuestAtlantis)
+                    {
+                        TheQuest.Status = QuestStatus.Deployed;
+                    }
+                }
+            }
 
             Cleanup();
         }

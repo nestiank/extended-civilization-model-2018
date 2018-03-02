@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Finno
+namespace CivModel.Quests
 {
-    public class AutismBeamAmplificationCrystal : ISpecialResource
+    public class InterstellarEnergyExtractor : ISpecialResource
     {
-        public static AutismBeamAmplificationCrystal Instance => _instance.Value;
-        private static Lazy<AutismBeamAmplificationCrystal> _instance
-            = new Lazy<AutismBeamAmplificationCrystal>(() => new AutismBeamAmplificationCrystal());
-
-        private AutismBeamAmplificationCrystal() { }
+        public static InterstellarEnergyExtractor Instance => _instance.Value;
+        private static Lazy<InterstellarEnergyExtractor> _instance
+            = new Lazy<InterstellarEnergyExtractor>(() => new InterstellarEnergyExtractor());
+        private InterstellarEnergyExtractor()
+        {
+        }
 
         public int MaxCount => 1;
 
@@ -32,7 +33,11 @@ namespace CivModel.Finno
                 player.Game.TurnObservable.AddObserver(this);
             }
 
-            public void PostTurn() { }
+            public void PostTurn()
+            {
+
+            }
+
             public void PostPlayerSubTurn(Player playerInTurn) { }
             public void PrePlayerSubTurn(Player playerInTurn) { }
             public void PreTurn() { }

@@ -4,16 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Finno
+namespace CivModel.Quests
 {
-    public class InterstellarEnergyExtractor : ISpecialResource
+    public class SpecialResourceCthulhuProjectInfo : ISpecialResource
     {
-        public static InterstellarEnergyExtractor Instance => _instance.Value;
-        private static Lazy<InterstellarEnergyExtractor> _instance
-            = new Lazy<InterstellarEnergyExtractor>(() => new InterstellarEnergyExtractor());
-        private InterstellarEnergyExtractor()
-        {
-        }
+        public static SpecialResourceCthulhuProjectInfo Instance => _instance.Value;
+        private static Lazy<SpecialResourceCthulhuProjectInfo> _instance
+            = new Lazy<SpecialResourceCthulhuProjectInfo>(() => new SpecialResourceCthulhuProjectInfo());
+
+        private SpecialResourceCthulhuProjectInfo() { }
 
         public int MaxCount => 1;
 
@@ -33,11 +32,7 @@ namespace CivModel.Finno
                 player.Game.TurnObservable.AddObserver(this);
             }
 
-            public void PostTurn()
-            {
-
-            }
-
+            public void PostTurn() { }
             public void PostPlayerSubTurn(Player playerInTurn) { }
             public void PrePlayerSubTurn(Player playerInTurn) { }
             public void PreTurn() { }

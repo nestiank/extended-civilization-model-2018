@@ -200,6 +200,10 @@ namespace CivModel
                 }
 
                 startup.InitializeGame(this, false);
+                foreach (var scheme in SchemeLoader.SchemaTree)
+                {
+                    scheme.OnAfterInitialized(this);
+                }
             }
             catch (InvalidCastException)
             {

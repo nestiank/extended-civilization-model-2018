@@ -4,16 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
-    public class SpecialResourceMoaiForceField : ISpecialResource
+    public class Necronomicon : ISpecialResource
     {
-        public static SpecialResourceMoaiForceField Instance => _instance.Value;
-        private static Lazy<SpecialResourceMoaiForceField> _instance
-            = new Lazy<SpecialResourceMoaiForceField>(() => new SpecialResourceMoaiForceField());
-        private SpecialResourceMoaiForceField()
-        {
-        }
+        public static Necronomicon Instance => _instance.Value;
+        private static Lazy<Necronomicon> _instance
+            = new Lazy<Necronomicon>(() => new Necronomicon());
+
+        private Necronomicon() { }
 
         public int MaxCount => 1;
 
@@ -33,11 +32,7 @@ namespace CivModel.Hwan
                 player.Game.TurnObservable.AddObserver(this);
             }
 
-            public void PostTurn()
-            {
-
-            }
-
+            public void PostTurn() { }
             public void PostPlayerSubTurn(Player playerInTurn) { }
             public void PrePlayerSubTurn(Player playerInTurn) { }
             public void PreTurn() { }

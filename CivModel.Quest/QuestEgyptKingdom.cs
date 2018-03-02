@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
     public class QuestEgyptKingdom : Quest, ITileObjectObserver
     {
@@ -47,7 +47,7 @@ namespace CivModel.Hwan
 
         public void TileObjectCreated(TileObject obj)
         {
-            if(obj is Preternaturality Pyramid && Pyramid.Owner == Requestee)
+            if(obj is CivModel.Hwan.Preternaturality Pyramid && Pyramid.Owner == Requestee)
             {
                 Status = QuestStatus.Completed;
             }
