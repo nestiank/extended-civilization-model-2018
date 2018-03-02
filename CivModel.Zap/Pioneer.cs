@@ -8,7 +8,7 @@ namespace CivModel.Zap
 {
     public sealed class Pioneer : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("487BBF97-538A-45CB-A62D-B33E173F8E6F");
+        public static Guid ClassGuid { get; } = new Guid("6A5A25E9-1213-49B9-94F6-A8BB5B0C0A10");
         public override Guid Guid => ClassGuid;
 
         public static readonly ActorConstants Constants = new ActorConstants

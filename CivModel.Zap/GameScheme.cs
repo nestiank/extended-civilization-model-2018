@@ -8,7 +8,7 @@ namespace CivModel.Zap
 { 
     public class GameSchemeFactory : IGameSchemeFactory
     {
-        public static Guid ClassGuid { get; } = new Guid("5E43CB90-F860-427D-A43B-57C96091C58B");
+        public static Guid ClassGuid { get; } = new Guid("57FA8243-995C-460F-B88E-F30C2C7E0807");
         public Guid Guid => ClassGuid;
 
         public Type SchemeType => typeof(GameScheme);
