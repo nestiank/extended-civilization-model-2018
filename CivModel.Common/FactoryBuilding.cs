@@ -29,6 +29,7 @@ namespace CivModel.Common
         {
         }
 
+        public Type ResultType => typeof(FactoryBuilding);
         public InteriorBuildingConstants Constants => FactoryBuilding.Constants;
 
         public double TotalLaborCost => 5;

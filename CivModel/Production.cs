@@ -13,6 +13,10 @@ namespace CivModel
     public interface IProductionFactory
     {
         /// <summary>
+        /// The type of production result object. <c>null</c> if the production result is not an object.
+        /// </summary>
+        Type ResultType { get; }
+        /// <summary>
         /// The total labor cost to finish this production.
         /// </summary>
         double TotalLaborCost { get; }

@@ -46,6 +46,7 @@ namespace CivModel.Common
         {
         }
 
+        public Type ResultType => typeof(CityCenter);
         public ActorConstants ActorConstants => CityCenter.Constants;
 
         public double TotalLaborCost => 5;
