@@ -69,6 +69,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoFIRFortress);
         public ActorConstants ActorConstants => AncientFinnoFIRFortress.Constants;
 
         public double TotalLaborCost => 20;

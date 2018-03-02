@@ -31,6 +31,7 @@ namespace CivModel.Zap
         {
         }
 
+        public Type ResultType => typeof(CityLab);
         public InteriorBuildingConstants Constants => CityLab.Constants;
 
         public double TotalLaborCost => 100;

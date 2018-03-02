@@ -44,7 +44,8 @@ namespace CivModel.Zap
         {
         }
 
-        public ActorConstants ActorConstants => DecentralizedMilitary.Constants;
+        public Type ResultType => typeof(ArmedDivision);
+        public ActorConstants ActorConstants => ArmedDivision.Constants;
 
         public double TotalLaborCost => 30;
         public double LaborCapacityPerTurn => 15;

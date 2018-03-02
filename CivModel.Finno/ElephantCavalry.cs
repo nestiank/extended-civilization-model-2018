@@ -168,6 +168,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(ElephantCavalry);
         public ActorConstants ActorConstants => ElephantCavalry.Constants;
 
         public double TotalLaborCost => 30;

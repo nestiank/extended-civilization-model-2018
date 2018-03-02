@@ -208,6 +208,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(GenghisKhan);
         public ActorConstants ActorConstants => GenghisKhan.Constants;
 
         public double TotalLaborCost => 100;

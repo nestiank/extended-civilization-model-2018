@@ -249,6 +249,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(FinnoEmpireCity);
         public ActorConstants Constants => FinnoEmpireCity.Constants;
 
         public double TotalLaborCost => 200;

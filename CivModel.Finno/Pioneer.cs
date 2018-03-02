@@ -32,6 +32,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(Pioneer);
         public ActorConstants ActorConstants => Pioneer.Constants;
 
         public double TotalLaborCost => 5;

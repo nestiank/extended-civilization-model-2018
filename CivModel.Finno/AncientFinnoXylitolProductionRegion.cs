@@ -29,6 +29,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoXylitolProductionRegion);
         public InteriorBuildingConstants Constants => AncientFinnoXylitolProductionRegion.Constants;
 
         public double TotalLaborCost => 100;

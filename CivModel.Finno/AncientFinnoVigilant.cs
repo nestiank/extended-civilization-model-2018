@@ -133,6 +133,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoVigilant);
         public InteriorBuildingConstants Constants => AncientFinnoVigilant.Constants;
 
         public double TotalLaborCost => 100;
