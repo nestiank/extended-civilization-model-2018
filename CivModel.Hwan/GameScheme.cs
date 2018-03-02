@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace CivModel.Hwan
 {
+    public class HwanPlayerConstant
+    {
+        public const int HwanPlayer = 0;
+    }
+
     public class GameSchemeFactory : IGameSchemeFactory
     {
         public static Guid ClassGuid { get; } = new Guid("E5FA297B-3BFB-472D-AD8B-01C8A78B1251");
