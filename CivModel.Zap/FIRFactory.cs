@@ -29,6 +29,7 @@ namespace CivModel.Zap
         {
         }
 
+        public Type ResultType => typeof(FIRFactory);
         public InteriorBuildingConstants Constants => FIRFactory.Constants;
 
         public double TotalLaborCost => 10;

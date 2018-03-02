@@ -69,6 +69,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(HwanEmpireFIRFortress);
         public ActorConstants ActorConstants => HwanEmpireFIRFortress.Constants;
 
         public double TotalLaborCost => 20;

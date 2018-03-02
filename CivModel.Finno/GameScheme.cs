@@ -5,7 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CivModel.Finno
-{ 
+{
+    public class FinnoPlayerConstant
+    {
+        public const int FinnoPlayer = 1;
+    }
+
     public class GameSchemeFactory : IGameSchemeFactory
     {
         public static Guid ClassGuid { get; } = new Guid("5E43CB90-F860-427D-A43B-57C96091C58B");

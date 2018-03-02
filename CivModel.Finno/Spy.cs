@@ -147,6 +147,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(Spy);
         public ActorConstants ActorConstants => Spy.Constants;
 
         public double TotalLaborCost => 32;

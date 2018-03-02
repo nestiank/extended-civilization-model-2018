@@ -6,16 +6,6 @@ using System.Threading.Tasks;
 
 namespace CivModel.Quests
 {
-    public class FinnoPlayerConstant
-    {
-        public const int FinnoPlayer = 1;
-    }
-
-    public class HwanPlayerConstant
-    {
-        public const int HwanPlayer = 0;
-    }
-
     public class GameSchemeFactory : IGameSchemeFactory
     {
         public static Guid ClassGuid { get; } = new Guid("5E43CB90-F860-427D-A43B-57C96091C58B");
@@ -57,9 +47,9 @@ namespace CivModel.Quests
 
         public void PostTurn()
         {
-            if(Game.Players[FinnoPlayerConstant.FinnoPlayer].Research >= 0)
+            if(Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer].Research >= 0)
             {
-                foreach(var TheQuest in Game.Players[FinnoPlayerConstant.FinnoPlayer].Quests)
+                foreach(var TheQuest in Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer].Quests)
                 {
                     if (TheQuest is QuestWarAliance)
                     {
@@ -68,9 +58,9 @@ namespace CivModel.Quests
                 }
             }
 
-            if (Game.Players[HwanPlayerConstant.HwanPlayer].Research >= 0)
+            if (Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer].Research >= 0)
             {
-                foreach (var TheQuest in Game.Players[HwanPlayerConstant.HwanPlayer].Quests)
+                foreach (var TheQuest in Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer].Quests)
                 {
                     if (TheQuest is QuestSubAirspaceDomination)
                     {

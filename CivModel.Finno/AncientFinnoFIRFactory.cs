@@ -30,6 +30,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoFIRFactory);
         public InteriorBuildingConstants Constants => AncientFinnoFIRFactory.Constants;
 
         public double TotalLaborCost => 10;

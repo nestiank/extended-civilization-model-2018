@@ -113,6 +113,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(ProtoNinja);
         public ActorConstants ActorConstants => ProtoNinja.Constants;
 
         public double TotalLaborCost => 50;

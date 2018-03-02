@@ -69,6 +69,7 @@ namespace CivModel.Zap
         {
         }
 
+        public Type ResultType => typeof(FIRFortress);
         public ActorConstants ActorConstants => FIRFortress.Constants;
 
         public double TotalLaborCost => 20;
