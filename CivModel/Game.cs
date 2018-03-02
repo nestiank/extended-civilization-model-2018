@@ -177,17 +177,6 @@ namespace CivModel
                 _players.Add(new Player(this, i));
             }
 
-            var additionalFactory = SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>()
-                .SelectMany(x => x.AdditionalProductionFactory ?? Enumerable.Empty<IProductionFactory>())
-                .Distinct();
-            foreach (var player in Players)
-            {
-                foreach (var factory in additionalFactory)
-                {
-                    player.AvailableProduction.Add(factory);
-                }
-            }
-
             startup.InitializeGame(this, true);
             foreach (var scheme in SchemeLoader.SchemaTree)
             {

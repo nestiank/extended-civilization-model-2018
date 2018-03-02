@@ -67,6 +67,13 @@ namespace CivModel.Common
 
         public void OnAfterInitialized(Game game)
         {
+            foreach (var player in game.Players)
+            {
+                foreach (var p in AdditionalProductionFactory)
+                {
+                    player.AvailableProduction.Add(p);
+                }
+            }
         }
 
         public void RegisterGuid(Game game)

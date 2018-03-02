@@ -83,7 +83,10 @@ namespace CivModel.Hwan
 
         public void OnAfterInitialized(Game game)
         {
-            
+            foreach (var p in AdditionalProductionFactory)
+            {
+                game.Players[HwanPlayerConstant.HwanPlayer].AvailableProduction.Add(p);
+            }
         }
     }
 }

@@ -83,7 +83,10 @@ namespace CivModel.Finno
 
         public void OnAfterInitialized(Game game)
         {
-            
+            foreach (var p in AdditionalProductionFactory)
+            {
+                game.Players[FinnoPlayerConstant.FinnoPlayer].AvailableProduction.Add(p);
+            }
         }
     }
 }
