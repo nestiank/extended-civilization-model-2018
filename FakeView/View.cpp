@@ -3,6 +3,8 @@
 
 #include "Screen.h"
 
+//#define AUTOMATIC_SKIP 30
+
 namespace
 {
     std::string cli2str(System::String^ str)
@@ -32,7 +34,10 @@ namespace FakeView
         if (!m_presenter)
             m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
 
-        m_presenter->Game->Players[0]->IsAIControlled = true;
+        for (int i = 1; i < m_presenter->Game->Players->Count; ++i)
+        {
+            m_presenter->Game->Players[i]->IsAIControlled = true;
+        }
     }
 
     void View::Refocus()
@@ -158,7 +163,8 @@ namespace FakeView
         {
             auto actor = m_presenter->SelectedActor;
             m_screen->PrintString(0, scrsz.height - 2, 0b00000111,
-                "Unit HP: " + std::to_string(actor->RemainHP) + " / " + std::to_string(actor->MaxHP)
+                "Unit Name: " + cli2str(actor->GetType()->FullName)
+                + ", Unit HP: " + std::to_string(actor->RemainHP) + " / " + std::to_string(actor->MaxHP)
                 + ", AP: " + std::to_string(actor->RemainAP) + " / " + std::to_string(actor->MaxAP));
         }
 
@@ -182,6 +188,16 @@ namespace FakeView
                     msg += " %c\x0fpress Enter for the next turn";
                 }
                 m_screen->PrintStringEx(0, scrsz.height - 1, 0b00000111, msg);
+
+#ifdef AUTOMATIC_SKIP
+                if (!m_presenter->IsThereTodos)
+                {
+                    static int count = 0;
+                    if (++count <= AUTOMATIC_SKIP)
+                        m_presenter->CommandApply();
+                }
+#endif
+
                 break;
             }
 
@@ -389,16 +405,19 @@ namespace FakeView
     {
         auto scrsz = m_screen->GetSize();
 
-        int y = 0;
+        int y = scrsz.height - ((scrsz.height / 6) + m_presenter->SelectedProduction);
+        if (y > 0)
+            y = 0;
+
         m_screen->PrintString(0, y, 0b00001111, "Add Production");
 
         unsigned color = 0b0000'0111;
         if (m_presenter->SelectedProduction == -1)
             color = 0b1111'0000;
-        y = 2;
+        y += 2;
         m_screen->PrintString(0, y, color, "Cancel");
 
-        y = 3;
+        y += 1;
         for (int idx = 0; idx < m_presenter->AvailableProduction->Count; ++idx)
         {
             if (y >= scrsz.height)
@@ -737,7 +756,7 @@ namespace FakeView
         }
         else
         {
-            c.ch = cli2str(unit->GetType()->FullName)[0];
+            c.ch = cli2str(unit->GetType()->FullName)[15];
         }
     }
 
