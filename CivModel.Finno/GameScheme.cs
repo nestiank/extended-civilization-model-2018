@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CivModel.Finno
-{
+{ 
     public class GameSchemeFactory : IGameSchemeFactory
     {
         public static Guid ClassGuid { get; } = new Guid("5E43CB90-F860-427D-A43B-57C96091C58B");
@@ -21,7 +21,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class GameScheme : IGameAdditionScheme, ITurnObserver
+    public class GameScheme : IGameAdditionScheme
     {
         public IGameSchemeFactory Factory => _factory;
         private readonly GameSchemeFactory _factory;
@@ -76,22 +76,7 @@ namespace CivModel.Finno
             game.GuidManager.RegisterGuid(FinnoEmpireCity.ClassGuid, (p, t) => new FinnoEmpireCity(p, t));
         }
 
-        public void PreTurn()
-        {
-
-        }
-
-        public void PostTurn()
-        {
-            
-        }
-
-        public void PrePlayerSubTurn(Player playerInTurn)
-        {
-            
-        }
-
-        public void PostPlayerSubTurn(Player playerInTurn)
+        public void OnAfterInitialized(Game game)
         {
             
         }

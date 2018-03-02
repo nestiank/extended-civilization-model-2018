@@ -75,5 +75,10 @@ namespace CivModel.Hwan
             game.GuidManager.RegisterGuid(HwanEmpireSungsimdang.ClassGuid, (c) => new HwanEmpireSungsimdang(c));
             game.GuidManager.RegisterGuid(HwanEmpireVigilant.ClassGuid, (c) => new HwanEmpireVigilant(c));
         }
+
+        public void OnAfterInitialized(Game game)
+        {
+            
+        }
     }
 }
