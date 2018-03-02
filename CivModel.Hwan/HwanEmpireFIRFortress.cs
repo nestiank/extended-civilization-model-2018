@@ -1,5 +1,4 @@
 using System;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -70,6 +69,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(HwanEmpireFIRFortress);
         public ActorConstants ActorConstants => HwanEmpireFIRFortress.Constants;
 
         public double TotalLaborCost => 20;

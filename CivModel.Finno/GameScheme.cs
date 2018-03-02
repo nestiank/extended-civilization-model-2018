@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace CivModel.Finno
 {
+    public class FinnoPlayerConstant
+    {
+        public const int FinnoPlayer = 1;
+    }
+
     public class GameSchemeFactory : IGameSchemeFactory
     {
         public static Guid ClassGuid { get; } = new Guid("5E43CB90-F860-427D-A43B-57C96091C58B");
@@ -37,6 +42,16 @@ namespace CivModel.Finno
                 yield return EMUHorseArcherProductionFactory.Instance;
                 yield return GenghisKhanProductionFactory.Instance;
                 yield return JediKnightProductionFactory.Instance;
+                yield return SpyProductionFactory.Instance;
+                yield return AncientFinnoFineDustFactoryProductionFactory.Instance;
+                yield return AncientFinnoFIRFactoryProductionFactory.Instance;
+                yield return AncientFinnoFIRFortressProductionFactory.Instance;
+                yield return AncientFinnoGermaniumMineProductionFactory.Instance;
+                yield return AncientFinnoLabortoryProductionFactory.Instance;
+                yield return AncientFinnoOctagonProductionFactory.Instance;
+                yield return AncientFinnoVigilantProductionFactory.Instance;
+                yield return AncientFinnoXylitolProductionRegionProductionFactory.Instance;
+                yield return FinnoEmpireCityProductionFactory.Instance;
             }
         }
 
@@ -54,6 +69,21 @@ namespace CivModel.Finno
             game.GuidManager.RegisterGuid(EMUHorseArcher.ClassGuid, (p, t) => new EMUHorseArcher(p, t));
             game.GuidManager.RegisterGuid(GenghisKhan.ClassGuid, (p, t) => new GenghisKhan(p, t));
             game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
+            game.GuidManager.RegisterGuid(Spy.ClassGuid, (p, t) => new Spy(p, t));
+            game.GuidManager.RegisterGuid(AncientFinnoFineDustFactory.ClassGuid, (p, t) => new AncientFinnoFineDustFactory(p, t));
+            game.GuidManager.RegisterGuid(AncientFinnoFIRFactory.ClassGuid, (c) => new AncientFinnoFIRFactory(c));
+            game.GuidManager.RegisterGuid(AncientFinnoFIRFortress.ClassGuid, (p, t) => new AncientFinnoFIRFortress(p, t));
+            game.GuidManager.RegisterGuid(AncientFinnoGermaniumMine.ClassGuid, (p, t) => new AncientFinnoGermaniumMine(p, t));
+            game.GuidManager.RegisterGuid(AncientFinnoLabortory.ClassGuid, (c) => new AncientFinnoLabortory(c));
+            game.GuidManager.RegisterGuid(AncientFinnoOctagon.ClassGuid, (p, t) => new AncientFinnoOctagon(p, t));
+            game.GuidManager.RegisterGuid(AncientFinnoVigilant.ClassGuid, (c) => new AncientFinnoVigilant(c));
+            game.GuidManager.RegisterGuid(AncientFinnoXylitolProductionRegion.ClassGuid, (c) => new AncientFinnoXylitolProductionRegion(c));
+            game.GuidManager.RegisterGuid(FinnoEmpireCity.ClassGuid, (p, t) => new FinnoEmpireCity(p, t));
+        }
+
+        public void OnAfterInitialized(Game game)
+        {
+            
         }
     }
 }

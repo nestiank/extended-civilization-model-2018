@@ -96,6 +96,107 @@ namespace CivModel.Finno
                 Owner.ConsumeAP(Ap);
             }
         }
+
+
+        public override void PostTurn()
+        {
+            base.PostTurn();
+            Random r = new Random();
+
+            int GetUnit = r.Next(1, 100);
+
+            if (GetUnit <= 20)
+            {
+                SendUnit(GetUnit);
+            }
+        }
+
+        private void SendUnit(int rand)
+        {
+            int A = this.PlacedPoint.Value.Position.A;
+            int B = this.PlacedPoint.Value.Position.B;
+            int C = this.PlacedPoint.Value.Position.C;
+
+            bool IsItOk = false;
+
+            int PointA = A;
+            int PointB = B;
+            int PointC = C;
+
+            if (!CheckUnit(A + 1, B - 1, C))
+            {
+                IsItOk = true;
+
+                PointA = A + 1;
+                PointB = B - 1;
+                PointC = C;
+            }
+
+            else if (!CheckUnit(A + 1, B, C - 1))
+            {
+                IsItOk = true;
+
+                PointA = A + 1;
+                PointB = B;
+                PointC = C - 1;
+            }
+
+            else if (!CheckUnit(A, B + 1, C - 1))
+            {
+                IsItOk = true;
+
+                PointA = A;
+                PointB = B + 1;
+                PointC = C - 1;
+            }
+
+            else if (!CheckUnit(A - 1, B + 1, C))
+            {
+                IsItOk = true;
+
+                PointA = A - 1;
+                PointB = B + 1;
+                PointC = C;
+            }
+
+            else if (!CheckUnit(A - 1, B, C + 1))
+            {
+                IsItOk = true;
+
+                PointA = A - 1;
+                PointB = B;
+                PointC = C + 1;
+            }
+
+            else if (!CheckUnit(A, B - 1, C + 1))
+            {
+                IsItOk = true;
+
+                PointA = A;
+                PointB = B - 1;
+                PointC = C + 1;
+            }
+
+            if (IsItOk)
+            {
+                new EMUHorseArcher(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+
+            }
+        }
+
+        private bool CheckUnit(int A, int B, int C)
+        {
+            if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < this.PlacedPoint.Value.Terrain.Width && 0 <= C && C < this.PlacedPoint.Value.Terrain.Height)
+            {
+                if ((this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null)
+                    return false;
+
+                else
+                    return true;
+            }
+
+            return false;
+        }
     }
 
     public class GenghisKhanProductionFactory : ITileObjectProductionFactory
@@ -107,6 +208,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(GenghisKhan);
         public ActorConstants ActorConstants => GenghisKhan.Constants;
 
         public double TotalLaborCost => 100;

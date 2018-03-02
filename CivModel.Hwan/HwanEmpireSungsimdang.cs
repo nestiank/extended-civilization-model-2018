@@ -56,6 +56,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(HwanEmpireSungsimdang);
         public InteriorBuildingConstants Constants => HwanEmpireSungsimdang.Constants;
 
         public double TotalLaborCost => 30;

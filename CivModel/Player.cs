@@ -548,8 +548,8 @@ namespace CivModel
         {
             foreach (var unit in Units)
                 unit.PreTurn();
-            foreach (var city in Cities)
-                city.PreTurn();
+            foreach (var building in TileBuildings)
+                building.PreTurn();
         }
 
         /// <summary>
@@ -557,8 +557,8 @@ namespace CivModel
         /// </summary>
         public void PostTurn()
         {
-            foreach (var city in Cities)
-                city.PostTurn();
+            foreach (var building in TileBuildings)
+                building.PostTurn();
             foreach (var unit in Units)
                 unit.PostTurn();
 
@@ -580,8 +580,8 @@ namespace CivModel
         {
             foreach (var unit in Units)
                 unit.PrePlayerSubTurn(playerInTurn);
-            foreach (var city in Cities)
-                city.PrePlayerSubTurn(playerInTurn);
+            foreach (var building in TileBuildings)
+                building.PrePlayerSubTurn(playerInTurn);
         }
 
         /// <summary>
@@ -590,8 +590,8 @@ namespace CivModel
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public void PostPlayerSubTurn(Player playerInTurn)
         {
-            foreach (var city in Cities)
-                city.PostPlayerSubTurn(playerInTurn);
+            foreach (var building in TileBuildings)
+                building.PostPlayerSubTurn(playerInTurn);
             foreach (var unit in Units)
                 unit.PostPlayerSubTurn(playerInTurn);
         }

@@ -177,6 +177,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AutismBeamDrone);
         public ActorConstants ActorConstants => AutismBeamDrone.Constants;
 
         public double TotalLaborCost => 50;

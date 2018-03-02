@@ -174,6 +174,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(JackieChan);
         public ActorConstants ActorConstants => JackieChan.Constants;
 
         public double TotalLaborCost => 100;

@@ -74,6 +74,8 @@ namespace CivModel.Hwan
                     return new InvalidOperationException("Too far to attack");
                 if (pt.Value.Unit.Owner == Owner.Owner)
                     return new InvalidOperationException("The Unit is friendly");
+                if (pt.Value.TileBuilding != null)
+                    return new InvalidOperationException("The Unit is in Building");
                 if (pt.Value.Unit.BattleClassLevel > 3)
                     return new InvalidOperationException("The Unit's ClassLevel is more then limit");
 
@@ -111,6 +113,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(ProtoNinja);
         public ActorConstants ActorConstants => ProtoNinja.Constants;
 
         public double TotalLaborCost => 50;

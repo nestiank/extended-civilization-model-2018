@@ -58,6 +58,7 @@
     <Compile Include="GenghisKhan.cs" />
     <Compile Include="JediKnight.cs" />
     <Compile Include="Pioneer.cs" />
+    <Compile Include="Preternaturality.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spy.cs" />
   </ItemGroup>

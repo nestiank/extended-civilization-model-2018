@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace CivModel.Hwan
 {
+    public class HwanPlayerConstant
+    {
+        public const int HwanPlayer = 0;
+    }
+
     public class GameSchemeFactory : IGameSchemeFactory
     {
         public static Guid ClassGuid { get; } = new Guid("E5FA297B-3BFB-472D-AD8B-01C8A78B1251");
@@ -37,6 +42,16 @@ namespace CivModel.Hwan
                 yield return LEOSpaceArmadaProductionFactory.Instance;
                 yield return ProtoNinjaProductionFactory.Instance;
                 yield return UnicornOrderProductionFactory.Instance;
+                yield return SpyProductionFactory.Instance;
+                yield return HwanEmpireCityProductionFactory.Instance;
+                yield return HwanEmpireCityCentralLabProductionFactory.Instance;
+                yield return HwanEmpireFIRFactoryProductionFactory.Instance;
+                yield return HwanEmpireFIRFortressProductionFactory.Instance;
+                yield return HwanEmpireIbizaProductionFactory.Instance;
+                yield return HwanEmpireKimchiFactoryProductionFactory.Instance;
+                yield return HwanEmpireLatifundiumProductionFactory.Instance;
+                yield return HwanEmpireSungsimdangProductionFactory.Instance;
+                yield return HwanEmpireVigilantProductionFactory.Instance;
             }
         }
 
@@ -54,6 +69,21 @@ namespace CivModel.Hwan
             game.GuidManager.RegisterGuid(LEOSpaceArmada.ClassGuid, (p, t) => new LEOSpaceArmada(p, t));
             game.GuidManager.RegisterGuid(ProtoNinja.ClassGuid, (p, t) => new ProtoNinja(p, t));
             game.GuidManager.RegisterGuid(UnicornOrder.ClassGuid, (p, t) => new UnicornOrder(p, t));
+            game.GuidManager.RegisterGuid(Spy.ClassGuid, (p, t) => new Spy(p, t));
+            game.GuidManager.RegisterGuid(HwanEmpireCity.ClassGuid, (p, t) => new HwanEmpireCity(p, t));
+            game.GuidManager.RegisterGuid(HwanEmpireCityCentralLab.ClassGuid, (c) => new HwanEmpireCityCentralLab(c));
+            game.GuidManager.RegisterGuid(HwanEmpireFIRFactory.ClassGuid, (c) => new HwanEmpireFIRFactory(c));
+            game.GuidManager.RegisterGuid(HwanEmpireFIRFortress.ClassGuid, (p, t) => new HwanEmpireFIRFortress(p, t));
+            game.GuidManager.RegisterGuid(HwanEmpireIbiza.ClassGuid, (p, t) => new HwanEmpireIbiza(p, t));
+            game.GuidManager.RegisterGuid(HwanEmpireKimchiFactory.ClassGuid, (p, t) => new HwanEmpireKimchiFactory(p, t));
+            game.GuidManager.RegisterGuid(HwanEmpireLatifundium.ClassGuid, (p, t) => new HwanEmpireLatifundium(p, t));
+            game.GuidManager.RegisterGuid(HwanEmpireSungsimdang.ClassGuid, (c) => new HwanEmpireSungsimdang(c));
+            game.GuidManager.RegisterGuid(HwanEmpireVigilant.ClassGuid, (c) => new HwanEmpireVigilant(c));
+        }
+
+        public void OnAfterInitialized(Game game)
+        {
+            
         }
     }
 }

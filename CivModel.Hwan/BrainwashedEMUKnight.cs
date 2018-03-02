@@ -44,6 +44,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(BrainwashedEMUKnight);
         public ActorConstants ActorConstants => BrainwashedEMUKnight.Constants;
 
         public double TotalLaborCost => 15;

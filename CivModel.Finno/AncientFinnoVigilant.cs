@@ -27,7 +27,7 @@ namespace CivModel.Finno
 
             if (GetUnit <= 20)
             {
-
+                SendUnit(GetUnit);
             }
         }
 
@@ -133,6 +133,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoVigilant);
         public InteriorBuildingConstants Constants => AncientFinnoVigilant.Constants;
 
         public double TotalLaborCost => 100;

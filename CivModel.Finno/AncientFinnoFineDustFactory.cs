@@ -21,6 +21,18 @@ namespace CivModel.Finno
 
 
         public AncientFinnoFineDustFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+
+        public override void PostTurn()
+        {
+            base.PostTurn();
+            foreach (var Player in Owner.Game.Players)
+            {
+                if (Player.Team != this.Owner.Team)
+                {
+                    Player.Happiness -= 5;
+                }
+            }
+        }
     }
 
     public class AncientFinnoFineDustFactoryProductionFactory : ITileObjectProductionFactory
@@ -32,6 +44,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoFineDustFactory);
         public ActorConstants ActorConstants => AncientFinnoFineDustFactory.Constants;
 
         public double TotalLaborCost => 20;
