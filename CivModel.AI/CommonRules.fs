@@ -87,7 +87,10 @@ type CommonRules(player : CivModel.Player) =
                 | None -> None
             else
                 None
-        let amud = player.Units |> Seq.choose amud' |> Seq.averageBy float
+        let amudSeq = player.Units |> Seq.choose amud'
+        let amud =
+            if Seq.isEmpty amudSeq then float (player.Game.Terrain.Width + player.Game.Terrain.Height)
+            else amudSeq |> Seq.averageBy float
         rules |> AllMyUnitEnemDist.SetValue (float32 amud)
 
         rules |> DeltaHappyGoal.SetValue (100.f - float32 player.Happiness)
