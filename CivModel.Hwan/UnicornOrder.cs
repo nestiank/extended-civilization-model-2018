@@ -95,11 +95,26 @@ namespace CivModel.Hwan
            private bool DirectionCheck(Terrain.Point? pt)
             {
                 if (pt.Value.Position.A != Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
-                    return false;
+                {
+                    if (pt.Value.Position.A == Owner.PlacedPoint.Value.Position.A - Owner.PlacedPoint.Value.Terrain.Width || pt.Value.Position.B == Owner.PlacedPoint.Value.Position.B + Owner.PlacedPoint.Value.Terrain.Width) { }
+                    else if (pt.Value.Position.A == Owner.PlacedPoint.Value.Position.A + Owner.PlacedPoint.Value.Terrain.Width || pt.Value.Position.B == Owner.PlacedPoint.Value.Position.B - Owner.PlacedPoint.Value.Terrain.Width) { }
+                    else
+                        return false;
+
+                }
+
                 if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 5)
                 {
-                    if (Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B) !=  Owner.PlacedPoint.Value.Terrain.Width - 5)
+                    if (Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B) != Owner.PlacedPoint.Value.Terrain.Width - 5)
+                    {
+                        if (Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C) != 5)
+                            return false;
+                    }
+                    else if (pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
+                    {
                         return false;
+                    }
+
                 }
 
 
@@ -132,7 +147,7 @@ namespace CivModel.Hwan
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CivModel.Common.CityCenter
+                && point.TileBuilding is CityBase
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)

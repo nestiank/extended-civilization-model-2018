@@ -69,16 +69,22 @@ type CommonRules(player : CivModel.Player) =
 
     let setFuzzyInput() =
         player.EstimateResourceInputs()
+        let potential = Seq.append player.Production player.Deployment
 
-        let dfun = float (Utils.fightUnits player |> Seq.length) - (1.5 * float (Utils.fightUnits enemy |> Seq.length) + (float <| Seq.length enemy.Cities))
+        let dfun =
+            float ((Utils.fightUnitsOfPlayer player |> Seq.length) + (Utils.fightUnitsOfProducts potential |> Seq.length))
+            - (1.5 * float (Utils.fightUnitsOfPlayer enemy |> Seq.length) + (float <| Seq.length enemy.Cities))
         rules |> DeltaFightingUnitNum.SetValue (float32 dfun)
 
         let dcn =
             (player.Cities |> Seq.length |> float) + (player.Units |> Enumerable.OfType<Common.Pioneer> |> Seq.length |> float)
+            + float (max
+                (Utils.productsOfType<CityBase> potential |> Seq.length)
+                (Utils.productsOfType<Common.Pioneer> potential |> Seq.length))
             - 1.5 * (enemy.Cities |> Seq.length |> float)
         rules |> DeltaCityNum.SetValue (float32 dcn)
 
-        rules |> EnemyFightingUnitNum.SetValue (Utils.fightUnits enemy |> Seq.length |> float32)
+        rules |> EnemyFightingUnitNum.SetValue (Utils.fightUnitsOfPlayer enemy |> Seq.length |> float32)
         
         let amud' (u : Unit) =
             if u.PlacedPoint.HasValue then

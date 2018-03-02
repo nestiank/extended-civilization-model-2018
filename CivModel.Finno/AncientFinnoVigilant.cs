@@ -113,14 +113,14 @@ namespace CivModel.Finno
         {
             if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < this.City.PlacedPoint.Value.Terrain.Width && 0 <= C && C < this.City.PlacedPoint.Value.Terrain.Height)
             {
-                if ((this.City.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null)
+                if ((this.City.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null && (this.City.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileOwner == this.Owner)
                     return false;
 
                 else
                     return true;
             }
 
-            return false;
+            return true;
         }
     }
 
