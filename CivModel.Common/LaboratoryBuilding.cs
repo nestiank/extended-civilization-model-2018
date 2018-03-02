@@ -30,6 +30,7 @@ namespace CivModel.Common
         {
         }
 
+        public Type ResultType => typeof(LaboratoryBuilding);
         public InteriorBuildingConstants Constants => LaboratoryBuilding.Constants;
 
         public double TotalLaborCost => 5;
