@@ -8,7 +8,7 @@ namespace CivModel.Zap
 {
     public class ZapNinja : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("04DBFD22-3990-48AC-BAF1-095BDAEFCB57");
+        public static Guid ClassGuid { get; } = new Guid("AB1AC3DC-3F5A-43A2-9141-8468B558D6F6");
         public override Guid Guid => ClassGuid;
 
         public static readonly ActorConstants Constants = new ActorConstants
