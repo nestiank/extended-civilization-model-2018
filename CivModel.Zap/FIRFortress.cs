@@ -4,22 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Finno
+namespace CivModel.Zap
 {
-    public sealed class AncientFinnoFIRFortress : TileBuilding, ITileObjectObserver
+    public sealed class FIRFortress : TileBuilding, ITileObjectObserver
     {
-        public static Guid ClassGuid { get; } = new Guid("F5AC55CF-C095-4525-9B87-111ED58856A2");
+        public static Guid ClassGuid { get; } = new Guid("60835460-2FDC-4507-B8F1-7822B5283541");
         public override Guid Guid => ClassGuid;
 
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 30,
             GoldLogistics = 20,
-            LaborLogistics =10,
+            LaborLogistics = 10,
             MaxHealPerTurn = 10
         };
 
-        public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public FIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             owner.Game.TileObjectObservable.AddObserver(this);
         }
@@ -60,16 +60,16 @@ namespace CivModel.Finno
         }
     }
 
-    public class AncientFinnoFIRFortressProductionFactory : ITileObjectProductionFactory
+    public class FIRFortressProductionFactory : ITileObjectProductionFactory
     {
-        public static AncientFinnoFIRFortressProductionFactory Instance => _instance.Value;
-        private static Lazy<AncientFinnoFIRFortressProductionFactory> _instance
-            = new Lazy<AncientFinnoFIRFortressProductionFactory>(() => new AncientFinnoFIRFortressProductionFactory());
-        private AncientFinnoFIRFortressProductionFactory()
+        public static FIRFortressProductionFactory Instance => _instance.Value;
+        private static Lazy<FIRFortressProductionFactory> _instance
+            = new Lazy<FIRFortressProductionFactory>(() => new FIRFortressProductionFactory());
+        private FIRFortressProductionFactory()
         {
         }
 
-        public ActorConstants ActorConstants => AncientFinnoFIRFortress.Constants;
+        public ActorConstants ActorConstants => FIRFortress.Constants;
 
         public double TotalLaborCost => 20;
         public double LaborCapacityPerTurn => 10;
@@ -87,7 +87,7 @@ namespace CivModel.Finno
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new AncientFinnoFIRFortress(owner, point);
+            return new FIRFortress(owner, point);
         }
     }
 }

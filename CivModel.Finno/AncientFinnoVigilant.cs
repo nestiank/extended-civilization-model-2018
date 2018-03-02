@@ -27,7 +27,7 @@ namespace CivModel.Finno
 
             if (GetUnit <= 20)
             {
-
+                SendUnit(GetUnit);
             }
         }
 

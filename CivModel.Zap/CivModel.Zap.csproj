@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6A09EBC4-CF6D-4BA5-8710-E3D4E7F46EA5}</ProjectGuid>
+    <ProjectGuid>{B6D55159-0ED4-41C6-94AE-8F1EB2B3B9F3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CivModel.Finno</RootNamespace>
-    <AssemblyName>CivModel.Finno</AssemblyName>
+    <RootNamespace>CivModel.Zap</RootNamespace>
+    <AssemblyName>CivModel.Zap</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,27 +40,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AncientFinnoFineDustFactory.cs" />
-    <Compile Include="AncientFinnoFIRFortress.cs" />
-    <Compile Include="AncientFinnoGermaniumMine.cs" />
-    <Compile Include="AncientFinnoOctagon.cs" />
-    <Compile Include="AncientFinnoVigilant.cs" />
-    <Compile Include="AncientFinnoXylitolProductionRegion.cs" />
-    <Compile Include="AncientSorcerer.cs" />
-    <Compile Include="AutismBeamDrone.cs" />
-    <Compile Include="AncientFinnoLabortory.cs" />
-    <Compile Include="AncientFinnoFIRFactory.cs" />
+    <Compile Include="ArmedDivision.cs" />
+    <Compile Include="Casino.cs" />
+    <Compile Include="CityCenter.cs" />
+    <Compile Include="CityLab.cs" />
     <Compile Include="DecentralizedMilitary.cs" />
-    <Compile Include="ElephantCavalry.cs" />
-    <Compile Include="EMUHorseArcher.cs" />
-    <Compile Include="FinnoEmpireCity.cs" />
+    <Compile Include="ZapFactory.cs" />
+    <Compile Include="FIRFactory.cs" />
+    <Compile Include="FIRFortress.cs" />
     <Compile Include="GameScheme.cs" />
-    <Compile Include="GenghisKhan.cs" />
-    <Compile Include="JediKnight.cs" />
+    <Compile Include="InfantryDivision.cs" />
+    <Compile Include="LEOSpaceArmada.cs" />
+    <Compile Include="Padawan.cs" />
     <Compile Include="Pioneer.cs" />
-    <Compile Include="Preternaturality.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Spy.cs" />
+    <Compile Include="ZapNinja.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">

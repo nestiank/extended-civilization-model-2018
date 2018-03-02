@@ -189,6 +189,10 @@ namespace CivModel
             }
 
             startup.InitializeGame(this, true);
+            foreach (var scheme in SchemeLoader.SchemaTree)
+            {
+                scheme.OnAfterInitialized(this);
+            }
         }
 
         /// <summary>

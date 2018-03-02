@@ -29,7 +29,7 @@ namespace CivModel.Finno
 
             if (GetUnit <= 10)
             {
-
+                SendUnit(GetUnit);
             }
         }
 
