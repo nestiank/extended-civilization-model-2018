@@ -3,7 +3,7 @@ import re
 
 data = []
 
-with open(r'D:\Projects\civiii-model-proto\CivModel.AI\script\input.txt', encoding='utf-8') as input:
+with open(r'input.txt', encoding='utf-8') as input:
     for line in input:
         line = line.strip()
         if line == '' or line == '---': continue
@@ -50,7 +50,7 @@ while idx < len(data):
     result.append((prefix if prefix != '' else data[idx][0], data[idx][0], data[idx][1]))
     idx = idx + 1
 
-with open(r'D:\Projects\civiii-model-proto\CivModel.AI\script\output.txt', 'w', encoding='utf-8') as output:
+with open(r'output.txt', 'w', encoding='utf-8') as output:
     nowfix = None
     for (prefix, name, lst) in result:
         if prefix != nowfix:
