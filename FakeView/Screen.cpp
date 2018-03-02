@@ -160,6 +160,8 @@ namespace FakeView
 
     void Screen::PrintString(int x, int y, unsigned char color, const std::string& str)
     {
+        if (x < 0 || y < 0)
+            return;
         auto scrsz = GetSize();
         std::size_t bufidx = x + y * scrsz.width;
         for (std::size_t idx = 0; idx < str.size(); ++idx)
@@ -175,6 +177,8 @@ namespace FakeView
 
     void Screen::PrintStringEx(int x, int y, unsigned char color, const std::string& str)
     {
+        if (x < 0 || y < 0)
+            return;
         auto scrsz = GetSize();
         std::size_t bufidx = x + y * scrsz.width;
         for (std::size_t idx = 0; idx < str.size(); ++idx)

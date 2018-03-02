@@ -83,13 +83,37 @@ namespace CivModel.Finno
                     return new InvalidOperationException("Skill is not turned on");
                 if (pt.Value.Unit != null)
                     return new InvalidOperationException("Can't go that way");
-                if (pt.Value.Position.A != Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
+                if (!this.DirectionCheck(pt))
                     return new InvalidOperationException("Can't go that way");
-                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 3)
-                    return new InvalidOperationException("Can't go that way");
-
 
                 return null;
+            }
+
+            private bool DirectionCheck(Terrain.Point? pt)
+            {
+                if (pt.Value.Position.A != Owner.PlacedPoint.Value.Position.A && pt.Value.Position.B != Owner.PlacedPoint.Value.Position.B && pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
+                {
+                    if (pt.Value.Position.A == Owner.PlacedPoint.Value.Position.A - Owner.PlacedPoint.Value.Terrain.Width || pt.Value.Position.B == Owner.PlacedPoint.Value.Position.B + Owner.PlacedPoint.Value.Terrain.Width) { }
+                    else if (pt.Value.Position.A == Owner.PlacedPoint.Value.Position.A + Owner.PlacedPoint.Value.Terrain.Width || pt.Value.Position.B == Owner.PlacedPoint.Value.Position.B - Owner.PlacedPoint.Value.Terrain.Width) { }
+                    else
+                        return false;
+
+                }
+
+                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) != 3)
+                {
+                    if (Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B) != Owner.PlacedPoint.Value.Terrain.Width - 3)
+                    {
+                        if (Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C) != 3)
+                            return false;
+                    }
+                    else if (pt.Value.Position.C != Owner.PlacedPoint.Value.Position.C)
+                    {
+                        return false;
+                    }
+
+                }
+                return true;
             }
 
             public void Act(Terrain.Point? pt)
@@ -108,48 +132,184 @@ namespace CivModel.Finno
                 int B = Owner.PlacedPoint.Value.Position.B;
                 int C = Owner.PlacedPoint.Value.Position.C;
 
-                if (pt.Value.Position.A == Owner.PlacedPoint.Value.Position.A)
+                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) == 3)
                 {
-                    if (pt.Value.Position.B < Owner.PlacedPoint.Value.Position.B)
+                    if (pt.Value.Position.A == Owner.PlacedPoint.Value.Position.A)
                     {
-                        this.Stamping(A, B - 1, C + 1);
-                        this.Stamping(A, B - 2, C + 2);
+                        if (pt.Value.Position.B < Owner.PlacedPoint.Value.Position.B)
+                        {
+                            this.Stamping(A, B - 1, C + 1);
+                            this.Stamping(A, B - 2, C + 2);
+                        }
+
+                        if (pt.Value.Position.B > Owner.PlacedPoint.Value.Position.B)
+                        {
+                            this.Stamping(A, B + 1, C - 1);
+                            this.Stamping(A, B + 2, C - 2);
+                        }
                     }
 
-                    if (pt.Value.Position.B > Owner.PlacedPoint.Value.Position.B)
+                    if (pt.Value.Position.B == Owner.PlacedPoint.Value.Position.B)
                     {
-                        this.Stamping(A, B + 1, C - 1);
-                        this.Stamping(A, B + 2, C - 2);
+                        if (pt.Value.Position.A < Owner.PlacedPoint.Value.Position.A)
+                        {
+                            this.Stamping(A - 1, B, C + 1);
+                            this.Stamping(A - 2, B, C + 2);
+                        }
+
+                        if (pt.Value.Position.A > Owner.PlacedPoint.Value.Position.A)
+                        {
+                            this.Stamping(A + 1, B, C - 1);
+                            this.Stamping(A + 2, B, C - 2);
+                        }
+                    }
+
+                    if (pt.Value.Position.C == Owner.PlacedPoint.Value.Position.C)
+                    {
+                        if (pt.Value.Position.A < Owner.PlacedPoint.Value.Position.A)
+                        {
+                            this.Stamping(A - 1, B + 1, C);
+                            this.Stamping(A - 2, B + 2, C);
+                        }
+
+                        if (pt.Value.Position.A > Owner.PlacedPoint.Value.Position.A)
+                        {
+                            this.Stamping(A + 1, B - 1, C);
+                            this.Stamping(A + 2, B - 2, C);
+                        }
                     }
                 }
 
-                if (pt.Value.Position.B == Owner.PlacedPoint.Value.Position.B)
+                else
                 {
-                    if (pt.Value.Position.A < Owner.PlacedPoint.Value.Position.A)
+                    if(pt.Value.Position.B < Owner.PlacedPoint.Value.Position.B)
                     {
-                        this.Stamping(A - 1, B, C + 1);
-                        this.Stamping(A - 2, B, C + 2);
+                        if(pt.Value.Position.C == Owner.PlacedPoint.Value.Position.C)
+                        {
+                            if (Owner.PlacedPoint.Value.Position.X == Owner.PlacedPoint.Value.Terrain.Width - 3)
+                            {
+                                this.Stamping(A - 1, B + 1, C);
+                                this.Stamping(A - 2, B + 2, C);
+                            }
+
+                            else if(Owner.PlacedPoint.Value.Position.X == Owner.PlacedPoint.Value.Terrain.Width - 2)
+                            {
+                                this.Stamping(A - 1, B + 1, C);
+                                this.Stamping(pt.Value.Position.A + 1, pt.Value.Position.B - 1, C);
+                            }
+
+                            else if(Owner.PlacedPoint.Value.Position.X == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(pt.Value.Position.A + 1, pt.Value.Position.B - 1, C);
+                                this.Stamping(pt.Value.Position.A + 2, pt.Value.Position.B - 2, C);
+                            }
+                        }
+
+                        else if(pt.Value.Position.C < Owner.PlacedPoint.Value.Position.C)
+                        {
+                            if(B + 2 + (C - 2 + Math.Sign(C - 2)) / 2 == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(A, B + 1, C - 1);
+                                this.Stamping(A, B + 2, C - 2);
+                            }
+
+                            else if(B + 1 + (C - 1 + Math.Sign(C - 1)) / 2 == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(A, B + 1, C - 1);
+                                this.Stamping(pt.Value.Position.A, pt.Value.Position.B - 1, pt.Value.Position.C + 1);
+                            }
+                            else
+                            {
+                                this.Stamping(pt.Value.Position.A, pt.Value.Position.B - 1, pt.Value.Position.C + 1);
+                                this.Stamping(pt.Value.Position.A, pt.Value.Position.B - 2, pt.Value.Position.C + 2);
+                            }
+                        }
+
+                        else if (pt.Value.Position.C > Owner.PlacedPoint.Value.Position.C)
+                        {
+                            if(B + (C + 2 + Math.Sign(C + 2)) / 2 == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(pt.Value.Position.A + 1, pt.Value.Position.B, pt.Value.Position.C - 1);
+                                this.Stamping(pt.Value.Position.A + 2, pt.Value.Position.B, pt.Value.Position.C - 2);
+                            }
+
+                            else if(B + (C + 1 + Math.Sign(C + 1)) / 2 == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(pt.Value.Position.A + 1, pt.Value.Position.B, pt.Value.Position.C - 1);
+                                this.Stamping(A - 1, B, C + 1);
+                            }
+
+                            else
+                            {
+                                this.Stamping(A - 1, B, C + 1);
+                                this.Stamping(A - 2, B, C + 2);
+                            }
+                        }
                     }
 
-                    if (pt.Value.Position.A > Owner.PlacedPoint.Value.Position.A)
+                    else if (pt.Value.Position.B > Owner.PlacedPoint.Value.Position.B)
                     {
-                        this.Stamping(A + 1, B, C - 1);
-                        this.Stamping(A + 2, B, C - 2);
-                    }
-                }
+                        if (pt.Value.Position.C == Owner.PlacedPoint.Value.Position.C)
+                        {
+                            if (pt.Value.Position.X == Owner.PlacedPoint.Value.Terrain.Width - 3)
+                            {
+                                this.Stamping(pt.Value.Position.A - 1, pt.Value.Position.B + 1, C);
+                                this.Stamping(pt.Value.Position.A - 2, pt.Value.Position.B + 2, C);
+                            }
 
-                if (pt.Value.Position.C == Owner.PlacedPoint.Value.Position.C)
-                {
-                    if (pt.Value.Position.A < Owner.PlacedPoint.Value.Position.A)
-                    {
-                        this.Stamping(A - 1, B + 1, C);
-                        this.Stamping(A - 2, B + 2, C);
-                    }
+                            else if (Owner.PlacedPoint.Value.Position.X == Owner.PlacedPoint.Value.Terrain.Width - 2)
+                            {
+                                this.Stamping(pt.Value.Position.A - 1, pt.Value.Position.B + 1, C);
+                                this.Stamping(A + 1, B - 1, C);
+                            }
 
-                    if (pt.Value.Position.A > Owner.PlacedPoint.Value.Position.A)
-                    {
-                        this.Stamping(A + 1, B - 1, C);
-                        this.Stamping(A + 2, B - 2, C);
+                            else if (Owner.PlacedPoint.Value.Position.X == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(A + 1, B - 1, C);
+                                this.Stamping(A + 2, B - 2, C);
+                            }
+                        }
+
+                        else if (pt.Value.Position.C < Owner.PlacedPoint.Value.Position.C)
+                        {
+                            if (B + (C - 2 + Math.Sign(C - 2)) / 2 == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(A + 1, B, C - 1);
+                                this.Stamping(A + 2, B, C - 2);
+                            }
+
+                            else if (B + (C - 1 + Math.Sign(C - 1)) / 2 == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(A + 1, B, C - 1);
+                                this.Stamping(pt.Value.Position.A - 1, pt.Value.Position.B, pt.Value.Position.C + 1);
+                            }
+
+                            else
+                            {
+                                this.Stamping(pt.Value.Position.A - 1, pt.Value.Position.B, pt.Value.Position.C + 1);
+                                this.Stamping(pt.Value.Position.A - 2, pt.Value.Position.B, pt.Value.Position.C + 2);
+                            }
+                        }
+
+                        else if (pt.Value.Position.C > Owner.PlacedPoint.Value.Position.C)
+                        {
+                            if (B - 2 + (C + 2 + Math.Sign(C + 2)) / 2 == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(A, B - 1, C + 1);
+                                this.Stamping(A, B - 2, C + 2);
+                            }
+
+                            else if (B - 1 + (C + 1 + Math.Sign(C + 1)) / 2 == Owner.PlacedPoint.Value.Terrain.Width - 1)
+                            {
+                                this.Stamping(A, B - 1, C + 1);
+                                this.Stamping(pt.Value.Position.A, pt.Value.Position.B + 1, pt.Value.Position.C - 1);
+                            }
+                            else
+                            {
+                                this.Stamping(pt.Value.Position.A, pt.Value.Position.B + 1, pt.Value.Position.C - 1);
+                                this.Stamping(pt.Value.Position.A, pt.Value.Position.B + 2, pt.Value.Position.C - 2);
+                            }
+                        }
                     }
                 }
 
@@ -183,7 +343,7 @@ namespace CivModel.Finno
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CivModel.Common.CityCenter
+                && point.TileBuilding is CityBase
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
