@@ -119,13 +119,13 @@ namespace CivModel.Zap
         }
     }
 
-    public class HwanEmpireCityProductionFactory : ITileObjectProductionFactory
+    public class CityCenterProductionFactory : ITileObjectProductionFactory
     {
-        public static HwanEmpireCityProductionFactory Instance => _instance.Value;
-        private static Lazy<HwanEmpireCityProductionFactory> _instance
-            = new Lazy<HwanEmpireCityProductionFactory>(() => new HwanEmpireCityProductionFactory());
+        public static CityCenterProductionFactory Instance => _instance.Value;
+        private static Lazy<CityCenterProductionFactory> _instance
+            = new Lazy<CityCenterProductionFactory>(() => new CityCenterProductionFactory());
 
-        private HwanEmpireCityProductionFactory()
+        private CityCenterProductionFactory()
         {
         }
 

@@ -45,8 +45,10 @@
     <Compile Include="CityCenter.cs" />
     <Compile Include="CityLab.cs" />
     <Compile Include="DecentralizedMilitary.cs" />
+    <Compile Include="ZapFactory.cs" />
     <Compile Include="FIRFactory.cs" />
     <Compile Include="FIRFortress.cs" />
+    <Compile Include="GameScheme.cs" />
     <Compile Include="InfantryDivision.cs" />
     <Compile Include="LEOSpaceArmada.cs" />
     <Compile Include="Padawan.cs" />
