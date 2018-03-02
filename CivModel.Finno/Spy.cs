@@ -39,6 +39,8 @@ namespace CivModel.Finno
             _movingAttackAct = new AttackActorAction(this, true);
             _specialActs[0] = new SpyAction(this);
             _specialActs[1] = new SpyRealAct(this);
+
+            this.IsCloacking = true;
         }
 
         private class SpyAction : IActorAction

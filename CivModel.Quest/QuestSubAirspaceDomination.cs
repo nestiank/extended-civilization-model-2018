@@ -49,7 +49,7 @@ namespace CivModel.Quests
 
         public void OnBattle(Actor attacker, Actor defender, BattleResult result)
         {
-            if (attacker.Owner == Requestee && defender is CivModel.Hwan.LEOSpaceArmada && result == BattleResult.Victory)
+            if (attacker.Owner == Requestee && defender is CivModel.Zap.LEOSpaceArmada && result == BattleResult.Victory)
             {
                 if (flag < 3)
                     flag += 1;

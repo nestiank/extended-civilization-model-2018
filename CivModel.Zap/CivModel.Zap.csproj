@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C7375E51-CB93-4405-B82A-64508ED2959C}</ProjectGuid>
+    <ProjectGuid>{B6D55159-0ED4-41C6-94AE-8F1EB2B3B9F3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CivModel.Quest</RootNamespace>
-    <AssemblyName>CivModel.Quest</AssemblyName>
+    <RootNamespace>CivModel.Zap</RootNamespace>
+    <AssemblyName>CivModel.Zap</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,45 +40,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutismBeamAmplificationCrystal.cs" />
+    <Compile Include="ArmedDivision.cs" />
+    <Compile Include="Casino.cs" />
+    <Compile Include="CityCenter.cs" />
+    <Compile Include="CityLab.cs" />
+    <Compile Include="DecentralizedMilitary.cs" />
+    <Compile Include="ZapFactory.cs" />
+    <Compile Include="FIRFactory.cs" />
+    <Compile Include="FIRFortress.cs" />
     <Compile Include="GameScheme.cs" />
-    <Compile Include="GatesOfRlyeh.cs" />
-    <Compile Include="InterstellarEnergyExtractor.cs" />
-    <Compile Include="Necronomicon.cs" />
+    <Compile Include="InfantryDivision.cs" />
+    <Compile Include="LEOSpaceArmada.cs" />
+    <Compile Include="Padawan.cs" />
+    <Compile Include="Pioneer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuestAtlantis.cs" />
-    <Compile Include="QuestAutismBeamReflex.cs" />
-    <Compile Include="QuestEgyptKingdom.cs" />
-    <Compile Include="QuestPorjectCthulhu.cs" />
-    <Compile Include="QuestRlyeh.cs" />
-    <Compile Include="QuestSubAirspaceDomination.cs" />
-    <Compile Include="QuestSubGeneticEngineering.cs" />
-    <Compile Include="QuestSubInterstellarEnergy.cs" />
-    <Compile Include="QuestSubMoaiForceField.cs" />
-    <Compile Include="QuestWarAliance.cs" />
-    <Compile Include="SpecialResourceAirspaceDomination.cs" />
-    <Compile Include="SpecialResourceAlienCommunication.cs" />
-    <Compile Include="SpecialResourceAutismBeamReflex.cs" />
-    <Compile Include="SpecialResourceCthulhuProjectInfo.cs" />
-    <Compile Include="SpecialResourceMoaiForceField.cs" />
-    <Compile Include="Ubermensch.cs" />
+    <Compile Include="ZapNinja.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
       <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
       <Name>CivModel.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CivModel.Finno\CivModel.Finno.csproj">
-      <Project>{6a09ebc4-cf6d-4ba5-8710-e3d4e7f46ea5}</Project>
-      <Name>CivModel.Finno</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CivModel.Hwan\CivModel.Hwan.csproj">
-      <Project>{257a17a7-e9db-4d7b-8469-0b3ad9e91937}</Project>
-      <Name>CivModel.Hwan</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CivModel.Zap\CivModel.Zap.csproj">
-      <Project>{b6d55159-0ed4-41c6-94ae-8f1eb2b3b9f3}</Project>
-      <Name>CivModel.Zap</Name>
     </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
