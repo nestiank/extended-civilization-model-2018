@@ -187,18 +187,6 @@ namespace CivModel
 
                 _shouldStartTurnResumeGame = true;
 
-
-                var additionalFactory = SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>()
-                    .SelectMany(x => x.AdditionalProductionFactory ?? Enumerable.Empty<IProductionFactory>())
-                    .Distinct();
-                foreach (var player in Players)
-                {
-                    foreach (var factory in additionalFactory)
-                    {
-                        player.AvailableProduction.Add(factory);
-                    }
-                }
-
                 startup.InitializeGame(this, false);
                 foreach (var scheme in SchemeLoader.SchemaTree)
                 {
