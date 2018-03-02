@@ -553,7 +553,11 @@ namespace CivPresenter
             State = States.Normal;
 
             OnApply = () => {
-                if (!IsThereTodos)
+                if (Game.PlayerInTurn.IsAIControlled)
+                {
+                    StateAIControl();
+                }
+                else if (!IsThereTodos)
                 {
                     ProceedTurn();
                 }

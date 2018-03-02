@@ -3,6 +3,8 @@
 
 #include "Screen.h"
 
+//#define AUTOMATIC_SKIP 30
+
 namespace
 {
     std::string cli2str(System::String^ str)
@@ -32,7 +34,10 @@ namespace FakeView
         if (!m_presenter)
             m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
 
-        m_presenter->Game->Players[0]->IsAIControlled = true;
+        for (int i = 1; i < m_presenter->Game->Players->Count; ++i)
+        {
+            m_presenter->Game->Players[i]->IsAIControlled = true;
+        }
     }
 
     void View::Refocus()
@@ -183,6 +188,16 @@ namespace FakeView
                     msg += " %c\x0fpress Enter for the next turn";
                 }
                 m_screen->PrintStringEx(0, scrsz.height - 1, 0b00000111, msg);
+
+#ifdef AUTOMATIC_SKIP
+                if (!m_presenter->IsThereTodos)
+                {
+                    static int count = 0;
+                    if (++count <= AUTOMATIC_SKIP)
+                        m_presenter->CommandApply();
+                }
+#endif
+
                 break;
             }
 
