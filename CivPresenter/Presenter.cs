@@ -201,6 +201,8 @@ namespace CivPresenter
                 new CivModel.AI.GameSchemeFactory(),
                 new CivModel.Hwan.GameSchemeFactory(),
                 new CivModel.Finno.GameSchemeFactory(),
+                new CivModel.Quests.GameSchemeFactory(),
+                new CivModel.Zap.GameSchemeFactory(),
             };
             _game = new Game(terrainWidth, terrainHeight, numOfPlayer, factory, knownFactory);
 
@@ -229,6 +231,8 @@ namespace CivPresenter
                 new CivModel.AI.GameSchemeFactory(),
                 new CivModel.Hwan.GameSchemeFactory(),
                 new CivModel.Finno.GameSchemeFactory(),
+                new CivModel.Quests.GameSchemeFactory(),
+                new CivModel.Zap.GameSchemeFactory(),
             };
             _game = new Game(saveFile, knownFactory);
 

@@ -390,16 +390,19 @@ namespace FakeView
     {
         auto scrsz = m_screen->GetSize();
 
-        int y = 0;
+        int y = scrsz.height - ((scrsz.height / 6) + m_presenter->SelectedProduction);
+        if (y > 0)
+            y = 0;
+
         m_screen->PrintString(0, y, 0b00001111, "Add Production");
 
         unsigned color = 0b0000'0111;
         if (m_presenter->SelectedProduction == -1)
             color = 0b1111'0000;
-        y = 2;
+        y += 2;
         m_screen->PrintString(0, y, color, "Cancel");
 
-        y = 3;
+        y += 1;
         for (int idx = 0; idx < m_presenter->AvailableProduction->Count; ++idx)
         {
             if (y >= scrsz.height)

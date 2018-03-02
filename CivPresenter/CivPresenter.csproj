@@ -64,6 +64,14 @@
       <Project>{257a17a7-e9db-4d7b-8469-0b3ad9e91937}</Project>
       <Name>CivModel.Hwan</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CivModel.Quest\CivModel.Quests.csproj">
+      <Project>{c7375e51-cb93-4405-b82a-64508ed2959c}</Project>
+      <Name>CivModel.Quests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Zap\CivModel.Zap.csproj">
+      <Project>{b6d55159-0ed4-41c6-94ae-8f1eb2b3b9f3}</Project>
+      <Name>CivModel.Zap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
       <Name>CivModel</Name>
