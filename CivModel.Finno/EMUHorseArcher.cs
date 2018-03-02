@@ -35,7 +35,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class EMUHorseArcherProductionFactory : ITileObjectProductionFactory
+    public class EMUHorseArcherProductionFactory : IActorProductionFactory
     {
         private static Lazy<EMUHorseArcherProductionFactory> _instance
             = new Lazy<EMUHorseArcherProductionFactory>(() => new EMUHorseArcherProductionFactory());

@@ -92,7 +92,7 @@ namespace CivModel.Hwan
         }
     }
 
-    public class LEOSpaceArmadaProductionFactory : ITileObjectProductionFactory
+    public class LEOSpaceArmadaProductionFactory : IActorProductionFactory
     {
         private static Lazy<LEOSpaceArmadaProductionFactory> _instance
             = new Lazy<LEOSpaceArmadaProductionFactory>(() => new LEOSpaceArmadaProductionFactory());

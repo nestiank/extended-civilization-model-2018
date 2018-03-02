@@ -165,7 +165,7 @@ namespace CivModel.Hwan
     }
 
 
-    public class JackieChanProductionFactory : ITileObjectProductionFactory
+    public class JackieChanProductionFactory : IActorProductionFactory
     {
         private static Lazy<JackieChanProductionFactory> _instance
             = new Lazy<JackieChanProductionFactory>(() => new JackieChanProductionFactory());

@@ -104,7 +104,7 @@ namespace CivModel.Hwan
         }        
     }
 
-    public class ProtoNinjaProductionFactory : ITileObjectProductionFactory
+    public class ProtoNinjaProductionFactory : IActorProductionFactory
     {
         private static Lazy<ProtoNinjaProductionFactory> _instance
             = new Lazy<ProtoNinjaProductionFactory>(() => new ProtoNinjaProductionFactory());

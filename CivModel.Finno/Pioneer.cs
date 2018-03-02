@@ -23,7 +23,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class PioneerProductionFactory : ITileObjectProductionFactory
+    public class PioneerProductionFactory : IActorProductionFactory
     {
         public static PioneerProductionFactory Instance => _instance.Value;
         private static Lazy<PioneerProductionFactory> _instance
