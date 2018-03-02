@@ -106,15 +106,12 @@ module AIFuzzyModule =
          [ -infinityf; -0.8f; -0.6f; -0.2f; 0.2f; 0.8f; infinityf ]
          |> fuzzySystem.CreateSetsByLevel "" [ "VeryLow"; "Low"; "Medium"; "High"; "VeryHigh" ] 3 1
 
-    // Variables
+    // Input Variables
 
     let DeltaFightingUnitNum = DeltaUnitSets |> fuzzySystem.CreateVariable "DeltaFightingUnitNum" -infinityf infinityf
     let RemainingGold = RemainGoldSets |> fuzzySystem.CreateVariable "RemainingGold" -infinityf infinityf
     let RemainingLabor = RemainLaborSets |> fuzzySystem.CreateVariable "RemainingLabor" 0.f infinityf
-    let NeedFightingUnit = ResultSets |> fuzzySystem.CreateVariable "NeedFightingUnit" -1.0f 1.0f
     let DeltaCityNum = CitySets |> fuzzySystem.CreateVariable "DeltaCityNum" -infinityf infinityf
-    let NeedCity = ResultSets |> fuzzySystem.CreateVariable "NeedCity" -1.0f 1.0f
-    let NeedPioneer = ResultSets |> fuzzySystem.CreateVariable "NeedPioneer" -1.0f 1.0f
     let EnemyFightingUnitNum = EnemDistSets |> fuzzySystem.CreateVariable "EnemyFightingUnitNum" 0.f infinityf
     let AllMyUnitEnemDist = EnemDistSets |> fuzzySystem.CreateVariable "AllMyUnitEnemDist" 0.f infinityf
     let DeltaHappyGoal = DeltaHappyGoalSets |> fuzzySystem.CreateVariable "DeltaHappyGoal" -200.f 200.f
@@ -122,15 +119,25 @@ module AIFuzzyModule =
     let SetEconInvesttoDouble = ResultSets |> fuzzySystem.CreateVariable "SetEconInvesttoDouble" -1.0f 1.0f
     let Gold = GoldSets |> fuzzySystem.CreateVariable "Gold" 0.f infinityf
     let Tech = TechSets |> fuzzySystem.CreateVariable "Tech" 0.f infinityf
-    let NeedGold = ResultSets |> fuzzySystem.CreateVariable "NeedGold" -1.0f 1.0f
-    let NeedLabor = ResultSets |> fuzzySystem.CreateVariable "NeedLabor" -1.0f 1.0f
-    let NeedTech = ResultSets |> fuzzySystem.CreateVariable "NeedTech" -1.0f 1.0f
     let TechLost = TechLostSets |> fuzzySystem.CreateVariable "TechLost" 0.f infinityf
     let TechInvest = TSets |> fuzzySystem.CreateVariable "TechInvest" 0.f infinityf
     let DmgUnitNum = UnitNumSets |> fuzzySystem.CreateVariable "DmgUnitNum" 0.f 1.f
-    let NeedLogistics = ResultSets |> fuzzySystem.CreateVariable "NeedLogistics" -1.0f 1.0f
     let Logistics = LSets |> fuzzySystem.CreateVariable "Logistics" -infinityf infinityf
-    let NeedMilitaryBuilding = ResultSets |> fuzzySystem.CreateVariable "NeedMilitaryBuilding" -1.0f 1.0f
+
+    // Output Variables
+
+    let createOutputVariable name = ResultSets |> fuzzySystem.CreateVariable name -1.0f 1.0f
+
+    let NeedFightingUnit = createOutputVariable "NeedFightingUnit"
+    let NeedCity = createOutputVariable "NeedCity"
+    let NeedPioneer = createOutputVariable "NeedPioneer"
+    let NeedGold = createOutputVariable "NeedGold"
+    let NeedLabor = createOutputVariable "NeedLabor"
+    let NeedTech = createOutputVariable "NeedTech"
+    let NeedLogistics = createOutputVariable "NeedLogistics"
+    let NeedMilitaryBuilding = createOutputVariable "NeedMilitaryBuilding"
+
+    // Rules
 
     let RuleString = """
 IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedFightingUnit is Low
