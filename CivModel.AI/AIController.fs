@@ -5,7 +5,7 @@ open System.Threading.Tasks
 open CivModel
 
 type public AIController(player : Player) =
-    let fuzzyRules = AIFuzzyModule.Rules(player)
+    let fuzzyRules = CommonRules(player)
 
     let deploy (x : Production) =
         match x.Factory with

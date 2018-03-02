@@ -1,31 +1,139 @@
 namespace CivModel.AI
 
-open System
-open System.Linq
-open CivModel
-
 module AIFuzzyModule =
     let fuzzy = FuzzySystem()
 
-    let ResearchSets = fuzzy.CreateSetsByLevel "Research" [ "Low"; "Normal"; "High" ] 1 [ -infinityf; 100.f; 200.f; 300.f; infinityf ]
-    let Research = fuzzy.CreateVariable "Research" 0.f infinityf ResearchSets
+    // Sets
 
-    let LaborSets = fuzzy.CreateSetsByLevel "Labor" [ "Low"; "Normal"; "High" ] 1 [ -infinityf; 100.f; 200.f; 300.f; infinityf ]
-    let Labor = fuzzy.CreateVariable "Labor" 0.f infinityf LaborSets
+    let DeltaUnitSets =
+        fuzzy.CreateSetsByList [
+            "DeltaUnitHigh", [ 0.000f; 50.000f; infinityf ];
+            "DeltaUnitMedium", [ -70.000f; -50.000f; 50.000f; 70.000f ];
+            "DeltaUnitLow", [ -infinityf; -50.000f; 0.000f ];
+        ]
+    let RemainGoldSets =
+        fuzzy.CreateSetsByList [
+            "RemainGoldVeryHigh", [ 500.000f; 1000.000f; infinityf ];
+            "RemainGoldHigh", [ 0.000f; 500.000f; 1000.000f; 1500.000f ];
+            "RemainGoldMedium", [ -750.000f; -250.000f; 250.000f; 750.000f ];
+            "RemainGoldLow", [ -1500.000f; -1000.000f; -500.000f; 0.000f ];
+            "RemainGoldVeryLow", [ -infinityf; -1000.000f; -500.000f ];
+        ]
+    let RemainLaborSets =
+        fuzzy.CreateSetsByList [
+            "RemainLaborVeryHigh", [ 500.000f; 1000.000f; infinityf ];
+            "RemainLaborHigh", [ 250.000f; 500.000f; 750.000f; 1000.000f ];
+            "RemainLaborMedium", [ 50.000f; 100.000f; 250.000f; 500.000f ];
+            "RemainLaborLow", [ 0.000f; 0.000f; 50.000f; 100.000f ];
+            "RemainLaborVeryLow", [ -infinityf; -1000.000f; -500.000f ];
+        ]
+    let CitySets =
+        fuzzy.CreateSetsByList [
+            "CityHigh", [ 10.000f; 20.000f; infinityf ];
+            "CityMedium", [ -20.000f; -10.000f; 10.000f; 20.000f ];
+            "CityLow", [ -infinityf; -20.000f; -10.000f ];
+        ]
+    let FightingUnitNumSets =
+        fuzzy.CreateSetsByList [
+            "FightingUnitNumHigh", [ 25.000f; 50.000f; infinityf ];
+            "FightingUnitNumMedium", [ 0.000f; 25.000f; 50.000f; 75.000f ];
+            "FightingUnitNumLow", [ -infinityf; 0.000f; 25.000f ];
+        ]
+    let EnemDistSets =
+        fuzzy.CreateSetsByList [
+            "EnemDistLow", [ -infinityf; 3.000f; 5.000f ];
+            "EnemDistHigh", [ 4.000f; 6.000f; infinityf ];
+        ]
+    let DeltaHappyGoalSets =
+        fuzzy.CreateSetsByList [
+            "DeltaHappyGoalHigh", [ 0.000f; 0.000f; infinityf ];
+            "DeltaHappyGoalLow", [ -infinityf; 0.000f; 0.000f ];
+        ]
+    let HSets =
+        fuzzy.CreateSetsByList [
+            "HVeryHigh", [ 50.000f; 75.000f; 100.000f; 100.000f ];
+            "HHigh", [ 25.000f; 50.000f; 75.000f; 100.000f ];
+            "HMedium", [ -50.000f; -25.000f; 25.000f; 50.000f ];
+            "HLow", [ -100.000f; -75.000f; -50.000f; -25.000f ];
+            "HVeryLow", [ -100.000f; -100.000f; -75.000f; -50.000f ];
+        ]
+    let TechLostSets =
+        fuzzy.CreateSetsByList [
+            "TechLostHigh", [ 2500.000f; 5000.000f; infinityf ];
+            "TechLostMedium", [ 0.000f; 2500.000f; 5000.000f; 7500.000f ];
+            "TechLostLow", [ 0.000f; 0.000f; 2500.000f; 5000.000f ];
+        ]
+    let GoldSets =
+        fuzzy.CreateSetsByList [
+            "GoldHigh", [ 2500.000f; 5000.000f; infinityf ];
+            "GoldNormal", [ 0.000f; 2500.000f; 5000.000f; 7500.000f ];
+            "GoldLow", [ 0.000f; 0.000f; 2500.000f; 5000.000f ];
+        ]
+    let TechSets =
+        fuzzy.CreateSetsByList [
+            "TechHigh", [ 10000.000f; 20000.000f; infinityf ];
+            "TechNormal", [ 5000.000f; 10000.000f; 20000.000f; 25000.000f ];
+            "TechLow", [ 0.000f; 0.000f; 5000.000f; 10000.000f ];
+        ]
+    let LaborSets =
+        fuzzy.CreateSetsByList [
+            "LaborHigh", [ 1000.000f; 2000.000f; infinityf ];
+            "LaborNormal", [ 250.000f; 500.000f; 1000.000f; 1500.000f ];
+            "LaborLow", [ 0.000f; 100.000f; 250.000f; 500.000f ];
+        ]
+    let TSets =
+        fuzzy.CreateSetsByList [
+            "THigh", [ 1.000f; 1.500f; 2.000f; 2.000f ];
+            "TMedium", [ 0.500f; 0.750f; 1.250f; 1.500f ];
+            "TLow", [ 0.000f; 0.000f; 0.500f; 1.000f ];
+        ]
+    let UnitNumSets =
+        fuzzy.CreateSetsByList [
+            "UnitNumHigh", [ 0.500f; 0.750f; 1.000f; 1.000f ];
+            "UnitNumMedium", [ 0.200f; 0.400f; 0.600f; 0.800f ];
+            "UnitNumLow", [ 0.000f; 0.100f; 0.200f; 0.250f ];
+            "UnitNumVeryLow", [ 0.000f ];
+        ]
+    let LSets =
+        fuzzy.CreateSetsByList [
+            "LHigh", [ 1.000f ];
+            "LMedium", [ 0.500f; 0.700f; 0.900f ];
+            "LLow", [ 0.400f; 0.500f; 0.600f ];
+            "LVeryLow", [ 0.000f ];
+        ]
 
-    let CostSets = fuzzy.CreateSetsByLevel "Cost" [ "Low"; "Normal"; "High" ] 2 [ -infinityf; 5.f; 10.f; 15.f; 20.f; 25.f; infinityf ]
-    let ProductionLaborCost = fuzzy.CreateVariable "ProductionLaborCost" 0.f infinityf CostSets
-    let ProductionGoldCost = fuzzy.CreateVariable "ProductionGoldCost" 0.f infinityf CostSets
+    let ResultSets =
+         [ -infinityf; -0.8f; -0.6f; -0.2f; 0.2f; 0.8f; infinityf ]
+         |> fuzzy.CreateSetsByLevel "" [ "VeryLow"; "Low"; "Normal"; "High"; "VeryHigh" ] 3 1
 
-    let ProfitSets = fuzzy.CreateSetsByLevel "Profit" [ "Low"; "Normal"; "High" ] 1 [ -infinityf; 4.f; 8.f; 12.f; infinityf ]
-    let Profit = fuzzy.CreateVariable "Profit" 0.f infinityf ProfitSets
+    // Variables
 
-    let ResultSets = fuzzy.CreateSetsByLevel "" [ "VeryLow"; "Low"; "Normal"; "High"; "VeryHigh" ] 1 [ -infinityf; -0.8f; -0.6f; -0.2f; 0.2f; 0.8f; infinityf ]
-    let NeedLaboratory = fuzzy.CreateVariable "NeedLaboratory" -1.f 1.f ResultSets
-    let NeedFactory = fuzzy.CreateVariable "NeedFactory" -1.f 1.f ResultSets
-
-    let NeedProduction = fuzzy.CreateVariable "NeedProduction" -1.f 1.f ResultSets
-    let BuildProduction = fuzzy.CreateVariable "BuildProduction" -1.f 1.f ResultSets
+    let DeltaFightingUnitNum = DeltaUnitSets |> fuzzy.CreateVariable "DeltaFightingUnitNum" -infinityf infinityf
+    let RemainingGold = RemainGoldSets |> fuzzy.CreateVariable "RemainingGold" -infinityf infinityf
+    let RemainingLabor = RemainLaborSets |> fuzzy.CreateVariable "RemainingLabor" 0.f infinityf
+    let NeedFightingUnit = ResultSets |> fuzzy.CreateVariable "NeedFightingUnit" -infinityf infinityf
+    let BuildFightingUnit = ResultSets |> fuzzy.CreateVariable "BuildFightingUnit" -infinityf infinityf
+    let DeltaCityNum = ResultSets |> fuzzy.CreateVariable "DeltaCityNum" -infinityf infinityf
+    let NeedCity = ResultSets |> fuzzy.CreateVariable "NeedCity" -infinityf infinityf
+    let NeedPioneer = ResultSets |> fuzzy.CreateVariable "NeedPioneer" -infinityf infinityf
+    let BuildCityCenter = ResultSets |> fuzzy.CreateVariable "BuildCityCenter" -infinityf infinityf
+    let BuildPioneer = ResultSets |> fuzzy.CreateVariable "BuildPioneer" -infinityf infinityf
+    let EnemyFightingUnitNum = EnemDistSets |> fuzzy.CreateVariable "EnemyFightingUnitNum" 0.f infinityf
+    let AllMyUnitEnumDist = EnemDistSets |> fuzzy.CreateVariable "AllMyUnitEnumDist" 0.f infinityf
+    let DeltaHappyGoal = DeltaHappyGoalSets |> fuzzy.CreateVariable "DeltaHappyGoal" -200.f 200.f
+    let SetEconInvesttoFull = ResultSets |> fuzzy.CreateVariable "SetEconInvesttoFull" -infinityf infinityf
+    let SetEconInvesttoDouble = ResultSets |> fuzzy.CreateVariable "SetEconInvesttoDouble" -infinityf infinityf
+    let HappinessGoal = HSets |> fuzzy.CreateVariable "HappinessGoal" -100.f 100.f
+    let Gold = GoldSets |> fuzzy.CreateVariable "Gold" 0.f infinityf
+    let Tech = TechSets |> fuzzy.CreateVariable "Tech" 0.f infinityf
+    let NeedGold = ResultSets |> fuzzy.CreateVariable "NeedGold" -infinityf infinityf
+    let NeedLabor = ResultSets |> fuzzy.CreateVariable "NeedLabor" -infinityf infinityf
+    let NeedTech = ResultSets |> fuzzy.CreateVariable "NeedTech" -infinityf infinityf
+    let TechLost = TechLostSets |> fuzzy.CreateVariable "TechLost" 0.f infinityf
+    let TechInvest = ResultSets |> fuzzy.CreateVariable "TechInvest" 0.f infinityf
+    let DmgUnitNum = ResultSets |> fuzzy.CreateVariable "DmgUnitNum" 0.f 1.f
+    let NeedLogistics = ResultSets |> fuzzy.CreateVariable "NeedLogistics" -infinityf infinityf
+    let Logistics = LSets |> fuzzy.CreateVariable "Logistics" -infinityf infinityf
 
     let RuleString = """
 IF Research is ResearchLow THEN NeedLaboratory is High
@@ -42,61 +150,3 @@ IF NeedProduction is High AND ProductionLaborCost is CostNormal AND ProductionGo
 IF NeedProduction is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostNormal THEN BuildProduction is Low
 IF NeedProduction is High AND ProductionLaborCost is CostHigh AND ProductionGoldCost is CostHigh THEN BuildProduction is VeryLow
 """
-
-    type Rules(player : CivModel.Player) =
-        let rules = fuzzy.CreateRule <| RuleString.Split([| "\n"; "\r"; "\r\n" |], StringSplitOptions.RemoveEmptyEntries)
-
-        let DoBuildInterior (getProfit : InteriorBuildingConstants -> float) (x : float32) =
-            let getPoint (p : IInteriorBuildingProductionFactory) =
-                let profit = getProfit p.Constants |> float32
-                if profit > 0.f then
-                    rules |> NeedProduction.SetValue x
-                    rules |> Profit.SetValue profit
-                    rules |> ProductionLaborCost.SetValue (float32 p.TotalLaborCost)
-                    rules |> ProductionGoldCost.SetValue (float32 p.TotalGoldCost)
-                    rules |> BuildProduction.GetValue
-                else
-                    -infinityf
-            let (factory, point) =
-                player.AvailableProduction
-                |> Enumerable.OfType<IInteriorBuildingProductionFactory>
-                |> Seq.map (fun p -> (p, getPoint p)) |> Seq.maxBy snd
-            if point > 0.f then
-                player.Production.AddLast(factory.Create(player)) |> ignore
-            else
-                ()
-
-        let isProductionFull() =
-            player.EstimateResourceInputs()
-            player.GoldNetIncome <= 0.0 || player.Labor <= player.EstimatedUsedLabor
-
-        let fuzzyActionList = [
-            NeedLaboratory, DoBuildInterior (fun c -> c.ResearchIncome), isProductionFull;
-            NeedFactory, DoBuildInterior (fun c -> c.ProvidedLabor), isProductionFull
-        ]
-
-        let setFuzzyInput() =
-            rules |> Research.SetValue (float32 player.Research)
-            rules |> Labor.SetValue (float32 player.Labor)
-
-        let rec doFuzzyAction (space : (FuzzyVariable * (float32 -> unit) * (unit -> bool)) list) =
-            seq {
-                if not space.IsEmpty then
-                    setFuzzyInput()
-                    let (k, v, d, x) =
-                        space
-                        |> List.map (fun (k, v, d) -> (k, v, d, rules |> k.GetValue))
-                        |> List.maxBy (fun (_, _, _, x) -> x)
-                    if x > 0.f then
-                        if d() then
-                            yield! doFuzzyAction (space |> List.filter (fun (k', _, _) -> k <> k'))
-                        else
-                            yield v x
-                            yield! doFuzzyAction space
-                    else
-                        ()
-                else
-                    ()
-            }
-
-        member this.DoFuzzyAction() = doFuzzyAction fuzzyActionList

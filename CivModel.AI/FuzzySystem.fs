@@ -8,27 +8,36 @@ type FuzzySystem() =
 
     let trapezoidal m1 m2 m3 =
         if m1 = -infinityf then
-            new TrapezoidalFunction(m2, m3, TrapezoidalFunction.EdgeType.Right)
+            TrapezoidalFunction(m2, m3, TrapezoidalFunction.EdgeType.Right)
         elif m3 = infinityf then
-            new TrapezoidalFunction(m1, m2, TrapezoidalFunction.EdgeType.Left)
+            TrapezoidalFunction(m1, m2, TrapezoidalFunction.EdgeType.Left)
         else
-            new TrapezoidalFunction(m1, m2, m3)
+            TrapezoidalFunction(m1, m2, m3)
 
-    member this.CreateSet name m1 m2 m3 =
-        new FuzzySet(name, trapezoidal m1 m2 m3)
+    member this.CreateSetPoint3 name m1 m2 m3 = FuzzySet(name, trapezoidal m1 m2 m3)
+    member this.CreateSetPoint4 name m1 m2 m3 m4 = FuzzySet(name, TrapezoidalFunction(m1, m2, m3, m4))
+    member this.CreateSetSingleton name value = FuzzySet(name, SingletonFunction(value))
 
-    member this.CreateSetsByLevel prefix names skip values =
+    member this.createSet name = function
+        | [value] -> this.CreateSetSingleton name value
+        | [m1; m2; m3] -> this.CreateSetPoint3 name m1 m2 m3
+        | [m1; m2; m3; m4] -> this.CreateSetPoint4 name m1 m2 m3 m4
+        | _ -> invalidArg "numPoints" "numPoints is invalid"
+
+    member this.CreateSetsByLevel prefix names numPoints numSkip values =
         let rec create names values =
-            match (names, values) with
-                | (n :: ns, m1 :: m2 :: m3 :: _) ->
-                    let set = this.CreateSet (prefix + n) m1 m2 m3
-                    set :: create ns (values |> List.skip skip)
-                | ([], _) -> []
-                | _ -> invalidArg "names" "names and values are not corresponding"
-        if skip < 1 then
+            match names with
+                | n :: ns ->
+                    let set = this.createSet (prefix + n) (List.take numPoints values)
+                    set :: create ns (List.skip numSkip values)
+                | _ -> []
+        if numSkip < 1 then
             invalidArg "skip" "skip is not positive"
         else
             create names values
+
+    member this.CreateSetsByList (dict : (string * (float32 list)) list) =
+        dict |> List.map (fun (k, v) -> this.createSet k v)
 
     member this.CreateVariable name minval maxval sets =
         let var = LinguisticVariable(name, minval, maxval)
