@@ -35,7 +35,7 @@ namespace CivModel.Zap
         }
     }
 
-    public class DecentralizedMilitaryProductionFactory : ITileObjectProductionFactory
+    public class DecentralizedMilitaryProductionFactory : IActorProductionFactory
     {
         private static Lazy<DecentralizedMilitaryProductionFactory> _instance
             = new Lazy<DecentralizedMilitaryProductionFactory>(() => new DecentralizedMilitaryProductionFactory());
