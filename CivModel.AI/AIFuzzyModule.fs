@@ -6,8 +6,12 @@ module AIFuzzyModule =
     let fuzzySystem = FuzzySystem()
 
     // Common Sets
+     
+    let ResultSets =
+         [ -infinityf; -0.8f; -0.6f; -0.2f; 0.2f; 0.8f; infinityf ]
+         |> fuzzySystem.CreateSetsByLevel "" [ "VeryLow"; "Low"; "Medium"; "High"; "VeryHigh" ] 3 1
+    let createOutputVariable name = ResultSets |> fuzzySystem.CreateVariable name -1.0f 1.0f
 
-    
     let RemainGoldSets =
         fuzzySystem.CreateSetsByList [
             "RemainGoldVeryHigh", [ 500.000f; 1000.000f; infinityf ];
@@ -96,12 +100,6 @@ module AIFuzzyModule =
             "FightingUnitNumMedium", [ 0.000f; 25.000f; 50.000f; 75.000f ];
             "FightingUnitNumLow", [ -infinityf; 0.000f; 25.000f ];
         ]
-    
-    let ResultSets =
-         [ -infinityf; -0.8f; -0.6f; -0.2f; 0.2f; 0.8f; infinityf ]
-         |> fuzzySystem.CreateSetsByLevel "" [ "VeryLow"; "Low"; "Medium"; "High"; "VeryHigh" ] 3 1
-
-    
 
     // Suomi/Hwan Global Sets
 
@@ -119,7 +117,7 @@ module AIFuzzyModule =
             "DeltaUnitLow", [ -infinityf; -50.000f; 0.000f ];
         ]
 
-    //Other Zapgguk Global Sets
+    // Other Zapgguk Global Sets
 
     let MyCityNumSets = 
         fuzzySystem.CreateSetsByList [
@@ -128,7 +126,7 @@ module AIFuzzyModule =
             "MyCityNumLow", [-infinityf; 2.000f; 4.000f];
         ]
 
-    //Common MoveTask Sets
+    // Common MoveTask Sets
 
     let UnitTypeSets =
         fuzzySystem.CreateSetsByList [
@@ -170,9 +168,9 @@ module AIFuzzyModule =
             "DistMyCitylow", [-infinityf;-0.500f;0.000f];
         ]
 
-    //Suomi/Hwan MoveTask Sets
+    // Suomi/Hwan MoveTask Sets
 
-    //Zapgguk MoveTask Sets
+    // Zapgguk MoveTask Sets
 
     let OwnerTypeSets =
         fuzzySystem.CreateSetsByList [
@@ -181,7 +179,7 @@ module AIFuzzyModule =
             "Ally", [2.000f];
         ]
     
-    //Common BuildResourceBuilding Sets
+    // Common BuildResourceBuilding Sets
 
     let ResourceTypeSets =
         fuzzySystem.CreateSetsByList [
@@ -191,7 +189,8 @@ module AIFuzzyModule =
             "Happy",[3.000f]
         ]
 
-    //Common DeployTask Sets
+    // Common DeployTask Sets
+
     let RsrcBuildingNumSets =
         fuzzySystem.CreateSetsByList [
             "RsrcBuildingNumHigh", [40.000f;80.000f;+infinityf];
@@ -216,7 +215,8 @@ module AIFuzzyModule =
             "DeployDistEnemLow", [0.000f;0.000f;3.000f;6.000f];
         ]
 
-    //Common UseSkillTask Sets
+    // Common UseSkillTask Sets
+
     let SkillEffectTypeSets =
         fuzzySystem.CreateSetsByList [
             "DamageEnemy", [0.000f];
@@ -242,6 +242,7 @@ module AIFuzzyModule =
             "SpotDealHigh", [3.0f;6.0f;+infinityf]
             "SpotDealLow", [0.0f;0.0f;2.0f;4.0f]
         ]
+
     // Global Common Input Variables
 
     let RemainingGold = RemainGoldSets |> fuzzySystem.CreateVariable "RemainingGold" -infinityf infinityf
@@ -259,8 +260,6 @@ module AIFuzzyModule =
 
     // Global Common Output Variables
 
-    let createOutputVariable name = ResultSets |> fuzzySystem.CreateVariable name -1.0f 1.0f
-
     let NeedFightingUnit = createOutputVariable "NeedFightingUnit"
     let NeedCity = createOutputVariable "NeedCity"
     let NeedPioneer = createOutputVariable "NeedPioneer"
@@ -270,21 +269,23 @@ module AIFuzzyModule =
     let NeedLogistics = createOutputVariable "NeedLogistics"
     let NeedMilitaryBuilding = createOutputVariable "NeedMilitaryBuilding"
 
-    //Global Suomi/Hwan Input Variables
+    // Global Suomi/Hwan Input Variables
+
     let DeltaFightingUnitNum = DeltaUnitSets |> fuzzySystem.CreateVariable "DeltaFightingUnitNum" -infinityf infinityf
     let DeltaCityNum = CitySets |> fuzzySystem.CreateVariable "DeltaCityNum" -infinityf infinityf
     let EnemyFightingUnitNum = EnemDistSets |> fuzzySystem.CreateVariable "EnemyFightingUnitNum" 0.f infinityf
 
-    //Global Suomi/Hwan Output Variables
+    // Global Suomi/Hwan Output Variables
 
-    //Global Zapgguk Input Variables
+    // Global Zapgguk Input Variables
 
     let MyFightingUnitNum = FightingUnitNumSets |> fuzzySystem.CreateVariable "MyFightingUnitNum" 0.f infinityf
     let MyCityNum = MyCityNumSets |> fuzzySystem.CreateVariable "MyCityNum" 0.f infinityf
 
-    //Global Zapgguk Output Variables
+    // Global Zapgguk Output Variables
 
-    //MoveTask Common Input Variables
+    // MoveTask Common Input Variables
+
     let MyUnit = UnitTypeSets |> fuzzySystem.CreateVariable "UnitType" 0.f 1.000f
     let MyUnitHP = HPSets |> fuzzySystem.CreateVariable "MyUnitHP" 0.f 1.000f
     let EnemyUnitHP = HPSets |> fuzzySystem.CreateVariable "EnemyUnitHP" 0.f 1.000f
@@ -294,40 +295,47 @@ module AIFuzzyModule =
     let SpotEnemDist = DistEnemSets |> fuzzySystem.CreateVariable "SpotEnemDist" -infinityf +infinityf
     let SpotMyCityDist = DistMyCitySets |> fuzzySystem.CreateVariable "SpotMyCityDist" -infinityf +infinityf
     
-    //MoveTask Common Output Variables
+    // MoveTask Common Output Variables
 
     let MoveUnittoSpot = ResultSets |> fuzzySystem.CreateVariable "MoveUnittoSpot" -1.000f 1.000f
 
-    //BuildingTask Common Input Variables
+    // BuildingTask Common Input Variables
+
     let BuildingProdResource = ResourceTypeSets |> fuzzySystem.CreateVariable "ResourceType" 0.f 3.000f
 
-    //BuildingTask Common OutputVariables
+    // BuildingTask Common OutputVariables
+
     let BuildResourceBuilding = ResultSets |> fuzzySystem.CreateVariable "BuildResourceBuilding" -1.000f 1.000f
 
-    //DeployTask Common Input Variables
+    // DeployTask Common Input Variables
+
     let CityatSpotRsrcBuildingNum = RsrcBuildingNumSets |> fuzzySystem.CreateVariable "CityatSpotRsrcBuildingNum" 0.f +infinityf
     let SpotRsrcBuildingNear = SpotRsrcBuildingNearSets |> fuzzySystem.CreateVariable "SpotRsrcBuildingNear" 0.f +infinityf
     let SpotMyUnitDist = MyUnitDistSets |> fuzzySystem.CreateVariable "SpotMyUnitDist" 0.f +infinityf
     let DeploySpotEnemDist = DeployDistEnemSets |> fuzzySystem.CreateVariable "DeploySpotEnemDist" 0.f +infinityf
 
-    //DeployTask Common Output Variables
+    // DeployTask Common Output Variables
+
     let DeployUnittoCity = ResultSets |> fuzzySystem.CreateVariable "DeployUnittoCity" -1.000f 1.000f
     let DeployInteriorBuildingtoSpot = ResultSets |> fuzzySystem.CreateVariable "DeployInteriorBuildingtoSpot" -1.000f 1.000f
     let DeployTileResourceBuildingtoSpot = ResultSets |> fuzzySystem.CreateVariable "DeployTileResourceBuildingtoSpot" -1.000f 1.000f
     let DeployMilitaryBuildingtoSpot = ResultSets |> fuzzySystem.CreateVariable "DeployMilitaryBuildingtoSpot" -1.000f 1.000f
     let DeployCitytoPioneer = ResultSets |> fuzzySystem.CreateVariable "DeployCitytoPioneer" -1.000f 1.000f
 
-    //UseSkillTask Common Input Variables
+    // UseSkillTask Common Input Variables
+
     let SkillEffect = SkillEffectTypeSets |> fuzzySystem.CreateVariable "SkillEffect" 0.0f 3.0f
     let SkillTarget = SkillTargetTypeSets |> fuzzySystem.CreateVariable "SkillTarget" 0.0f 1.0f
     let SkillTargetHP = HPSets |> fuzzySystem.CreateVariable "SkillTargetHP" 0.0f 1.0f
     let SkillTargetSpotDamage = SpotDamageSets |> fuzzySystem.CreateVariable "SpotDamage" 0.0f infinityf
     let SkillTargetSpotDeal = SpotDealSets |> fuzzySystem.CreateVariable "SpotDeal" 0.0f infinityf
     
-    //UseSkillTask Common Output Variables
+    // UseSkillTask Common Output Variables
+
     let UseSKill = ResultSets |> fuzzySystem.CreateVariable "UseSkill" -1.0f 1.0f
 
     // Rules
+
     let RuleStringGlobalCommon = """
 IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedFightingUnit is Low
 IF RemainingGold is RemainGoldMedium THEN NeedFightingUnit is Medium
@@ -455,6 +463,7 @@ IF NeedCity is High THEN DeployCitytoPioneer is High
 IF NeedCity is Medium THEN DeployCitytoPioneer is High
 IF NeedCity is Low THEN DeployCitytoPioneer is Medium
 """
+
     let RuleStringUseSkillCommon = """
 IF SkillEffect is DamageEnemy AND SkillTargetHP is HPLow AND SkillTarget is Enemy THEN UseSkill is VeryHigh
 IF SkillEffect is DamageEnemy AND SkillTargetHP is HPHigh AND SkillTarget is Enemy THEN UseSkill is High
@@ -465,5 +474,3 @@ IF SkillEffect is RestoreHP AND SkillTargetSpotDamage is SpotDamageHigh AND Skil
 IF SkillEffect is Buff AND SkillTargetSpotDamage is SpotDamageHigh AND SkillTarget is Ally THEN UseSkill is High
 IF SkillEffect is Buff AND SkillTargetSpotDeal is SpotDealHigh AND SkillTarget is Ally THEN UseSkill is High
 """
-
-
