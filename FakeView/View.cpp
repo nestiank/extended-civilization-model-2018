@@ -158,7 +158,8 @@ namespace FakeView
         {
             auto actor = m_presenter->SelectedActor;
             m_screen->PrintString(0, scrsz.height - 2, 0b00000111,
-                "Unit HP: " + std::to_string(actor->RemainHP) + " / " + std::to_string(actor->MaxHP)
+                "Unit Name: " + cli2str(actor->GetType()->FullName)
+                + ", Unit HP: " + std::to_string(actor->RemainHP) + " / " + std::to_string(actor->MaxHP)
                 + ", AP: " + std::to_string(actor->RemainAP) + " / " + std::to_string(actor->MaxAP));
         }
 
@@ -737,7 +738,7 @@ namespace FakeView
         }
         else
         {
-            c.ch = cli2str(unit->GetType()->FullName)[0];
+            c.ch = cli2str(unit->GetType()->FullName)[15];
         }
     }
 
