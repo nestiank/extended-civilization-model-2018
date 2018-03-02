@@ -5,6 +5,8 @@ open CivModel
 type Failable<'a, 'b> = Success of 'a | Fail of 'b
 
 module Utils =
+    open Accord.Fuzzy
+
     let searchNear f (pt : Terrain.Point) =
         let table : (Position * (Position -> bool)) list = [
                 Position.FromLogical(0, 1, -1), fun p -> p.B < 0;
@@ -40,5 +42,16 @@ module Utils =
             | Fail _ -> spread (radius + 1)
         spread 1
 
-    let fightUnits (player : Player) =
+    let fightUnitsOfPlayer (player : Player) =
         player.Units |> Seq.filter (fun u -> u.MaxHP > 0.0)
+    let fightUnitsOfProducts (prods : Production seq) =
+        prods |> Seq.filter (fun p ->
+            match p.Factory with
+            | :? IActorProductionFactory as f ->
+                if typeof<Unit>.IsAssignableFrom f.ResultType && f.ActorConstants.MaxHP > 0.0 then
+                    true
+                else false
+            | _ -> false)
+
+    let productsOfType<'a> (prods : Production seq) =
+        prods |> Seq.filter (fun p -> typeof<'a>.IsAssignableFrom p.Factory.ResultType)
