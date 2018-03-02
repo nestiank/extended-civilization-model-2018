@@ -99,7 +99,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class AncientSorcererProductionFactory : ITileObjectProductionFactory
+    public class AncientSorcererProductionFactory : IActorProductionFactory
     {
         private static Lazy<AncientSorcererProductionFactory> _instance
             = new Lazy<AncientSorcererProductionFactory>(() => new AncientSorcererProductionFactory());

@@ -168,7 +168,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class AutismBeamDroneFactory : ITileObjectProductionFactory
+    public class AutismBeamDroneFactory : IActorProductionFactory
     {
         private static Lazy<AutismBeamDroneFactory> _instance
             = new Lazy<AutismBeamDroneFactory>(() => new AutismBeamDroneFactory());
