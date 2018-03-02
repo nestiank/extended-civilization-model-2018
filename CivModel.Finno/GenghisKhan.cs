@@ -188,14 +188,14 @@ namespace CivModel.Finno
         {
             if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < this.PlacedPoint.Value.Terrain.Width && 0 <= C && C < this.PlacedPoint.Value.Terrain.Height)
             {
-                if ((this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null)
+                if ((this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null && (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileOwner == Owner)
                     return false;
 
                 else
                     return true;
             }
 
-            return false;
+            return true;
         }
     }
 
@@ -223,7 +223,7 @@ namespace CivModel.Finno
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.Unit == null
-                && point.TileBuilding is CivModel.Common.CityCenter
+                && point.TileBuilding is CityBase
                 && point.TileBuilding.Owner == production.Owner;
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
