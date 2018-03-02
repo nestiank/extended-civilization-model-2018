@@ -10,6 +10,8 @@ open AIFuzzyModule
 type CommonRules(player : CivModel.Player) =
     let random = Random()
 
+    let RuleString = /* */
+
     let rules =
         RuleString.Split([| "\r"; "\n" |], StringSplitOptions.RemoveEmptyEntries)
         |> Array.map (fun s -> s.Trim())
