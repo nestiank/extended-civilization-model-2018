@@ -108,6 +108,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientSorcerer);
         public ActorConstants ActorConstants => AncientSorcerer.Constants;
 
         public double TotalLaborCost => 35;

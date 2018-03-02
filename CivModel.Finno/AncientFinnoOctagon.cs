@@ -38,6 +38,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoOctagon);
         public ActorConstants ActorConstants => AncientFinnoOctagon.Constants;
 
         public double TotalLaborCost => 20;

@@ -52,9 +52,12 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <None Include="script\translate-sets.py" />
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Utils.fs" />
     <Compile Include="FuzzySystem.fs" />
     <Compile Include="AIFuzzyModule.fs" />
+    <Compile Include="CommonRules.fs" />
     <Compile Include="AIController.fs" />
     <Compile Include="GameScheme.fs" />
     <Content Include="packages.config" />
@@ -79,6 +82,11 @@
       <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
+      <Name>CivModel.Common</Name>
+      <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Name>CivModel</Name>
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>

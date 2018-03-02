@@ -117,6 +117,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(UnicornOrder);
         public ActorConstants ActorConstants => UnicornOrder.Constants;
 
         public double TotalLaborCost => 30;

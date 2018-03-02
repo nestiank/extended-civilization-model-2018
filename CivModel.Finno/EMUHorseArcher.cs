@@ -44,6 +44,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(EMUHorseArcher);
         public ActorConstants ActorConstants => EMUHorseArcher.Constants;
 
         public double TotalLaborCost => 15;

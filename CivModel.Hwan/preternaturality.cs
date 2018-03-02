@@ -44,6 +44,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(Preternaturality);
         public ActorConstants ActorConstants => Preternaturality.Constants;
 
         public double TotalLaborCost => 800;

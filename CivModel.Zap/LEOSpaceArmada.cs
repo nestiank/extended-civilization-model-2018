@@ -44,6 +44,7 @@ namespace CivModel.Zap
         {
         }
 
+        public Type ResultType => typeof(LEOSpaceArmada);
         public ActorConstants ActorConstants => LEOSpaceArmada.Constants;
 
         public double TotalLaborCost => 35;

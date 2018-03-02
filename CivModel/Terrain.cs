@@ -19,6 +19,12 @@ namespace CivModel
         private Point_t[] _points;
 
         /// <summary>
+        /// Gets all tiles of this terrain.
+        /// </summary>
+        public IEnumerable<Point> AllTiles =>
+            Enumerable.Range(0, Width * Height).Select(i => GetPoint(i % Width, i / Width));
+
+        /// <summary>
         /// The width of this terrain.
         /// </summary>
         public int Width => _width;

@@ -97,6 +97,7 @@ namespace CivModel.Common
         {
         }
 
+        public Type ResultType => typeof(FakeKnight);
         public ActorConstants ActorConstants => FakeKnight.Constants;
 
         public double TotalLaborCost => 7.5;

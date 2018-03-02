@@ -126,6 +126,7 @@ namespace CivModel.Hwan
         {
         }
 
+        public Type ResultType => typeof(JediKnight);
         public ActorConstants ActorConstants => JediKnight.Constants;
 
         public double TotalLaborCost => 50;
