@@ -9,25 +9,31 @@ namespace CivModel
     partial class Game
     {
         /// <summary>
-        /// An <see cref="Observable{ITurnObserver}"/> which can be observed by <see cref="ITurnObserver"/>.
+        /// An <see cref="Observable{ITurnObserver}"/> object which can be observed by <see cref="ITurnObserver"/>.
         /// </summary>
         public Observable<ITurnObserver> TurnObservable { get; private set; }
 
         /// <summary>
-        /// An <see cref="Observable{ITileObjectObserver}"/> which can be observed by <see cref="ITileObjectObserver"/>.
+        /// An <see cref="Observable{ITileObjectObserver}"/> object which can be observed by <see cref="ITileObjectObserver"/>.
         /// </summary>
         public Observable<ITileObjectObserver> TileObjectObservable { get; private set; }
 
         /// <summary>
-        /// An <see cref="Observable{IBattleObserver}"/> which can be observed by <see cref="IBattleObserver"/>.
+        /// An <see cref="Observable{IBattleObserver}"/> object which can be observed by <see cref="IBattleObserver"/>.
         /// </summary>
         public Observable<IBattleObserver> BattleObservable { get; private set; }
+
+        /// <summary>
+        /// An <see cref="Observable{IQuestObserver}"/> object which can be observed by <see cref="IQuestObserver"/>.
+        /// </summary>
+        public Observable<IQuestObserver> QuestObservable { get; private set; }
 
         private void InitializeObservable()
         {
             TurnObservable = new Observable<ITurnObserver>();
             TileObjectObservable = new Observable<ITileObjectObserver>();
             BattleObservable = new Observable<IBattleObserver>();
+            QuestObservable = new Observable<IQuestObserver>();
         }
     }
 }
