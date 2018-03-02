@@ -123,7 +123,7 @@ namespace CivModel.Hwan
         }
     }
 
-    public class UnicornOrderProductionFactory : ITileObjectProductionFactory
+    public class UnicornOrderProductionFactory : IActorProductionFactory
     {
         private static Lazy<UnicornOrderProductionFactory> _instance
             = new Lazy<UnicornOrderProductionFactory>(() => new UnicornOrderProductionFactory());

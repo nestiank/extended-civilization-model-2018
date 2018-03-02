@@ -319,7 +319,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class ElephantCavalryProductionFactory : ITileObjectProductionFactory
+    public class ElephantCavalryProductionFactory : IActorProductionFactory
     {
         private static Lazy<ElephantCavalryProductionFactory> _instance
             = new Lazy<ElephantCavalryProductionFactory>(() => new ElephantCavalryProductionFactory());

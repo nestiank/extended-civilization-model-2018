@@ -199,7 +199,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class GenghisKhanProductionFactory : ITileObjectProductionFactory
+    public class GenghisKhanProductionFactory : IActorProductionFactory
     {
         private static Lazy<GenghisKhanProductionFactory> _instance
             = new Lazy<GenghisKhanProductionFactory>(() => new GenghisKhanProductionFactory());
