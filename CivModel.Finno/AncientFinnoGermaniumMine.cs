@@ -55,6 +55,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoGermaniumMine);
         public ActorConstants ActorConstants => AncientFinnoGermaniumMine.Constants;
 
         public double TotalLaborCost => 10;

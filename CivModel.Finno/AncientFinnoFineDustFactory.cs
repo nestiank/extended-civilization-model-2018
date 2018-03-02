@@ -44,6 +44,7 @@ namespace CivModel.Finno
         {
         }
 
+        public Type ResultType => typeof(AncientFinnoFineDustFactory);
         public ActorConstants ActorConstants => AncientFinnoFineDustFactory.Constants;
 
         public double TotalLaborCost => 20;

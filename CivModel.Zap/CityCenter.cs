@@ -129,6 +129,7 @@ namespace CivModel.Zap
         {
         }
 
+        public Type ResultType => typeof(CityCenter);
         public ActorConstants Constants => CityCenter.Constants;
 
         public double TotalLaborCost => 100;

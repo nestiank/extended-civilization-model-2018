@@ -37,6 +37,7 @@ namespace CivModel.Zap
         {
         }
 
+        public Type ResultType => typeof(Casino);
         public ActorConstants ActorConstants => Casino.Constants;
 
         public double TotalLaborCost => 30;

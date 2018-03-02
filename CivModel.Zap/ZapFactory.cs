@@ -31,6 +31,7 @@ namespace CivModel.Zap
         {
         }
 
+        public Type ResultType => typeof(ZapFactory);
         public ActorConstants ActorConstants => ZapFactory.Constants;
 
         public double TotalLaborCost => 20;
