@@ -4,16 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
-    public class SpecialResourceAirspaceDomination : ISpecialResource
+    public class AutismBeamAmplificationCrystal : ISpecialResource
     {
-        public static SpecialResourceAirspaceDomination Instance => _instance.Value;
-        private static Lazy<SpecialResourceAirspaceDomination> _instance
-            = new Lazy<SpecialResourceAirspaceDomination>(() => new SpecialResourceAirspaceDomination());
-        private SpecialResourceAirspaceDomination()
-        {
-        }
+        public static AutismBeamAmplificationCrystal Instance => _instance.Value;
+        private static Lazy<AutismBeamAmplificationCrystal> _instance
+            = new Lazy<AutismBeamAmplificationCrystal>(() => new AutismBeamAmplificationCrystal());
+
+        private AutismBeamAmplificationCrystal() { }
 
         public int MaxCount => 1;
 
@@ -33,11 +32,7 @@ namespace CivModel.Hwan
                 player.Game.TurnObservable.AddObserver(this);
             }
 
-            public void PostTurn()
-            {
-
-            }
-
+            public void PostTurn() { }
             public void PostPlayerSubTurn(Player playerInTurn) { }
             public void PrePlayerSubTurn(Player playerInTurn) { }
             public void PreTurn() { }

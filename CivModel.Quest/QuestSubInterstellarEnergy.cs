@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Finno
+namespace CivModel.Quests
 {
     public class QuestSubInterstellarEnergy : Quest, ITileObjectObserver
     {
@@ -47,7 +47,7 @@ namespace CivModel.Finno
 
         public void TileObjectCreated(TileObject obj)
         {
-            if (obj is Preternaturality Extractor && Extractor.Owner == Requestee)
+            if (obj is CivModel.Finno.Preternaturality Extractor && Extractor.Owner == Requestee)
             {
                 Status = QuestStatus.Completed;
             }

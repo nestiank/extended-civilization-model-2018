@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
     public class QuestSubAirspaceDomination : Quest, IBattleObserver
     {
@@ -49,7 +49,7 @@ namespace CivModel.Hwan
 
         public void OnBattle(Actor attacker, Actor defender, BattleResult result)
         {
-            if (attacker.Owner == Requestee && defender is LEOSpaceArmada && result == BattleResult.Victory)
+            if (attacker.Owner == Requestee && defender is CivModel.Hwan.LEOSpaceArmada && result == BattleResult.Victory)
             {
                 if (flag < 3)
                     flag += 1;

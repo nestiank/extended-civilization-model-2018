@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Finno
+namespace CivModel.Quests
 {
     public class QuestWarAliance : Quest, ITileObjectObserver
     {
@@ -47,7 +47,7 @@ namespace CivModel.Finno
 
         public void TileObjectCreated(TileObject obj)
         {
-            if (obj is AutismBeamDrone Drone && Drone.Owner == Requestee)
+            if (obj is CivModel.Finno.AutismBeamDrone Drone && Drone.Owner == Requestee)
             {
                 if (flag < 2)
                     flag += 1;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
     public class QuestSubMoaiForceField : Quest, ITileObjectObserver
     {
@@ -47,7 +47,7 @@ namespace CivModel.Hwan
 
         public void TileObjectCreated(TileObject obj)
         {
-            if (obj is HwanEmpireFIRFortress Moai && Moai.Owner == Requestee)
+            if (obj is CivModel.Hwan.HwanEmpireFIRFortress Moai && Moai.Owner == Requestee)
             {
                 Status = QuestStatus.Completed;
             }

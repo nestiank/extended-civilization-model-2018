@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CivModel.Hwan
+namespace CivModel.Quests
 {
-    public class SpecialResourceAutismBeamReflex : ISpecialResource
+    public class Ubermensch : ISpecialResource
     {
-        public static SpecialResourceAutismBeamReflex Instance => _instance.Value;
-        private static Lazy<SpecialResourceAutismBeamReflex> _instance
-            = new Lazy<SpecialResourceAutismBeamReflex>(() => new SpecialResourceAutismBeamReflex());
-
-        private SpecialResourceAutismBeamReflex() { }
+        public static Ubermensch Instance => _instance.Value;
+        private static Lazy<Ubermensch> _instance
+            = new Lazy<Ubermensch>(() => new Ubermensch());
+        private Ubermensch()
+        {
+        }
 
         public int MaxCount => 1;
 
@@ -32,7 +33,11 @@ namespace CivModel.Hwan
                 player.Game.TurnObservable.AddObserver(this);
             }
 
-            public void PostTurn() { }
+            public void PostTurn()
+            {
+
+            }
+
             public void PostPlayerSubTurn(Player playerInTurn) { }
             public void PrePlayerSubTurn(Player playerInTurn) { }
             public void PreTurn() { }
