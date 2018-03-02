@@ -52,6 +52,7 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <None Include="script\translate-sets.py" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="FuzzySystem.fs" />
     <Compile Include="AIFuzzyModule.fs" />
