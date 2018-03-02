@@ -21,7 +21,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class GameScheme : IGameAdditionScheme
+    public class GameScheme : IGameAdditionScheme, ITurnObserver
     {
         public IGameSchemeFactory Factory => _factory;
         private readonly GameSchemeFactory _factory;
@@ -74,6 +74,26 @@ namespace CivModel.Finno
             game.GuidManager.RegisterGuid(AncientFinnoVigilant.ClassGuid, (c) => new AncientFinnoVigilant(c));
             game.GuidManager.RegisterGuid(AncientFinnoXylitolProductionRegion.ClassGuid, (c) => new AncientFinnoXylitolProductionRegion(c));
             game.GuidManager.RegisterGuid(FinnoEmpireCity.ClassGuid, (p, t) => new FinnoEmpireCity(p, t));
+        }
+
+        public void PreTurn()
+        {
+
+        }
+
+        public void PostTurn()
+        {
+            
+        }
+
+        public void PrePlayerSubTurn(Player playerInTurn)
+        {
+            
+        }
+
+        public void PostPlayerSubTurn(Player playerInTurn)
+        {
+            
         }
     }
 }

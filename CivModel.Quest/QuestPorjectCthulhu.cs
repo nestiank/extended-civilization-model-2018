@@ -41,6 +41,13 @@ namespace CivModel.Quests
         protected override void OnComplete()
         {
             Requestee.SpecialResource[SpecialResourceCthulhuProjectInfo.Instance] = 1;
+            foreach (var TheQuest in Requestee.Quests)
+            {
+                if (TheQuest is QuestEgyptKingdom)
+                {
+                    TheQuest.Status = QuestStatus.Deployed;
+                }
+            }
 
             Cleanup();
         }

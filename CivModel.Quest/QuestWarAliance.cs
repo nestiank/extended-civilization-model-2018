@@ -41,6 +41,17 @@ namespace CivModel.Quests
         protected override void OnComplete()
         {
             Requestee.SpecialResource[AutismBeamAmplificationCrystal.Instance] = 1;
+            foreach(var Player in Game.Players)
+            {
+                foreach(var TheQuest in Player.Quests)
+                {
+                    if (TheQuest is QuestAutismBeamReflex)
+                    {
+                        TheQuest.Status = QuestStatus.Deployed;
+                    }
+                }
+            }
+
 
             Cleanup();
         }

@@ -19,6 +19,7 @@ namespace CivModel.Quests
 
         public QuestSubInterstellarEnergy(Player requestee) : base(null, requestee)
         {
+            this.Status = QuestStatus.Deployed;
         }
 
         protected override void OnAccept()

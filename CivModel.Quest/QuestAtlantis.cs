@@ -41,6 +41,13 @@ namespace CivModel.Quests
         protected override void OnComplete()
         {
             Requestee.SpecialResource[Necronomicon.Instance] = 1;
+            foreach (var TheQuest in Requestee.Quests)
+            {
+                if (TheQuest is QuestRlyeh)
+                {
+                    TheQuest.Status = QuestStatus.Deployed;
+                }
+            }
 
             Cleanup();
         }

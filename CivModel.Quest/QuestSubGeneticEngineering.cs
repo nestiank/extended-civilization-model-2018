@@ -21,6 +21,7 @@ namespace CivModel.Quests
 
         public QuestSubGeneticEngineering(Player requestee) : base(null, requestee)
         {
+            this.Status = QuestStatus.Deployed;
         }
 
         protected override void OnAccept()
