@@ -67,7 +67,7 @@ and FuzzyVariable(system : FuzzySystem, var : LinguisticVariable) =
     member this.SetValue x (rules : FuzzyRules) =
         rules.InferSystem.SetInput(var.Name, x)
     member this.GetValue (rules : FuzzyRules) =
-        rules.InferSystem.Evaluate(var.Name)
+        rules.InferSystem.Evaluate var.Name
 
     override this.Equals other =
         match other with

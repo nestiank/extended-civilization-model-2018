@@ -9,14 +9,23 @@ type public AIController(player : Player) =
 
     let deploy (x : Production) =
         match x.Factory with
-            | :? IInteriorBuildingProductionFactory ->
-                let city' = player.Cities |> Seq.tryFind (fun c -> c.PlacedPoint.HasValue && x.IsPlacable(c.PlacedPoint.Value))
-                match city' with
-                    | Some city ->
-                        player.Deployment.Remove(x) |> ignore
-                        x.Place(city.PlacedPoint.Value)
-                    | None -> ()
-            | _ -> ()
+        | :? IInteriorBuildingProductionFactory ->
+            let city' = player.Cities |> Seq.tryFind (fun c -> c.PlacedPoint.HasValue && x.IsPlacable c.PlacedPoint.Value)
+            match city' with
+            | Some city ->
+                player.Deployment.Remove x |> ignore
+                x.Place city.PlacedPoint.Value
+            | None -> ()
+        | :? ITileObjectProductionFactory ->
+            let pt' = player.Game.Terrain.AllTiles |> Seq.tryFind (fun pt -> x.IsPlacable pt)
+            match pt' with
+            | Some pt ->
+                player.Deployment.Remove x |> ignore
+                x.Place pt
+            | None -> ()
+        | _ ->
+            System.Diagnostics.Debug.WriteLine "unqualified production in AIController.deploy"
+            ()
     let rec doDeploy' = function
         | x :: xs ->
             deploy x

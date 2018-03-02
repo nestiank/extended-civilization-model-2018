@@ -10,7 +10,10 @@ open AIFuzzyModule
 type CommonRules(player : CivModel.Player) =
     let random = Random()
 
-    let rules = fuzzySystem.CreateRule <| RuleString.Split([| "\r"; "\n" |], StringSplitOptions.RemoveEmptyEntries)
+    let rules =
+        RuleString.Split([| "\r"; "\n" |], StringSplitOptions.RemoveEmptyEntries)
+        |> Array.map (fun s -> s.Trim())
+        |> fuzzySystem.CreateRule
 
     let enemy =
         let idx = player.Game.Players |> Seq.findIndex ((=) player)
@@ -36,7 +39,7 @@ type CommonRules(player : CivModel.Player) =
         let ar =
             player.AvailableProduction
             |> Enumerable.OfType<IActorProductionFactory>
-            |> Seq.filter (fun p -> typeof<CityBase>.IsAssignableFrom p.ResultType && p.ActorConstants.MaxHP > 0.0)
+            |> Seq.filter (fun p -> typeof<CityBase>.IsAssignableFrom p.ResultType)
             |> Seq.toArray
         if not (Array.isEmpty ar) then
             let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
@@ -49,7 +52,7 @@ type CommonRules(player : CivModel.Player) =
         let ar =
             player.AvailableProduction
             |> Enumerable.OfType<IActorProductionFactory>
-            |> Seq.filter (fun p -> typeof<Pioneer>.IsAssignableFrom p.ResultType && p.ActorConstants.MaxHP > 0.0)
+            |> Seq.filter (fun p -> typeof<Pioneer>.IsAssignableFrom p.ResultType)
             |> Seq.toArray
         if not (Array.isEmpty ar) then
             let prod = ar.[random.Next (Array.length ar - 1)].Create(player)

@@ -14,8 +14,8 @@ module AIFuzzyModule =
     let RemainGoldSets =
         fuzzySystem.CreateSetsByList [
             "RemainGoldVeryHigh", [ 500.000f; 1000.000f; infinityf ];
-            "RemainGoldHigh", [ 0.000f; 500.000f; 1000.000f; 1500.000f ];
-            "RemainGoldMedium", [ -750.000f; -250.000f; 250.000f; 750.000f ];
+            "RemainGoldHigh", [ 0.000f; 250.000f; 1000.000f; 1500.000f ];
+            "RemainGoldMedium", [ -750.000f; -500.000f; 250.000f; 750.000f ];
             "RemainGoldLow", [ -1500.000f; -1000.000f; -500.000f; 0.000f ];
             "RemainGoldVeryLow", [ -infinityf; -1000.000f; -500.000f ];
         ]
@@ -25,7 +25,7 @@ module AIFuzzyModule =
             "RemainLaborHigh", [ 250.000f; 500.000f; 750.000f; 1000.000f ];
             "RemainLaborMedium", [ 50.000f; 100.000f; 250.000f; 500.000f ];
             "RemainLaborLow", [ 10.0f; 50.0f; 50.000f; 100.000f ];
-            "RemainLaborVeryLow", [ 0.000f; 0.000f; 25.000f; 50.000f ];
+            "RemainLaborVeryLow", [ -infinityf; 25.000f; 50.000f ];
         ]
     let CitySets =
         fuzzySystem.CreateSetsByList [
@@ -61,19 +61,19 @@ module AIFuzzyModule =
         fuzzySystem.CreateSetsByList [
             "TechLostHigh", [ 2500.000f; 5000.000f; infinityf ];
             "TechLostMedium", [ 0.000f; 2500.000f; 5000.000f; 7500.000f ];
-            "TechLostLow", [ 0.000f; 0.000f; 2500.000f; 5000.000f ];
+            "TechLostLow", [ -infinityf; 2500.000f; 5000.000f ];
         ]
     let GoldSets =
         fuzzySystem.CreateSetsByList [
             "GoldHigh", [ 2500.000f; 5000.000f; infinityf ];
             "GoldNormal", [ 0.000f; 2500.000f; 5000.000f; 7500.000f ];
-            "GoldLow", [ 0.000f; 0.000f; 2500.000f; 5000.000f ];
+            "GoldLow", [ -infinityf; 2500.000f; 5000.000f ];
         ]
     let TechSets =
         fuzzySystem.CreateSetsByList [
             "TechHigh", [ 10000.000f; 20000.000f; infinityf ];
             "TechNormal", [ 5000.000f; 10000.000f; 20000.000f; 25000.000f ];
-            "TechLow", [ 0.000f; 0.000f; 5000.000f; 10000.000f ];
+            "TechLow", [ -infinityf; 5000.000f; 10000.000f ];
         ]
     let LaborSets =
         fuzzySystem.CreateSetsByList [
@@ -85,21 +85,21 @@ module AIFuzzyModule =
         fuzzySystem.CreateSetsByList [
             "THigh", [ 1.000f; 1.500f; 2.000f; 2.000f ];
             "TMedium", [ 0.500f; 0.750f; 1.250f; 1.500f ];
-            "TLow", [ 0.000f; 0.000f; 0.500f; 1.000f ];
+            "TLow", [ -infinityf; 0.500f; 1.000f ];
         ]
     let UnitNumSets =
         fuzzySystem.CreateSetsByList [
             "UnitNumHigh", [ 0.500f; 0.750f; 1.000f; 1.000f ];
             "UnitNumMedium", [ 0.200f; 0.400f; 0.600f; 0.800f ];
             "UnitNumLow", [ 0.000f; 0.100f; 0.200f; 0.250f ];
-            "UnitNumVeryLow", [ 0.000f ];
+            "UnitNumVeryLow", [ -infinityf; 0.100f; 0.150f ];
         ]
     let LSets =
         fuzzySystem.CreateSetsByList [
-            "LHigh", [ 1.000f ];
+            "LHigh", [ 0.700f; 0.900f; infinityf ];
             "LMedium", [ 0.500f; 0.700f; 0.900f ];
             "LLow", [ 0.400f; 0.500f; 0.600f ];
-            "LVeryLow", [ 0.000f ];
+            "LVeryLow", [ -infinityf; 0.400f; 0.500f ];
         ]
 
     let ResultSets =
@@ -111,26 +111,26 @@ module AIFuzzyModule =
     let DeltaFightingUnitNum = DeltaUnitSets |> fuzzySystem.CreateVariable "DeltaFightingUnitNum" -infinityf infinityf
     let RemainingGold = RemainGoldSets |> fuzzySystem.CreateVariable "RemainingGold" -infinityf infinityf
     let RemainingLabor = RemainLaborSets |> fuzzySystem.CreateVariable "RemainingLabor" 0.f infinityf
-    let NeedFightingUnit = ResultSets |> fuzzySystem.CreateVariable "NeedFightingUnit" -infinityf infinityf
+    let NeedFightingUnit = ResultSets |> fuzzySystem.CreateVariable "NeedFightingUnit" -1.0f 1.0f
     let DeltaCityNum = CitySets |> fuzzySystem.CreateVariable "DeltaCityNum" -infinityf infinityf
-    let NeedCity = ResultSets |> fuzzySystem.CreateVariable "NeedCity" -infinityf infinityf
-    let NeedPioneer = ResultSets |> fuzzySystem.CreateVariable "NeedPioneer" -infinityf infinityf
+    let NeedCity = ResultSets |> fuzzySystem.CreateVariable "NeedCity" -1.0f 1.0f
+    let NeedPioneer = ResultSets |> fuzzySystem.CreateVariable "NeedPioneer" -1.0f 1.0f
     let EnemyFightingUnitNum = EnemDistSets |> fuzzySystem.CreateVariable "EnemyFightingUnitNum" 0.f infinityf
     let AllMyUnitEnemDist = EnemDistSets |> fuzzySystem.CreateVariable "AllMyUnitEnemDist" 0.f infinityf
     let DeltaHappyGoal = DeltaHappyGoalSets |> fuzzySystem.CreateVariable "DeltaHappyGoal" -200.f 200.f
-    let SetEconInvesttoFull = ResultSets |> fuzzySystem.CreateVariable "SetEconInvesttoFull" -infinityf infinityf
-    let SetEconInvesttoDouble = ResultSets |> fuzzySystem.CreateVariable "SetEconInvesttoDouble" -infinityf infinityf
+    let SetEconInvesttoFull = ResultSets |> fuzzySystem.CreateVariable "SetEconInvesttoFull" -1.0f 1.0f
+    let SetEconInvesttoDouble = ResultSets |> fuzzySystem.CreateVariable "SetEconInvesttoDouble" -1.0f 1.0f
     let Gold = GoldSets |> fuzzySystem.CreateVariable "Gold" 0.f infinityf
     let Tech = TechSets |> fuzzySystem.CreateVariable "Tech" 0.f infinityf
-    let NeedGold = ResultSets |> fuzzySystem.CreateVariable "NeedGold" -infinityf infinityf
-    let NeedLabor = ResultSets |> fuzzySystem.CreateVariable "NeedLabor" -infinityf infinityf
-    let NeedTech = ResultSets |> fuzzySystem.CreateVariable "NeedTech" -infinityf infinityf
+    let NeedGold = ResultSets |> fuzzySystem.CreateVariable "NeedGold" -1.0f 1.0f
+    let NeedLabor = ResultSets |> fuzzySystem.CreateVariable "NeedLabor" -1.0f 1.0f
+    let NeedTech = ResultSets |> fuzzySystem.CreateVariable "NeedTech" -1.0f 1.0f
     let TechLost = TechLostSets |> fuzzySystem.CreateVariable "TechLost" 0.f infinityf
     let TechInvest = TSets |> fuzzySystem.CreateVariable "TechInvest" 0.f infinityf
     let DmgUnitNum = UnitNumSets |> fuzzySystem.CreateVariable "DmgUnitNum" 0.f 1.f
-    let NeedLogistics = ResultSets |> fuzzySystem.CreateVariable "NeedLogistics" -infinityf infinityf
+    let NeedLogistics = ResultSets |> fuzzySystem.CreateVariable "NeedLogistics" -1.0f 1.0f
     let Logistics = LSets |> fuzzySystem.CreateVariable "Logistics" -infinityf infinityf
-    let NeedMilitaryBuilding = ResultSets |> fuzzySystem.CreateVariable "NeedMilitaryBuilding" -infinityf infinityf
+    let NeedMilitaryBuilding = ResultSets |> fuzzySystem.CreateVariable "NeedMilitaryBuilding" -1.0f 1.0f
 
     let RuleString = """
 IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedFightingUnit is Low
@@ -139,6 +139,9 @@ IF RemainingGold is RemainGoldHigh OR RemainingGold is RemainGoldVeryHigh THEN N
 IF RemainingLabor is RemainLaborVeryLow OR RemainingLabor is RemainLaborLow THEN NeedFightingUnit is Low
 IF RemainingLabor is RemainLaborMedium THEN NeedFightingUnit is Medium
 IF RemainingLabor is RemainLaborHigh OR RemainingLabor is RemainLaborVeryHigh THEN NeedFightingUnit is High
+IF DeltaCityNum is CityHigh THEN NeedCity is Low
+IF DeltaCityNum is CityMedium THEN NeedCity is Medium
+IF DeltaCityNum is CityLow THEN NeedCity is High
 IF NeedCity is Low THEN NeedPioneer is VeryLow
 IF NeedCity is High THEN NeedPioneer is VeryHigh
 IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedPioneer is Low
