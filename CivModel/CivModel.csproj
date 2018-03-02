@@ -59,6 +59,7 @@
     <Compile Include="InteriorBuildingConstants.cs" />
     <Compile Include="InteriorBuilding.cs" />
     <Compile Include="InteriorBuildingProduction.cs" />
+    <Compile Include="IQuestObserver.cs" />
     <Compile Include="ITileObjectObserver.cs" />
     <Compile Include="Observable.cs" />
     <Compile Include="Quest.cs" />
