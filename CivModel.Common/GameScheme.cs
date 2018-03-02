@@ -65,6 +65,10 @@ namespace CivModel.Common
             _factory = factory ?? throw new ArgumentNullException("factory");
         }
 
+        public void OnAfterInitialized(Game game)
+        {
+        }
+
         public void RegisterGuid(Game game)
         {
             game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));

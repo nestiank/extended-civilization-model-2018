@@ -17,6 +17,7 @@ namespace CivModel
         /// This property is not used.
         /// </summary>
         IGameSchemeFactory IGameScheme.Factory => null;
+        void IGameScheme.OnAfterInitialized(Game game) { }
 
         /// <summary>
         /// Coefficient for <see cref="Player.GoldIncome" />.
