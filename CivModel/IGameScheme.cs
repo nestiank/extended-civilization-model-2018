@@ -47,6 +47,12 @@ namespace CivModel
         /// The factory object of this instance.
         /// </summary>
         IGameSchemeFactory Factory { get; }
+
+        /// <summary>
+        /// Called after the game is initialized.
+        /// </summary>
+        /// <param name="game">The <see cref="Game"/> object.</param>
+        void OnAfterInitialized(Game game);
     }
 
     /// <summary>

@@ -181,7 +181,7 @@ namespace CivModel
 
             if (prev == QuestStatus.Accepted)
             {
-                OnGiveup();
+                CallOnGiveup();
             }
         }
 
@@ -204,7 +204,7 @@ namespace CivModel
 
             if (prev == QuestStatus.Accepted)
             {
-                OnGiveup();
+                CallOnGiveup();
             }
         }
 
@@ -231,7 +231,7 @@ namespace CivModel
             _status = QuestStatus.Accepted;
             LeftTurn = LimitTurn;
 
-            OnAccept();
+            CallOnAccept();
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace CivModel
             _status = QuestStatus.Completed;
             LeftTurn = -1;
 
-            OnComplete();
+            CallOnComplete();
         }
 
         /// <summary>
@@ -298,6 +298,24 @@ namespace CivModel
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public virtual void PostPlayerSubTurn(Player playerInTurn)
         {
+        }
+
+        private void CallOnAccept()
+        {
+            OnAccept();
+            Game.QuestObservable.IterateObserver(obs => obs.QuestAccepted(this));
+        }
+
+        private void CallOnGiveup()
+        {
+            OnGiveup();
+            Game.QuestObservable.IterateObserver(obs => obs.QuestGivenup(this));
+        }
+
+        private void CallOnComplete()
+        {
+            OnComplete();
+            Game.QuestObservable.IterateObserver(obs => obs.QuestCompleted(this));
         }
 
         /// <summary>

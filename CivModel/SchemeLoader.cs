@@ -26,6 +26,8 @@ namespace CivModel
         /// <seealso cref="SchemaTree"/>
         public IGameScheme RootScheme => SchemaTree[1];
 
+        private DefaultScheme _defaultScheme = new DefaultScheme();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SchemeLoader"/> class.
         /// </summary>
@@ -36,7 +38,6 @@ namespace CivModel
         /// </param>
         public SchemeLoader(IGameSchemeFactory rootFactory, IEnumerable<IGameSchemeFactory> knownSchemes = null)
         {
-            _schemaTree.Add(new DefaultScheme());
             Load(rootFactory, knownSchemes);
         }
 
@@ -82,10 +83,21 @@ namespace CivModel
         /// Gets the applied exclusive scheme.
         /// </summary>
         /// <typeparam name="T">The type of exclusive scheme.</typeparam>
-        /// <returns>The applied scheme</returns>
+        /// <returns>The applied scheme. <c>null</c> if there is no scheme of given type.</returns>
         public T GetExclusiveScheme<T>() where T : class, IGameScheme
         {
-            return SchemaTree.Reverse().OfType<T>().First();
+            var ret = SchemaTree.Reverse().OfType<T>().FirstOrDefault();
+            if (ret == null)
+            {
+                if (_defaultScheme is T)
+                    return (T)(IGameScheme)_defaultScheme;
+                else
+                    return null;
+            }
+            else
+            {
+                return ret;
+            }
         }
 
         /// <summary>
@@ -103,6 +115,7 @@ namespace CivModel
     {
         // not used.
         IGameSchemeFactory IGameScheme.Factory => null;
+        void IGameScheme.OnAfterInitialized(Game game) => throw new NotImplementedException();
 
         public bool OnlyDefaultPlayers => false;
         public int DefaultNumberOfPlayers => 2;
