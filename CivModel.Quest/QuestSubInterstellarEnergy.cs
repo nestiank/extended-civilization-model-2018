@@ -48,7 +48,7 @@ namespace CivModel.Quests
 
         public void TileObjectCreated(TileObject obj)
         {
-            if (obj is CivModel.Finno.Preternaturality Extractor && Extractor.Owner == Requestee)
+            if (obj is CivModel.Finno.Preternaturality Extractor && Extractor.Owner == Requestee && Extractor.PlacedPoint.Value.TileOwner == Extractor.Owner.Game.Players[5])
             {
                 Status = QuestStatus.Completed;
             }

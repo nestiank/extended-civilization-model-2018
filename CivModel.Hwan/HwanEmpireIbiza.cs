@@ -53,7 +53,7 @@ namespace CivModel.Hwan
         {
             return point.TileBuilding == null
                  && !IsCityNeer(production, point)
-                 && point.TileOwner == production.Owner;
+                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[2] || point.TileOwner == production.Owner.Game.Players[4] || point.TileOwner == production.Owner.Game.Players[6]);
         }
 
         private bool IsCityNeer(TileObjectProduction production, Terrain.Point point)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Quests
 {
-    public class QuestWarAliance : Quest, ITileObjectObserver
+    public class QuestWarAliance : Quest, IBattleObserver
     {
         public override string Name => "[전쟁 동맹] - 에뮤 연방";
 
@@ -56,23 +56,17 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void TileObjectCreated(TileObject obj)
+        public void OnBattle(Actor attacker, Actor defender, BattleResult result)
         {
-            if (obj is CivModel.Finno.AutismBeamDrone Drone && Drone.Owner == Requestee)
+            if (attacker.Owner == Requestee && attacker is CivModel.Finno.AutismBeamDrone && defender.Owner == defender.Owner.Game.Players[4] && flag < 2)
             {
-                if (flag < 2)
-                    flag += 1;
-
-                else if(flag >= 2)
-                {
-                    Status = QuestStatus.Completed;
-                    flag = 0;
-                }                    
+                flag += 1;               
             }
-
-
+            else if(attacker.Owner == Requestee && attacker is CivModel.Finno.AutismBeamDrone && defender.Owner == defender.Owner.Game.Players[4] && flag >= 2)
+            {
+                flag = 0;
+                Status = QuestStatus.Completed;
+            }
         }
-
-        public void TileObjectPlaced(TileObject obj) { }
     }
 }
