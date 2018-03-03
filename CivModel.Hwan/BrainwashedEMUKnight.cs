@@ -35,7 +35,7 @@ namespace CivModel.Hwan
         }
     }
 
-    public class BrainwashedEMUKnightProductionFactory : ITileObjectProductionFactory
+    public class BrainwashedEMUKnightProductionFactory : IActorProductionFactory
     {
         private static Lazy<BrainwashedEMUKnightProductionFactory> _instance
             = new Lazy<BrainwashedEMUKnightProductionFactory>(() => new BrainwashedEMUKnightProductionFactory());

@@ -116,7 +116,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class JediKnightProductionFactory : ITileObjectProductionFactory
+    public class JediKnightProductionFactory : IActorProductionFactory
     {
         private static Lazy<JediKnightProductionFactory> _instance
             = new Lazy<JediKnightProductionFactory>(() => new JediKnightProductionFactory());
