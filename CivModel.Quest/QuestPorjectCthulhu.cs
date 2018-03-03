@@ -56,7 +56,7 @@ namespace CivModel.Quests
 
         public void TileObjectPlaced(TileObject obj)
         {
-            if (obj is CivModel.Hwan.Spy Spy && Spy.Owner == Requestee && Spy.PlacedPoint.Value.TileOwner != Requestee)
+            if (obj is CivModel.Hwan.Spy Spy && Spy.Owner == Requestee && Spy.PlacedPoint.Value.TileOwner == Requestee.Game.Players[1])
             {
                 if (Spy.QuestFlag)
                 {

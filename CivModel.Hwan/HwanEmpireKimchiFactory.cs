@@ -46,7 +46,7 @@ namespace CivModel.Hwan
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.TileBuilding == null
-                 && point.TileOwner == production.Owner;
+                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[2] || point.TileOwner == production.Owner.Game.Players[4] || point.TileOwner == production.Owner.Game.Players[6]);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {

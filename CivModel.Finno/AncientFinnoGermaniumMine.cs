@@ -70,7 +70,7 @@ namespace CivModel.Finno
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.TileBuilding == null
-                 && point.TileOwner == production.Owner;
+                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[3] || point.TileOwner == production.Owner.Game.Players[5] || point.TileOwner == production.Owner.Game.Players[7]);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
