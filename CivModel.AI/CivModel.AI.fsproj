@@ -57,7 +57,8 @@
     <Compile Include="Utils.fs" />
     <Compile Include="FuzzySystem.fs" />
     <Compile Include="AIFuzzyModule.fs" />
-    <Compile Include="CommonRules.fs" />
+    <Compile Include="GlobalRules.fs" />
+    <Compile Include="MoveRules.fs" />
     <Compile Include="AIController.fs" />
     <Compile Include="GameScheme.fs" />
     <Content Include="packages.config" />
@@ -85,6 +86,26 @@
     <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
       <Name>CivModel.Common</Name>
       <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Finno\CivModel.Finno.csproj">
+      <Name>CivModel.Finno</Name>
+      <Project>{6a09ebc4-cf6d-4ba5-8710-e3d4e7f46ea5}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Hwan\CivModel.Hwan.csproj">
+      <Name>CivModel.Hwan</Name>
+      <Project>{257a17a7-e9db-4d7b-8469-0b3ad9e91937}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Quest\CivModel.Quests.csproj">
+      <Name>CivModel.Quests</Name>
+      <Project>{c7375e51-cb93-4405-b82a-64508ed2959c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Zap\CivModel.Zap.csproj">
+      <Name>CivModel.Zap</Name>
+      <Project>{b6d55159-0ed4-41c6-94ae-8f1eb2b3b9f3}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
