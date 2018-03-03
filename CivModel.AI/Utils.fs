@@ -1,11 +1,15 @@
 namespace CivModel.AI
 
+open System.Linq
 open CivModel
 
 type Failable<'a, 'b> = Success of 'a | Fail of 'b
 
 module Utils =
-    open Accord.Fuzzy
+    [<Literal>]
+    let HwanPlayer = CivModel.Hwan.HwanPlayerConstant.HwanPlayer
+    [<Literal>]
+    let FinnoPlayer = CivModel.Finno.FinnoPlayerConstant.FinnoPlayer
 
     let searchNear f (pt : Terrain.Point) =
         let table : (Position * (Position -> bool)) list = [
@@ -41,6 +45,13 @@ module Utils =
             | Fail -1 -> None
             | Fail _ -> spread (radius + 1)
         spread 1
+
+    let getNearestActor (pt : Terrain.Point) f (player : Player) =
+        player.Game.Players
+        |> Seq.collect (fun p -> p.Actors)
+        |> Seq.filter (fun a -> a.PlacedPoint.HasValue && f a)
+        |> Seq.map (fun a -> a, Terrain.Point.Distance (a.PlacedPoint.Value, pt))
+        |> Seq.minBy snd
 
     let fightUnitsOfPlayer (player : Player) =
         player.Units |> Seq.filter (fun u -> u.MaxHP > 0.0)
