@@ -8,7 +8,7 @@ module AIFuzzyModule =
     // Common Sets
      
     let ResultSets =
-         [ -infinityf; -0.8f; -0.6f; -0.2f; 0.2f; 0.8f; infinityf ]
+         [ -infinityf; -0.5f; -0.30f; 0.0f; 0.30f; 0.5f; infinityf ]
          |> fuzzySystem.CreateSetsByLevel "" [ "VeryLow"; "Low"; "Medium"; "High"; "VeryHigh" ] 3 1
     let createOutputVariable name = ResultSets |> fuzzySystem.CreateVariable name -1.0f 1.0f
 
@@ -52,20 +52,26 @@ module AIFuzzyModule =
     let GoldSets =
         fuzzySystem.CreateSetsByList [
             "GoldHigh", [ 2500.000f; 5000.000f; infinityf ];
-            "GoldNormal", [ 0.000f; 2500.000f; 5000.000f; 7500.000f ];
+            "GoldMedium", [ 0.000f; 2500.000f; 5000.000f; 7500.000f ];
             "GoldLow", [ -infinityf; 2500.000f; 5000.000f ];
         ]
     let TechSets =
         fuzzySystem.CreateSetsByList [
             "TechHigh", [ 10000.000f; 20000.000f; infinityf ];
-            "TechNormal", [ 5000.000f; 10000.000f; 20000.000f; 25000.000f ];
+            "TechMedium", [ 5000.000f; 10000.000f; 20000.000f; 25000.000f ];
             "TechLow", [ -infinityf; 5000.000f; 10000.000f ];
         ]
     let LaborSets =
         fuzzySystem.CreateSetsByList [
             "LaborHigh", [ 1000.000f; 2000.000f; infinityf ];
-            "LaborNormal", [ 250.000f; 500.000f; 1000.000f; 1500.000f ];
+            "LaborMedium", [ 250.000f; 500.000f; 1000.000f; 1500.000f ];
             "LaborLow", [ 0.000f; 100.000f; 250.000f; 500.000f ];
+        ]
+    let HappySets =
+        fuzzySystem.CreateSetsByList [
+            "HappyHigh", [ 50.0f; 75.0f; infinityf ];
+            "HappyMedium", [ 0.0f;25.0f; 50.0f; 75.0f ];
+            "HappyLow", [ -infinityf; 0.0f; 25.0f ];
         ]
     let TSets =
         fuzzySystem.CreateSetsByList [
@@ -105,16 +111,16 @@ module AIFuzzyModule =
 
     let CitySets =
         fuzzySystem.CreateSetsByList [
-            "CityHigh", [ 10.000f; 20.000f; infinityf ];
-            "CityMedium", [ -20.000f; -10.000f; 10.000f; 20.000f ];
-            "CityLow", [ -infinityf; -20.000f; -10.000f ];
+            "CityHigh", [ 2.000f; 4.000f; infinityf ];
+            "CityMedium", [ -4.000f; -2.000f; 2.000f; 4.000f ];
+            "CityLow", [ -infinityf; -4.000f; -2.000f ];
         ]
 
     let DeltaUnitSets = 
         fuzzySystem.CreateSetsByList [
-            "DeltaUnitHigh", [ 0.000f; 50.000f; infinityf ];
-            "DeltaUnitMedium", [ -70.000f; -50.000f; 50.000f; 70.000f ];
-            "DeltaUnitLow", [ -infinityf; -50.000f; 0.000f ];
+            "DeltaUnitHigh", [ 0.000f; 5.000f; infinityf ];
+            "DeltaUnitMedium", [ -7.000f; -5.000f; 5.000f; 7.000f ];
+            "DeltaUnitLow", [ -infinityf; -5.000f; 0.000f ];
         ]
 
     // Other Zapgguk Global Sets
@@ -158,14 +164,14 @@ module AIFuzzyModule =
         fuzzySystem.CreateSetsByList [
             "DistEnemHigh", [0.000f;0.500f;infinityf];
             "DistEnemMedium",[-0.500f;0.000f;0.500f];
-            "DistEnemlow", [-infinityf;-0.500f;0.000f];
+            "DistEnemLow", [-infinityf;-0.500f;0.000f];
         ]
 
     let DistMyCitySets =
         fuzzySystem.CreateSetsByList [
             "DistMyCityHigh", [0.000f;0.500f;infinityf];
             "DistMyCityMedium",[-0.500f;0.000f;0.500f];
-            "DistMyCitylow", [-infinityf;-0.500f;0.000f];
+            "DistMyCityLow", [-infinityf;-0.500f;0.000f];
         ]
 
     // Suomi/Hwan MoveTask Sets
@@ -215,6 +221,7 @@ module AIFuzzyModule =
             "DeployDistEnemLow", [0.000f;0.000f;3.000f;6.000f];
         ]
 
+
     // Common UseSkillTask Sets
 
     let SkillEffectTypeSets =
@@ -249,10 +256,10 @@ module AIFuzzyModule =
     let RemainingLabor = RemainLaborSets |> fuzzySystem.CreateVariable "RemainingLabor" 0.f infinityf
     let AllMyUnitEnemDist = EnemDistSets |> fuzzySystem.CreateVariable "AllMyUnitEnemDist" 0.f infinityf
     let DeltaHappyGoal = DeltaHappyGoalSets |> fuzzySystem.CreateVariable "DeltaHappyGoal" -200.f 200.f
-    let SetEconInvesttoFull = ResultSets |> fuzzySystem.CreateVariable "SetEconInvesttoFull" -1.0f 1.0f
-    let SetEconInvesttoDouble = ResultSets |> fuzzySystem.CreateVariable "SetEconInvesttoDouble" -1.0f 1.0f
     let Gold = GoldSets |> fuzzySystem.CreateVariable "Gold" 0.f infinityf
     let Tech = TechSets |> fuzzySystem.CreateVariable "Tech" 0.f infinityf
+    let Labor = LaborSets |> fuzzySystem.CreateVariable "Labor" 0.f infinityf
+    let Happy = HappySets |> fuzzySystem.CreateVariable "Happy" 0.f infinityf
     let TechLost = TechLostSets |> fuzzySystem.CreateVariable "TechLost" 0.f infinityf
     let TechInvest = TSets |> fuzzySystem.CreateVariable "TechInvest" 0.f infinityf
     let DmgUnitNum = UnitNumSets |> fuzzySystem.CreateVariable "DmgUnitNum" 0.f 1.f
@@ -263,17 +270,23 @@ module AIFuzzyModule =
     let NeedFightingUnit = createOutputVariable "NeedFightingUnit"
     let NeedCity = createOutputVariable "NeedCity"
     let NeedPioneer = createOutputVariable "NeedPioneer"
+    let NeedMilitaryBuilding = createOutputVariable "NeedMilitaryBuilding"
+    let SetEconInvesttoFull = createOutputVariable "SetEconInvesttoFull"
+    let SetEconInvesttoDouble = createOutputVariable "SetEconInvesttoDouble"
+    
+    // Global Common Mid-layer Variables
+
     let NeedGold = createOutputVariable "NeedGold"
     let NeedLabor = createOutputVariable "NeedLabor"
     let NeedTech = createOutputVariable "NeedTech"
     let NeedLogistics = createOutputVariable "NeedLogistics"
-    let NeedMilitaryBuilding = createOutputVariable "NeedMilitaryBuilding"
+    let NeedHappy = createOutputVariable "NeedHappy"
 
     // Global Suomi/Hwan Input Variables
 
     let DeltaFightingUnitNum = DeltaUnitSets |> fuzzySystem.CreateVariable "DeltaFightingUnitNum" -infinityf infinityf
     let DeltaCityNum = CitySets |> fuzzySystem.CreateVariable "DeltaCityNum" -infinityf infinityf
-    let EnemyFightingUnitNum = EnemDistSets |> fuzzySystem.CreateVariable "EnemyFightingUnitNum" 0.f infinityf
+    let EnemyFightingUnitNum = FightingUnitNumSets |> fuzzySystem.CreateVariable "EnemyFightingUnitNum" 0.f infinityf
 
     // Global Suomi/Hwan Output Variables
 
@@ -286,7 +299,7 @@ module AIFuzzyModule =
 
     // MoveTask Common Input Variables
 
-    let MyUnit = UnitTypeSets |> fuzzySystem.CreateVariable "UnitType" 0.f 1.000f
+    let MyUnit = UnitTypeSets |> fuzzySystem.CreateVariable "MyUnit" 0.f 1.000f
     let MyUnitHP = HPSets |> fuzzySystem.CreateVariable "MyUnitHP" 0.f 1.000f
     let EnemyUnitHP = HPSets |> fuzzySystem.CreateVariable "EnemyUnitHP" 0.f 1.000f
     let EnemyCityHP = HPSets |> fuzzySystem.CreateVariable "EnemyCityHP" 0.f 1.000f
@@ -299,9 +312,13 @@ module AIFuzzyModule =
 
     let MoveUnittoSpot = ResultSets |> fuzzySystem.CreateVariable "MoveUnittoSpot" -1.000f 1.000f
 
+    // MoveTask Zap Input Variables
+
+    let SpotOwner = OwnerTypeSets |> fuzzySystem.CreateVariable "SpotOwner" 0.0f 2.0f
+
     // BuildingTask Common Input Variables
 
-    let BuildingProdResource = ResourceTypeSets |> fuzzySystem.CreateVariable "ResourceType" 0.f 3.000f
+    let BuildingProdResource = ResourceTypeSets |> fuzzySystem.CreateVariable "BuildingProdResource" 0.f 3.000f
 
     // BuildingTask Common OutputVariables
 
@@ -325,10 +342,10 @@ module AIFuzzyModule =
     // UseSkillTask Common Input Variables
 
     let SkillEffect = SkillEffectTypeSets |> fuzzySystem.CreateVariable "SkillEffect" 0.0f 3.0f
-    let SkillTarget = SkillTargetTypeSets |> fuzzySystem.CreateVariable "SkillTarget" 0.0f 1.0f
+    let SkillTarget = SkillTargetTypeSets |> fuzzySystem.CreateVariable "SkillTarget" 0.0f 2.0f
     let SkillTargetHP = HPSets |> fuzzySystem.CreateVariable "SkillTargetHP" 0.0f 1.0f
-    let SkillTargetSpotDamage = SpotDamageSets |> fuzzySystem.CreateVariable "SpotDamage" 0.0f infinityf
-    let SkillTargetSpotDeal = SpotDealSets |> fuzzySystem.CreateVariable "SpotDeal" 0.0f infinityf
+    let SkillTargetSpotDamage = SpotDamageSets |> fuzzySystem.CreateVariable "SkillTargetSpotDamage" 0.0f infinityf
+    let SkillTargetSpotDeal = SpotDealSets |> fuzzySystem.CreateVariable "SkillTargetSpotDeal" 0.0f infinityf
     
     // UseSkillTask Common Output Variables
 
@@ -337,20 +354,19 @@ module AIFuzzyModule =
     // Rules
 
     let RuleStringGlobalCommon = """
-IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedFightingUnit is Low
-IF RemainingGold is RemainGoldMedium THEN NeedFightingUnit is Medium
-IF RemainingGold is RemainGoldHigh OR RemainingGold is RemainGoldVeryHigh THEN NeedFightingUnit is High
-IF RemainingLabor is RemainLaborVeryLow OR RemainingLabor is RemainLaborLow THEN NeedFightingUnit is Low
-IF RemainingLabor is RemainLaborMedium THEN NeedFightingUnit is Medium
-IF RemainingLabor is RemainLaborHigh OR RemainingLabor is RemainLaborVeryHigh THEN NeedFightingUnit is High
-IF NeedCity is Low THEN NeedPioneer is VeryLow
-IF NeedCity is High THEN NeedPioneer is VeryHigh
-IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedPioneer is Low
-IF RemainingGold is RemainGoldMedium THEN NeedPioneer is Medium
-IF RemainingGold is RemainGoldHigh OR RemainingGold is RemainGoldVeryHigh THEN NeedPioneer is High
-IF RemainingLabor is RemainLaborVeryLow OR RemainingLabor is RemainLaborLow THEN NeedPioneer is Low
-IF RemainingLabor is RemainLaborMedium THEN NeedPioneer is Medium
-IF RemainingLabor is RemainLaborHigh OR RemainingLabor is RemainLaborVeryHigh THEN NeedPioneer is High
+IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedFightingUnit is VeryLow
+IF RemainingLabor is RemainLaborVeryLow OR RemainingLabor is RemainLaborLow THEN NeedFightingUnit is VeryLow
+IF NeedCity is VeryLow THEN NeedPioneer is VeryLow
+IF NeedCity is Low THEN NeedPioneer is Low
+IF NeedCity is Medium THEN NeedPioneer is Medium
+IF NeedCity is High THEN NeedPioneer is High
+IF NeedCity is VeryHigh THEN NeedPioneer is VeryHigh
+IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedCity is Low
+IF RemainingGold is RemainGoldMedium THEN NeedCity is Medium
+IF RemainingGold is RemainGoldHigh OR RemainingGold is RemainGoldVeryHigh THEN NeedCity is High
+IF RemainingLabor is RemainLaborVeryLow OR RemainingLabor is RemainLaborLow THEN NeedCity is Low
+IF RemainingLabor is RemainLaborMedium THEN NeedCity is Medium
+IF RemainingLabor is RemainLaborHigh OR RemainingLabor is RemainLaborVeryHigh THEN NeedCity is High
 IF AllMyUnitEnemDist is EnemDistLow THEN NeedMilitaryBuilding is High
 IF AllMyUnitEnemDist is EnemDistHigh THEN NeedMilitaryBuilding is Low
 IF RemainingGold is RemainGoldVeryLow OR RemainingGold is RemainGoldLow THEN NeedMilitaryBuilding is Low
@@ -373,7 +389,7 @@ IF TechLost is TechLostHigh THEN NeedTech is VeryHigh
 IF TechLost is TechLostMedium THEN NeedTech is High
 IF TechLost is TechLostLow THEN NeedTech is Medium
 IF Tech is TechHigh THEN NeedTech is Low
-IF Tech is TechNormal THEN NeedTech is Medium
+IF Tech is TechMedium THEN NeedTech is Medium
 IF Tech is TechLow THEN NeedTech is High
 IF NeedGold is VeryHigh THEN NeedTech is VeryLow
 IF NeedTech is High THEN TechInvest is THigh
@@ -391,15 +407,24 @@ IF NeedLogistics is VeryLow THEN Logistics is LVeryLow
 """
 
     let RuleStringGlobalSuomiHwan = """
-IF DeltaCityNum is CityHigh THEN NeedCity is Low
-IF DeltaCityNum is CityMedium THEN NeedCity is Medium
-IF DeltaCityNum is CityLow THEN NeedCity is High
-IF DeltaFightingUnitNum is DeltaUnitHigh THEN NeedFightingUnit is Low
+IF DeltaCityNum is CityHigh THEN NeedCity is VeryLow
+IF DeltaCityNum is CityMedium THEN NeedCity is Low
+IF DeltaCityNum is CityLow THEN NeedCity is Medium
+IF DeltaFightingUnitNum is DeltaUnitHigh THEN NeedFightingUnit is VeryLow
 IF DeltaFightingUnitNum is DeltaUnitMedium THEN NeedFightingUnit is Medium
-IF DeltaFightingUnitNum is DeltaUnitLow THEN NeedFightingUnit is High
+IF DeltaFightingUnitNum is DeltaUnitLow THEN NeedFightingUnit is VeryHigh
 IF EnemyFightingUnitNum is FightingUnitNumHigh THEN NeedMilitaryBuilding is High
 IF EnemyFightingUnitNum is FightingUnitNumMedium THEN NeedMilitaryBuilding is Medium
 IF EnemyFightingUnitNum is FightingUnitNumLow THEN NeedMilitaryBuilding is Low
+"""
+
+    let RuleStringGlobalOther = """
+IF MyFightingUnitNum is FightingUnitNumHigh THEN NeedFightingUnit is VeryLow
+IF MyFightingUnitNum is FightingUnitNumMedium THEN NeedFightingUnit is Low
+IF MyFightingUnitNum is FightingUnitNumLow THEN NeedFightingUnit is High
+IF MyCityNum is MyCityNumHigh THEN NeedCity is VeryLow
+IF MyCityNum is MyCityNumMedium THEN NeedCity is Low
+IF MyCityNum is MyCityNumLow THEN NeedCity is High
 """
 
     let RuleStringMoveTaskCommon = """
@@ -451,7 +476,7 @@ IF RemainingGold is RemainGoldLow THEN DeployUnittoCity is Low
 IF DeploySpotEnemDist is DeployDistEnemHigh AND MyUnit is Pioneer THEN DeployUnittoCity is VeryHigh
 IF DeploySpotEnemDist is DeployDistEnemHigh THEN DeployInteriorBuildingtoSpot is VeryHigh
 IF CityatSpotRsrcBuildingNum is RsrcBuildingNumHigh THEN DeployInteriorBuildingtoSpot is Low
-IF DeploySpotEnemDist is DistEnemLow THEN DeployInteriorBuildingtoSpot is VeryLow
+IF DeploySpotEnemDist is DeployDistEnemLow THEN DeployInteriorBuildingtoSpot is VeryLow
 IF CityatSpotRsrcBuildingNum is RsrcBuildingNumLow THEN DeployInteriorBuildingtoSpot is High
 IF DeploySpotEnemDist is DeployDistEnemHigh THEN DeployTileResourceBuildingtoSpot is VeryHigh
 IF DeploySpotEnemDist is DeployDistEnemLow THEN DeployTileResourceBuildingtoSpot is VeryLow
@@ -467,7 +492,7 @@ IF NeedCity is Low THEN DeployCitytoPioneer is Medium
     let RuleStringUseSkillCommon = """
 IF SkillEffect is DamageEnemy AND SkillTargetHP is HPLow AND SkillTarget is Enemy THEN UseSkill is VeryHigh
 IF SkillEffect is DamageEnemy AND SkillTargetHP is HPHigh AND SkillTarget is Enemy THEN UseSkill is High
-IF SkillEffect is RestoreAP THEN UseSkill is MostHigh
+IF SkillEffect is RestoreAP THEN UseSkill is VeryHigh
 IF SkillEffect is RestoreHP AND SkillTargetHP is HPLow AND SkillTarget is Ally THEN UseSkill is VeryHigh
 IF SkillEffect is RestoreHP AND SkillTargetHP is HPHigh  AND SkillTarget is Ally THEN UseSkill is Medium
 IF SkillEffect is RestoreHP AND SkillTargetSpotDamage is SpotDamageHigh AND SkillTarget is Ally THEN UseSkill is High

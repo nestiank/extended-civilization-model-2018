@@ -5,7 +5,8 @@ open System.Threading.Tasks
 open CivModel
 
 type public AIController(player : Player) =
-    let fuzzyRules = CommonRules(player)
+    let globalRules = GlobalRules(player)
+    let moveRules = MoveRules(player, globalRules.FuzzyRules)
 
     let deploy (x : Production) =
         match x.Factory with
@@ -38,7 +39,8 @@ type public AIController(player : Player) =
     interface CivModel.IAIController with
         member this.DoAction() =
             async {
-                fuzzyRules.DoFuzzyAction()
+                globalRules.DoFuzzyAction()
+                moveRules.DoFuzzyAction()
                 doDeploy()
 
                 let researchDiff = player.Research - prevResearch
