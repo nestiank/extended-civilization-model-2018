@@ -48,7 +48,7 @@ namespace CivModel.Quests
 
         public void TileObjectCreated(TileObject obj)
         {
-            if (obj is CivModel.Hwan.HwanEmpireFIRFortress Moai && Moai.Owner == Requestee)
+            if (obj is CivModel.Hwan.HwanEmpireFIRFortress Moai && Moai.Owner == Requestee && Moai.PlacedPoint.Value.TileOwner == Moai.Owner.Game.Players[8])
             {
                 Status = QuestStatus.Completed;
             }

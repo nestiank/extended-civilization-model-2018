@@ -54,7 +54,7 @@ namespace CivModel.Quests
 
         public void TileObjectCreated(TileObject obj)
         {
-            if (obj is CivModel.Finno.Preternaturality Atlantis && Atlantis.Owner == Requestee)
+            if (obj is CivModel.Finno.Preternaturality Atlantis && Atlantis.Owner == Requestee && Atlantis.PlacedPoint.Value.TileOwner == Requestee.Game.Players[3])
             {
                 Status = QuestStatus.Completed;
             }

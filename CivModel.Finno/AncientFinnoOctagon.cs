@@ -54,7 +54,7 @@ namespace CivModel.Finno
         {
             return point.TileBuilding == null
                  && !IsCityNeer(production, point)
-                 && point.TileOwner == production.Owner;
+                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[3] || point.TileOwner == production.Owner.Game.Players[5] || point.TileOwner == production.Owner.Game.Players[7]);
         }
 
         private bool IsCityNeer(TileObjectProduction production, Terrain.Point point)
