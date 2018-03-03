@@ -54,7 +54,6 @@ namespace CivModel.Common
             {
                 yield return CityCenterProductionFactory.Instance;
                 yield return PioneerProductionFactory.Instance;
-                yield return FakeKnightProductionFactory.Instance;
                 yield return FactoryBuildingProductionFactory.Instance;
                 yield return LaboratoryBuildingProductionFactory.Instance;
             }
@@ -80,7 +79,6 @@ namespace CivModel.Common
         {
             game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
             game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
-            game.GuidManager.RegisterGuid(FakeKnight.ClassGuid, (p, t) => new FakeKnight(p, t));
             game.GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, city => new FactoryBuilding(city));
             game.GuidManager.RegisterGuid(LaboratoryBuilding.ClassGuid, city => new LaboratoryBuilding(city));
         }
@@ -108,11 +106,6 @@ namespace CivModel.Common
 
                     new CityCenter(player, pt).ProcessCreation();
                 }
-            }
-
-            foreach (var player in game.Players)
-            {
-                new TestQuest(player).Deploy();
             }
         }
     }

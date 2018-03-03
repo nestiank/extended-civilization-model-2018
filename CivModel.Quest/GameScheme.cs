@@ -49,24 +49,14 @@ namespace CivModel.Quests
         {
             if(Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer].Research >= 0)
             {
-                foreach(var TheQuest in Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer].Quests)
-                {
-                    if (TheQuest is QuestWarAliance)
-                    {
-                        TheQuest.Status = QuestStatus.Deployed;
-                    }
-                }
+                var p = Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer];
+                new QuestWarAliance(p).Deploy();
             }
 
             if (Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer].Research >= 0)
             {
-                foreach (var TheQuest in Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer].Quests)
-                {
-                    if (TheQuest is QuestSubAirspaceDomination)
-                    {
-                        TheQuest.Status = QuestStatus.Deployed;
-                    }
-                }
+                var p = Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer];
+                new QuestSubAirspaceDomination(p).Deploy();
             }
         }
 

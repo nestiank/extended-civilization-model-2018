@@ -1,8 +1,24 @@
 namespace CivModel.AI
 
 open System
+open System.Linq
 open System.Threading.Tasks
 open CivModel
+
+type asdfasdf(player : Player) =
+    let mutable counter = 0
+    interface ITurnObserver with
+        member this.PreTurn () = ()
+        member this.PostTurn () =
+            if counter = 10 then
+                let q = player.Quests.FirstOrDefault ()
+                if q = null then ()
+                else q.Complete()
+                counter <- 0
+            else
+                counter <- counter + 1
+        member this.PrePlayerSubTurn p = ()
+        member this.PostPlayerSubTurn p = ()
 
 type public AIController(player : Player) =
     let globalRules = GlobalRules(player)
@@ -36,6 +52,7 @@ type public AIController(player : Player) =
 
     let mutable prevResearch = -infinity
     let mutable prevLabor = -infinity
+
     interface CivModel.IAIController with
         member this.DoAction() =
             async {

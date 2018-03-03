@@ -69,7 +69,7 @@ type MoveRules(player : Player, rules : FuzzyRules) =
                 rules |> MyUnitHP.SetValue (float32 (myHP / unit.MaxHP))
                 rules |> EnemyUnitHP.SetValue (float32 enemyHP)
                 rules |> EnemyCityHP.SetValue (if enemy :? CityBase then float32 enemyHP else 1.0f)
-                retCommon unit.MoveAct
+                retCommon unit.MovingAttackAct
             else
                 None
         | None -> None
