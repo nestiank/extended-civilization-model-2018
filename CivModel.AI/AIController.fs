@@ -1,6 +1,7 @@
 namespace CivModel.AI
 
 open System
+open System.Linq
 open System.Threading.Tasks
 open CivModel
 
@@ -36,6 +37,7 @@ type public AIController(player : Player) =
 
     let mutable prevResearch = -infinity
     let mutable prevLabor = -infinity
+
     interface CivModel.IAIController with
         member this.DoAction() =
             async {

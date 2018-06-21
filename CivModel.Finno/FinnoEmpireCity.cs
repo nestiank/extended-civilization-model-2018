@@ -99,24 +99,28 @@ namespace CivModel.Finno
                 PointC = C + 1;
             }
 
-            if (IsItOk)
+            var ppt = this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC);
+            if (ppt.Unit == null && ppt.TileBuilding == null)
             {
-                if (rand <= 2)
-                    new DecentralizedMilitary(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+                if (IsItOk)
+                {
+                    if (rand <= 2)
+                        new DecentralizedMilitary(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
 
 
-                else if(rand <= 4)
-                    new EMUHorseArcher(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+                    else if (rand <= 4)
+                        new EMUHorseArcher(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
 
 
-                else if(rand <= 6)
-                    new ElephantCavalry(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+                    else if (rand <= 6)
+                        new ElephantCavalry(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
 
-                else if(rand <= 8)
-                    new AncientSorcerer(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+                    else if (rand <= 8)
+                        new AncientSorcerer(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
 
-                else
-                    new JediKnight(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+                    else
+                        new JediKnight(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
+                }
             }
         }
 

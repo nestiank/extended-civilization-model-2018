@@ -13,7 +13,10 @@ namespace CivModel
     public sealed class Observable<T>
     {
         private List<T> _observerList = new List<T>();
+        private List<T> _observerAddList = new List<T>();
         private List<T> _observerRemoveList = new List<T>();
+
+        private int counter = 0;
 
         /// <summary>
         /// Registers an observer object.
@@ -25,6 +28,10 @@ namespace CivModel
             if (_observerRemoveList.Contains(observer))
             {
                 _observerRemoveList.Remove(observer);
+            }
+            else if (counter > 0)
+            {
+                _observerAddList.Add(observer);
             }
             else
             {
@@ -52,12 +59,19 @@ namespace CivModel
         /// <param name="action">The action to do in iteration.</param>
         public void IterateObserver(Action<T> action)
         {
+            ++counter;
             foreach (var obs in _observerList)
             {
                 if (!_observerRemoveList.Contains(obs))
                     action(obs);
             }
-            _observerList.RemoveAll(obs => _observerRemoveList.Contains(obs));
+            if (--counter == 0)
+            {
+                _observerList.RemoveAll(obs => _observerRemoveList.Contains(obs));
+                _observerList.AddRange(_observerAddList);
+                _observerRemoveList.Clear();
+                _observerAddList.Clear();
+            }
         }
     }
 }

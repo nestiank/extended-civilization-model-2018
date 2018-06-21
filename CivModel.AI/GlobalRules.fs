@@ -35,60 +35,72 @@ type GlobalRules(player : CivModel.Player) =
         |> fuzzySystem.CreateRule
 
     let DoFightingUnit x =
-        let ar =
-            player.AvailableProduction
-            |> Enumerable.OfType<IActorProductionFactory>
-            |> Seq.filter (fun p -> typeof<Unit>.IsAssignableFrom p.ResultType && p.ActorConstants.MaxHP > 0.0)
-            |> Seq.toArray
-        if not (Array.isEmpty ar) then
-            let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
-            player.Production.AddLast prod |> ignore
-            true
-        else
+        if player.Production |> Seq.length > 20 then
             false
+        else
+            let ar =
+                player.AvailableProduction
+                |> Enumerable.OfType<IActorProductionFactory>
+                |> Seq.filter (fun p -> typeof<Unit>.IsAssignableFrom p.ResultType && p.ActorConstants.MaxHP > 0.0)
+                |> Seq.toArray
+            if not (Array.isEmpty ar) then
+                let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
+                player.Production.AddLast prod |> ignore
+                true
+            else
+                false
 
     let DoCity x =
-        let ar =
-            player.AvailableProduction
-            |> Enumerable.OfType<IActorProductionFactory>
-            |> Seq.filter (fun p -> typeof<CityBase>.IsAssignableFrom p.ResultType)
-            |> Seq.toArray
-        if not (Array.isEmpty ar) then
-            let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
-            player.Production.AddLast prod |> ignore
-            true
-        else
+        if player.Production |> Seq.length > 20 then
             false
+        else
+            let ar =
+                player.AvailableProduction
+                |> Enumerable.OfType<IActorProductionFactory>
+                |> Seq.filter (fun p -> typeof<CityBase>.IsAssignableFrom p.ResultType)
+                |> Seq.toArray
+            if not (Array.isEmpty ar) then
+                let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
+                player.Production.AddLast prod |> ignore
+                true
+            else
+                false
 
     let DoPioneer x =
-        let ar =
-            player.AvailableProduction
-            |> Enumerable.OfType<IActorProductionFactory>
-            |> Seq.filter (fun p -> typeof<Pioneer>.IsAssignableFrom p.ResultType)
-            |> Seq.toArray
-        if not (Array.isEmpty ar) then
-            let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
-            player.Production.AddLast prod |> ignore
-            true
-        else
+        if player.Production |> Seq.length > 20 then
             false
+        else
+            let ar =
+                player.AvailableProduction
+                |> Enumerable.OfType<IActorProductionFactory>
+                |> Seq.filter (fun p -> typeof<Pioneer>.IsAssignableFrom p.ResultType)
+                |> Seq.toArray
+            if not (Array.isEmpty ar) then
+                let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
+                player.Production.AddLast prod |> ignore
+                true
+            else
+                false
 
     let DoMilitaryBuilding x =
-        let ar =
-            player.AvailableProduction
-            |> Enumerable.OfType<IActorProductionFactory>
-            |> Seq.filter (fun p ->
-                typeof<Hwan.HwanEmpireVigilant>.IsAssignableFrom p.ResultType
-                 || typeof<Hwan.HwanEmpireFIRFortress>.IsAssignableFrom p.ResultType
-                 || typeof<Finno.AncientFinnoVigilant>.IsAssignableFrom p.ResultType
-                 || typeof<Finno.AncientFinnoFIRFortress>.IsAssignableFrom p.ResultType
-                 || typeof<Zap.FIRFortress>.IsAssignableFrom p.ResultType)
-            |> Seq.toArray
-        if not (Array.isEmpty ar) then
-            let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
-            player.Production.AddLast prod |> ignore
-            true
+        if player.Production |> Seq.length > 20 then
+            false
         else
+            let ar =
+                player.AvailableProduction
+                |> Enumerable.OfType<IActorProductionFactory>
+                |> Seq.filter (fun p ->
+                    typeof<Hwan.HwanEmpireVigilant>.IsAssignableFrom p.ResultType
+                     || typeof<Hwan.HwanEmpireFIRFortress>.IsAssignableFrom p.ResultType
+                     || typeof<Finno.AncientFinnoVigilant>.IsAssignableFrom p.ResultType
+                     || typeof<Finno.AncientFinnoFIRFortress>.IsAssignableFrom p.ResultType
+                     || typeof<Zap.FIRFortress>.IsAssignableFrom p.ResultType)
+                |> Seq.toArray
+            if not (Array.isEmpty ar) then
+                let prod = ar.[random.Next (Array.length ar - 1)].Create(player)
+                player.Production.AddLast prod |> ignore
+                true
+            else
             false
 
     let DoEconInvesttoDouble x =

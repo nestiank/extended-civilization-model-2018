@@ -198,7 +198,11 @@ namespace CivPresenter
 
             var factory = new CivModel.Common.GameSchemeFactory();
             var knownFactory = new IGameSchemeFactory[] {
-                new CivModel.AI.GameSchemeFactory()
+                new CivModel.AI.GameSchemeFactory(),
+                new CivModel.Finno.GameSchemeFactory(),
+                new CivModel.Hwan.GameSchemeFactory(),
+                new CivModel.Zap.GameSchemeFactory(),
+                new CivModel.Quests.GameSchemeFactory(),
             };
             _game = new Game(terrainWidth, terrainHeight, numOfPlayer, factory, knownFactory);
 
@@ -224,7 +228,11 @@ namespace CivPresenter
 
             var knownFactory = new IGameSchemeFactory[] {
                 new CivModel.Common.GameSchemeFactory(),
-                new CivModel.AI.GameSchemeFactory()
+                new CivModel.AI.GameSchemeFactory(),
+                new CivModel.Finno.GameSchemeFactory(),
+                new CivModel.Hwan.GameSchemeFactory(),
+                new CivModel.Zap.GameSchemeFactory(),
+                new CivModel.Quests.GameSchemeFactory(),
             };
             _game = new Game(saveFile, knownFactory);
 
