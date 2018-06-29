@@ -45,7 +45,8 @@ namespace FakeView
             if (_kbhit())
             {
                 int ch = _getch();
-                if (ch == 0 || ch == 0xe0)
+                // It seems that getch() returns 0 on a synchronization issue
+                if (/*ch == 0 || */ch == 0xe0)
                 {
                     ch = _getch() | 0x0100;
                 }

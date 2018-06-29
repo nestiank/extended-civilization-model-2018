@@ -40,7 +40,7 @@ type public AIController(player : Player) =
 
     interface CivModel.IAIController with
         member this.DoAction() =
-            async {
+            Task.CompletedTask (* async {
                 globalRules.DoFuzzyAction()
                 moveRules.DoFuzzyAction()
                 doDeploy()
@@ -55,5 +55,5 @@ type public AIController(player : Player) =
                         player.Research researchDiff
                         player.Labor laborDiff
                 System.Diagnostics.Debug.WriteLine msg
-            } |> Async.StartAsTask :> Task
+            } |> Async.StartAsTask :> Task *)
         member this.Destroy() = ()
