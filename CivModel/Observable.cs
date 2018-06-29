@@ -12,9 +12,22 @@ namespace CivModel
     /// <typeparam name="T">The observer interface to receive</typeparam>
     public sealed class Observable<T>
     {
-        private List<T> _observerList = new List<T>();
-        private List<T> _observerAddList = new List<T>();
-        private List<T> _observerRemoveList = new List<T>();
+        private struct Observer
+        {
+            public T value;
+            public int refcount;
+            public void IncRef()
+            {
+                ++refcount;
+            }
+            public void DecRef()
+            {
+                --refcount;
+            }
+        }
+
+        private List<Observer> _observerList = new List<Observer>();
+        private List<Observer> _observerAddList = new List<Observer>();
 
         private int counter = 0;
 
@@ -25,17 +38,13 @@ namespace CivModel
         /// <seealso cref="RemoveObserver(T)"/>
         public void AddObserver(T observer)
         {
-            if (_observerRemoveList.Contains(observer))
+            if (counter > 0)
             {
-                _observerRemoveList.Remove(observer);
-            }
-            else if (counter > 0)
-            {
-                _observerAddList.Add(observer);
+                AddToList(_observerAddList, observer);
             }
             else
             {
-                _observerList.Add(observer);
+                AddToList(_observerList, observer);
             }
         }
 
@@ -47,10 +56,19 @@ namespace CivModel
         /// <seealso cref="AddObserver(T)"/>
         public void RemoveObserver(T observer)
         {
-            if (!_observerList.Contains(observer) || _observerRemoveList.Contains(observer))
-                throw new ArgumentException("observer is not registered", nameof(observer));
+            int idx = _observerAddList.FindIndex(o => object.ReferenceEquals(o.value, observer));
+            if (idx != -1 && _observerAddList[idx].refcount > 0)
+            {
+                _observerAddList[idx].DecRef();
+            }
+            else
+            {
+                idx = _observerList.FindIndex(o => object.ReferenceEquals(o.value, observer));
+                if (idx == -1 || _observerList[idx].refcount <= 0)
+                    throw new ArgumentException("observer is not registered", nameof(observer));
 
-            _observerRemoveList.Add(observer);
+                _observerList[idx].DecRef();
+            }
         }
 
         /// <summary>
@@ -62,15 +80,27 @@ namespace CivModel
             ++counter;
             foreach (var obs in _observerList)
             {
-                if (!_observerRemoveList.Contains(obs))
-                    action(obs);
+                if (obs.refcount > 0)
+                    action(obs.value);
             }
             if (--counter == 0)
             {
-                _observerList.RemoveAll(obs => _observerRemoveList.Contains(obs));
-                _observerList.AddRange(_observerAddList);
-                _observerRemoveList.Clear();
+                _observerList.RemoveAll(obs => obs.refcount <= 0);
+                _observerList.AddRange(_observerAddList.Where(obs => obs.refcount > 0));
                 _observerAddList.Clear();
+            }
+        }
+
+        private static void AddToList(List<Observer> list, T val)
+        {
+            int idx = list.FindIndex(o => object.ReferenceEquals(o.value, val));
+            if (idx != -1)
+            {
+                list[idx].IncRef();
+            }
+            else
+            {
+                list.Add(new Observer { value = val, refcount = 1 });
             }
         }
     }
