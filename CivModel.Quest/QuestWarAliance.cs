@@ -56,13 +56,17 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void OnBattle(Actor attacker, Actor defender, BattleResult result)
+        public void OnBeforeBattle(Actor attacker, Actor defender)
         {
-            if (attacker.Owner == Requestee && attacker is CivModel.Finno.AutismBeamDrone && defender.Owner == defender.Owner.Game.Players[4] && flag < 2)
+        }
+
+        public void OnAfterBattle(Actor attacker, Actor defender, Player atkOwner, Player defOwner, BattleResult result)
+        {
+            if (atkOwner == Requestee && attacker is CivModel.Finno.AutismBeamDrone && defOwner == Game.Players[4] && flag < 2)
             {
-                flag += 1;               
+                flag += 1;
             }
-            else if(attacker.Owner == Requestee && attacker is CivModel.Finno.AutismBeamDrone && defender.Owner == defender.Owner.Game.Players[4] && flag >= 2)
+            else if(atkOwner == Requestee && attacker is CivModel.Finno.AutismBeamDrone && defOwner == Game.Players[4] && flag >= 2)
             {
                 flag = 0;
                 Status = QuestStatus.Completed;

@@ -47,17 +47,6 @@ namespace CivModel.Quests
 
         public void PostTurn()
         {
-            if(Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer].Research >= 0)
-            {
-                var p = Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer];
-                new QuestWarAliance(p).Deploy();
-            }
-
-            if (Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer].Research >= 0)
-            {
-                var p = Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer];
-                new QuestSubAirspaceDomination(p).Deploy();
-            }
         }
 
         public void PrePlayerSubTurn(Player playerInTurn)
@@ -74,6 +63,18 @@ namespace CivModel.Quests
         {
             this.Game = game;
             game.TurnObservable.AddObserver(this);
+
+            if (Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer].Research >= 0)
+            {
+                var p = Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer];
+                new QuestWarAliance(p).Deploy();
+            }
+
+            if (Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer].Research >= 0)
+            {
+                var p = Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer];
+                new QuestSubAirspaceDomination(p).Deploy();
+            }
         }
     }
 }

@@ -47,9 +47,13 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void OnBattle(Actor attacker, Actor defender, BattleResult result)
+        public void OnBeforeBattle(Actor attacker, Actor defender)
         {
-            if (attacker.Owner == Requestee && defender is CivModel.Zap.LEOSpaceArmada && result == BattleResult.Victory && defender.Owner == defender.Owner.Game.Players[7])
+        }
+
+        public void OnAfterBattle(Actor attacker, Actor defender, Player atkOwner, Player defOwner, BattleResult result)
+        {
+            if (atkOwner == Requestee && defender is CivModel.Zap.LEOSpaceArmada && result == BattleResult.Victory && defOwner == Game.Players[7])
             {
                 if (flag < 3)
                     flag += 1;

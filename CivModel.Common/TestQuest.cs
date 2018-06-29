@@ -50,9 +50,13 @@ namespace CivModel.Common
             Cleanup();
         }
 
-        public void OnBattle(Actor attacker, Actor defender, BattleResult result)
+        public void OnBeforeBattle(Actor attacker, Actor defender)
         {
-            if (attacker.Owner == Requestee && attacker is FakeKnight)
+        }
+
+        public void OnAfterBattle(Actor attacker, Actor defender, Player atkOwner, Player defOwner, BattleResult result)
+        {
+            if (atkOwner == Requestee && attacker is FakeKnight)
             {
                 Status = QuestStatus.Completed;
             }

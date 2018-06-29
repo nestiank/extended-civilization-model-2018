@@ -641,23 +641,31 @@ namespace CivModel
             if (opposite.Owner == null)
                 throw new InvalidOperationException("Opposite actor is already destroyed");
 
+            Game.BattleObservable.IterateObserver(obj => obj.OnBeforeBattle(this, opposite));
+
+            Player myOwner = Owner;
+            Player yourOwner = opposite.Owner;
+
             double atk = CalculateAttackPower(thisAttack, opposite, isMelee, isSkillAttack);
             double def = opposite.CalculateAttackPower(oppositeDefence, this, isMelee, isSkillAttack);
 
+            double yourDamage = opposite.CalculateDamage(atk, this, isMelee, isSkillAttack);
+            double myDamage = CalculateDamage(def, opposite, isMelee, isSkillAttack);
+
             int rs = 0;
 
-            if (opposite.GetDamage(opposite.CalculateDamage(atk, this, isMelee, isSkillAttack), Owner))
+            if (opposite.GetDamage(yourDamage, myOwner))
                 ++rs;
 
             if (isMelee)
             {
-                if (GetDamage(CalculateDamage(def, opposite, isMelee, isSkillAttack), opposite.Owner))
+                if (GetDamage(myDamage, yourOwner))
                     --rs;
             }
 
             var ret = rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
 
-            Game.BattleObservable.IterateObserver(obj => obj.OnBattle(this, opposite, ret));
+            Game.BattleObservable.IterateObserver(obj => obj.OnAfterBattle(this, opposite, myOwner, yourOwner, ret));
 
             return ret;
         }
