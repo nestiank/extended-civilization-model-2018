@@ -170,7 +170,7 @@ namespace FakeView
             if (bufidx >= m_buffer.size())
                 break;
 
-            m_buffer[bufidx].ch = str[idx];
+            m_buffer[bufidx].ch = (str[idx] & 0x80) ? '?' : str[idx];
             m_buffer[bufidx].color = color;
             ++bufidx;
         }
@@ -190,7 +190,7 @@ namespace FakeView
             if (str[idx] != '%')
             {
             print:
-                m_buffer[bufidx].ch = str[idx];
+                m_buffer[bufidx].ch = (str[idx] & 0x80) ? '?' : str[idx];
                 m_buffer[bufidx].color = color;
                 ++bufidx;
             }

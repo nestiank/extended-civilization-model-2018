@@ -280,7 +280,14 @@ namespace FakeView
             ++y;
             if (y >= scrsz.height)
                 return;
-            m_screen->PrintString(0, y, color, "Total Population: " + std::to_string(player->Population));
+
+            double popinc = 0;
+            for each (auto city in player->Cities)
+            {
+                popinc += city->PopulationIncome;
+            }
+            m_screen->PrintString(0, y, color, "Total Population: " + std::to_string(player->Population)
+                + " (+" + std::to_string(popinc) + ")");
 
             y += 2;
             if (y >= scrsz.height)
