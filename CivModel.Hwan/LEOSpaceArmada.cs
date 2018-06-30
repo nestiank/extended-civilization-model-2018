@@ -69,7 +69,7 @@ namespace CivModel.Hwan
                     return new InvalidOperationException("Actor is not placed yet");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     return new InvalidOperationException("Skill is not turned on");
-                if (pt.Value.Unit == null)
+                if (pt.Value.Unit == null && pt.Value.TileBuilding == null)
                     return new InvalidOperationException("There is no target");
 
                 return null;
@@ -84,8 +84,11 @@ namespace CivModel.Hwan
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
+                if(pt.Value.Unit != null)
+                    Owner.AttackTo(Owner.AttackPower * 2, pt.Value.Unit, pt.Value.Unit.DefencePower,false, true);
 
-                Owner.AttackTo(Owner.AttackPower * 2, pt.Value.Unit, pt.Value.Unit.DefencePower,false, true);
+                if(pt.Value.TileBuilding == null)
+                    Owner.AttackTo(Owner.AttackPower * 2, pt.Value.TileBuilding, pt.Value.TileBuilding.DefencePower, false, true);
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);
             }

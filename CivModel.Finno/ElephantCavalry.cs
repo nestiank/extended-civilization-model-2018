@@ -71,6 +71,15 @@ namespace CivModel.Finno
                         Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit, 0, false, true);
                     }
                 }
+
+                if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileBuilding != null)
+                {
+                    if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileBuilding.Owner != Owner.Owner)
+                    {
+                        double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileBuilding.MaxHP * 0.2;
+                        Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileBuilding, 0, false, true);
+                    }
+                }
             }
 
             private Exception CheckError(Terrain.Point? pt)
