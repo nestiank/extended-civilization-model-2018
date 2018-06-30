@@ -25,7 +25,7 @@ namespace FakeView
         m_presenter = nullptr;
         if (System::IO::File::Exists(L"map.txt"))
         {
-            if (MessageBox(nullptr, L"Save file is found. Do you want to load it?", L"Save file is found", MB_YESNO)
+            if (MessageBoxW(nullptr, L"Save file is found. Do you want to load it?", L"Save file is found", MB_YESNO)
                 == IDYES)
             {
                 m_presenter = gcnew CivPresenter::Presenter(this, L"map.txt");
@@ -33,11 +33,6 @@ namespace FakeView
         }
         if (!m_presenter)
             m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
-
-        for (int i = 1; i < m_presenter->Game->Players->Count; ++i)
-        {
-            m_presenter->Game->Players[i]->IsAIControlled = true;
-        }
     }
 
     void View::Refocus()
@@ -580,7 +575,7 @@ namespace FakeView
                 if (!m_presenter->SaveFile)
                     m_presenter->SaveFile = L"map.txt";
                 m_presenter->CommandSave();
-                MessageBox(nullptr, L"Saved", L"", MB_OK);
+                MessageBoxW(nullptr, L"Saved", L"", MB_OK);
                 break;
 
             case '+':
@@ -595,8 +590,25 @@ namespace FakeView
             case '_':
                 if (m_presenter->State == CivPresenter::Presenter::States::Normal)
                 {
-                    auto player = m_presenter->Game->Players[0];
-                    player->IsAIControlled = !player->IsAIControlled;
+                    auto msg = L"Press \"Yes\" to make this player controlled by AI\n"
+                        L"Press \"No\" to make all but this player controlled by AI\n"
+                        L"Press \"Cancel\" to cancel AI Setting";
+                    auto rs = MessageBoxW(nullptr, msg, L"AI Setting", MB_YESNOCANCEL);
+                    if (rs == IDYES)
+                    {
+                        auto player = m_presenter->Game->PlayerInTurn;
+                        player->IsAIControlled = !player->IsAIControlled;
+                    }
+                    else if (rs == IDNO)
+                    {
+                        for (int i = 0; i < m_presenter->Game->Players->Count; ++i)
+                        {
+                            if (i != m_presenter->Game->PlayerNumberInTurn)
+                            {
+                                m_presenter->Game->Players[i]->IsAIControlled = true;
+                            }
+                        }
+                    }
                 }
                 break;
 
