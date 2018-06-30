@@ -52,7 +52,7 @@ namespace CivModel.Hwan
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.TileBuilding == null
-                 && IsCityNeer(production, point)
+                 && !IsCityNeer(production, point)
                  && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[2] || point.TileOwner == production.Owner.Game.Players[4] || point.TileOwner == production.Owner.Game.Players[6]);
         }
 
