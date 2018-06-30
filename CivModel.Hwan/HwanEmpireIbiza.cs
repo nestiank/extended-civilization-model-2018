@@ -52,11 +52,27 @@ namespace CivModel.Hwan
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
             return point.TileBuilding == null
-                 && !IsCityNeer(production, point)
+                 && IsCityNeer(production, point)
                  && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[2] || point.TileOwner == production.Owner.Game.Players[4] || point.TileOwner == production.Owner.Game.Players[6]);
         }
 
         private bool IsCityNeer(TileObjectProduction production, Terrain.Point point)
+        {
+            int A = point.Position.A;
+            int B = point.Position.B;
+            int C = point.Position.C;
+
+
+            if (IsInDisOne(production, point))
+                return true;
+
+            else if (IsInDisTwo(production, point))
+                return true;               
+
+            return false;
+        }
+
+        private bool IsInDisOne(TileObjectProduction production, Terrain.Point point)
         {
             int A = point.Position.A;
             int B = point.Position.B;
@@ -76,7 +92,16 @@ namespace CivModel.Hwan
             else if (RealAction(A, B - 1, C + 1, production, point))
                 return true;
 
-            else if (RealAction(A + 2, B - 2, C, production, point))
+            return false;
+        }
+
+        private bool IsInDisTwo(TileObjectProduction production, Terrain.Point point)
+        {
+            int A = point.Position.A;
+            int B = point.Position.B;
+            int C = point.Position.C;
+
+            if (RealAction(A + 2, B - 2, C, production, point))
                 return true;
             else if (RealAction(A + 2, B - 1, C - 1, production, point))
                 return true;
