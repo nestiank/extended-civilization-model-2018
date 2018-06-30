@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace CivModel.Hwan
 {
-    public class HwanPlayerConstant
+    public static class HwanPlayerConstant
     {
         public const int HwanPlayer = 0;
+        public static Player GetPlayerHwan(this Game game)
+        {
+            return game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer];
+        }
     }
 
     public class GameSchemeFactory : IGameSchemeFactory

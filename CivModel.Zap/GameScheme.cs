@@ -6,29 +6,53 @@ using System.Threading.Tasks;
 
 namespace CivModel.Zap
 {
-    public class EgyptPlayerConstant
+    public static class EgyptPlayerConstant
     {
         public const int EgyptPlayer = 2;
+        public static Player GetPlayerEgypt(this Game game)
+        {
+            return game.Players[CivModel.Zap.EgyptPlayerConstant.EgyptPlayer];
+        }
     }
-    public class AtlantisPlayerConstant
+    public static class AtlantisPlayerConstant
     {
-        public const int AtlantisPlayer = 3;
+        public  const int AtlantisPlayer = 3;
+        public static Player GetPlayerAtlantis(this Game game)
+        {
+            return game.Players[CivModel.Zap.AtlantisPlayerConstant.AtlantisPlayer];
+        }
     }
-    public class FishPlayerConstant
+    public static class FishPlayerConstant
     {
         public const int FishPlayer = 4;
+        public static Player GetPlayerFish(this Game game)
+        {
+            return game.Players[CivModel.Zap.FishPlayerConstant.FishPlayer];
+        }
     }
-    public class EmuPlayerConstant
+    public static class EmuPlayerConstant
     {
         public const int EmuPlayer = 5;
+        public static Player GetPlayerEmu(this Game game)
+        {
+            return game.Players[CivModel.Zap.EmuPlayerConstant.EmuPlayer];
+        }
     }
-    public class SwedePlayerConstant
+    public static class SwedePlayerConstant
     {
         public const int SwedePlayer = 6;
+        public static Player GetPlayerSwede(this Game game)
+        {
+            return game.Players[CivModel.Zap.SwedePlayerConstant.SwedePlayer];
+        }
     }
-    public class RamuPlayerConstant
+    public static class RamuPlayerConstant
     {
         public const int RamuPlayer = 7;
+        public static Player GetPlayerRamu(this Game game)
+        {
+            return game.Players[CivModel.Zap.RamuPlayerConstant.RamuPlayer];
+        }
     }
     public class GameSchemeFactory : IGameSchemeFactory
     {
