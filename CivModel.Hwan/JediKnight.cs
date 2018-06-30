@@ -24,28 +24,35 @@ namespace CivModel.Hwan
 
         public int SkillDurationTime = 0;
 
-        public int SkillFlag = 1;
+        public double? SkillDamage = null;
 
-        protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        protected override double CalculateDamage(double originalDamage, Actor attacker, Actor defender, bool isMelee, bool isSkillAttack)
         {
-            if (opposite.BattleClassLevel >= 4 && isSkillAttack)
+            if (this == defender)
             {
-                return originalDamage;
+                if (attacker.BattleClassLevel >= 4 && isSkillAttack)
+                {
+                    return originalDamage;
+                }
+                else if (this.SkillDurationTime >= this.Owner.Game.TurnNumber)
+                {
+                    SkillDamage = originalDamage;
+                    return 0;
+                }
             }
-            else if (this.SkillDurationTime >= this.Owner.Game.TurnNumber && this.SkillFlag > 0)
+            return originalDamage;
+        }
+
+        protected override void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,
+            Actor attacker, Actor defender, Player atkOwner, Player defOwner, bool isMelee, bool isSkillAttack)
+        {
+            if (this == defender && SkillDamage.HasValue)
             {
-                AttackTo(originalDamage, opposite, opposite.DefencePower, false, true);
-                this.SkillFlag -= 1;
-                return 0;
-            }
-            else if(this.SkillDurationTime >= this.Owner.Game.TurnNumber && this.SkillFlag <= 0)
-            {
-                this.SkillFlag = 1;
-                return 0;
-            }
-            else
-            {
-                return originalDamage;
+                if (attacker.Owner != null)
+                {
+                    attacker.GetDamage(SkillDamage.Value, defOwner);
+                }
+                SkillDamage = null;
             }
         }
 

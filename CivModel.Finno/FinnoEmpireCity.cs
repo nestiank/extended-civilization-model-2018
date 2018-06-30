@@ -235,11 +235,9 @@ namespace CivModel.Finno
             }
         }
 
-        protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        protected override double CalculateDefencePower(double originalPower, Actor opposite, bool isMelee, bool isSkillAttack)
         {
-            double damage = 15 + 15 * InteriorBuildings.OfType<AncientFinnoVigilant>().Count();
-            AttackTo(damage, opposite, opposite.DefencePower, false, true);
-            return originalDamage;
+            return originalPower + 15 * InteriorBuildings.OfType<AncientFinnoVigilant>().Count();
         }
     }
 

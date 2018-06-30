@@ -28,10 +28,13 @@ namespace CivModel.Finno
             Owner.Gold += 200;
         }
 
-        protected override double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        protected override void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,
+            Actor attacker, Actor defender, Player atkOwner, Player defOwner, bool isMelee, bool isSkillAttack)
         {
-            AttackTo(20, opposite, opposite.DefencePower, false, true);
-            return originalDamage;
+            if (this == defender && attacker.Owner != null)
+            {
+                attacker.GetDamage(20, defOwner);
+            }
         }
     }
 

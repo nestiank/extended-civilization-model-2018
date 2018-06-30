@@ -23,7 +23,12 @@ namespace CivModel
         /// <summary>
         /// Indicating that battle result is defeated.
         /// </summary>
-        Defeated
+        Defeated,
+        /// <summary>
+        /// Indicating that battle is cancelled
+        /// It can be happened by an actor destroyed before damage step.
+        /// </summary>
+        Cancelled
     }
 
     /// <summary>
@@ -615,6 +620,7 @@ namespace CivModel
         /// <param name="isMelee">Whether the battle is melee or not.</param>
         /// <param name="isSkillAttack">Whether the battle </param>
         /// <exception cref="ArgumentNullException"><paramref name="opposite"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">cannot attack myself</exception>
         /// <exception cref="InvalidOperationException">
         /// actor is already destroyed
         /// or
@@ -622,20 +628,27 @@ namespace CivModel
         /// </exception>
         /// <returns>
         ///   <see cref="BattleResult"/> indicating the result of this battle.
-        ///   if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.
-        ///   if this object has died, <see cref="BattleResult.Defeated"/>.
-        ///   if both have died or survived, <see cref="BattleResult.Draw"/>.
+        ///   <ul>
+        ///     <li>if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.</li>
+        ///     <li>if this object has died, <see cref="BattleResult.Defeated"/>.</li>
+        ///     <li>if both have died or survived, <see cref="BattleResult.Draw"/>.</li>
+        ///     <li>if the battle is cancelled, <see cref="BattleResult.Cancelled"/>.</li>
+        ///   </ul>
         /// </returns>
         /// <remarks>
         /// This method is intented to be used to customerize battle.
         /// <see cref="MeleeAttackTo(Actor)"/>, <see cref="RangedAttackTo(Actor)"/> or battle-causing skills should be used in noraml cases.
+        /// <br/>
+        /// See "전투 매커니즘" documentation of wiki for detailed information about battle.
         /// </remarks>
         /// <seealso cref="MeleeAttackTo(Actor)"/>
         /// <seealso cref="RangedAttackTo(Actor)"/>
         public BattleResult AttackTo(double thisAttack, Actor opposite, double oppositeDefence, bool isMelee, bool isSkillAttack)
         {
             if (opposite == null)
-                throw new ArgumentNullException("opposite");
+                throw new ArgumentNullException(nameof(opposite));
+            if (this == opposite)
+                throw new ArgumentException("cannot attack myself", nameof(opposite));
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
             if (opposite.Owner == null)
@@ -643,34 +656,54 @@ namespace CivModel
 
             Game.BattleObservable.IterateObserver(obj => obj.OnBeforeBattle(this, opposite));
 
+            double atk = CalculateAttackPower(thisAttack, opposite, isMelee, isSkillAttack);
+            double def = opposite.CalculateDefencePower(oppositeDefence, this, isMelee, isSkillAttack);
+
+            double yourDamage = opposite.CalculateDamage(atk, this, opposite, isMelee, isSkillAttack);
+            double myDamage = CalculateDamage(def, this, opposite, isMelee, isSkillAttack);
+
+            OnBeforeDamage(atk, def, myDamage, yourDamage,
+                this, opposite, isMelee, isSkillAttack);
+            opposite.OnBeforeDamage(atk, def, myDamage, yourDamage,
+                this, opposite, isMelee, isSkillAttack);
+
             Player myOwner = Owner;
             Player yourOwner = opposite.Owner;
-
-            double atk = CalculateAttackPower(thisAttack, opposite, isMelee, isSkillAttack);
-            double def = opposite.CalculateAttackPower(oppositeDefence, this, isMelee, isSkillAttack);
-
-            double yourDamage = opposite.CalculateDamage(atk, this, isMelee, isSkillAttack);
-            double myDamage = CalculateDamage(def, opposite, isMelee, isSkillAttack);
+            if (Owner == null || opposite.Owner == null)
+            {
+                return BattleResult.Cancelled;
+            }
 
             int rs = 0;
 
-            if (opposite.GetDamage(yourDamage, myOwner))
+            if (opposite.GetDamage(yourDamage, Owner))
                 ++rs;
 
-            if (isMelee)
+            if (Owner != null && isMelee)
             {
-                if (GetDamage(myDamage, yourOwner))
+                if (GetDamage(myDamage, opposite.Owner))
                     --rs;
             }
 
+            OnAfterDamage(atk, def, myDamage, yourDamage,
+                this, opposite, Owner, opposite.Owner, isMelee, isSkillAttack);
+            opposite.OnAfterDamage(atk, def, myDamage, yourDamage,
+                this, opposite, Owner, opposite.Owner, isMelee, isSkillAttack);
+
             var ret = rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
 
-            Game.BattleObservable.IterateObserver(obj => obj.OnAfterBattle(this, opposite, myOwner, yourOwner, ret));
+            Game.BattleObservable.IterateObserver(obj => obj.OnAfterBattle(this, opposite, Owner, opposite.Owner, ret));
 
             return ret;
         }
 
-        private bool GetDamage(double damage, Player oppositeOwner)
+        /// <summary>
+        /// Gets the damage directly.
+        /// </summary>
+        /// <param name="damage">The damage.</param>
+        /// <param name="oppositeOwner">The owner who gives this damage. This can be <c>null</c>.</param>
+        /// <returns></returns>
+        public bool GetDamage(double damage, Player oppositeOwner)
         {
             _remainHP -= damage;
             if (_remainHP <= 0)
@@ -686,42 +719,96 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Calculates the ATK which is used during battle.
+        /// Calculates the effective ATK which is used during battle.
         /// </summary>
         /// <param name="originalPower">The original ATK power.</param>
         /// <param name="opposite">The opposite of battle.</param>
         /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
         /// <param name="isSkillAttack">whether attack is <i>skill</i> type.</param>
         /// <returns>the ATK power to be used during battle.</returns>
+        /// <remarks>
+        /// <b>Warning:</b> DO NOT attack <paramref name="opposite"/> in this method. Infinite recursion can occur.
+        /// </remarks>
         protected virtual double CalculateAttackPower(double originalPower, Actor opposite, bool isMelee, bool isSkillAttack)
         {
             return originalPower;
         }
 
         /// <summary>
-        /// Calculates the DEF which is used during battle.
+        /// Calculates the effective DEF which is used during battle.
         /// </summary>
         /// <param name="originalPower">The original DEF power.</param>
         /// <param name="opposite">The opposite of battle.</param>
         /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
         /// <param name="isSkillAttack">whether attack is <i>skill</i> type.</param>
         /// <returns>the DEF power to be used during battle.</returns>
+        /// <remarks>
+        /// <b>Warning:</b> DO NOT attack <paramref name="opposite"/> in this method. Infinite recursion can occur.
+        /// </remarks>
         protected virtual double CalculateDefencePower(double originalPower, Actor opposite, bool isMelee, bool isSkillAttack)
         {
             return originalPower;
         }
 
         /// <summary>
-        /// Calculates the damage by battle.
+        /// Calculates the effective damage by battle.
         /// </summary>
         /// <param name="originalDamage">The original damage.</param>
-        /// <param name="opposite">The opposite of battle.</param>
+        /// <param name="attacker">The attacker.</param>
+        /// <param name="defender">The defender.</param>
         /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
         /// <param name="isSkillAttack">whether attack is <i>skill</i> type.</param>
         /// <returns>the damage by battle.</returns>
-        protected virtual double CalculateDamage(double originalDamage, Actor opposite, bool isMelee, bool isSkillAttack)
+        /// <remarks>
+        /// When this method called, this actor is either <paramref name="attacker"/> or <paramref name="defender"/>.
+        /// <b>Warning:</b> DO NOT attack opposite in this method. Infinite recursion can occur.
+        /// </remarks>
+        protected virtual double CalculateDamage(double originalDamage, Actor attacker, Actor defender, bool isMelee, bool isSkillAttack)
         {
             return originalDamage;
+        }
+
+        /// <summary>
+        /// Called before getting damage by battle.
+        /// </summary>
+        /// <param name="atk">The effecitve attack power calculated by <see cref="CalculateAttackPower(double, Actor, bool, bool)"/> in this battle.</param>
+        /// <param name="def">The effecitve defence power calculated by <see cref="CalculateDefencePower(double, Actor, bool, bool)"/> in this battle.</param>
+        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
+        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
+        /// <param name="attacker">The attacker.</param>
+        /// <param name="defender">The defender.</param>
+        /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
+        /// <param name="isSkillAttack">whether attack is <i>skill</i> type.</param>
+        /// <remarks>
+        /// When this method called, this actor is either <paramref name="attacker"/> or <paramref name="defender"/>.
+        /// <b>Warning:</b> DO NOT attack opposite in this method. Infinite recursion can occur.
+        /// </remarks>
+        protected virtual void OnBeforeDamage(double atk, double def, double attackerDamage, double defenderDamage,
+            Actor attacker, Actor defender, bool isMelee, bool isSkillAttack)
+        {
+        }
+
+        /// <summary>
+        /// Called before getting damage by battle. This method can be called even if this actor is died or destroyed during battle.
+        /// </summary>
+        /// <param name="atk">The effecitve attack power calculated by <see cref="CalculateAttackPower(double, Actor, bool, bool)"/> in this battle.</param>
+        /// <param name="def">The effecitve defence power calculated by <see cref="CalculateDefencePower(double, Actor, bool, bool)"/> in this battle.</param>
+        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
+        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
+        /// <param name="attacker">The attacker.</param>
+        /// <param name="defender">The defender.</param>
+        /// <param name="atkOwner">The owner of attacker.</param>
+        /// <param name="defOwner">The owner of defender.</param>
+        /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
+        /// <param name="isSkillAttack">whether attack is <i>skill</i> type.</param>
+        /// <remarks>
+        /// When this method called, this actor is either <paramref name="attacker"/> or <paramref name="defender"/>.<br/>
+        /// <b>Warning:</b> This method can be called even if this actor is died or destroyed during battle.
+        /// You must check it by compare <see cref="Owner"/> with <c>null</c>.
+        /// </remarks>
+        protected virtual void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,
+            Actor attacker, Actor defender, Player atkOwner, Player defOwner, bool isMelee, bool isSkillAttack)
+        {
         }
 
         /// <summary>
