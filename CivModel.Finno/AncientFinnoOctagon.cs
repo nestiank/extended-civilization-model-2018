@@ -120,7 +120,7 @@ namespace CivModel.Finno
 
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new AncientFinnoOctagon(owner, point);
+            return new AncientFinnoOctagon(point.TileOwner, point);
         }
     }
 }

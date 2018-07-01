@@ -75,7 +75,7 @@ namespace CivModel.Finno
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new AncientFinnoGermaniumMine(owner, point);
+            return new AncientFinnoGermaniumMine(point.TileOwner, point);
         }
     }
 }

@@ -51,7 +51,7 @@ namespace CivModel.Hwan
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new HwanEmpireKimchiFactory(owner, point);
+            return new HwanEmpireKimchiFactory(point.TileOwner, point);
         }
     }
 }

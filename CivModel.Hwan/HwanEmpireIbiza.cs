@@ -144,7 +144,7 @@ namespace CivModel.Hwan
 
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new HwanEmpireIbiza(owner, point);
+            return new HwanEmpireIbiza(point.TileOwner, point);
         }
     }
 }

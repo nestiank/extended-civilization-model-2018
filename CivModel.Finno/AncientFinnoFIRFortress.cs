@@ -83,7 +83,7 @@ namespace CivModel.Finno
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new AncientFinnoFIRFortress(owner, point);
+            return new AncientFinnoFIRFortress(point.TileOwner, point);
         }
     }
 }
