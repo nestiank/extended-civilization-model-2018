@@ -87,7 +87,7 @@ namespace CivModel.Hwan
                 if(pt.Value.Unit != null)
                     Owner.AttackTo(Owner.AttackPower * 2, pt.Value.Unit, pt.Value.Unit.DefencePower,false, true);
 
-                if(pt.Value.TileBuilding == null)
+                if(pt.Value.TileBuilding != null)
                     Owner.AttackTo(Owner.AttackPower * 2, pt.Value.TileBuilding, pt.Value.TileBuilding.DefencePower, false, true);
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);
