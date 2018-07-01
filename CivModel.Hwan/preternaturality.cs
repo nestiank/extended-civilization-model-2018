@@ -14,6 +14,7 @@ namespace CivModel.Hwan
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 300,
+            DefencePower = 20,
             GoldLogistics = 60,
             LaborLogistics = 30,
             MaxHealPerTurn = 20
