@@ -56,6 +56,7 @@ namespace CivModel.Hwan
                 yield return HwanEmpireLatifundiumProductionFactory.Instance;
                 yield return HwanEmpireSungsimdangProductionFactory.Instance;
                 yield return HwanEmpireVigilantProductionFactory.Instance;
+                yield return PreternaturalityProductionFactory.Instance;
             }
         }
 
@@ -83,6 +84,7 @@ namespace CivModel.Hwan
             game.GuidManager.RegisterGuid(HwanEmpireLatifundium.ClassGuid, (p, t) => new HwanEmpireLatifundium(p, t));
             game.GuidManager.RegisterGuid(HwanEmpireSungsimdang.ClassGuid, (c) => new HwanEmpireSungsimdang(c));
             game.GuidManager.RegisterGuid(HwanEmpireVigilant.ClassGuid, (c) => new HwanEmpireVigilant(c));
+            game.GuidManager.RegisterGuid(Preternaturality.ClassGuid, (p, t) => new Preternaturality(p, t));
         }
 
         public void OnAfterInitialized(Game game)
