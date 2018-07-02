@@ -773,8 +773,8 @@ namespace CivModel
         /// </summary>
         /// <param name="atk">The effecitve attack power calculated by <see cref="CalculateAttackPower(double, Actor, bool, bool)"/> in this battle.</param>
         /// <param name="def">The effecitve defence power calculated by <see cref="CalculateDefencePower(double, Actor, bool, bool)"/> in this battle.</param>
-        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
-        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
+        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, Actor, bool, bool)"/>.</param>
+        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, Actor, bool, bool)"/>.</param>
         /// <param name="attacker">The attacker.</param>
         /// <param name="defender">The defender.</param>
         /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
@@ -793,8 +793,8 @@ namespace CivModel
         /// </summary>
         /// <param name="atk">The effecitve attack power calculated by <see cref="CalculateAttackPower(double, Actor, bool, bool)"/> in this battle.</param>
         /// <param name="def">The effecitve defence power calculated by <see cref="CalculateDefencePower(double, Actor, bool, bool)"/> in this battle.</param>
-        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
-        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
+        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, Actor, bool, bool)"/>.</param>
+        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, Actor, bool, bool)"/>.</param>
         /// <param name="attacker">The attacker.</param>
         /// <param name="defender">The defender.</param>
         /// <param name="atkOwner">The owner of attacker.</param>
