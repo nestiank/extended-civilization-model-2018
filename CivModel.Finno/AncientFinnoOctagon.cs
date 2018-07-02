@@ -25,8 +25,10 @@ namespace CivModel.Finno
         public override void PostTurn()
         {
             base.PostTurn();
-
-            Owner.Happiness += 2;
+            if (Owner.Happiness + 2 <= 100)
+                Owner.Happiness += 2;
+            else
+                Owner.Happiness = 100;
         }
     }
 
