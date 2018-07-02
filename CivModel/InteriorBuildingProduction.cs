@@ -99,7 +99,6 @@ namespace CivModel
                 throw new ArgumentException("point is invalid");
 
             var building = _factory.CreateInteriorBuilding((CityBase)point.TileBuilding);
-            building.ProcessCreation();
         }
     }
 }

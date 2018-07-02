@@ -77,7 +77,7 @@ namespace CivModel.Common
 
         public void RegisterGuid(Game game)
         {
-            game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
+            game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t, true));
             game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
             game.GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, city => new FactoryBuilding(city));
             game.GuidManager.RegisterGuid(LaboratoryBuilding.ClassGuid, city => new LaboratoryBuilding(city));
@@ -104,7 +104,7 @@ namespace CivModel.Common
                         pt = game.Terrain.GetPoint(x, y);
                     } while (pt.TileBuilding != null);
 
-                    new CityCenter(player, pt).ProcessCreation();
+                    new CityCenter(player, pt, false);
                 }
             }
         }

@@ -74,7 +74,7 @@ namespace CivModel.Hwan
             game.GuidManager.RegisterGuid(ProtoNinja.ClassGuid, (p, t) => new ProtoNinja(p, t));
             game.GuidManager.RegisterGuid(UnicornOrder.ClassGuid, (p, t) => new UnicornOrder(p, t));
             game.GuidManager.RegisterGuid(Spy.ClassGuid, (p, t) => new Spy(p, t));
-            game.GuidManager.RegisterGuid(HwanEmpireCity.ClassGuid, (p, t) => new HwanEmpireCity(p, t));
+            game.GuidManager.RegisterGuid(HwanEmpireCity.ClassGuid, (p, t) => new HwanEmpireCity(p, t, true));
             game.GuidManager.RegisterGuid(HwanEmpireCityCentralLab.ClassGuid, (c) => new HwanEmpireCityCentralLab(c));
             game.GuidManager.RegisterGuid(HwanEmpireFIRFactory.ClassGuid, (c) => new HwanEmpireFIRFactory(c));
             game.GuidManager.RegisterGuid(HwanEmpireFIRFortress.ClassGuid, (p, t) => new HwanEmpireFIRFortress(p, t));

@@ -142,10 +142,19 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public FinnoEmpireCity(Player player, Terrain.Point point) : base(player, Constants, point)
+        public FinnoEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile) : base(player, Constants, point)
         {
             this.Population = 5;
             _specialActs[0] = new FinnoEmpireCityAction(this);
+
+            if (!isLoadFromFile)
+            {
+                foreach (var pt in PlacedPoint.Value.Adjacents())
+                {
+                    if (pt.HasValue)
+                        Owner.TryAddTerritory(pt.Value);
+                }
+            }
         }
 
         private class FinnoEmpireCityAction : IActorAction
@@ -225,17 +234,6 @@ namespace CivModel.Finno
             }
         }
 
-        protected override void OnProcessCreation()
-        {
-            base.OnProcessCreation();
-
-            foreach (var pt in PlacedPoint.Value.Adjacents())
-            {
-                if (pt.HasValue)
-                    Owner.TryAddTerritory(pt.Value);
-            }
-        }
-
         protected override double CalculateDefencePower(double originalPower, Actor opposite, bool isMelee, bool isSkillAttack)
         {
             return originalPower + 15 * InteriorBuildings.OfType<AncientFinnoVigilant>().Count();
@@ -277,7 +275,7 @@ namespace CivModel.Finno
             // remove pioneer
             point.Unit.Destroy();
 
-            return new FinnoEmpireCity(owner, point);
+            return new FinnoEmpireCity(owner, point, false);
         }
     }
 }

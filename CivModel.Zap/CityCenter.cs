@@ -24,10 +24,19 @@ namespace CivModel.Zap
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public CityCenter(Player player, Terrain.Point point) : base(player, Constants, point)
+        public CityCenter(Player player, Terrain.Point point, bool isLoadFromFile) : base(player, Constants, point)
         {
             this.Population = 5;
             _specialActs[0] = new CityCenterAction(this);
+
+            if (!isLoadFromFile)
+            {
+                foreach (var pt in PlacedPoint.Value.Adjacents())
+                {
+                    if (pt.HasValue)
+                        Owner.TryAddTerritory(pt.Value);
+                }
+            }
         }
 
         private class CityCenterAction : IActorAction
@@ -106,17 +115,6 @@ namespace CivModel.Zap
                 }
             }
         }
-
-        protected override void OnProcessCreation()
-        {
-            base.OnProcessCreation();
-
-            foreach (var pt in PlacedPoint.Value.Adjacents())
-            {
-                if (pt.HasValue)
-                    Owner.TryAddTerritory(pt.Value);
-            }
-        }
     }
 
     public class CityCenterProductionFactory : ITileObjectProductionFactory
@@ -154,7 +152,7 @@ namespace CivModel.Zap
             // remove pioneer
             point.Unit.Destroy();
 
-            return new CityCenter(owner, point);
+            return new CityCenter(owner, point, false);
         }
     }
 }
