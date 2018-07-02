@@ -83,7 +83,7 @@ namespace CivModel.Hwan
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new HwanEmpireFIRFortress(point.TileOwner, point);
+            return new HwanEmpireFIRFortress(owner, point);
         }
     }
 }

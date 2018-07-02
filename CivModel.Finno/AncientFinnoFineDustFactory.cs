@@ -64,7 +64,7 @@ namespace CivModel.Finno
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new AncientFinnoFineDustFactory(point.TileOwner, point);
+            return new AncientFinnoFineDustFactory(owner, point);
         }
     }
 }

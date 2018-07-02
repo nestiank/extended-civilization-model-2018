@@ -100,7 +100,7 @@ namespace CivModel.Hwan
 
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
-            return new HwanEmpireLatifundium(point.TileOwner, point);
+            return new HwanEmpireLatifundium(owner, point);
         }
     }
 }
