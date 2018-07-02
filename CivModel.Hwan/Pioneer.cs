@@ -8,7 +8,7 @@ namespace CivModel.Hwan
 {
     public sealed class Pioneer : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("487BBF97-538A-45CB-A62D-B33E173F8E6F");
+        public static Guid ClassGuid { get; } = new Guid("D259F783-9179-4AC1-9ACD-39A27FAB90BE");
         public override Guid Guid => ClassGuid;
 
         public static readonly ActorConstants Constants = new ActorConstants
