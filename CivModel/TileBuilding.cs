@@ -19,6 +19,13 @@ namespace CivModel
         public override IActorAction MoveAct => null;
 
         /// <summary>
+        /// The labor which this tile building offers.
+        /// </summary>
+        /// <seealso cref="InteriorBuilding.ProvidedLabor"/>
+        /// <seealso cref="Player.Labor"/>
+        public virtual double Labor => 0;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TileBuilding"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this TileBuilding.</param>

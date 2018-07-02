@@ -83,7 +83,7 @@ namespace CivModel
         /// <seealso cref="LaborWithoutLogistics"/>
         /// <seealso cref="Labor"/>
         /// <seealso cref="CityBase.Labor"/>
-        public double OriginalLabor => Cities.Select(city => city.Labor).Sum();
+        public double OriginalLabor => TileBuildings.Select(b => b.Labor).Sum();
 
         /// <summary>
         /// The labor per turn of this player without logistics consumption.

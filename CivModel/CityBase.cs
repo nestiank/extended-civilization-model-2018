@@ -65,7 +65,7 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedLabor"/>
         /// <seealso cref="Player.Labor"/>
-        public double Labor => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
+        public override double Labor => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
 
         /// <summary>
         /// The list of <see cref="InteriorBuilding"/> this city owns.
