@@ -129,9 +129,9 @@ namespace CivModel.Hwan
             base.OnDie(opposite);
         }
 
-        protected override double CalculateDefencePower(double originalPower, Actor opposite, bool isMelee, bool isSkillAttack)
+        protected override double CalculateAttackPower(double originalPower, Actor opposite, bool isMelee, bool isSkillAttack)
         {
-            return originalPower + 30 * InteriorBuildings.OfType<HwanEmpireVigilant>().Count();
+            return originalPower + 5 * InteriorBuildings.OfType<HwanEmpireVigilant>().Count();
         }
     }
 
