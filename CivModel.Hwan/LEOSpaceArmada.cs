@@ -53,7 +53,7 @@ namespace CivModel.Hwan
 
             public int LastSkillCalled = -3;
 
-            public double GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point? pt)
             {
                 if (CheckError(pt) != null)
                     return double.NaN;
@@ -80,14 +80,14 @@ namespace CivModel.Hwan
                 if (CheckError(pt) is Exception e)
                     throw e;
 
-                double Ap = GetRequiredAP(pt);
+                ActionPoint Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
                 if(pt.Value.Unit != null)
                     Owner.AttackTo(Owner.AttackPower * 2, pt.Value.Unit, pt.Value.Unit.DefencePower,false, true);
 
-                if(pt.Value.TileBuilding == null)
+                if(pt.Value.TileBuilding != null)
                     Owner.AttackTo(Owner.AttackPower * 2, pt.Value.TileBuilding, pt.Value.TileBuilding.DefencePower, false, true);
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);

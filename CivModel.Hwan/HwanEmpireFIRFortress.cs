@@ -25,15 +25,6 @@ namespace CivModel.Hwan
             owner.Game.TileObjectObservable.AddObserver(this);
         }
 
-        protected override void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,
-            Actor attacker, Actor defender, Player atkOwner, Player defOwner, bool isMelee, bool isSkillAttack)
-        {
-            if (this == defender && attacker.Owner != null)
-            {
-                attacker.GetDamage(5, defOwner);
-            }
-        }
-
         protected override void OnBeforeDestroy()
         {
             Owner.Game.TileObjectObservable.RemoveObserver(this);

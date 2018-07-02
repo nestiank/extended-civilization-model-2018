@@ -24,10 +24,19 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public HwanEmpireCity(Player player, Terrain.Point point) : base(player, Constants, point)
+        public HwanEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile) : base(player, Constants, point)
         {
             this.Population = 5;
             _specialActs[0] = new HwanEmpireCityAction(this);
+
+            if (!isLoadFromFile)
+            {
+                foreach (var pt in PlacedPoint.Value.Adjacents())
+                {
+                    if (pt.HasValue)
+                        Owner.TryAddTerritory(pt.Value);
+                }
+            }
         }
 
         private class HwanEmpireCityAction : IActorAction
@@ -44,7 +53,7 @@ namespace CivModel.Hwan
                 _owner = owner;
             }
 
-            public double GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point? pt)
             {
                 if (pt != null)
                     return double.NaN;
@@ -107,17 +116,6 @@ namespace CivModel.Hwan
             }
         }
 
-        protected override void OnProcessCreation()
-        {
-            base.OnProcessCreation();
-
-            foreach (var pt in PlacedPoint.Value.Adjacents())
-            {
-                if (pt.HasValue)
-                    Owner.TryAddTerritory(pt.Value);
-            }
-        }
-
         protected override void OnDie(Player opposite)
         {
             Owner.Gold += 200*InteriorBuildings.OfType<HwanEmpireVigilant>().Count();
@@ -172,7 +170,7 @@ namespace CivModel.Hwan
             // remove pioneer
             point.Unit.Destroy();
 
-            return new HwanEmpireCity(owner, point);
+            return new HwanEmpireCity(owner, point, false);
         }
     }
 }

@@ -107,7 +107,6 @@ namespace CivModel
                 throw new ArgumentException("point is invalid");
 
             var obj = _factory.CreateTileObject(Owner, point);
-            obj.ProcessCreation();
         }
     }
 }

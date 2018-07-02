@@ -103,7 +103,7 @@ namespace CivModel.Zap
         {
             game.GuidManager.RegisterGuid(ArmedDivision.ClassGuid, (p, t) => new ArmedDivision(p, t));
             game.GuidManager.RegisterGuid(Casino.ClassGuid, (p, t) => new Casino(p, t));
-            game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t));
+            game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t, true));
             game.GuidManager.RegisterGuid(CityLab.ClassGuid, (c) => new CityLab(c));
             game.GuidManager.RegisterGuid(DecentralizedMilitary.ClassGuid, (p, t) => new DecentralizedMilitary(p, t));
             game.GuidManager.RegisterGuid(ZapFactory.ClassGuid, (p, t) => new ZapFactory(p, t));

@@ -23,13 +23,13 @@ namespace CivModel
 
         /// <summary>
         /// Test if the action with given parameter is valid and return required AP to act.
-        /// Returns <see cref="double.NaN"/> if the action is invalid.
+        /// Returns <see cref="ActionPoint.NonAvailable"/> if the action is invalid.
         /// </summary>
         /// <param name="pt">the parameter with which action will be tested.</param>
         /// <returns>
-        /// the required AP to act. If the action is invalid, <c>double.NaN</c>.
+        /// the required AP to act. If the action is invalid, <see cref="ActionPoint.NonAvailable"/>.
         /// </returns>
-        double GetRequiredAP(Terrain.Point? pt);
+        ActionPoint GetRequiredAP(Terrain.Point? pt);
     }
 
     /// <summary>
@@ -62,8 +62,8 @@ namespace CivModel
         /// </returns>
         public static bool IsActable(this IReadOnlyActorAction action, Terrain.Point? pt)
         {
-            double requiredAP = action.GetRequiredAP(pt);
-            return requiredAP != double.NaN && action.Owner.CanConsumeAP(requiredAP);
+            ActionPoint requiredAP = action.GetRequiredAP(pt);
+            return action.Owner.CanConsumeAP(requiredAP);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace CivModel
         /// <summary>
         /// Represents one tile of a <see cref="Terrain"/>.
         /// </summary>
-        public struct Point
+        public struct Point : IEquatable<Point>
         {
             /// <summary>
             /// The <see cref="Terrain"/> object.
@@ -172,7 +172,6 @@ namespace CivModel
             {
                 return lhs.Terrain == rhs.Terrain && lhs.Position == rhs.Position;
             }
-
             /// <summary>
             /// Implements the operator !=.
             /// </summary>
@@ -185,7 +184,6 @@ namespace CivModel
             {
                 return !(lhs == rhs);
             }
-
             /// <summary>
             /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
             /// </summary>
@@ -195,11 +193,19 @@ namespace CivModel
             /// </returns>
             public override bool Equals(object obj)
             {
-                if (obj is Point other)
-                    return this == other;
-                return false;
+                return obj is Point pt && Equals(pt);
             }
-
+            /// <summary>
+            /// 현재 개체가 동일한 형식의 다른 개체와 같은지 여부를 나타냅니다.
+            /// </summary>
+            /// <param name="other">이 개체와 비교할 개체입니다.</param>
+            /// <returns>
+            /// 현재 개체가 <see langword="true" /> 매개 변수와 같으면 <paramref name="other" />이고, 그렇지 않으면 <see langword="false" />입니다.
+            /// </returns>
+            public bool Equals(Point other)
+            {
+                return (this == other);
+            }
             /// <summary>
             /// Returns a hash code for this instance.
             /// </summary>
@@ -208,10 +214,10 @@ namespace CivModel
             /// </returns>
             public override int GetHashCode()
             {
-                unchecked
-                {
-                    return Terrain.GetHashCode() * 17 + Position.GetHashCode();
-                }
+                var hashCode = -715914744;
+                hashCode = hashCode * -1521134295 + Terrain.GetHashCode();
+                hashCode = hashCode * -1521134295 + Position.GetHashCode();
+                return hashCode;
             }
 
             /// <summary>

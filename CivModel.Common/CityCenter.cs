@@ -18,20 +18,17 @@ namespace CivModel.Common
             DefencePower = 21
         };
 
-        public CityCenter(Player player, Terrain.Point point) : base(player, Constants, point)
+        public CityCenter(Player player, Terrain.Point point, bool isLoadFromFile) : base(player, Constants, point)
         {
-        }
-
-        protected override void OnProcessCreation()
-        {
-            base.OnProcessCreation();
-
-            new FactoryBuilding(this).ProcessCreation();
-
-            foreach (var pt in PlacedPoint.Value.Adjacents())
+            if (!isLoadFromFile)
             {
-                if (pt.HasValue)
-                    Owner.TryAddTerritory(pt.Value);
+                new FactoryBuilding(this);
+
+                foreach (var pt in PlacedPoint.Value.Adjacents())
+                {
+                    if (pt.HasValue)
+                        Owner.TryAddTerritory(pt.Value);
+                }
             }
         }
     }
@@ -73,7 +70,7 @@ namespace CivModel.Common
                 throw new InvalidOperationException("city can be placed only where Pionner is");
             point.Unit.Destroy();
 
-            return new CityCenter(owner, point);
+            return new CityCenter(owner, point, false);
         }
     }
 }

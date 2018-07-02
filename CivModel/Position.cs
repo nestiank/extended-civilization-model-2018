@@ -10,7 +10,7 @@ namespace CivModel
     /// Represents the coordinate for <see cref="Terrain"/>.
     /// The coordinate system is documented in "docs/Coordinate System.pptx".
     /// </summary>
-    public struct Position
+    public struct Position : IEquatable<Position>
     {
         /// <summary>
         /// X in physical coordinate system.
@@ -178,7 +178,6 @@ namespace CivModel
         {
             return lhs.X == rhs.X && lhs.Y == rhs.Y;
         }
-
         /// <summary>
         /// Implements the operator !=.
         /// </summary>
@@ -191,7 +190,6 @@ namespace CivModel
         {
             return !(lhs == rhs);
         }
-
         /// <summary>
         /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
         /// </summary>
@@ -201,11 +199,19 @@ namespace CivModel
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj is Position other)
-                return this == other;
-            return false;
+            return obj is Position pos && Equals(pos);
         }
-
+        /// <summary>
+        /// 현재 개체가 동일한 형식의 다른 개체와 같은지 여부를 나타냅니다.
+        /// </summary>
+        /// <param name="other">이 개체와 비교할 개체입니다.</param>
+        /// <returns>
+        /// 현재 개체가 <see langword="true" /> 매개 변수와 같으면 <paramref name="other" />이고, 그렇지 않으면 <see langword="false" />입니다.
+        /// </returns>
+        public bool Equals(Position other)
+        {
+            return (this == other);
+        }
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -214,10 +220,10 @@ namespace CivModel
         /// </returns>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return X * 17 + Y;
-            }
+            var hashCode = 1861411795;
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Y.GetHashCode();
+            return hashCode;
         }
     }
 }

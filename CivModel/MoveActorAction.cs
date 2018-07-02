@@ -35,13 +35,13 @@ namespace CivModel
 
         /// <summary>
         /// Test if the action with given parameter is valid and return required AP to act.
-        /// Returns <see cref="double.NaN"/> if the action is invalid.
+        /// Returns <see cref="ActionPoint.NonAvailable"/> if the action is invalid.
         /// </summary>
         /// <param name="pt">the parameter with which action will be tested.</param>
         /// <returns>
-        /// the required AP to act. If the action is invalid, <see cref="double.NaN"/>.
+        /// the required AP to act. If the action is invalid, <see cref="ActionPoint.NonAvailable"/>.
         /// </returns>
-        public double GetRequiredAP(Terrain.Point? pt)
+        public ActionPoint GetRequiredAP(Terrain.Point? pt)
         {
             if (pt is Terrain.Point target && _owner.PlacedPoint is Terrain.Point origin)
             {
@@ -50,12 +50,12 @@ namespace CivModel
                     if (!(target.TileBuilding is TileBuilding building && building.Owner != Owner.Owner))
                     {
                         if (Terrain.Point.Distance(origin, target) == 1)
-                            return _owner.GetRequiredAPToMove(target.Type);
+                            return _owner.GetRequiredAPToMoveNearBy(target);
                     }
                 }
             }
 
-            return double.NaN;
+            return ActionPoint.NonAvailable;
         }
 
         /// <summary>
@@ -66,9 +66,9 @@ namespace CivModel
         /// <exception cref="InvalidOperationException">Owner of this action is not placed yet</exception>
         public void Act(Terrain.Point? pt)
         {
-            double requiredAP = GetRequiredAP(pt);
+            ActionPoint requiredAP = GetRequiredAP(pt);
 
-            if (requiredAP == double.NaN || !_owner.CanConsumeAP(requiredAP))
+            if (!_owner.CanConsumeAP(requiredAP))
                 throw new ArgumentException("parameter is invalid");
             if (!_owner.PlacedPoint.HasValue)
                 throw new InvalidOperationException("Owner of this action is not placed yet");

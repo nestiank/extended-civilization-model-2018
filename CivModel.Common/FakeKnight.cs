@@ -50,7 +50,7 @@ namespace CivModel.Common
                 _owner = owner;
             }
 
-            public double GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point? pt)
             {
                 if (CheckError(pt) != null)
                     return double.NaN;
