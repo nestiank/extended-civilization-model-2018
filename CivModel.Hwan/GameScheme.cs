@@ -39,6 +39,7 @@ namespace CivModel.Hwan
         {
             get
             {
+                yield return PioneerProductionFactory.Instance;
                 yield return BrainwashedEMUKnightProductionFactory.Instance;
                 yield return DecentralizedMilitaryProductionFactory.Instance;
                 yield return JackieChanProductionFactory.Instance;
@@ -67,6 +68,7 @@ namespace CivModel.Hwan
 
         public void RegisterGuid(Game game)
         {
+            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
             game.GuidManager.RegisterGuid(BrainwashedEMUKnight.ClassGuid, (p, t) => new BrainwashedEMUKnight(p, t));
             game.GuidManager.RegisterGuid(DecentralizedMilitary.ClassGuid, (p, t) => new DecentralizedMilitary(p, t));
             game.GuidManager.RegisterGuid(JackieChan.ClassGuid, (p, t) => new JackieChan(p, t));

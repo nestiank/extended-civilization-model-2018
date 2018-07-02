@@ -39,6 +39,7 @@ namespace CivModel.Finno
         {
             get
             {
+                yield return PioneerProductionFactory.Instance;
                 yield return AncientSorcererProductionFactory.Instance;
                 yield return AutismBeamDroneFactory.Instance;
                 yield return DecentralizedMilitaryProductionFactory.Instance;
@@ -67,6 +68,7 @@ namespace CivModel.Finno
 
         public void RegisterGuid(Game game)
         {
+            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
             game.GuidManager.RegisterGuid(AncientSorcerer.ClassGuid, (p, t) => new AncientSorcerer(p, t));
             game.GuidManager.RegisterGuid(AutismBeamDrone.ClassGuid, (p, t) => new AutismBeamDrone(p, t));
             game.GuidManager.RegisterGuid(DecentralizedMilitary.ClassGuid, (p, t) => new DecentralizedMilitary(p, t));
