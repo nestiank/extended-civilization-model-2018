@@ -44,7 +44,7 @@ namespace CivModel.Hwan
                 _owner = owner;
             }
 
-            public double GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point? pt)
             {
                 if (pt != null)
                     return double.NaN;

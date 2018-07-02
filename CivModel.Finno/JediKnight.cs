@@ -86,7 +86,7 @@ namespace CivModel.Finno
 
             public int LastSkillCalled = -3;
 
-            public double GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point? pt)
             {
                 if (CheckError(pt) != null)
                     return double.NaN;
@@ -111,7 +111,7 @@ namespace CivModel.Finno
                 if (CheckError(pt) is Exception e)
                     throw e;
 
-                double Ap = GetRequiredAP(pt);
+                ActionPoint Ap = GetRequiredAP(pt);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
