@@ -94,8 +94,11 @@ namespace CivModel.Finno
                     return new InvalidOperationException("Can't go that way");
                 if (!this.DirectionCheck(pt))
                     return new InvalidOperationException("Can't go that way");
-                if(pt.Value.TileBuilding.Owner != Owner.Owner)
-                    return new InvalidOperationException("Can't go that way");
+                if(pt.Value.TileBuilding != null)
+                {
+                    if (pt.Value.TileBuilding.Owner != Owner.Owner)
+                        return new InvalidOperationException("Can't go that way");
+                }                
                 return null;
             }
 
