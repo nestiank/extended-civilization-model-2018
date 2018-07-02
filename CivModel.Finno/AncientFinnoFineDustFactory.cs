@@ -19,6 +19,7 @@ namespace CivModel.Finno
             LaborLogistics = 10,
             MaxHealPerTurn = 4
         };
+        public override double Labor => 20;
 
 
         public AncientFinnoFineDustFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
@@ -26,13 +27,14 @@ namespace CivModel.Finno
         public override void PostTurn()
         {
             base.PostTurn();
-            foreach (var Player in Owner.Game.Players)
+            foreach (var Player in Owner.Game.Players) // 행복도 감소
             {
                 if (Player.Team != this.Owner.Team)
                 {
                     Player.Happiness -= 5;
                 }
             }
+
         }
     }
 
