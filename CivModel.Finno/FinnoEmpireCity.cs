@@ -15,6 +15,7 @@ namespace CivModel.Finno
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 500,
+            DefencePower = 15,
             GoldLogistics = 0,
             LaborLogistics = 0,
             MaxHealPerTurn = 20

@@ -60,6 +60,29 @@ namespace CivModel.Finno
                 return 1;
             }
 
+            private bool IsInDistance(Terrain.Point? pt)
+            {
+                int A = Owner.PlacedPoint.Value.Position.A;
+                int B = Owner.PlacedPoint.Value.Position.B;
+                int C = Owner.PlacedPoint.Value.Position.C;
+                int Width = Owner.PlacedPoint.Value.Terrain.Width;
+
+                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - A), Math.Abs(pt.Value.Position.B - B)), Math.Abs(pt.Value.Position.C - C)) > 2)
+                {
+                    if(pt.Value.Position.B > B) // pt가 맵 오른쪽
+                    {
+                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B - Width - B), Math.Abs(pt.Value.Position.A + Width - A)),Math.Abs(pt.Value.Position.C - C)) > 2)
+                            return false;
+                    }
+                    else //pt가 맵 왼쪽
+                    {
+                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B + Width - B), Math.Abs(pt.Value.Position.A - Width - A)), Math.Abs(pt.Value.Position.C - C)) > 2)
+                            return false;
+                    }
+                }
+                return true;
+            }
+
             private Exception CheckError(Terrain.Point? pt)
             {
                 if (pt == null)
@@ -70,6 +93,8 @@ namespace CivModel.Finno
                     return new InvalidOperationException("There is no target");
                 if (pt.Value.Unit.Owner != Owner.Owner)
                     return new InvalidOperationException("The Unit is hostile");
+                if (!this.IsInDistance(pt))
+                    return new InvalidOperationException("Too Far to Heal");
 
                 return null;
             }
@@ -85,7 +110,7 @@ namespace CivModel.Finno
 
                 double AmountOfHeal = 0;
 
-                AmountOfHeal = Math.Min(10, Owner.RemainHP - 1);
+                AmountOfHeal = Math.Min(10, Owner.RemainHP);
                 pt.Value.Unit.Heal(AmountOfHeal);
 
                 Owner.RemainHP = Owner.RemainHP - AmountOfHeal;

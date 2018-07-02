@@ -14,6 +14,7 @@ namespace CivModel.Finno
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 300,
+            DefencePower = 20,
             GoldLogistics = 60,
             LaborLogistics = 30,
             MaxHealPerTurn = 20
@@ -26,15 +27,6 @@ namespace CivModel.Finno
             base.PostTurn();
             Owner.Happiness += 5;
             Owner.Gold += 200;
-        }
-
-        protected override void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,
-            Actor attacker, Actor defender, Player atkOwner, Player defOwner, bool isMelee, bool isSkillAttack)
-        {
-            if (this == defender && attacker.Owner != null)
-            {
-                attacker.GetDamage(20, defOwner);
-            }
         }
     }
 

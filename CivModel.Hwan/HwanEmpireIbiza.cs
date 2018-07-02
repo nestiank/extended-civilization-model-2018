@@ -14,6 +14,7 @@ namespace CivModel.Hwan
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 30,
+            DefencePower = 0,
             GoldLogistics = 20,
             LaborLogistics = 10,
             MaxHealPerTurn = 5
@@ -63,6 +64,22 @@ namespace CivModel.Hwan
             int C = point.Position.C;
 
 
+            if (IsInDisOne(production, point))
+                return true;
+
+            else if (IsInDisTwo(production, point))
+                return true;               
+
+            return false;
+        }
+
+        private bool IsInDisOne(TileObjectProduction production, Terrain.Point point)
+        {
+            int A = point.Position.A;
+            int B = point.Position.B;
+            int C = point.Position.C;
+
+
             if (RealAction(A + 1, B - 1, C, production, point))
                 return true;
             else if (RealAction(A + 1, B, C - 1, production, point))
@@ -76,7 +93,16 @@ namespace CivModel.Hwan
             else if (RealAction(A, B - 1, C + 1, production, point))
                 return true;
 
-            else if (RealAction(A + 2, B - 2, C, production, point))
+            return false;
+        }
+
+        private bool IsInDisTwo(TileObjectProduction production, Terrain.Point point)
+        {
+            int A = point.Position.A;
+            int B = point.Position.B;
+            int C = point.Position.C;
+
+            if (RealAction(A + 2, B - 2, C, production, point))
                 return true;
             else if (RealAction(A + 2, B - 1, C - 1, production, point))
                 return true;

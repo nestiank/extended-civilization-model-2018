@@ -55,7 +55,7 @@ namespace CivModel.Finno
             public double GetRequiredAP(Terrain.Point? pt)
             {
                 if (CheckError(pt) != null)
-                    return -1;
+                    return double.NaN;
 
                 return 2;
             }

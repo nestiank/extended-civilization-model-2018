@@ -14,6 +14,7 @@ namespace CivModel.Finno
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 30,
+            DefencePower = 5,
             GoldLogistics = 20,
             LaborLogistics =10,
             MaxHealPerTurn = 10
@@ -22,15 +23,6 @@ namespace CivModel.Finno
         public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             owner.Game.TileObjectObservable.AddObserver(this);
-        }
-
-        protected override void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,
-            Actor attacker, Actor defender, Player atkOwner, Player defOwner, bool isMelee, bool isSkillAttack)
-        {
-            if (this == defender && attacker.Owner != null)
-            {
-                attacker.GetDamage(5, defOwner);
-            }
         }
 
         protected override void OnBeforeDestroy()

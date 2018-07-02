@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace CivModel.Finno
 {
-    public class FinnoPlayerConstant
+    public static class FinnoPlayerConstant
     {
         public const int FinnoPlayer = 1;
+        public static Player GetPlayerFinno(this Game game)
+        {
+            return game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer];
+        }
     }
 
     public class GameSchemeFactory : IGameSchemeFactory
