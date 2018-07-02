@@ -491,15 +491,12 @@ namespace CivModel
         ///   <c>true</c> if this actor can consume the specified amount of AP; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        /// <exception cref="ArgumentException"><paramref name="amount"/> is negative</exception>
-        public bool CanConsumeAP(double amount)
+        public bool CanConsumeAP(ActionPoint amount)
         {
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
-            if (amount < 0)
-                throw new ArgumentException("amount is negative", "amount");
 
-            return amount <= RemainAP;
+            return (amount <= RemainAP);
         }
 
         /// <summary>
@@ -507,28 +504,23 @@ namespace CivModel
         /// </summary>
         /// <param name="amount">The amount of AP</param>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="amount"/> is negative
-        /// or
-        /// <paramref name="amount"/> is bigger than <see cref="RemainAP"/>
-        /// </exception>
-        public void ConsumeAP(double amount)
+        /// <exception cref="ArgumentException"><paramref name="amount"/> is too big to consume</exception>
+        public void ConsumeAP(ActionPoint amount)
         {
-            if (Owner == null)
-                throw new InvalidOperationException("actor is already destroyed");
-            if (amount < 0)
-                throw new ArgumentException("amount is negative", "amount");
-            if (amount > RemainAP)
-                throw new ArgumentException("amount is bigger than RemainAP", "amount");
+            if (!CanConsumeAP(amount))
+                throw new ArgumentException("amount is too big to consume");
 
-            RemainAP -= amount;
+            if (amount.IsConsumingAll)
+                _remainAP = 0;
+            else
+                RemainAP -= amount.Value; // call setter of RemainAP to fix floating-point error
         }
 
         /// <summary>
         /// Consumes all of AP which this actor has.
         /// </summary>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        /// <seealso cref="ConsumeAP(double)"/>
+        /// <seealso cref="ConsumeAP(ActionPoint)"/>
         public void ConsumeAllAP()
         {
             if (Owner == null)
@@ -773,8 +765,8 @@ namespace CivModel
         /// </summary>
         /// <param name="atk">The effecitve attack power calculated by <see cref="CalculateAttackPower(double, Actor, bool, bool)"/> in this battle.</param>
         /// <param name="def">The effecitve defence power calculated by <see cref="CalculateDefencePower(double, Actor, bool, bool)"/> in this battle.</param>
-        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
-        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
+        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, Actor, bool, bool)"/>.</param>
+        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, Actor, bool, bool)"/>.</param>
         /// <param name="attacker">The attacker.</param>
         /// <param name="defender">The defender.</param>
         /// <param name="isMelee">whether battle is <i>melee</i> type.</param>
@@ -793,8 +785,8 @@ namespace CivModel
         /// </summary>
         /// <param name="atk">The effecitve attack power calculated by <see cref="CalculateAttackPower(double, Actor, bool, bool)"/> in this battle.</param>
         /// <param name="def">The effecitve defence power calculated by <see cref="CalculateDefencePower(double, Actor, bool, bool)"/> in this battle.</param>
-        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
-        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, bool, bool)"/>.</param>
+        /// <param name="attackerDamage">The damage attacker will gain, calculated by <see cref="CalculateDamage(double, Actor, Actor, bool, bool)"/>.</param>
+        /// <param name="defenderDamage">The damage defender will gain, calculated by <see cref="CalculateDamage(double, Actor, Actor, bool, bool)"/>.</param>
         /// <param name="attacker">The attacker.</param>
         /// <param name="defender">The defender.</param>
         /// <param name="atkOwner">The owner of attacker.</param>
@@ -812,24 +804,32 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Gets the required AP to move to point of the specified type
+        /// Gets the required AP to move to point, assuming the point is near the position of this actor.
         /// </summary>
-        /// <param name="type">The type of <see cref="Terrain.Point"/></param>
+        /// <param name="point">The <see cref="Terrain.Point"/> struct object</param>
         /// <returns>the required AP.</returns>
-        public virtual double GetRequiredAPToMove(TerrainType type)
+        /// <remarks>
+        /// This method assumes <paramref name="point"/> is near <see cref="TileObject.PlacedPoint"/> of this actor.<br/>
+        /// Thus, <see cref="Terrain.Point.Position"/> of <paramref name="point"/> can be ignored.
+        /// </remarks>
+        public virtual ActionPoint GetRequiredAPToMoveNearBy(Terrain.Point point)
         {
             // POMFSTIH
-            switch (type)
+            switch (point.Type)
             {
                 case TerrainType.Plain: return 1;
-                case TerrainType.Ocean: return 0.5;
+                case TerrainType.Ocean:
+                    if (PlacedPoint?.Type != TerrainType.Ocean)
+                        return new ActionPoint(0.5, consumeAll: true);
+                    else
+                        return 0.5;
                 case TerrainType.Mount: return 3;
                 case TerrainType.Forest: return 2;
                 case TerrainType.Swamp: return 2;
                 case TerrainType.Tundra: return 1;
                 case TerrainType.Ice: return 2;
                 case TerrainType.Hill: return 2;
-                default: throw new NotImplementedException("unqualified TerrainType at Actor.GetRequiredAPToMove()");
+                default: throw new NotImplementedException("unqualified TerrainType");
             }
         }
 

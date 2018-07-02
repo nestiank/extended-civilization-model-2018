@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionPoint.cs" />
     <Compile Include="ActorConstants.cs" />
     <Compile Include="IAIController.cs" />
     <Compile Include="AttackActorAction.cs" />
