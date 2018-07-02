@@ -22,6 +22,27 @@ namespace CivModel.Finno
             BattleClassLevel = 4
         };
 
+        public override ActionPoint GetRequiredAPToMoveNearBy(Terrain.Point point)
+        {
+            // POMFSTIH
+            switch (point.Type)
+            {
+                case TerrainType.Plain: return 1;
+                case TerrainType.Ocean:
+                    if (PlacedPoint?.Type != TerrainType.Ocean)
+                        return new ActionPoint(0.5, consumeAll: true);
+                    else
+                        return 0.5;
+                case TerrainType.Mount: return 1;
+                case TerrainType.Forest: return 1;
+                case TerrainType.Swamp: return 1;
+                case TerrainType.Tundra: return 1;
+                case TerrainType.Ice: return 1;
+                case TerrainType.Hill: return 1;
+                default: throw new NotImplementedException("unqualified TerrainType");
+            }
+        }
+
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
@@ -186,10 +207,66 @@ namespace CivModel.Finno
 
         private bool CheckUnit(int A, int B, int C)
         {
-            if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < this.PlacedPoint.Value.Terrain.Width && 0 <= C && C < this.PlacedPoint.Value.Terrain.Height)
+            int Width = this.PlacedPoint.Value.Terrain.Width;
+
+            if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < Width && 0 <= C && C < this.PlacedPoint.Value.Terrain.Height)
             {
-                if ((this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null && (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileOwner == Owner)
-                    return false;
+                if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).Unit == null)
+                {
+                    if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).TileBuilding != null)
+                    {
+                        if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).TileBuilding.Owner != Owner)
+                            return true;
+
+                        else
+                            return false;
+                    }
+
+                    else
+                        return false;
+                }                    
+
+                else
+                    return true;
+            }
+
+            else if (B + (C + Math.Sign(C)) / 2 >= Width)
+            {
+                if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).Unit == null)
+                {
+                    if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).TileBuilding != null)
+                    {
+                        if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).TileBuilding.Owner != Owner)
+                            return true;
+
+                        else
+                            return false;
+                    }
+
+                    else
+                        return false;
+                }
+
+                else
+                    return true;
+            }
+
+            else if(0 > B + (C + Math.Sign(C)) / 2)
+            {
+                if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).Unit == null)
+                {
+                    if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).TileBuilding != null)
+                    {
+                        if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).TileBuilding.Owner != Owner)
+                            return true;
+
+                        else
+                            return false;
+                    }
+
+                    else
+                        return false;
+                }
 
                 else
                     return true;
