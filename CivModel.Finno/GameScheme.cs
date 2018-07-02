@@ -82,7 +82,7 @@ namespace CivModel.Finno
             game.GuidManager.RegisterGuid(AncientFinnoOctagon.ClassGuid, (p, t) => new AncientFinnoOctagon(p, t));
             game.GuidManager.RegisterGuid(AncientFinnoVigilant.ClassGuid, (c) => new AncientFinnoVigilant(c));
             game.GuidManager.RegisterGuid(AncientFinnoXylitolProductionRegion.ClassGuid, (c) => new AncientFinnoXylitolProductionRegion(c));
-            game.GuidManager.RegisterGuid(FinnoEmpireCity.ClassGuid, (p, t) => new FinnoEmpireCity(p, t));
+            game.GuidManager.RegisterGuid(FinnoEmpireCity.ClassGuid, (p, t) => new FinnoEmpireCity(p, t, true));
         }
 
         public void OnAfterInitialized(Game game)
