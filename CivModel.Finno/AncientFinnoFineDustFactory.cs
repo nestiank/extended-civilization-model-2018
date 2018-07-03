@@ -31,10 +31,10 @@ namespace CivModel.Finno
             {
                 if (Player.Team != this.Owner.Team)
                 {
-                    if (Owner.Happiness - 5 >= -100)
+                    if (Player.Happiness - 5 >= -100)
                         Player.Happiness -= 5;
                     else
-                        Owner.Happiness = -100;
+                        Player.Happiness = -100;
                 }
             }
 
