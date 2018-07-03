@@ -40,8 +40,8 @@ namespace CivPresenter
         /// </summary>
         public Terrain.Point FocusedPoint { get; set; }
 
-        private Unit[] _standbyUnits = null;
-        private int _standbyUnitIndex = -1;
+        private Actor[] _standbyActors = null;
+        private int _standbyActorIndex = -1;
 
         /// <summary>
         /// Whether there is something to do in this turn.
@@ -241,8 +241,8 @@ namespace CivPresenter
 
         private void Initialize()
         {
-            // fallback point
-            // ProceedTurn() would set FocusedPoint if any unit/city exists.
+            // (0, 0) is fallback point
+            // ProceedTurn() would set FocusedPoint if any actor exists.
             FocusedPoint = Game.Terrain.GetPoint(0, 0);
             ProceedTurn();
 
@@ -322,9 +322,21 @@ namespace CivPresenter
         /// </summary>
         public void CommandSelect()
         {
-            if (FocusedPoint.Unit != null && FocusedPoint.Unit.Owner == Game.PlayerInTurn)
+            if (FocusedPoint.Unit is Unit unit && unit.Owner == Game.PlayerInTurn)
             {
-                SelectUnit(FocusedPoint.Unit);
+                if (unit.IsControllable && unit != SelectedActor)
+                {
+                    SelectActor(unit);
+                    return;
+                }
+            }
+            if (FocusedPoint.TileBuilding is TileBuilding tb && tb.Owner == Game.PlayerInTurn)
+            {
+                if (tb.IsControllable && tb != SelectedActor)
+                {
+                    SelectActor(tb);
+                    return;
+                }
             }
         }
 
@@ -416,7 +428,7 @@ namespace CivPresenter
 
             if (!Game.PlayerInTurn.IsAIControlled)
             {
-                SelectNextUnit();
+                SelectNextActor();
                 if (_selectedActor == null)
                 {
                     if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
@@ -434,25 +446,26 @@ namespace CivPresenter
             }
         }
 
-        private void SelectNextUnit()
+        private void SelectNextActor()
         {
-            int tryNumber = (_standbyUnitIndex == -1) ? 1 : 2;
+            int tryNumber = (_standbyActorIndex == -1) ? 1 : 2;
 
             for (int j = 0; j < tryNumber; ++j)
             {
-                if (_standbyUnitIndex == -1)
+                if (_standbyActorIndex == -1)
                 {
-                    _standbyUnits = Game.PlayerInTurn.Units.ToArray();
+                    _standbyActors = Game.PlayerInTurn.Actors.ToArray();
                 }
 
-                int idx = _standbyUnitIndex + 1;
-                for (; idx < _standbyUnits.Length; ++idx)
+                int idx = _standbyActorIndex + 1;
+                for (; idx < _standbyActors.Length; ++idx)
                 {
-                    var unit = _standbyUnits[idx];
-                    if (unit.RemainAP > 0 && !unit.SkipFlag && unit.IsControllable && unit.PlacedPoint.HasValue)
+                    var actor = _standbyActors[idx];
+                    if (actor is Unit && actor.RemainAP > 0 && !actor.SkipFlag
+                        && actor.IsControllable && actor.PlacedPoint.HasValue)
                     {
-                        _standbyUnitIndex = idx;
-                        _selectedActor = _standbyUnits[idx];
+                        _standbyActorIndex = idx;
+                        _selectedActor = _standbyActors[idx];
                         IsThereTodos = true;
                         Refocus();
                         return;
@@ -460,26 +473,26 @@ namespace CivPresenter
                 }
 
                 _selectedActor = null;
-                _standbyUnitIndex = -1;
+                _standbyActorIndex = -1;
                 IsThereTodos = false;
             }
         }
 
-        private void SelectUnit(Unit unit)
+        private void SelectActor(Actor actor)
         {
-            var units = Game.PlayerInTurn.Units.ToArray();
-            int idx = Array.IndexOf(units, unit);
+            var actors = Game.PlayerInTurn.Actors.ToArray();
+            int idx = Array.IndexOf(actors, actor);
 
             if (idx == -1)
                 return;
-            if (!unit.IsControllable)
+            if (!actor.IsControllable)
                 return;
 
-            _selectedActor = unit;
-            unit.SkipFlag = false;
+            _selectedActor = actor;
+            actor.SkipFlag = false;
 
-            _standbyUnits = units;
-            _standbyUnitIndex = idx;
+            _standbyActors = actors;
+            _standbyActorIndex = idx;
             IsThereTodos = true;
             Refocus();
         }
@@ -563,7 +576,7 @@ namespace CivPresenter
                 }
                 else
                 {
-                    SelectNextUnit();
+                    SelectNextActor();
                 }
             };
             OnCancel = () => {
@@ -590,14 +603,14 @@ namespace CivPresenter
                 if (SelectedActor != null)
                 {
                     SelectedActor.SkipFlag = !SelectedActor.SkipFlag;
-                    SelectNextUnit();
+                    SelectNextActor();
                 }
             };
             OnSleep = () => {
                 if (SelectedActor != null)
                 {
                     SelectedActor.SleepFlag = !SelectedActor.SleepFlag;
-                    SelectNextUnit();
+                    SelectNextActor();
                 }
             };
         }
@@ -983,7 +996,7 @@ namespace CivPresenter
                 {
                     Game.PlayerInTurn.Deployment.Remove(node);
                     DeployProduction.Place(FocusedPoint);
-                    SelectNextUnit();
+                    SelectNextActor();
                     OnCancel();
                 }
             };

@@ -39,6 +39,7 @@ namespace CivModel.Hwan
         {
             get
             {
+                yield return PioneerProductionFactory.Instance;
                 yield return BrainwashedEMUKnightProductionFactory.Instance;
                 yield return DecentralizedMilitaryProductionFactory.Instance;
                 yield return JackieChanProductionFactory.Instance;
@@ -56,6 +57,7 @@ namespace CivModel.Hwan
                 yield return HwanEmpireLatifundiumProductionFactory.Instance;
                 yield return HwanEmpireSungsimdangProductionFactory.Instance;
                 yield return HwanEmpireVigilantProductionFactory.Instance;
+                yield return PreternaturalityProductionFactory.Instance;
             }
         }
 
@@ -66,6 +68,7 @@ namespace CivModel.Hwan
 
         public void RegisterGuid(Game game)
         {
+            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
             game.GuidManager.RegisterGuid(BrainwashedEMUKnight.ClassGuid, (p, t) => new BrainwashedEMUKnight(p, t));
             game.GuidManager.RegisterGuid(DecentralizedMilitary.ClassGuid, (p, t) => new DecentralizedMilitary(p, t));
             game.GuidManager.RegisterGuid(JackieChan.ClassGuid, (p, t) => new JackieChan(p, t));
@@ -83,6 +86,7 @@ namespace CivModel.Hwan
             game.GuidManager.RegisterGuid(HwanEmpireLatifundium.ClassGuid, (p, t) => new HwanEmpireLatifundium(p, t));
             game.GuidManager.RegisterGuid(HwanEmpireSungsimdang.ClassGuid, (c) => new HwanEmpireSungsimdang(c));
             game.GuidManager.RegisterGuid(HwanEmpireVigilant.ClassGuid, (c) => new HwanEmpireVigilant(c));
+            game.GuidManager.RegisterGuid(Preternaturality.ClassGuid, (p, t) => new Preternaturality(p, t));
         }
 
         public void OnAfterInitialized(Game game)

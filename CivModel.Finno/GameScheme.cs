@@ -39,6 +39,7 @@ namespace CivModel.Finno
         {
             get
             {
+                yield return PioneerProductionFactory.Instance;
                 yield return AncientSorcererProductionFactory.Instance;
                 yield return AutismBeamDroneFactory.Instance;
                 yield return DecentralizedMilitaryProductionFactory.Instance;
@@ -56,6 +57,7 @@ namespace CivModel.Finno
                 yield return AncientFinnoVigilantProductionFactory.Instance;
                 yield return AncientFinnoXylitolProductionRegionProductionFactory.Instance;
                 yield return FinnoEmpireCityProductionFactory.Instance;
+                yield return PreternaturalityProductionFactory.Instance;
             }
         }
 
@@ -66,6 +68,7 @@ namespace CivModel.Finno
 
         public void RegisterGuid(Game game)
         {
+            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
             game.GuidManager.RegisterGuid(AncientSorcerer.ClassGuid, (p, t) => new AncientSorcerer(p, t));
             game.GuidManager.RegisterGuid(AutismBeamDrone.ClassGuid, (p, t) => new AutismBeamDrone(p, t));
             game.GuidManager.RegisterGuid(DecentralizedMilitary.ClassGuid, (p, t) => new DecentralizedMilitary(p, t));
@@ -83,6 +86,7 @@ namespace CivModel.Finno
             game.GuidManager.RegisterGuid(AncientFinnoVigilant.ClassGuid, (c) => new AncientFinnoVigilant(c));
             game.GuidManager.RegisterGuid(AncientFinnoXylitolProductionRegion.ClassGuid, (c) => new AncientFinnoXylitolProductionRegion(c));
             game.GuidManager.RegisterGuid(FinnoEmpireCity.ClassGuid, (p, t) => new FinnoEmpireCity(p, t, true));
+            game.GuidManager.RegisterGuid(Preternaturality.ClassGuid, (p, t) => new Preternaturality(p, t));
         }
 
         public void OnAfterInitialized(Game game)

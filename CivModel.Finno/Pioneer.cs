@@ -8,7 +8,7 @@ namespace CivModel.Finno
 {
     public sealed class Pioneer : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("487BBF97-538A-45CB-A62D-B33E173F8E6F");
+        public static Guid ClassGuid { get; } = new Guid("6FC1C96D-2E22-48A6-9401-5CF7E8636015");
         public override Guid Guid => ClassGuid;
 
         public static readonly ActorConstants Constants = new ActorConstants

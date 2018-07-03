@@ -114,9 +114,9 @@ namespace CivModel.Finno
                 pt.Value.Unit.Heal(AmountOfHeal);
 
                 Owner.RemainHP = Owner.RemainHP - AmountOfHeal;
-                if (Owner.RemainHP <= 0)
+                if(Owner.RemainHP <= 0)
                 {
-                    Owner.Destroy();
+                    return;
                 }
                 Owner.ConsumeAP(Ap);
 

@@ -19,6 +19,7 @@ namespace CivModel.Hwan
             LaborLogistics = 10,
             MaxHealPerTurn = 2
         };
+        public override double Labor => 10;
 
         public HwanEmpireKimchiFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
     }

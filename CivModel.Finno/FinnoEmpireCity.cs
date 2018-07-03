@@ -125,12 +125,68 @@ namespace CivModel.Finno
             }
         }
 
-        private bool CheckUnit (int A, int B, int C)
+        private bool CheckUnit(int A, int B, int C)
         {
-            if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < this.PlacedPoint.Value.Terrain.Width && 0 <= C && C < this.PlacedPoint.Value.Terrain.Height)
+            int Width = this.PlacedPoint.Value.Terrain.Width;
+
+            if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < Width && 0 <= C && C < this.PlacedPoint.Value.Terrain.Height)
             {
-                if ((this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null && (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileOwner == this.Owner)
-                    return false;
+                if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).Unit == null)
+                {
+                    if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).TileBuilding != null)
+                    {
+                        if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).TileBuilding.Owner != Owner)
+                            return true;
+
+                        else
+                            return false;
+                    }
+
+                    else
+                        return false;
+                }
+
+                else
+                    return true;
+            }
+
+            else if (B + (C + Math.Sign(C)) / 2 >= Width)
+            {
+                if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).Unit == null)
+                {
+                    if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).TileBuilding != null)
+                    {
+                        if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).TileBuilding.Owner != Owner)
+                            return true;
+
+                        else
+                            return false;
+                    }
+
+                    else
+                        return false;
+                }
+
+                else
+                    return true;
+            }
+
+            else if (0 > B + (C + Math.Sign(C)) / 2)
+            {
+                if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).Unit == null)
+                {
+                    if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).TileBuilding != null)
+                    {
+                        if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).TileBuilding.Owner != Owner)
+                            return true;
+
+                        else
+                            return false;
+                    }
+
+                    else
+                        return false;
+                }
 
                 else
                     return true;

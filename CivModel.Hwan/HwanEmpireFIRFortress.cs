@@ -23,6 +23,15 @@ namespace CivModel.Hwan
         public HwanEmpireFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             owner.Game.TileObjectObservable.AddObserver(this);
+            if (point.Unit != null)
+            {
+                if (point.Unit.Owner == this.Owner)
+                {
+                    AboveUnit = point.Unit;
+                    AboveUnit.AttackPower += 5;
+                    AboveUnit.DefencePower += 5;
+                }
+            }
         }
 
         protected override void OnBeforeDestroy()

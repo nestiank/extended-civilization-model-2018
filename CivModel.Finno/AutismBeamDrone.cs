@@ -60,6 +60,29 @@ namespace CivModel.Finno
                 return 2;
             }
 
+            private bool IsInDistance(Terrain.Point? pt)
+            {
+                int A = Owner.PlacedPoint.Value.Position.A;
+                int B = Owner.PlacedPoint.Value.Position.B;
+                int C = Owner.PlacedPoint.Value.Position.C;
+                int Width = Owner.PlacedPoint.Value.Terrain.Width;
+
+                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - A), Math.Abs(pt.Value.Position.B - B)), Math.Abs(pt.Value.Position.C - C)) > 3)
+                {
+                    if (pt.Value.Position.B > B) // pt가 맵 오른쪽
+                    {
+                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B - Width - B), Math.Abs(pt.Value.Position.A + Width - A)), Math.Abs(pt.Value.Position.C - C)) > 3)
+                            return false;
+                    }
+                    else //pt가 맵 왼쪽
+                    {
+                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B + Width - B), Math.Abs(pt.Value.Position.A - Width - A)), Math.Abs(pt.Value.Position.C - C)) > 3)
+                            return false;
+                    }
+                }
+                return true;
+            }
+
             public void Act(Terrain.Point? pt)
             {
                 if (CheckError(pt) is Exception e)
@@ -84,6 +107,8 @@ namespace CivModel.Finno
                     return new ArgumentNullException(nameof(pt));
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     return new InvalidOperationException("Skill is not turned on");
+                if (!this.IsInDistance(pt))
+                    return new InvalidOperationException("Too Far to Use Autism Beam");
 
                 if (pt.Value.Unit is Unit unit && unit.Owner != Owner.Owner)
                 {
