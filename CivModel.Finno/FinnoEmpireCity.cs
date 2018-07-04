@@ -11,6 +11,7 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("300E06FD-B656-46DC-A668-BB36C75E3086");
         public override Guid Guid => ClassGuid;
 
+        private static Random _rand = new Random();
 
         public static readonly ActorConstants Constants = new ActorConstants
         {
@@ -23,176 +24,37 @@ namespace CivModel.Finno
 
         public override void PostTurn()
         {
+            if (_rand.Next(10) == 0)
+            {
+                SendUnit();
+            }
+
             base.PostTurn();
-            Random r = new Random();
-
-            int GetUnit = r.Next(1, 100);
-
-            if (GetUnit <= 10)
-            {
-                SendUnit(GetUnit);
-            }
         }
 
-        private void SendUnit(int rand)
+        private void SendUnit()
         {
-            int A = this.PlacedPoint.Value.Position.A;
-            int B = this.PlacedPoint.Value.Position.B;
-            int C = this.PlacedPoint.Value.Position.C;
-
-            bool IsItOk = false;
-
-            int PointA = A;
-            int PointB = B ;
-            int PointC = C;
-
-            if (!CheckUnit(A + 1, B - 1, C))
+            if (PlacedPoint is Terrain.Point thisPoint)
             {
-                IsItOk = true;
+                var creators = new Func<Terrain.Point, Unit>[] {
+                    pt => new DecentralizedMilitary(Owner, pt),
+                    pt => new EMUHorseArcher(Owner, pt),
+                    pt => new ElephantCavalry(Owner, pt),
+                    pt => new AncientSorcerer(Owner, pt),
+                    pt => new JediKnight(Owner, pt),
+                };
+                var creator = creators[_rand.Next(creators.Length)];
 
-                PointA = A + 1;
-                PointB = B - 1;
-                PointC = C;
-            }
-
-            else if (!CheckUnit(A + 1, B, C - 1))
-            {
-                IsItOk = true;
-
-                PointA = A + 1;
-                PointB = B;
-                PointC = C - 1;
-            }
-
-            else if (!CheckUnit(A, B + 1, C - 1))
-            {
-                IsItOk = true;
-
-                PointA = A;
-                PointB = B + 1;
-                PointC = C - 1;
-            }
-
-            else if (!CheckUnit(A - 1, B + 1, C))
-            {
-                IsItOk = true;
-
-                PointA = A - 1;
-                PointB = B + 1;
-                PointC = C;
-            }
-            
-            else if (!CheckUnit(A - 1, B, C + 1))
-            {
-                IsItOk = true;
-
-                PointA = A - 1;
-                PointB = B;
-                PointC = C + 1;
-            }
-
-            else if (!CheckUnit(A, B - 1, C + 1))
-            {
-                IsItOk = true;
-
-                PointA = A;
-                PointB = B - 1;
-                PointC = C + 1;
-            }
-
-            var ppt = this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC);
-            if (ppt.Unit == null && ppt.TileBuilding == null)
-            {
-                if (IsItOk)
+                foreach (var adjacent in thisPoint.Adjacents())
                 {
-                    if (rand <= 2)
-                        new DecentralizedMilitary(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
-
-
-                    else if (rand <= 4)
-                        new EMUHorseArcher(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
-
-
-                    else if (rand <= 6)
-                        new ElephantCavalry(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
-
-                    else if (rand <= 8)
-                        new AncientSorcerer(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
-
-                    else
-                        new JediKnight(Owner, this.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
-                }
-            }
-        }
-
-        private bool CheckUnit(int A, int B, int C)
-        {
-            int Width = this.PlacedPoint.Value.Terrain.Width;
-
-            if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < Width && 0 <= C && C < this.PlacedPoint.Value.Terrain.Height)
-            {
-                if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).Unit == null)
-                {
-                    if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).TileBuilding != null)
+                    if (adjacent is Terrain.Point pt && pt.Unit == null
+                        && (pt.TileBuilding == null || pt.TileBuilding.Owner == Owner))
                     {
-                        if (this.PlacedPoint.Value.Terrain.GetPoint(A, B, C).TileBuilding.Owner != Owner)
-                            return true;
-
-                        else
-                            return false;
+                        creator(pt);
+                        return;
                     }
-
-                    else
-                        return false;
                 }
-
-                else
-                    return true;
             }
-
-            else if (B + (C + Math.Sign(C)) / 2 >= Width)
-            {
-                if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).Unit == null)
-                {
-                    if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).TileBuilding != null)
-                    {
-                        if (this.PlacedPoint.Value.Terrain.GetPoint(A + Width, B - Width, C).TileBuilding.Owner != Owner)
-                            return true;
-
-                        else
-                            return false;
-                    }
-
-                    else
-                        return false;
-                }
-
-                else
-                    return true;
-            }
-
-            else if (0 > B + (C + Math.Sign(C)) / 2)
-            {
-                if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).Unit == null)
-                {
-                    if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).TileBuilding != null)
-                    {
-                        if (this.PlacedPoint.Value.Terrain.GetPoint(A - Width, B + Width, C).TileBuilding.Owner != Owner)
-                            return true;
-
-                        else
-                            return false;
-                    }
-
-                    else
-                        return false;
-                }
-
-                else
-                    return true;
-            }
-
-            return true;
         }
 
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
