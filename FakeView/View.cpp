@@ -543,7 +543,7 @@ namespace FakeView
             if (y >= scrsz.height)
                 return;
             color = 0b0000'0111;
-            m_screen->PrintString(0, y, color, "Labor: " + std::to_string(city->Labor));
+            m_screen->PrintString(0, y, color, "Labor: " + std::to_string(city->ProvidedLabor));
 
             y += 1;
             if (y >= scrsz.height)

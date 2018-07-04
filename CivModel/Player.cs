@@ -32,7 +32,9 @@ namespace CivModel
         /// The happiness income of this player.
         /// </summary>
         /// <seealso cref="IGameConstantScheme.HappinessCoefficient"/>
-        public double HappinessIncome => Game.Constants.HappinessCoefficient * ((EconomicInvestmentRatio - 1) * BasicEconomicRequire);
+        public double HappinessIncome =>
+            Game.Constants.HappinessCoefficient * ((EconomicInvestmentRatio - 1) * BasicEconomicRequire)
+            + TileBuildings.Sum(b => b.ProvidedHappiness);
 
         /// <summary>
         /// The gold of this player. This value is not negative.
@@ -57,7 +59,9 @@ namespace CivModel
         /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
         /// <seealso cref="IGameConstantScheme.GoldCoefficient"/>
-        public double GoldIncome => Game.Constants.GoldCoefficient * Population * TaxRate;
+        public double GoldIncome =>
+            Game.Constants.GoldCoefficient * Population * TaxRate
+            + TileBuildings.Sum(b => b.ProvidedGold);
 
         /// <summary>
         /// The gold net income without repair/production consumption.
@@ -78,12 +82,12 @@ namespace CivModel
 
         /// <summary>
         /// The labor per turn of this player, not controlled by <see cref="Happiness"/>.
-        /// It is equal to sum of all <see cref="CityBase.Labor"/> of cities of this player.
+        /// It is equal to sum of all <see cref="CityBase.ProvidedLabor"/> of cities of this player.
         /// </summary>
         /// <seealso cref="LaborWithoutLogistics"/>
         /// <seealso cref="Labor"/>
-        /// <seealso cref="CityBase.Labor"/>
-        public double OriginalLabor => TileBuildings.Select(b => b.Labor).Sum();
+        /// <seealso cref="CityBase.ProvidedLabor"/>
+        public double OriginalLabor => TileBuildings.Sum(b => b.ProvidedLabor);
 
         /// <summary>
         /// The labor per turn of this player without logistics consumption.

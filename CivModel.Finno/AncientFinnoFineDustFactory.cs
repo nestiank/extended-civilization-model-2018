@@ -19,7 +19,7 @@ namespace CivModel.Finno
             LaborLogistics = 10,
             MaxHealPerTurn = 4
         };
-        public override double Labor => 20;
+        public override double ProvidedLabor => 20;
 
 
         public AncientFinnoFineDustFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }

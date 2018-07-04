@@ -20,16 +20,9 @@ namespace CivModel.Hwan
             MaxHealPerTurn = 5
         };
 
-        public HwanEmpireIbiza(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public override double ProvidedHappiness => 1;
 
-        public override void PostTurn()
-        {
-            base.PostTurn();
-            if(Owner.Happiness + 1 <= 100)
-                Owner.Happiness += 1;
-            else
-                Owner.Happiness = 100;
-        }
+        public HwanEmpireIbiza(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
     }
 
     public class HwanEmpireIbizaProductionFactory : ITileObjectProductionFactory
