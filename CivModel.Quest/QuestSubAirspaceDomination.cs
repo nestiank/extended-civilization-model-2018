@@ -53,11 +53,22 @@ namespace CivModel.Quests
 
         public void OnAfterBattle(Actor attacker, Actor defender, Player atkOwner, Player defOwner, BattleResult result)
         {
-            if (atkOwner == Requestee && defender is CivModel.Zap.LEOSpaceArmada && result == BattleResult.Victory && defOwner == Game.Players[7])
+            if (atkOwner == Requestee && defOwner == Game.Players[7] && defender is CivModel.Zap.LEOSpaceArmada && defender.Owner == null)
             {
                 if (flag < 3)
                     flag += 1;
                 else if(flag >= 3)
+                {
+                    Status = QuestStatus.Completed;
+                    flag = 0;
+                }
+            }
+
+            else if (atkOwner == Game.Players[7] && defOwner == Requestee && attacker is CivModel.Zap.LEOSpaceArmada && attacker.Owner == null)
+            {
+                if (flag < 3)
+                    flag += 1;
+                else if (flag >= 3)
                 {
                     Status = QuestStatus.Completed;
                     flag = 0;
