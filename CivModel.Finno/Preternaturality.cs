@@ -21,16 +21,8 @@ namespace CivModel.Finno
         };
 
         public Preternaturality(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
-
-        public override void PostTurn()
-        {
-            base.PostTurn();
-            if (Owner.Happiness + 5 <= 100)
-                Owner.Happiness += 5;
-            else
-                Owner.Happiness = 100;
-            Owner.Gold += 200;
-        }
+        public override double ProvidedHappiness => 5;
+        public override double ProvidedGold => 200;
     }
 
     public class PreternaturalityProductionFactory : ITileObjectProductionFactory

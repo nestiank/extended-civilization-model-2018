@@ -25,14 +25,7 @@ namespace CivModel.Hwan
 
         public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
 
-       
-
-        public override void PostTurn()
-        {
-            base.PostTurn();
-
-            Owner.Gold += 10;
-        }
+        public override double ProvidedGold => 10;
     }
 
     public class HwanEmpireLatifundiumProductionFactory : ITileObjectProductionFactory

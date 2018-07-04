@@ -21,15 +21,7 @@ namespace CivModel.Finno
         };
 
         public AncientFinnoOctagon(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
-
-        public override void PostTurn()
-        {
-            base.PostTurn();
-            if (Owner.Happiness + 2 <= 100)
-                Owner.Happiness += 2;
-            else
-                Owner.Happiness = 100;
-        }
+        public override double ProvidedHappiness => 2;
     }
 
     public class AncientFinnoOctagonProductionFactory : ITileObjectProductionFactory
