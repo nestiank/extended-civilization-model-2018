@@ -22,7 +22,7 @@ namespace CivModel.Finno
 
         public override void PostTurn()
         {
-            if (Game.Random.Next(10) == 0)
+            if (Game.Random.Next(100) == 7)
             {
                 SendUnit();
             }
