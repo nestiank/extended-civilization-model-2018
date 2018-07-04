@@ -11,6 +11,9 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("10B85454-07B8-4D6A-8FF2-157870C41AF6");
         public override Guid Guid => ClassGuid;
 
+        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
+
 
         public static readonly ActorConstants Constants = new ActorConstants
         {
@@ -20,12 +23,86 @@ namespace CivModel.Hwan
             LaborLogistics = 10,
             MaxHealPerTurn = 4
         };
+        private double _ProvidedGold = 10;
+        public override double ProvidedGold => _ProvidedGold;
+
+        private double _ProvidedLabor = 0;
+        public override double ProvidedLabor => _ProvidedLabor;
+
+        public int SkillDurationTime = 0;
+
+        public override void PostTurn()
+        {
+            if (this.SkillDurationTime >= this.Owner.Game.TurnNumber)
+            {
+                _ProvidedGold = 0;
+                _ProvidedLabor = 10;
+            }
+            else
+            {
+                _ProvidedGold = 10;
+                _ProvidedLabor = 0;
+            }
+            base.PostTurn();
+        }
 
 
 
-        public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        {
+            _specialActs[0] = new HwanEmpireLatifundiumAction(this);
+        }
 
-        public override double ProvidedGold => 10;
+        private class HwanEmpireLatifundiumAction : IActorAction
+        {
+            private readonly HwanEmpireLatifundium _owner;
+            public Actor Owner => _owner;
+
+            public bool IsParametered => false;
+
+            public int LastSkillCalled = -1;
+
+            public HwanEmpireLatifundiumAction(HwanEmpireLatifundium owner)
+            {
+                _owner = owner;
+            }
+
+            private Exception CheckError(Terrain.Point? pt)
+            {
+                if (pt != null)
+                    return new ArgumentException("pt is invalid");
+                if (!_owner.PlacedPoint.HasValue)
+                    return new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
+                    return new InvalidOperationException("Skill is not turned on");
+
+                return null;
+            }
+
+            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            {
+                if (CheckError(pt) != null)
+                    return double.NaN;
+
+                return 0;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                ActionPoint Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
+                _owner.SkillDurationTime = Owner.Owner.Game.TurnNumber + 2;
+
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
+            }
+        }
+
+        
     }
 
     public class HwanEmpireLatifundiumProductionFactory : ITileObjectProductionFactory
