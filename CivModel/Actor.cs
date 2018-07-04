@@ -678,13 +678,13 @@ namespace CivModel
             }
 
             OnAfterDamage(atk, def, myDamage, yourDamage,
-                this, opposite, Owner, opposite.Owner, isMelee, isSkillAttack);
+                this, opposite, myOwner, yourOwner, isMelee, isSkillAttack);
             opposite.OnAfterDamage(atk, def, myDamage, yourDamage,
-                this, opposite, Owner, opposite.Owner, isMelee, isSkillAttack);
+                this, opposite, myOwner, yourOwner, isMelee, isSkillAttack);
 
             var ret = rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
 
-            Game.BattleObservable.IterateObserver(obj => obj.OnAfterBattle(this, opposite, Owner, opposite.Owner, ret));
+            Game.BattleObservable.IterateObserver(obj => obj.OnAfterBattle(this, opposite, myOwner, yourOwner, ret));
 
             return ret;
         }

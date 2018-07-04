@@ -264,7 +264,7 @@ namespace CivModel
         /// <see cref="IEnumerable{T}"/> object which contains <see cref="Actor"/> objects this player owns.
         /// </summary>
         /// <seealso cref="Actor"/>
-        public IEnumerable<Actor> Actors => Units.Cast<Actor>().Concat(Cities);
+        public IEnumerable<Actor> Actors => Units.Cast<Actor>().Concat(TileBuildings);
 
         /// <summary>
         /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
