@@ -19,11 +19,25 @@ namespace CivModel
         public override IActorAction MoveAct => null;
 
         /// <summary>
+        /// The amount of gold this building provides.
+        /// </summary>
+        /// <seealso cref="InteriorBuilding.ProvidedGold"/>
+        /// <seealso cref="Player.GoldIncome"/>
+        public virtual double ProvidedGold => 0;
+
+        /// <summary>
+        /// The amount of happiness this building provides.
+        /// </summary>
+        /// <seealso cref="InteriorBuilding.ProvidedHappiness"/>
+        /// <seealso cref="Player.HappinessIncome"/>
+        public virtual double ProvidedHappiness => 0;
+
+        /// <summary>
         /// The labor which this tile building offers.
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedLabor"/>
         /// <seealso cref="Player.Labor"/>
-        public virtual double Labor => 0;
+        public virtual double ProvidedLabor => 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TileBuilding"/> class.

@@ -59,8 +59,7 @@ namespace CivModel
         /// <summary>
         /// The original constants of this building. The actual values can be different from the values of this property.
         /// </summary>
-        public InteriorBuildingConstants OriginalConstants => _originalConstants;
-        private readonly InteriorBuildingConstants _originalConstants;
+        public InteriorBuildingConstants OriginalConstants { get; }
 
         /// <summary>
         /// The amount of gold logistics of this actor.
@@ -79,10 +78,22 @@ namespace CivModel
         private double _goldLogistics;
 
         /// <summary>
+        /// The amount of gold this building provides.
+        /// </summary>
+        /// <seealso cref="CityBase.ProvidedGold"/>
+        public double ProvidedGold => 0;
+
+        /// <summary>
+        /// The amount of happiness this building provides.
+        /// </summary>
+        /// <seealso cref="CityBase.ProvidedHappiness"/>
+        public double ProvidedHappiness => 0;
+
+        /// <summary>
         /// The amount of labor this building provides.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">ProvidedLabor is negative</exception>
-        /// <seealso cref="CityBase.Labor"/>
+        /// <seealso cref="CityBase.ProvidedLabor"/>
         public double ProvidedLabor
         {
             get => _providedLabor;
@@ -188,7 +199,7 @@ namespace CivModel
         public InteriorBuilding(CityBase city, InteriorBuildingConstants constants)
         {
             CopyConstants(constants);
-            _originalConstants = constants.Clone();
+            OriginalConstants = constants.Clone();
 
             _owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");

@@ -28,12 +28,6 @@ namespace CivModel
         private static int _cityNamePrefix = 1;
 
         /// <summary>
-        /// The action performing movement. <c>null</c> if this actor cannot do.
-        /// </summary>
-        public override IActorAction HoldingAttackAct => _holdingAttackAct;
-        private readonly IActorAction _holdingAttackAct;
-
-        /// <summary>
         /// The population of this city.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Population must be bigger or equal than 1</exception>
@@ -61,11 +55,25 @@ namespace CivModel
             * (InteriorBuildings.Count == 0 ? 1 : InteriorBuildings.Select(b => b.PopulationCoefficient).Aggregate((a, x) => a * x));
 
         /// <summary>
-        /// The labor which this city offers.
+        /// The amount of gold this building provides.
+        /// </summary>
+        /// <seealso cref="InteriorBuilding.ProvidedGold"/>
+        /// <seealso cref="Player.GoldIncome"/>
+        public override double ProvidedGold => InteriorBuildings.Select(b => b.ProvidedGold).Sum();
+
+        /// <summary>
+        /// The amount of happiness this building provides.
+        /// </summary>
+        /// <seealso cref="InteriorBuilding.ProvidedHappiness"/>
+        /// <seealso cref="Player.HappinessIncome"/>
+        public override double ProvidedHappiness => InteriorBuildings.Select(b => b.ProvidedHappiness).Sum();
+
+        /// <summary>
+        /// The labor which this city provides.
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedLabor"/>
         /// <seealso cref="Player.Labor"/>
-        public override double Labor => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
+        public override double ProvidedLabor => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
 
         /// <summary>
         /// The list of <see cref="InteriorBuilding"/> this city owns.
@@ -94,8 +102,6 @@ namespace CivModel
                 ++_cityNamePrefix;
             }
             while (!TrySetCityName(name));
-
-            _holdingAttackAct = new AttackActorAction(this, false);
 
             Owner.BeforeLandingCity = false;
         }
