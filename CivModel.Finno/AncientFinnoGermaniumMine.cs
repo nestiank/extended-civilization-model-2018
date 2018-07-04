@@ -26,9 +26,7 @@ namespace CivModel.Finno
         {
             base.PostTurn();
 
-            Random r = new Random();
-
-            int GetGold = r.Next(1, 100);
+            int GetGold = Game.Random.Next(100);
 
             if (GetGold < 6)
             {

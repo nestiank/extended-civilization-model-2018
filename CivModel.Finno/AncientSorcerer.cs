@@ -93,6 +93,8 @@ namespace CivModel.Finno
                     return new InvalidOperationException("There is no target");
                 if (pt.Value.Unit.Owner != Owner.Owner)
                     return new InvalidOperationException("The Unit is hostile");
+                if(pt.Value.Unit.MaxHP == pt.Value.Unit.RemainHP)
+                    return new InvalidOperationException("The Unit Has Full HP"); //만피 회복 불가
                 if (!this.IsInDistance(pt))
                     return new InvalidOperationException("Too Far to Heal");
 
@@ -108,9 +110,13 @@ namespace CivModel.Finno
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
+                Unit Patient = pt.Value.Unit;
                 double AmountOfHeal = 0;
+                double NeedHeal = Patient.MaxHP - Patient.RemainHP;
 
                 AmountOfHeal = Math.Min(10, Owner.RemainHP);
+                AmountOfHeal = Math.Min(AmountOfHeal, NeedHeal);
+
                 pt.Value.Unit.Heal(AmountOfHeal);
 
                 Owner.RemainHP = Owner.RemainHP - AmountOfHeal;

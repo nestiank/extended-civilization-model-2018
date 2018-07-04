@@ -24,9 +24,8 @@ namespace CivModel.Hwan
         public override void PostTurn()
         {
             base.PostTurn();
-            Random r = new Random();
 
-            int GetSoBoRo = r.Next(1, 100);
+            int GetSoBoRo = Game.Random.Next(100);
 
             if (GetSoBoRo <= 30)
                 this.SoBoRo = this.SoBoRo + 1;

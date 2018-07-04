@@ -24,6 +24,11 @@ namespace CivModel
         private Player _owner;
 
         /// <summary>
+        /// The <see cref="Game"/> object
+        /// </summary>
+        public Game Game => Owner.Game;
+
+        /// <summary>
         /// The <see cref="CityBase"/> where this building is.
         /// </summary>
         public CityBase City
