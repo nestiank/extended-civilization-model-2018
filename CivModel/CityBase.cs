@@ -89,8 +89,6 @@ namespace CivModel
             }
             while (!TrySetCityName(name));
 
-            _holdingAttackAct = new AttackActorAction(this, false);
-
             Owner.BeforeLandingCity = false;
         }
 
