@@ -28,12 +28,6 @@ namespace CivModel
         private static int _cityNamePrefix = 1;
 
         /// <summary>
-        /// The action performing movement. <c>null</c> if this actor cannot do.
-        /// </summary>
-        public override IActorAction HoldingAttackAct => _holdingAttackAct;
-        private readonly IActorAction _holdingAttackAct;
-
-        /// <summary>
         /// The population of this city.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Population must be bigger or equal than 1</exception>
