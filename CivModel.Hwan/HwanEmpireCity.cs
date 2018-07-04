@@ -44,7 +44,7 @@ namespace CivModel.Hwan
             private readonly HwanEmpireCity _owner;
             public Actor Owner => _owner;
 
-            public bool IsParametered => false;
+            public bool IsParametered => true;
 
             public int LastSkillCalled = -1;
 
@@ -53,13 +53,50 @@ namespace CivModel.Hwan
                 _owner = owner;
             }
 
+            private Exception CheckError(Terrain.Point? pt)
+            {
+                if (pt == null)
+                    return new ArgumentException("pt is invalid");
+                if (!_owner.PlacedPoint.HasValue)
+                    return new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
+                    return new InvalidOperationException("Skill is not turned on");
+                if (pt.Value.Unit == null)
+                    return new InvalidOperationException("There is no target");
+                if (pt.Value.Unit.Owner == Owner.Owner)
+                    return new InvalidOperationException("The Unit is not hostile");
+                if (!this.IsInDistance(pt))
+                    return new InvalidOperationException("Too Far to Attack");
+
+                return null;
+            }
+
+            private bool IsInDistance(Terrain.Point? pt)
+            {
+                int A = Owner.PlacedPoint.Value.Position.A;
+                int B = Owner.PlacedPoint.Value.Position.B;
+                int C = Owner.PlacedPoint.Value.Position.C;
+                int Width = Owner.PlacedPoint.Value.Terrain.Width;
+
+                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - A), Math.Abs(pt.Value.Position.B - B)), Math.Abs(pt.Value.Position.C - C)) > 2)
+                {
+                    if (pt.Value.Position.B > B) // pt가 맵 오른쪽
+                    {
+                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B - Width - B), Math.Abs(pt.Value.Position.A + Width - A)), Math.Abs(pt.Value.Position.C - C)) > 2)
+                            return false;
+                    }
+                    else //pt가 맵 왼쪽
+                    {
+                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B + Width - B), Math.Abs(pt.Value.Position.A - Width - A)), Math.Abs(pt.Value.Position.C - C)) > 2)
+                            return false;
+                    }
+                }
+                return true;
+            }
+
             public ActionPoint GetRequiredAP(Terrain.Point? pt)
             {
-                if (pt != null)
-                    return double.NaN;
-                if (!_owner.PlacedPoint.HasValue)
-                    return double.NaN;
-                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
+                if (CheckError(pt) != null)
                     return double.NaN;
 
                 return 0;
@@ -67,52 +104,16 @@ namespace CivModel.Hwan
 
             public void Act(Terrain.Point? pt)
             {
-                if (pt != null)
-                    throw new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    throw new InvalidOperationException("Actor is not placed yet");
-                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
-                    throw new InvalidOperationException("Skill is not turned on");
+                if (CheckError(pt) is Exception e)
+                    throw e;
 
-                int A = Owner.PlacedPoint.Value.Position.A;
-                int B = Owner.PlacedPoint.Value.Position.B;
-                int C = Owner.PlacedPoint.Value.Position.C;
+                ActionPoint Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
 
-                RealAction(A + 1, B - 1, C);
-                RealAction(A + 1, B, C - 1);
-                RealAction(A, B + 1, C - 1);
-                RealAction(A - 1, B + 1, C);
-                RealAction(A - 1, B, C + 1);
-                RealAction(A, B - 1, C + 1);
-
-                RealAction(A + 2, B - 2, C);
-                RealAction(A + 2, B - 1, C - 1);
-                RealAction(A + 2, B, C - 2);
-                RealAction(A + 1, B + 1, C - 2);
-                RealAction(A, B + 2, C - 2);
-                RealAction(A - 1, B + 2, C - 1);
-                RealAction(A - 2, B + 2, C);
-                RealAction(A - 2, B + 1, C + 1);
-                RealAction(A - 2, B, C + 2);
-                RealAction(A - 1, B - 1, C + 2);
-                RealAction(A, B - 2, C + 2);
-                RealAction(A + 1, B - 2, C + 1);
+                Owner.AttackTo(30, pt.Value.Unit, 0, false, true);
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
-            }
-
-            private void RealAction(int A, int B, int C)
-            {
-                if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < Owner.PlacedPoint.Value.Terrain.Width && 0 <= C && C < Owner.PlacedPoint.Value.Terrain.Height)
-                {
-                    if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null)
-                    {
-                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit.Owner != Owner.Owner)
-                        {
-                            Owner.AttackTo(30, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit, 0, false, true);
-                        }
-                    }
-                }
             }
         }
 
