@@ -122,9 +122,8 @@ namespace CivModel.Finno
         public override void PostTurn()
         {
             base.PostTurn();
-            Random r = new Random();
 
-            int GetUnit = r.Next(1, 100);
+            int GetUnit = Game.Random.Next(100);
 
             if (GetUnit <= 20)
             {

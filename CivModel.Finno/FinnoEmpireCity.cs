@@ -11,8 +11,6 @@ namespace CivModel.Finno
         public static Guid ClassGuid { get; } = new Guid("300E06FD-B656-46DC-A668-BB36C75E3086");
         public override Guid Guid => ClassGuid;
 
-        private static Random _rand = new Random();
-
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 500,
@@ -24,7 +22,7 @@ namespace CivModel.Finno
 
         public override void PostTurn()
         {
-            if (_rand.Next(10) == 0)
+            if (Game.Random.Next(10) == 0)
             {
                 SendUnit();
             }
@@ -43,7 +41,7 @@ namespace CivModel.Finno
                     pt => new AncientSorcerer(Owner, pt),
                     pt => new JediKnight(Owner, pt),
                 };
-                var creator = creators[_rand.Next(creators.Length)];
+                var creator = creators[Game.Random.Next(creators.Length)];
 
                 foreach (var adjacent in thisPoint.Adjacents())
                 {

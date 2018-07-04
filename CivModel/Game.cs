@@ -35,6 +35,14 @@ namespace CivModel
         public GuidTaggedObjectManager GuidManager { get; private set; } // init by PreInitialize
 
         /// <summary>
+        /// The random generator of this game.
+        /// </summary>
+        /// <remarks>
+        /// All random values used in this game must be generated from this object by default.
+        /// </remarks>
+        public Random Random { get; private set; } // init by PreInitialize
+
+        /// <summary>
         /// <see cref="Terrain"/> of this game.
         /// </summary>
         public Terrain Terrain { get; private set; }
@@ -220,6 +228,8 @@ namespace CivModel
         private void PreInitialize()
         {
             GuidManager = new GuidTaggedObjectManager();
+            Random = new Random();
+
             _players = new List<Player>();
             SubTurnNumber = 0;
             IsInsideTurn = false;

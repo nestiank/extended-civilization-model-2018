@@ -20,107 +20,34 @@ namespace CivModel.Finno
 
         public override void PostTurn()
         {
+            if (Game.Random.Next(5) == 0)
+            {
+                SendUnit();
+            }
+
             base.PostTurn();
-            Random r = new Random();
-
-            int GetUnit = r.Next(1, 100);
-
-            if (GetUnit <= 20)
-            {
-                SendUnit(GetUnit);
-            }
         }
 
-        private void SendUnit(int rand)
+        private void SendUnit()
         {
-            int A = this.City.PlacedPoint.Value.Position.A;
-            int B = this.City.PlacedPoint.Value.Position.B;
-            int C = this.City.PlacedPoint.Value.Position.C;
-
-            bool IsItOk = false;
-
-            int PointA = A;
-            int PointB = B;
-            int PointC = C;
-
-            if (!CheckUnit(A + 1, B - 1, C))
+            if (City.PlacedPoint is Terrain.Point thisPoint)
             {
-                IsItOk = true;
+                var creators = new Func<Terrain.Point, Unit>[] {
+                    pt => new DecentralizedMilitary(Owner, pt),
+                    pt => new EMUHorseArcher(Owner, pt),
+                };
+                var creator = creators[Game.Random.Next(creators.Length)];
 
-                PointA = A + 1;
-                PointB = B - 1;
-                PointC = C;
+                foreach (var adjacent in thisPoint.Adjacents())
+                {
+                    if (adjacent is Terrain.Point pt && pt.Unit == null
+                        && (pt.TileBuilding == null || pt.TileBuilding.Owner == Owner))
+                    {
+                        creator(pt);
+                        return;
+                    }
+                }
             }
-
-            else if (!CheckUnit(A + 1, B, C - 1))
-            {
-                IsItOk = true;
-
-                PointA = A + 1;
-                PointB = B;
-                PointC = C - 1;
-            }
-
-            else if (!CheckUnit(A, B + 1, C - 1))
-            {
-                IsItOk = true;
-
-                PointA = A;
-                PointB = B + 1;
-                PointC = C - 1;
-            }
-
-            else if (!CheckUnit(A - 1, B + 1, C))
-            {
-                IsItOk = true;
-
-                PointA = A - 1;
-                PointB = B + 1;
-                PointC = C;
-            }
-
-            else if (!CheckUnit(A - 1, B, C + 1))
-            {
-                IsItOk = true;
-
-                PointA = A - 1;
-                PointB = B;
-                PointC = C + 1;
-            }
-
-            else if (!CheckUnit(A, B - 1, C + 1))
-            {
-                IsItOk = true;
-
-                PointA = A;
-                PointB = B - 1;
-                PointC = C + 1;
-            }
-
-            if (IsItOk)
-            {
-                if (rand % 2 == 0)
-                    new DecentralizedMilitary(Owner, this.City.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
-
-
-                else
-                    new EMUHorseArcher(Owner, this.City.PlacedPoint.Value.Terrain.GetPoint(PointA, PointB, PointC));
-
-            }
-        }
-
-        private bool CheckUnit(int A, int B, int C)
-        {
-            if (0 <= B + (C + Math.Sign(C)) / 2 && B + (C + Math.Sign(C)) / 2 < this.City.PlacedPoint.Value.Terrain.Width && 0 <= C && C < this.City.PlacedPoint.Value.Terrain.Height)
-            {
-                if ((this.City.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).Unit != null && (this.City.PlacedPoint.Value.Terrain.GetPoint(A, B, C)).TileOwner == this.Owner)
-                    return false;
-
-                else
-                    return true;
-            }
-
-            return true;
         }
     }
 
