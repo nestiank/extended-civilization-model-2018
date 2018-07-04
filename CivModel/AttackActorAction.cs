@@ -95,10 +95,16 @@ namespace CivModel
 
         private Actor GetTargetObject(Terrain.Point target)
         {
-            if (target.TileBuilding != null && target.TileBuilding.RemainHP > 0)
+            /*if (target.TileBuilding != null && target.TileBuilding.RemainHP > 0)
                return target.TileBuilding;
             else
+                return target.Unit;*/
+            if (target.Unit != null)
                 return target.Unit;
+            else if (target.TileBuilding != null && target.TileBuilding.RemainHP > 0)
+                return target.TileBuilding;
+            else
+                return null;
         }
     }
 }
