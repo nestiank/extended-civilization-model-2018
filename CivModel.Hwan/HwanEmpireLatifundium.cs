@@ -14,7 +14,6 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-
         public static readonly ActorConstants Constants = new ActorConstants
         {
             MaxHP = 20,
@@ -23,34 +22,43 @@ namespace CivModel.Hwan
             LaborLogistics = 10,
             MaxHealPerTurn = 4
         };
-        private double _ProvidedGold = 10;
-        public override double ProvidedGold => _ProvidedGold;
 
-        private double _ProvidedLabor = 0;
-        public override double ProvidedLabor => _ProvidedLabor;
+        public override double ProvidedGold => _providedGold;
+        private double _providedGold;
 
-        public int SkillDurationTime = 0;
+        public override double ProvidedLabor => _providedLabor;
+        private double _providedLabor;
 
-        public override void PostTurn()
-        {
-            if (this.SkillDurationTime >= this.Owner.Game.TurnNumber)
-            {
-                _ProvidedGold = 0;
-                _ProvidedLabor = 10;
-            }
-            else
-            {
-                _ProvidedGold = 10;
-                _ProvidedLabor = 0;
-            }
-            base.PostTurn();
-        }
-
-
+        private int _skillExpireTurn;
 
         public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _specialActs[0] = new HwanEmpireLatifundiumAction(this);
+
+            SkillModeOff();
+        }
+
+        private void SkillModeOn()
+        {
+            _providedGold = 0;
+            _providedLabor = 10;
+            _skillExpireTurn = Game.TurnNumber + 2;
+        }
+        private void SkillModeOff()
+        {
+            _providedGold = 10;
+            _providedLabor = 0;
+            _skillExpireTurn = -1;
+        }
+
+        public override void PostTurn()
+        {
+            if (_skillExpireTurn >= Game.TurnNumber)
+            {
+                SkillModeOff();
+            }
+
+            base.PostTurn();
         }
 
         private class HwanEmpireLatifundiumAction : IActorAction
@@ -96,13 +104,11 @@ namespace CivModel.Hwan
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
-                _owner.SkillDurationTime = Owner.Owner.Game.TurnNumber + 2;
+                _owner.SkillModeOn();
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
             }
         }
-
-        
     }
 
     public class HwanEmpireLatifundiumProductionFactory : ITileObjectProductionFactory
