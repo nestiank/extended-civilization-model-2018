@@ -211,16 +211,19 @@ namespace CivModel
         /// </summary>
         public override void PostTurn()
         {
-            base.PostTurn();
-
-            _population += PopulationIncome;
-            if (_population < 1)
-            {
-                Destroy();
-            }
-
             foreach (var building in InteriorBuildings)
                 building.PostTurn();
+
+            base.PostTurn();
+
+            if (Owner != null)
+            {
+                _population += PopulationIncome;
+                if (_population < 1)
+                {
+                    Destroy();
+                }
+            }
         }
 
         /// <summary>
@@ -241,10 +244,10 @@ namespace CivModel
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public override void PostPlayerSubTurn(Player playerInTurn)
         {
-            base.PostPlayerSubTurn(playerInTurn);
-
             foreach (var building in InteriorBuildings)
                 building.PostPlayerSubTurn(playerInTurn);
+
+            base.PostPlayerSubTurn(playerInTurn);
         }
     }
 }
