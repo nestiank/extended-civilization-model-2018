@@ -80,6 +80,9 @@ namespace CivModel
         /// </summary>
         /// <param name="lhs">The LHS.</param>
         /// <param name="rhs">The RHS.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static bool operator <(ActionPoint lhs, double rhs)
         {
             return !double.IsNaN(lhs.Value) && lhs.Value < rhs;
@@ -125,6 +128,9 @@ namespace CivModel
         /// </summary>
         /// <param name="lhs">The LHS.</param>
         /// <param name="rhs">The RHS.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static bool operator >(ActionPoint lhs, double rhs)
         {
             return double.IsNaN(lhs.Value) || lhs.Value > rhs;

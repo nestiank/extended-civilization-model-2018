@@ -694,7 +694,7 @@ namespace CivModel
         /// </summary>
         /// <param name="damage">The damage.</param>
         /// <param name="oppositeOwner">The owner who gives this damage. This can be <c>null</c>.</param>
-        /// <returns></returns>
+        /// <returns>If this actor is died by damage, <c>true</c>. Otherwise, <c>false</c>.</returns>
         public bool GetDamage(double damage, Player oppositeOwner)
         {
             _remainHP -= damage;
