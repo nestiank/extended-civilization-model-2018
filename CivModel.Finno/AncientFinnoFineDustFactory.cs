@@ -21,23 +21,19 @@ namespace CivModel.Finno
         };
         public override double ProvidedLabor => 20;
 
-
         public AncientFinnoFineDustFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
 
         public override void PostTurn()
         {
-            base.PostTurn();
-            foreach (var Player in Owner.Game.Players) // 행복도 감소
+            foreach (var player in Owner.Game.Players) // 행복도 감소
             {
-                if (Player.Team != this.Owner.Team)
+                if (player.Team != Owner.Team)
                 {
-                    if (Player.Happiness - 5 >= -100)
-                        Player.Happiness -= 5;
-                    else
-                        Player.Happiness = -100;
+                    player.Happiness = Math.Max(-100, player.Happiness - 5);
                 }
             }
 
+            base.PostTurn();
         }
     }
 
