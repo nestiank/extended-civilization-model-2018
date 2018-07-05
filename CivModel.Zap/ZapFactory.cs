@@ -18,7 +18,7 @@ namespace CivModel.Zap
             LaborLogistics = 10,
             MaxHealPerTurn = 2
         };
-        public override double Labor => 10;
+        public override double ProvidedLabor => 10;
 
         public ZapFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
     }

@@ -11,6 +11,8 @@ namespace CivModel.Hwan
         public static Guid ClassGuid { get; } = new Guid("10B85454-07B8-4D6A-8FF2-157870C41AF6");
         public override Guid Guid => ClassGuid;
 
+        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
 
         public static readonly ActorConstants Constants = new ActorConstants
         {
@@ -21,17 +23,91 @@ namespace CivModel.Hwan
             MaxHealPerTurn = 4
         };
 
+        public override double ProvidedGold => _providedGold;
+        private double _providedGold;
 
+        public override double ProvidedLabor => _providedLabor;
+        private double _providedLabor;
 
-        public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        private int _skillExpireTurn;
 
-       
+        public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        {
+            _specialActs[0] = new HwanEmpireLatifundiumAction(this);
+
+            SkillModeOff();
+        }
+
+        private void SkillModeOn()
+        {
+            _providedGold = 0;
+            _providedLabor = 10;
+            _skillExpireTurn = Game.TurnNumber + 2;
+        }
+        private void SkillModeOff()
+        {
+            _providedGold = 10;
+            _providedLabor = 0;
+            _skillExpireTurn = -1;
+        }
 
         public override void PostTurn()
         {
-            base.PostTurn();
+            if (_skillExpireTurn >= Game.TurnNumber)
+            {
+                SkillModeOff();
+            }
 
-            Owner.Gold += 10;
+            base.PostTurn();
+        }
+
+        private class HwanEmpireLatifundiumAction : IActorAction
+        {
+            private readonly HwanEmpireLatifundium _owner;
+            public Actor Owner => _owner;
+
+            public bool IsParametered => false;
+
+            public int LastSkillCalled = -1;
+
+            public HwanEmpireLatifundiumAction(HwanEmpireLatifundium owner)
+            {
+                _owner = owner;
+            }
+
+            private Exception CheckError(Terrain.Point? pt)
+            {
+                if (pt != null)
+                    return new ArgumentException("pt is invalid");
+                if (!_owner.PlacedPoint.HasValue)
+                    return new InvalidOperationException("Actor is not placed yet");
+                if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
+                    return new InvalidOperationException("Skill is not turned on");
+
+                return null;
+            }
+
+            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            {
+                if (CheckError(pt) != null)
+                    return double.NaN;
+
+                return 0;
+            }
+
+            public void Act(Terrain.Point? pt)
+            {
+                if (CheckError(pt) is Exception e)
+                    throw e;
+
+                ActionPoint Ap = GetRequiredAP(pt);
+                if (!Owner.CanConsumeAP(Ap))
+                    throw new InvalidOperationException("Not enough Ap");
+
+                _owner.SkillModeOn();
+
+                LastSkillCalled = Owner.Owner.Game.TurnNumber;
+            }
         }
     }
 

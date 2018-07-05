@@ -21,25 +21,8 @@ namespace CivModel.Hwan
         };
 
         public Preternaturality(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
-
-        public override void PostTurn()
-        {
-            base.PostTurn();
-            if (Owner.Happiness + 5 <= 100)
-                Owner.Happiness += 5;
-            else
-                Owner.Happiness = 100;
-            Owner.Gold += 200;
-        }
-
-        protected override void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,
-            Actor attacker, Actor defender, Player atkOwner, Player defOwner, bool isMelee, bool isSkillAttack)
-        {
-            if (this == defender && attacker.Owner != null)
-            {
-                attacker.GetDamage(20, defOwner);
-            }
-        }
+        public override double ProvidedHappiness => 5;
+        public override double ProvidedGold => 200;
     }
 
     public class PreternaturalityProductionFactory : ITileObjectProductionFactory
