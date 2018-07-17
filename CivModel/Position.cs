@@ -25,12 +25,12 @@ namespace CivModel
         /// <summary>
         /// A in logical coordinate system.
         /// </summary>
-        public int A => -B - C;
+        public int A => -X - ((Y + (Math.Sign(Y) - 1) / 2) / 2);
 
         /// <summary>
         /// B in logical coordinate system.
         /// </summary>
-        public int B => X - (Y + Math.Sign(Y)) / 2;
+        public int B => -A - C;
 
         /// <summary>
         /// C in logical coordinate system.
@@ -62,9 +62,91 @@ namespace CivModel
                 throw new ArgumentException("logical coordinate is invalid");
 
             return new Position {
-                X = b + (c + Math.Sign(c)) / 2,
+                X = -a - ((c + (Math.Sign(c) - 1) / 2) / 2),
                 Y = c
             };
+        }
+
+        /// <summary>
+        /// Gets the list of positions, within the specified distance, in left-to-right, top-to-bottom order.
+        /// </summary>
+        /// <param name="distance">The distance</param>
+        /// <returns>The list of positions</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="distance"/> is negative</exception>
+        /// <seealso cref="AdjacentsAtDistance(int)"/>
+        /// <seealso cref="Terrain.Point.AdjacentsWithinDistance(int)"/>
+        public IEnumerable<Position> AdjacentsWithinDistance(int distance)
+        {
+            if (distance < 0)
+                throw new ArgumentOutOfRangeException(nameof(distance), "distance is negative");
+
+            for (int dc = -distance; dc <= distance; ++dc)
+            {
+                int da0 = Math.Max(0, -dc) - distance;
+                for (int da = distance - Math.Max(0, dc); da >= da0; --da)
+                {
+                    int db = 0 - dc - da;
+                    yield return FromLogical(A + da, B + db, C + dc);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the list of positions, at the specified distance, in clockwise order.
+        /// </summary>
+        /// <param name="distance">The distance</param>
+        /// <returns>The list of positions</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="distance"/> is negative</exception>
+        /// <remarks>
+        /// Get the list of the adjacent points in clockwise order.
+        /// A first element of the list is the left one.
+        /// <code>
+        /// // the result when distance = 1
+        /// //   1   2
+        /// // 0  pt  3
+        /// //   5   4
+        /// </code>
+        /// </remarks>
+        /// <seealso cref="AdjacentsWithinDistance(int)"/>
+        /// <seealso cref="Terrain.Point.AdjacentsAtDistance(int)"/>
+        public IEnumerable<Position> AdjacentsAtDistance(int distance)
+        {
+            if (distance < 0)
+                throw new ArgumentOutOfRangeException(nameof(distance), "distance is negative");
+
+            int da = distance;
+            int db = -distance;
+            int dc = 0;
+
+            for (; db < 0; ++db, --dc)
+                yield return FromLogical(A + da, B + db, C + dc);
+
+            for (; da > 0; --da, ++db)
+                yield return FromLogical(A + da, B + db, C + dc);
+
+            for (; dc < 0; ++dc, --da)
+                yield return FromLogical(A + da, B + db, C + dc);
+
+            for (; db > 0; --db, ++dc)
+                yield return FromLogical(A + da, B + db, C + dc);
+
+            for (; da < 0; ++da, --db)
+                yield return FromLogical(A + da, B + db, C + dc);
+
+            for (; dc > 0; --dc, ++da)
+                yield return FromLogical(A + da, B + db, C + dc);
+        }
+
+        /// <summary>
+        /// Gets the list of adjacent positions, in clockwise order.
+        /// </summary>
+        /// <returns>The list of positions</returns>
+        /// <seealso cref="AdjacentsWithinDistance(int)"/>
+        /// <seealso cref="AdjacentsAtDistance(int)"/>
+        /// <seealso cref="Terrain.Point.Adjacents"/>
+        public Position[] Adjacents()
+        {
+            return AdjacentsAtDistance(1).ToArray();
         }
 
         /// <summary>

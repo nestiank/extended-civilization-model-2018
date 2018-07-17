@@ -13,9 +13,13 @@ namespace CivModel
     public enum BattleResult
     {
         /// <summary>
-        /// Indicating that battle result is draw.
+        /// Indicating that battle result is draw, and no one has died.
         /// </summary>
-        Draw,
+        DrawAlive,
+        /// <summary>
+        /// Indicating that battle result is draw, and both one have died.
+        /// </summary>
+        DrawDead,
         /// <summary>
         /// Indicating that battle result is victory.
         /// </summary>
@@ -666,23 +670,25 @@ namespace CivModel
                 return BattleResult.Cancelled;
             }
 
-            int rs = 0;
+            var ret = BattleResult.DrawAlive;
 
             if (opposite.GetDamage(yourDamage, Owner))
-                ++rs;
+            {
+                ret = BattleResult.Victory;
+            }
 
             if (Owner != null && isMelee)
             {
                 if (GetDamage(myDamage, opposite.Owner))
-                    --rs;
+                {
+                    ret = (ret == BattleResult.DrawAlive) ? BattleResult.Defeated : BattleResult.DrawDead;
+                }
             }
 
             OnAfterDamage(atk, def, myDamage, yourDamage,
                 this, opposite, myOwner, yourOwner, isMelee, isSkillAttack);
             opposite.OnAfterDamage(atk, def, myDamage, yourDamage,
                 this, opposite, myOwner, yourOwner, isMelee, isSkillAttack);
-
-            var ret = rs < 0 ? BattleResult.Defeated : (rs > 0 ? BattleResult.Victory : BattleResult.Draw);
 
             Game.BattleObservable.IterateObserver(obj => obj.OnAfterBattle(this, opposite, myOwner, yourOwner, ret));
 

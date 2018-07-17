@@ -15,7 +15,7 @@ namespace CivModel
         private const string _guidSaveFormat = "D";
 
         /// <summary>
-        /// Re-initializes the <see cref="Game"/> object, by loading a existing save file.
+        /// Re-initializes the <see cref="Game"/> object, by loading a existing save file from stream.
         /// </summary>
         /// <param name="stream"><see cref="StreamReader"/> object which contains a save file.</param>
         /// <param name="knownSchemes">

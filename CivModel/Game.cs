@@ -225,6 +225,30 @@ namespace CivModel
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Game"/> class, by loading a existing save file from stream.
+        /// </summary>
+        /// <param name="stream"><see cref="StreamReader"/> object which contains a save file.</param>
+        /// <param name="schemeFactories">the candidates of factories for <see cref="IGameScheme"/> of the game.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="schemeFactories"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidDataException">
+        /// save file is invalid
+        /// or
+        /// there is no <see cref="IGameSchemeFactory"/> for this save file.
+        /// </exception>
+        /// <remarks>
+        /// This constructor is wrapper of <see cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/>.
+        /// See <see cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/> for more information.
+        /// </remarks>
+        /// <seealso cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/>
+        public Game(StreamReader stream, IEnumerable<IGameSchemeFactory> schemeFactories)
+        {
+            if (schemeFactories == null)
+                throw new ArgumentNullException(nameof(schemeFactories));
+
+            Load(stream, schemeFactories);
+        }
+
         private void PreInitialize()
         {
             GuidManager = new GuidTaggedObjectManager();

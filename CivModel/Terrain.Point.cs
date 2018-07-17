@@ -221,55 +221,41 @@ namespace CivModel
             }
 
             /// <summary>
-            /// get adjacent points, in clockwise order.
+            /// Gets the list of points, within the specified distance, in left-to-right, top-to-bottom order.
             /// </summary>
-            /// <remarks>
-            /// Get the array of the adjacent points in clockwise order.
-            /// If the position is invalid, the value is null.
-            /// A first element of the array is the left one.
-            ///   1   2
-            /// 0  pt  3
-            ///   5   4
-            /// </remarks>
-            /// <returns>an array of the adjacent points</returns>
+            /// <param name="distance">The distance</param>
+            /// <returns>The list of points</returns>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="distance"/> is negative</exception>
+            /// <seealso cref="AdjacentsAtDistance(int)"/>
+            /// <seealso cref="Position.AdjacentsWithinDistance(int)"/>
+            public IEnumerable<Point?> AdjacentsWithinDistance(int distance)
+            {
+                return Position.AdjacentsWithinDistance(distance).Select(Terrain.TryGetPoint);
+            }
+
+            /// <summary>
+            /// Gets the list of points, at the specified distance, in clockwise order.
+            /// </summary>
+            /// <param name="distance">The distance</param>
+            /// <returns>The list of points</returns>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="distance"/> is negative</exception>
+            /// <seealso cref="AdjacentsWithinDistance(int)"/>
+            /// <seealso cref="Position.AdjacentsAtDistance(int)"/>
+            public IEnumerable<Point?> AdjacentsAtDistance(int distance)
+            {
+                return Position.AdjacentsAtDistance(distance).Select(Terrain.TryGetPoint);
+            }
+
+            /// <summary>
+            /// Gets the list of adjacent points, in clockwise order.
+            /// </summary>
+            /// <returns>The list of points</returns>
+            /// <seealso cref="AdjacentsWithinDistance(int)"/>
+            /// <seealso cref="AdjacentsAtDistance(int)"/>
+            /// <seealso cref="Position.Adjacents"/>
             public Point?[] Adjacents()
             {
-                var ret = new Point?[6];
-                Position pos;
-
-                pos = new Position { X = Position.X - 1, Y = Position.Y };
-                if (Terrain.IsValidPosition(pos))
-                    ret[0] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X, Y = Position.Y - 1 };
-                if (Terrain.IsValidPosition(pos))
-                    ret[2] = ret[1] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X + 1, Y = Position.Y };
-                if (Terrain.IsValidPosition(pos))
-                    ret[3] = new Point(Terrain, pos);
-
-                pos = new Position { X = Position.X, Y = Position.Y + 1 };
-                if (Terrain.IsValidPosition(pos))
-                    ret[5] = ret[4] = new Point(Terrain, pos);
-
-                int correction = 1 - (Position.Y % 2) * 2;
-                int cidx = 1 - (Position.Y % 2);
-
-                if (ret[1 + cidx] != null)
-                {
-                    pos = ret[1 + cidx].Value.Position;
-                    pos.X += correction;
-                    ret[1 + cidx] = new Point(Terrain, pos);
-                }
-                if (ret[5 - cidx] != null)
-                {
-                    pos = ret[5 - cidx].Value.Position;
-                    pos.X += correction;
-                    ret[5 - cidx] = new Point(Terrain, pos);
-                }
-
-                return ret;
+                return AdjacentsAtDistance(1).ToArray();
             }
         }
     }

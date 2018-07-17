@@ -101,10 +101,23 @@ namespace CivModel
         /// Gets the <see cref="Point"/> from <see cref="Position"/>
         /// </summary>
         /// <param name="pos">The <see cref="Position"/> object.</param>
-        /// <returns>the <see cref="Point"/> objec</returns>
+        /// <returns>the <see cref="Point"/> object</returns>
         public Point GetPoint(Position pos)
         {
             return new Point(this, pos);
+        }
+
+        /// <summary>
+        /// Tries to get the <see cref="Point"/> from <see cref="Position"/>
+        /// </summary>
+        /// <param name="pos">The <see cref="Position"/> object.</param>
+        /// <returns>The <see cref="Point"/> object. If <paramref name="pos"/> is invalid, <c>null</c>.</returns>
+        public Point? TryGetPoint(Position pos)
+        {
+            if (IsValidPosition(pos))
+                return new Point(this, pos);
+            else
+                return null;
         }
 
         /// <summary>
