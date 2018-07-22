@@ -434,7 +434,7 @@ namespace CivModel
 
                     if (thiz._specialResources.TryGetValue(resource, out var x))
                     {
-                        x.count = value;
+                        thiz._specialResources[resource] = (x.data, value);
                     }
                     else
                     {
