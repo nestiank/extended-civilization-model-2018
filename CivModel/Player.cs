@@ -315,9 +315,45 @@ namespace CivModel
         private readonly List<Terrain.Point> _territory = new List<Terrain.Point>();
 
         /// <summary>
+        /// Whether this player is eliminated.
+        /// </summary>
+        public bool IsEliminated => (!BeforeLandingCity && Cities.Count() == 0) || (BeforeLandingCity && Units.Count() == 0);
+
+        /// <summary>
+        /// Whether this player is victoried.
+        /// </summary>
+        /// <seealso cref="VictoryCondition"/>
+        /// <seealso cref="IsDefeated"/>
+        public bool IsVictoried => VictoryCondition != null;
+
+        /// <summary>
+        /// The victory condition this player has achieved. If this player is not victoried yet, <c>null</c>.
+        /// </summary>
+        public IVictoryCondition VictoryCondition { get; private set; }
+
+        /// <summary>
         /// Whether this player is defeated.
         /// </summary>
-        public bool IsDefeated => !BeforeLandingCity && Cities.Count() == 0;
+        /// <see cref="DefeatCondition"/>
+        /// <seealso cref="IsVictoried"/>
+        public bool IsDefeated => DefeatCondition != null;
+
+        /// <summary>
+        /// The defeat condition this player has achieved. If this player is not defeated yet, <c>null</c>.
+        /// </summary>
+        public IDefeatCondition DefeatCondition { get; private set; }
+
+        /// <summary>
+        /// The list of available victories that this player can achieve.
+        /// </summary>
+        public IReadOnlyList<IVictoryCondition> AvailableVictories => _availableVictories;
+        private readonly List<IVictoryCondition> _availableVictories = new List<IVictoryCondition>();
+
+        /// <summary>
+        /// The list of available defeats that this player can achieve.
+        /// </summary>
+        public IReadOnlyList<IDefeatCondition> AvailableDefeats => _availableDefeats;
+        private readonly List<IDefeatCondition> _availableDefeats = new List<IDefeatCondition>();
 
         /// <summary>
         /// Whether this player is controlled by AI.
@@ -546,10 +582,143 @@ namespace CivModel
         }
 
         /// <summary>
+        /// Adds an available victory condition to this player.
+        /// </summary>
+        /// <param name="victory">The victory condition to add.</param>
+        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="ArgumentException">specified <paramref name="victory"/> is already added</exception>
+        public void AddVictoryCondition(IVictoryCondition victory)
+        {
+            if (IsVictoried || IsDefeated)
+                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (AvailableVictories.Contains(victory))
+                throw new ArgumentException("specified victory is already added", nameof(victory));
+
+            _availableVictories.Add(victory);
+        }
+
+        /// <summary>
+        /// Removes an available victory condition of this player.
+        /// </summary>
+        /// <param name="victory">The victory condition to remove.</param>
+        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="ArgumentException">specific <paramref name="victory"/> has not added</exception>
+        public void RemoveVictoryCondition(IVictoryCondition victory)
+        {
+            if (IsVictoried || IsDefeated)
+                throw new InvalidOperationException("the player is already victoried or defeated");
+
+            bool rs = _availableVictories.Remove(victory);
+
+            if (!rs)
+                throw new ArgumentException("specific victory has not added", nameof(victory));
+        }
+
+        /// <summary>
+        /// Adds an available defeat condition to this player.
+        /// </summary>
+        /// <param name="defeat">The defeat condition to add.</param>
+        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="ArgumentException">specified <paramref name="defeat"/> is already added</exception>
+        public void AddDefeatCondition(IDefeatCondition defeat)
+        {
+            if (IsVictoried || IsDefeated)
+                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (AvailableDefeats.Contains(defeat))
+                throw new ArgumentException("specified defeat is already added", nameof(defeat));
+
+            _availableDefeats.Add(defeat);
+        }
+
+        /// <summary>
+        /// Removes an available defeat condition of this player.
+        /// </summary>
+        /// <param name="defeat">The defeat condition to remove.</param>
+        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="ArgumentException">specific <paramref name="defeat"/> has not added</exception>
+        public void RemoveDefeatCondition(IDefeatCondition defeat)
+        {
+            if (IsVictoried || IsDefeated)
+                throw new InvalidOperationException("the player is already victoried or defeated");
+
+            bool rs = _availableDefeats.Remove(defeat);
+
+            if (!rs)
+                throw new ArgumentException("specific defeat has not added", nameof(defeat));
+        }
+
+        /// <summary>
+        /// Make this player achieve the specified victory.
+        /// </summary>
+        /// <param name="victory">The victory.</param>
+        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="ArgumentException">specified <paramref name="victory"/> is not available to the player</exception>
+        /// <seealso cref="IsVictoried"/>
+        /// <seealso cref="VictoryCondition"/>
+        /// <seealso cref="Defeat(IDefeatCondition)"/>
+        public void Victory(IVictoryCondition victory)
+        {
+            if (IsVictoried || IsDefeated)
+                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (!AvailableVictories.Contains(victory))
+                throw new ArgumentException("specified victory is not available to the player", nameof(victory));
+
+            VictoryCondition = victory;
+            victory.DoVictory(this);
+
+            Game.VictoryObservable.IterateObserver(o => o.OnVictory(this, victory));
+        }
+
+        /// <summary>
+        /// Make this player achieve the specified defeat.
+        /// </summary>
+        /// <param name="defeat">The defeat.</param>
+        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="ArgumentException">specified <paramref name="defeat"/> is not available to the player</exception>
+        /// <seealso cref="IsDefeated"/>
+        /// <seealso cref="DefeatCondition"/>
+        /// <seealso cref="Victory(IVictoryCondition)"/>
+        public void Defeat(IDefeatCondition defeat)
+        {
+            if (IsVictoried || IsDefeated)
+                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (!AvailableDefeats.Contains(defeat))
+                throw new ArgumentException("specified defeat is not available to the player", nameof(defeat));
+
+            DefeatCondition = defeat;
+            defeat.DoDefeat(this);
+
+            Game.VictoryObservable.IterateObserver(o => o.OnDefeat(this, defeat));
+        }
+
+        /// <summary>
         /// Called before a turn.
         /// </summary>
         public void PreTurn()
         {
+            if (!IsVictoried && !IsDefeated)
+            {
+                foreach (var victory in AvailableVictories)
+                {
+                    if (victory.CheckVictory(this))
+                    {
+                        Victory(victory);
+                        break;
+                    }
+                }
+            }
+            if (!IsVictoried && !IsDefeated)
+            {
+                foreach (var defeat in AvailableDefeats)
+                {
+                    if (defeat.CheckDefeat(this))
+                    {
+                        Defeat(defeat);
+                        break;
+                    }
+                }
+            }
+
             foreach (var unit in Units)
                 unit.PreTurn();
             foreach (var building in TileBuildings)

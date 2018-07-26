@@ -27,7 +27,7 @@ namespace CivModel.Common
         private readonly GameSchemeFactory _factory;
 
         public bool OnlyDefaultPlayers => false;
-        public int DefaultNumberOfPlayers => 2;
+        public int DefaultNumberOfPlayers => 9;
 
         public bool OnlyDefaultTerrain => false;
         public int DefaultTerrainWidth => 128;

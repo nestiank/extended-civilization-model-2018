@@ -28,12 +28,18 @@ namespace CivModel
         /// </summary>
         public Observable<IQuestObserver> QuestObservable { get; private set; }
 
+        /// <summary>
+        /// An <see cref="Observable{IVictoryObserver}"/> object which can be observed by <see cref="IVictoryObserver"/>.
+        /// </summary>
+        public Observable<IVictoryObserver> VictoryObservable { get; private set; }
+
         private void InitializeObservable()
         {
             TurnObservable = new Observable<ITurnObserver>();
             TileObjectObservable = new Observable<ITileObjectObserver>();
             BattleObservable = new Observable<IBattleObserver>();
             QuestObservable = new Observable<IQuestObserver>();
+            VictoryObservable = new Observable<IVictoryObserver>();
         }
     }
 }

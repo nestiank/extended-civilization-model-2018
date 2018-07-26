@@ -54,6 +54,7 @@
     <Compile Include="Game.Save.cs" />
     <Compile Include="GameConstants.cs" />
     <Compile Include="IBattleObserver.cs" />
+    <Compile Include="IVictoryObserver.cs" />
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
     <Compile Include="IGuidTaggedObject.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Terrain.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="TileObjectProduction.cs" />
+    <Compile Include="IVictoryCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.Observers.cs" />

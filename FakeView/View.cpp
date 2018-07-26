@@ -32,7 +32,7 @@ namespace FakeView
             }
         }
         if (!m_presenter)
-            m_presenter = gcnew CivPresenter::Presenter(this, 10, 8, 2);
+            m_presenter = gcnew CivPresenter::Presenter(this, 15, 12, -1);
     }
 
     void View::Refocus()
@@ -498,14 +498,32 @@ namespace FakeView
 
     void View::RenderVictory()
     {
+        const char* msg;
+        if (auto victory = dynamic_cast<CivModel::Quests::FinnoUltimateVictory^>(m_presenter->Game->PlayerInTurn->VictoryCondition))
+            msg = "YOU ARE C'THULHU SUMMOER";
+        else if (auto victory = dynamic_cast<CivModel::Quests::HwanUltimateVictory^>(m_presenter->Game->PlayerInTurn->VictoryCondition))
+            msg = "YOU ARE CHOSEN PEOPLE";
+        else if (auto victory = dynamic_cast<CivModel::Quests::ConquerVictory^>(m_presenter->Game->PlayerInTurn->VictoryCondition))
+            msg = "YOU ARE NOT SLAVE BUT CONQUERER";
+        else
+            msg = "HOW DO YOU VICTORIED? (unqualified)";
+
         for (int y = 10; y <= 20; ++y)
-            m_screen->PrintString(10, y, 0b1101'1010, "YOU ARE WINNER");
+            m_screen->PrintString(10, y, 0b1101'1010, msg);
     }
 
     void View::RenderDefeated()
     {
+        const char* msg;
+        if (auto victory = dynamic_cast<CivModel::Quests::GameEndDefeat^>(m_presenter->Game->PlayerInTurn->DefeatCondition))
+            msg = "YOU ARE DEFEATED BY ULTIMATE FORCE";
+        else if (auto victory = dynamic_cast<CivModel::Quests::EliminationDefeat^>(m_presenter->Game->PlayerInTurn->DefeatCondition))
+            msg = "YOU ARE ELIMINATED";
+        else
+            msg = "HOW DO YOU DEFEATED? (unqualified)";
+
         for (int y = 10; y <= 20; ++y)
-            m_screen->PrintString(10, y, 0b1000'1111, "YOU ARE LOSER");
+            m_screen->PrintString(10, y, 0b1000'1111, msg);
     }
 
     void View::RenderCityView()

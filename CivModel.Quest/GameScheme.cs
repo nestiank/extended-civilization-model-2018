@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CivModel.Finno.FinnoPlayerNumber;
+using static CivModel.Hwan.HwanPlayerNumber;
+
 namespace CivModel.Quests
 {
     public class GameSchemeFactory : IGameSchemeFactory
@@ -42,6 +45,17 @@ namespace CivModel.Quests
         public void OnAfterInitialized(Game game)
         {
             this.Game = game;
+
+            // Victory & Defeat Condition
+            game.GetPlayerHwan().AddVictoryCondition(new HwanUltimateVictory());
+            game.GetPlayerFinno().AddVictoryCondition(new FinnoUltimateVictory());
+
+            foreach (var p in game.Players)
+            {
+                p.AddVictoryCondition(new ConquerVictory());
+                p.AddDefeatCondition(new EliminationDefeat());
+                p.AddDefeatCondition(new GameEndDefeat());
+            }
 
             // Hwan Main
             new QuestAutismBeamReflex(Game);

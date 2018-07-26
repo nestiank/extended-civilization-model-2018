@@ -157,7 +157,7 @@ namespace CivPresenter
         /// </summary>
         public CityBase SelectedCity { get; private set; }
 
-        private bool[] _victoryNotified = null;
+        private bool[] _victoryNotified;
 
         /// <summary>
         /// The path of the save file.
@@ -241,6 +241,8 @@ namespace CivPresenter
 
         private void Initialize()
         {
+            _victoryNotified = new bool[Game.Players.Count];
+
             // (0, 0) is fallback point
             // ProceedTurn() would set FocusedPoint if any actor exists.
             FocusedPoint = Game.Terrain.GetPoint(0, 0);
@@ -499,17 +501,15 @@ namespace CivPresenter
 
         private bool CheckVictory()
         {
-            if (_victoryNotified != null)
-                return false;
-
-            var survivors = Game.Players.Where(player => !player.IsDefeated);
-            if (survivors.Count() <= 1)
+            if (Game.PlayerInTurn.IsVictoried || Game.PlayerInTurn.IsDefeated)
             {
-                _victoryNotified = new bool[Game.Players.Count];
                 StateNormal();
                 return true;
             }
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
         private void Refocus()
@@ -542,23 +542,16 @@ namespace CivPresenter
 
         private void StateNormal()
         {
-            if (_victoryNotified != null)
+            if (Game.PlayerInTurn.IsVictoried || Game.PlayerInTurn.IsDefeated)
             {
-                int idx = 0;
-                for (; idx < Game.Players.Count; ++idx)
+                if (!_victoryNotified[Game.PlayerNumberInTurn])
                 {
-                    if (Game.Players[idx] == Game.PlayerInTurn)
-                        break;
-                }
-
-                if (!_victoryNotified[idx])
-                {
-                    if (Game.PlayerInTurn.IsDefeated)
-                        StateDefeated();
-                    else
+                    if (Game.PlayerInTurn.IsVictoried)
                         StateVictory();
+                    else
+                        StateDefeated();
 
-                    _victoryNotified[idx] = true;
+                    _victoryNotified[Game.PlayerNumberInTurn] = true;
                     return;
                 }
             }
