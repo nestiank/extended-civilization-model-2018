@@ -627,7 +627,8 @@ namespace CivModel
         ///   <ul>
         ///     <li>if <paramref name="opposite"/> has died, <see cref="BattleResult.Victory"/>.</li>
         ///     <li>if this object has died, <see cref="BattleResult.Defeated"/>.</li>
-        ///     <li>if both have died or survived, <see cref="BattleResult.Draw"/>.</li>
+        ///     <li>if both have survived, <see cref="BattleResult.DrawAlive"/>.</li>
+        ///     <li>if both have died, <see cref="BattleResult.DrawDead"/>.</li>
         ///     <li>if the battle is cancelled, <see cref="BattleResult.Cancelled"/>.</li>
         ///   </ul>
         /// </returns>
