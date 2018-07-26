@@ -44,7 +44,7 @@
   <ItemGroup>
     <Compile Include="Observable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SafeIterationCollection.cs" />
+    <Compile Include="SafeIterationList.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
