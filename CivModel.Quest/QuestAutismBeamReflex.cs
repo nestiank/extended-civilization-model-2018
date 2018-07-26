@@ -58,7 +58,7 @@ namespace CivModel.Quests
 
         public override void PostTurn()
         {
-            if (Status == QuestStatus.Deployed)
+            if (Status == QuestStatus.Accepted)
             {
                 if (Requestee.Research >= 0)
                 {
