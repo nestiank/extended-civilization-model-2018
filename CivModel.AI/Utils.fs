@@ -7,9 +7,9 @@ type Failable<'a, 'b> = Success of 'a | Fail of 'b
 
 module Utils =
     [<Literal>]
-    let HwanPlayer = CivModel.Hwan.HwanPlayerConstant.HwanPlayer
+    let HwanPlayer = CivModel.Hwan.HwanPlayerNumber.Number
     [<Literal>]
-    let FinnoPlayer = CivModel.Finno.FinnoPlayerConstant.FinnoPlayer
+    let FinnoPlayer = CivModel.Finno.FinnoPlayerNumber.Number
 
     let searchNear f (pt : Terrain.Point) =
         let table : (Position * (Position -> bool)) list = [

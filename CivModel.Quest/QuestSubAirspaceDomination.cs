@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CivModel.Hwan.HwanPlayerNumber;
+using static CivModel.Zap.SwedePlayerNumber;
+
 namespace CivModel.Quests
 {
     public class QuestSubAirspaceDomination : Quest, IBattleObserver
@@ -19,19 +22,27 @@ namespace CivModel.Quests
 
         public int flag = 0;
 
-        public QuestSubAirspaceDomination(Player requestee) : base(null, requestee)
+        public QuestSubAirspaceDomination(Game game)
+            : base(game.GetPlayerSwede(), game.GetPlayerHwan())
         {
+        }
+
+        public override void OnQuestDeployTime()
+        {
+            if (Requestee.Research >= 0)
+            {
+                if (Game.Random.Next(2) == 0)
+                    Deploy();
+            }
         }
 
         protected override void OnAccept()
         {
-            Game.TurnObservable.AddObserver(this);
             Game.BattleObservable.AddObserver(this);
         }
 
         private void Cleanup()
         {
-            Game.TurnObservable.RemoveObserver(this);
             Game.BattleObservable.RemoveObserver(this);
         }
 

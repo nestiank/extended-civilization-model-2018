@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CivModel.Hwan
 {
-    public static class HwanPlayerConstant
+    public static class HwanPlayerNumber
     {
-        public const int HwanPlayer = 0;
+        public const int Number = 0;
         public static Player GetPlayerHwan(this Game game)
         {
-            return game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer];
+            return game.Players[Number];
         }
     }
 
@@ -93,7 +93,7 @@ namespace CivModel.Hwan
         {
             foreach (var p in AdditionalProductionFactory)
             {
-                game.Players[HwanPlayerConstant.HwanPlayer].AvailableProduction.Add(p);
+                game.GetPlayerHwan().AvailableProduction.Add(p);
             }
         }
     }

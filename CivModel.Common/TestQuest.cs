@@ -17,8 +17,13 @@ namespace CivModel.Common
         public override string RewardNotice => "배치 가능한 제다이 기사 생산 6개";
         public override string CompleteNotice => "개꿀잼 ㅇㅈ ㅆㅇㅈ";
 
-        public TestQuest(Player requestee) : base(null, requestee)
+        public TestQuest(Player requester, Player requestee) : base(requester, requestee)
         {
+        }
+
+        public override void OnQuestDeployTime()
+        {
+            Deploy();
         }
 
         protected override void OnAccept()

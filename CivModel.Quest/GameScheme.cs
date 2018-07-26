@@ -21,60 +21,45 @@ namespace CivModel.Quests
         }
     }
 
-    public class GameScheme : IGameAdditionScheme, ITurnObserver
+    public class GameScheme : IGameAdditionScheme
     {
-        public Game Game;
-        public IGameSchemeFactory Factory => _factory;
-        private readonly GameSchemeFactory _factory;
+        public Game Game { get; private set; }
+
+        public IGameSchemeFactory Factory { get; }
 
         public IEnumerable<IProductionFactory> AdditionalProductionFactory
             => Enumerable.Empty<IProductionFactory>();
 
         public GameScheme(GameSchemeFactory factory)
         {
-            _factory = factory ?? throw new ArgumentNullException("factory");
+            Factory = factory ?? throw new ArgumentNullException("factory");
         }
 
         public void RegisterGuid(Game game)
         {
- 
-        }
-
-        public void PreTurn()
-        {
-
-        }
-
-        public void PostTurn()
-        {
-        }
-
-        public void PrePlayerSubTurn(Player playerInTurn)
-        {
-
-        }
-
-        public void PostPlayerSubTurn(Player playerInTurn)
-        {
-
         }
 
         public void OnAfterInitialized(Game game)
         {
             this.Game = game;
-            game.TurnObservable.AddObserver(this);
 
-            if (Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer].Research >= 0)
-            {
-                var p = Game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer];
-                new QuestWarAliance(p).Deploy();
-            }
+            // Hwan Main
+            new QuestAutismBeamReflex(Game);
+            new QuestPorjectCthulhu(Game);
+            new QuestEgyptKingdom(Game);
 
-            if (Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer].Research >= 0)
-            {
-                var p = Game.Players[CivModel.Hwan.HwanPlayerConstant.HwanPlayer];
-                new QuestSubAirspaceDomination(p).Deploy();
-            }
+            // Hwan Sub
+            new QuestSubAirspaceDomination(Game);
+            new QuestSubMoaiForceField(Game);
+
+            // Finno Main
+            new QuestWarAliance(Game);
+            new QuestAtlantis(Game);
+            new QuestRlyeh(Game);
+
+            // Finno Sub
+            new QuestSubInterstellarEnergy(Game);
+            new QuestSubGeneticEngineering(Game);
         }
     }
 }

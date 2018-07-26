@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CivModel.Finno.FinnoPlayerNumber;
+using static CivModel.Zap.EmuPlayerNumber;
+
 namespace CivModel.Quests
 {
     public class QuestWarAliance : Quest, IBattleObserver
@@ -19,18 +22,28 @@ namespace CivModel.Quests
         public override string RewardNotice => "[특수 자원: 오티즘 빔 증폭 크리스탈] 1 획득";
         public override string CompleteNotice => @"쵸슨 피플의 무리들이 전장에서 수오미 제국을 밀수 있던 큰 원인 중 하나는 그들의 뛰어난 장군들이었습니다. 이를 막기 위해 개발된 기술이 바로 오티즘 빔으로, 이 광선에 맞은 사람은 순식간에 말도 제대로 못하며 집중을 못하는 바보가 되어버립니다. 오늘날 이 현상은 자폐증이라 알려져 있지요. 헬신키 깊은 지하의 던전에서 개발된 이 병기를 증폭시켜 환국의 리더쉽을 통째로 날려버린다면, 분명 위대한 수오미 제국은 승리를 쟁취할 수 있을것이라 황제 스푸르도 스파르데 스푸르도 1세(Spurdo Spärde I Spurdo)는 생각했지요. 덕분에 위대하며 신성한 프로토-카가네이트는 일시적으로 전쟁에서 엄청난 이점을 쥐게 됩니다. 안타깝게도 환국에선 이미 대항책을 준비하고 있었습니다.....";
 
-        public QuestWarAliance(Player requestee) : base(null, requestee)
+        public QuestWarAliance(Game game)
+            : base(game.GetPlayerEmu(), game.GetPlayerFinno())
         {
+        }
+
+        public override void OnQuestDeployTime()
+        {
+            if (Requestee.Research >= 0)
+            {
+                if (Game.Random.Next(10) < 7)
+                    Deploy();
+            }
         }
 
         protected override void OnAccept()
         {
-            Game.TurnObservable.AddObserver(this);
+            Game.BattleObservable.AddObserver(this);
         }
 
         private void Cleanup()
         {
-            Game.TurnObservable.RemoveObserver(this);
+            Game.BattleObservable.RemoveObserver(this);
         }
 
         protected override void OnGiveup()
@@ -41,17 +54,6 @@ namespace CivModel.Quests
         protected override void OnComplete()
         {
             Requestee.SpecialResource[AutismBeamAmplificationCrystal.Instance] = 1;
-            foreach(var Player in Game.Players)
-            {
-                foreach(var TheQuest in Player.Quests)
-                {
-                    if (TheQuest is QuestAutismBeamReflex)
-                    {
-                        TheQuest.Status = QuestStatus.Deployed;
-                    }
-                }
-            }
-
 
             Cleanup();
         }

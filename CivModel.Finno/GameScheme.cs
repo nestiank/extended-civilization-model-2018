@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CivModel.Finno
 {
-    public static class FinnoPlayerConstant
+    public static class FinnoPlayerNumber
     {
-        public const int FinnoPlayer = 1;
+        public const int Number = 1;
         public static Player GetPlayerFinno(this Game game)
         {
-            return game.Players[CivModel.Finno.FinnoPlayerConstant.FinnoPlayer];
+            return game.Players[Number];
         }
     }
 
@@ -93,7 +93,7 @@ namespace CivModel.Finno
         {
             foreach (var p in AdditionalProductionFactory)
             {
-                game.Players[FinnoPlayerConstant.FinnoPlayer].AvailableProduction.Add(p);
+                game.GetPlayerFinno().AvailableProduction.Add(p);
             }
         }
     }

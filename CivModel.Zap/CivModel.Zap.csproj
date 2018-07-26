@@ -45,6 +45,7 @@
     <Compile Include="CityCenter.cs" />
     <Compile Include="CityLab.cs" />
     <Compile Include="DecentralizedMilitary.cs" />
+    <Compile Include="PlayerNumber.cs" />
     <Compile Include="ZapFactory.cs" />
     <Compile Include="FIRFactory.cs" />
     <Compile Include="FIRFortress.cs" />

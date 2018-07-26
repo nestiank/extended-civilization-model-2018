@@ -261,10 +261,21 @@ namespace CivModel
         }
 
         /// <summary>
+        /// Called when Quest Deploy Time of the game.
+        /// Override this method to implement when to deploy the quest.
+        /// This method is called only if <see cref="Status"/> is <see cref="QuestStatus.Disabled"/>.
+        /// </summary>
+        public abstract void OnQuestDeployTime();
+
+        /// <summary>
         /// Called before a turn.
         /// </summary>
         public virtual void PreTurn()
         {
+            if (Status == QuestStatus.Disabled)
+            {
+                OnQuestDeployTime();
+            }
         }
 
         /// <summary>

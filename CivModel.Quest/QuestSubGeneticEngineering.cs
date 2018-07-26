@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CivModel.Finno.FinnoPlayerNumber;
+using static CivModel.Zap.AtlantisPlayerNumber;
+
 namespace CivModel.Quests
 {
     public class QuestSubGeneticEngineering : Quest
@@ -19,20 +22,24 @@ namespace CivModel.Quests
 
         public double TargetResearch = 30000;
 
-        public QuestSubGeneticEngineering(Player requestee) : base(null, requestee)
+        public QuestSubGeneticEngineering(Game game)
+            : base(game.GetPlayerAtlantis(), game.GetPlayerFinno())
         {
-            this.Status = QuestStatus.Deployed;
+        }
+
+        public override void OnQuestDeployTime()
+        {
+            if (Game.Random.Next(2) == 0)
+                Deploy();
         }
 
         protected override void OnAccept()
         {
-            Game.TurnObservable.AddObserver(this);
             TargetResearch += Requestee.Research;
         }
 
         private void Cleanup()
         {
-            Game.TurnObservable.RemoveObserver(this);
         }
 
         protected override void OnGiveup()
@@ -47,13 +54,17 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public override void PreTurn()
+        public override void PostTurn()
         {
-            base.PreTurn();
-            if (Requestee.Research >= TargetResearch)
+            if (Status == QuestStatus.Deployed)
             {
-                Status = QuestStatus.Completed;
+                if (Requestee.Research >= TargetResearch)
+                {
+                    Status = QuestStatus.Completed;
+                }
             }
+
+            base.PostTurn();
         }
     }
 }
