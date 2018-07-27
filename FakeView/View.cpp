@@ -2,9 +2,6 @@
 #include "View.h"
 
 #include "Screen.h"
-
-//#define AUTOMATIC_SKIP 30
-
 namespace
 {
     std::string cli2str(System::String^ str)
@@ -154,13 +151,18 @@ namespace FakeView
             }
         }
 
+        if (m_presenter->FocusedPoint.Unit != nullptr && m_presenter->FocusedPoint.Unit != m_presenter->SelectedActor)
+        {
+            PrintActorInfo(scrsz.height - 3, 0b00000111, "<on cursor>: ", m_presenter->FocusedPoint.Unit);
+        }
+        else if (m_presenter->FocusedPoint.TileBuilding != nullptr && m_presenter->FocusedPoint.TileBuilding != m_presenter->SelectedActor)
+        {
+            PrintActorInfo(scrsz.height - 3, 0b00000111, "<on cursor>: ", m_presenter->FocusedPoint.TileBuilding);
+        }
+
         if (m_presenter->SelectedActor != nullptr)
         {
-            auto actor = m_presenter->SelectedActor;
-            m_screen->PrintString(0, scrsz.height - 2, 0b00000111,
-                "Unit Name: " + cli2str(actor->GetType()->FullName)
-                + ", Unit HP: " + std::to_string(actor->RemainHP) + " / " + std::to_string(actor->MaxHP)
-                + ", AP: " + std::to_string(actor->RemainAP) + " / " + std::to_string(actor->MaxAP));
+            PrintActorInfo(scrsz.height - 2, 0b00000111, "< selected>: ", m_presenter->SelectedActor);
         }
 
         switch (m_presenter->State)
@@ -184,14 +186,17 @@ namespace FakeView
                 }
                 m_screen->PrintStringEx(0, scrsz.height - 1, 0b00000111, msg);
 
-#ifdef AUTOMATIC_SKIP
-                if (!m_presenter->IsThereTodos)
+                if (m_autoSkipPlayer != nullptr)
                 {
-                    static int count = 0;
-                    if (++count <= AUTOMATIC_SKIP)
+                    if (m_presenter->Game->PlayerInTurn == m_autoSkipPlayer)
+                    {
+                        if (m_autoSkip-- == 0)
+                            m_autoSkipPlayer = nullptr;
+                    }
+
+                    if (m_autoSkipPlayer != nullptr)
                         m_presenter->CommandApply();
                 }
-#endif
 
                 break;
             }
@@ -706,6 +711,18 @@ namespace FakeView
                 m_presenter->CommandApply();
                 break;
 
+            case '\'':
+            {
+                auto str = Microsoft::VisualBasic::Interaction::InputBox(L"input turn count to autoskip", L"", L"", -1, -1);
+                int turn;
+                if (System::Int32::TryParse(str, turn) && turn > 0)
+                {
+                    m_autoSkip = turn;
+                    m_autoSkipPlayer = m_presenter->Game->PlayerInTurn;
+                }
+                break;
+            }
+
             case '1':
                 m_presenter->CommandNumeric(0);
                 break;
@@ -802,6 +819,24 @@ namespace FakeView
         auto& c = m_screen->GetChar(px, py);
         c.color &= 0x0f;
         c.color |= GetPlayerColor(tileBuilding->Owner) << 4;
+    }
+
+    void View::PrintActorInfo(int line, unsigned char color, const std::string& prefix, CivModel::Actor^ actor)
+    {
+        std::string msg = prefix;
+
+        if (auto unit = dynamic_cast<CivModel::Unit^>(actor))
+            msg += "Unit Name: ";
+        else if (auto tb = dynamic_cast<CivModel::TileBuilding^>(actor))
+            msg += "TileBuilding: ";
+        else
+            msg += "(unqualified actor): ";
+
+        msg += cli2str(actor->GetType()->FullName);
+        msg += ", Unit HP: " + std::to_string(actor->RemainHP) + " / " + std::to_string(actor->MaxHP);
+        msg += ", AP: " + std::to_string(actor->RemainAP) + " / " + std::to_string(actor->MaxAP);
+
+        m_screen->PrintString(0, line, color, msg);
     }
 
     unsigned char View::GetPlayerColor(CivModel::Player^ player)

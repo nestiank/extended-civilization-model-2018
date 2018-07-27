@@ -30,6 +30,8 @@ namespace FakeView
         void PrintUnit(int px, int py, CivModel::Unit^ unit);
         void PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding);
 
+        void PrintActorInfo(int line, unsigned char color, const std::string& prefix, CivModel::Actor^ actor);
+
         unsigned char GetPlayerColor(CivModel::Player^ player);
 
         std::string GetFactoryDescription(CivModel::IProductionFactory^ factory);
@@ -40,5 +42,8 @@ namespace FakeView
         bool m_roundEarth = false;
 
         Screen* m_screen;
+
+        int m_autoSkip = 0;
+        CivModel::Player^ m_autoSkipPlayer;
     };
 }
