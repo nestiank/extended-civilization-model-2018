@@ -21,7 +21,10 @@ namespace CivModel.Finno
         };
         public override double ProvidedLabor => 20;
 
-        public AncientFinnoFineDustFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public AncientFinnoFineDustFactory(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
+        {
+        }
 
         public override void PostTurn()
         {
@@ -37,7 +40,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class AncientFinnoFineDustFactoryProductionFactory : ITileObjectProductionFactory
+    public class AncientFinnoFineDustFactoryProductionFactory : ITileBuildingProductionFactory
     {
         public static AncientFinnoFineDustFactoryProductionFactory Instance => _instance.Value;
         private static Lazy<AncientFinnoFineDustFactoryProductionFactory> _instance
@@ -56,16 +59,19 @@ namespace CivModel.Finno
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[3] || point.TileOwner == production.Owner.Game.Players[5] || point.TileOwner == production.Owner.Game.Players[7]);
+            return point.TileBuilding == null && production.Owner.IsAlliedWith(point.TileOwner);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             return new AncientFinnoFineDustFactory(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new AncientFinnoFineDustFactory(owner, point, donator);
         }
     }
 }

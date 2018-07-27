@@ -34,24 +34,9 @@ namespace CivModel
     }
 
     /// <summary>
-    /// The factory interface of <see cref="Production"/> which products <see cref="Actor"/> objects.
-    /// This interface also provides <see cref="ActorConstants"/> of production results.
-    /// </summary>
-    /// <seealso cref="CivModel.ActorConstants"/>
-    /// <seealso cref="ITileObjectProductionFactory"/>
-    public interface IActorProductionFactory : ITileObjectProductionFactory
-    {
-        /// <summary>
-        /// The constants of production result <see cref="Actor"/>.
-        /// </summary>
-        /// <seealso cref="ActorConstants"/>
-        ActorConstants ActorConstants { get; }
-    }
-
-    /// <summary>
     /// The <see cref="Production"/> class for <see cref="TileObject"/>
     /// </summary>
-    /// <seealso cref="CivModel.Production" />
+    /// <seealso cref="Production" />
     public class TileObjectProduction : Production
     {
         private readonly ITileObjectProductionFactory _factory;
@@ -88,7 +73,7 @@ namespace CivModel
         /// <returns>
         ///   <c>true</c> if the production is placable; otherwise, <c>false</c>.
         /// </returns>
-        public override bool IsPlacable(Terrain.Point point)
+        protected override bool CoreIsPlacable(Terrain.Point point)
         {
             return _factory.IsPlacable(this, point);
         }
@@ -99,14 +84,14 @@ namespace CivModel
         /// <param name="point">The point to place the production result.</param>
         /// <exception cref="InvalidOperationException">production is not completed yet</exception>
         /// <exception cref="ArgumentException">point is invalid</exception>
-        public override void Place(Terrain.Point point)
+        protected override IProductionResult CorePlace(Terrain.Point point)
         {
             if (!IsCompleted)
                 throw new InvalidOperationException("production is not completed yet");
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            var obj = _factory.CreateTileObject(Owner, point);
+            return _factory.CreateTileObject(Owner, point);
         }
     }
 }

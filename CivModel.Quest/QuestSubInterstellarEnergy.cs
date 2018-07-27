@@ -20,6 +20,9 @@ namespace CivModel.Quests
         public override string RewardNotice => "[특수 자원 : 성간 에너지 추출기] 획득";
         public override string CompleteNotice => @"우주를 떠다니는, 행성의 기로 정화되지 않은 순수 마력을 추출하는 방법을 핀란드는 전쟁 말기에 터득하게 됩니다. 오늘도 이를 위해 사용되었던 거대 시설들의 잔해를 영국의 스톤헨지와 같은데서 찾아볼수가 있죠. 이러한 작업을 위해선 지구의 정확한 반대편에도 비슷한 시설을 건축할 필요가 있었는데, 안타깝게도 이 두번째 짝인 시설은 하이퍼워가 끝나며 바다 밑으로 가라않게 됩니다. 그럼에도 우리는 스톤헨지의 실제 기능애 대한 증거를 찾아볼수가 있습니다. 이러한 스톤헨지의 초자연적 기능 때문에 오늘날 오스트렐리아와 뉴질랜드로 영국인들이 자연스럽게 끌릴수 밖에 없었던 것이죠.";
 
+        private bool _finBuilt = false;
+        private bool _emuBuilt = false;
+
         public QuestSubInterstellarEnergy(Game game)
             : base(game.GetPlayerEmu(), game.GetPlayerFinno())
         {
@@ -53,12 +56,19 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void TileObjectCreated(TileObject obj)
+        public void TileObjectProduced(TileObject obj)
         {
-            if (obj is CivModel.Finno.Preternaturality Extractor && Extractor.Owner == Requestee && Extractor.PlacedPoint.Value.TileOwner == Extractor.Owner.Game.Players[5])
+            if (obj is CivModel.Finno.Preternaturality extractor)
             {
-                Status = QuestStatus.Completed;
+                if (extractor.Owner == Requestee)
+                    _finBuilt = true;
+
+                if (extractor.Owner == Requester && extractor.Donator == Requestee)
+                    _emuBuilt = true;
             }
+
+            if (_finBuilt && _emuBuilt)
+                Status = QuestStatus.Completed;
         }
 
         public void TileObjectPlaced(TileObject obj) { }

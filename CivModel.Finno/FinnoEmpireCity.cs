@@ -34,12 +34,12 @@ namespace CivModel.Finno
         {
             if (PlacedPoint is Terrain.Point thisPoint)
             {
-                var creators = new Func<Terrain.Point, Unit>[] {
-                    pt => new DecentralizedMilitary(Owner, pt),
-                    pt => new EMUHorseArcher(Owner, pt),
-                    pt => new ElephantCavalry(Owner, pt),
-                    pt => new AncientSorcerer(Owner, pt),
-                    pt => new JediKnight(Owner, pt),
+                var creators = new Action<Terrain.Point>[] {
+                    pt => DecentralizedMilitaryProductionFactory.Instance.Create(Owner).Place(pt),
+                    pt => EMUHorseArcherProductionFactory.Instance.Create(Owner).Place(pt),
+                    pt => ElephantCavalryProductionFactory.Instance.Create(Owner).Place(pt),
+                    pt => AncientSorcererProductionFactory.Instance.Create(Owner).Place(pt),
+                    pt => JediKnightProductionFactory.Instance.Create(Owner).Place(pt),
                 };
                 var creator = creators[Game.Random.Next(creators.Length)];
 
@@ -58,7 +58,8 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public FinnoEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile) : base(player, Constants, point)
+        public FinnoEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile)
+            : base(player, Constants, point, null)
         {
             this.Population = 5;
             _specialActs[0] = new FinnoEmpireCityAction(this);

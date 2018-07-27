@@ -31,7 +31,8 @@ namespace CivModel.Hwan
 
         private int _skillExpireTurn;
 
-        public HwanEmpireLatifundium(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public HwanEmpireLatifundium(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
         {
             _specialActs[0] = new HwanEmpireLatifundiumAction(this);
 
@@ -111,7 +112,7 @@ namespace CivModel.Hwan
         }
     }
 
-    public class HwanEmpireLatifundiumProductionFactory : ITileObjectProductionFactory
+    public class HwanEmpireLatifundiumProductionFactory : ITileBuildingProductionFactory
     {
         public static HwanEmpireLatifundiumProductionFactory Instance => _instance.Value;
         private static Lazy<HwanEmpireLatifundiumProductionFactory> _instance
@@ -130,13 +131,19 @@ namespace CivModel.Hwan
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && !IsCityNeer(production, point)
-                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[2] || point.TileOwner == production.Owner.Game.Players[4] || point.TileOwner == production.Owner.Game.Players[6]);
+            return point.TileBuilding == null && !IsCityNeer(production, point) && production.Owner.IsAlliedWith(point.TileOwner);
+        }
+        public TileObject CreateTileObject(Player owner, Terrain.Point point)
+        {
+            return new HwanEmpireLatifundium(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new HwanEmpireLatifundium(owner, point, donator);
         }
 
         private bool IsCityNeer(TileObjectProduction production, Terrain.Point point)
@@ -172,11 +179,6 @@ namespace CivModel.Hwan
                 }
             }
             return false;
-        }
-
-        public TileObject CreateTileObject(Player owner, Terrain.Point point)
-        {
-            return new HwanEmpireLatifundium(owner, point);
         }
     }
 }

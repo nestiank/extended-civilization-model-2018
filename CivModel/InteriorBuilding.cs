@@ -10,7 +10,7 @@ namespace CivModel
     /// Represents a building which must be built in <see cref="CityBase"/>.
     /// </summary>
     /// <seealso cref="TileBuilding"/>
-    public abstract class InteriorBuilding : ITurnObserver, IGuidTaggedObject
+    public abstract class InteriorBuilding : ITurnObserver, IGuidTaggedObject, IProductionResult
     {
         /// <summary>
         /// The unique identifier of this class.
@@ -203,6 +203,14 @@ namespace CivModel
 
             _owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");
+        }
+
+        /// <summary>
+        /// Called when production is finished, that is, <see cref="Production.Place(Terrain.Point)" /> is succeeded.
+        /// </summary>
+        /// <param name="production">The <see cref="Production" /> object that produced this object.</param>
+        public void OnAfterProduce(Production production)
+        {
         }
 
         private void CopyConstants(InteriorBuildingConstants constants)

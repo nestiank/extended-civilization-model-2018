@@ -32,9 +32,9 @@ namespace CivModel.Finno
         {
             if (City.PlacedPoint is Terrain.Point thisPoint)
             {
-                var creators = new Func<Terrain.Point, Unit>[] {
-                    pt => new DecentralizedMilitary(Owner, pt),
-                    pt => new EMUHorseArcher(Owner, pt),
+                var creators = new Action<Terrain.Point>[] {
+                    pt => DecentralizedMilitaryProductionFactory.Instance.Create(Owner).Place(pt),
+                    pt => EMUHorseArcherProductionFactory.Instance.Create(Owner).Place(pt),
                 };
                 var creator = creators[Game.Random.Next(creators.Length)];
 

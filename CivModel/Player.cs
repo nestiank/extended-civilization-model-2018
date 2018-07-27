@@ -413,7 +413,17 @@ namespace CivModel
         /// <summary>
         /// The team of this player.
         /// </summary>
-        public int Team { get; }
+        public int Team
+        {
+            get => _team;
+            set
+            {
+                if (value < 0 || value >= Game.TeamCount)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "team number is invalid");
+                _team = value;
+            }
+        }
+        private int _team;
 
         // this property is used by CityBase class
         internal bool BeforeLandingCity { get; set; }
@@ -428,8 +438,6 @@ namespace CivModel
         {
             _game = game ?? throw new ArgumentNullException(nameof(game));
 
-            if (team < 0 || team >= game.TeamCount)
-                throw new ArgumentOutOfRangeException(nameof(team), team, "team number is invalid");
             Team = team;
 
             _specialResourceProxy = new SpecialResourceProxy { thiz = this };
@@ -712,6 +720,30 @@ namespace CivModel
             defeat.DoDefeat(this);
 
             Game.VictoryObservable.IterateObserver(o => o.OnDefeat(this, defeat));
+        }
+
+        /// <summary>
+        /// Whether the specified player is not null and is allied with this player.
+        /// Allied players includes the player itself. that is, <c>player.IsAlliedWith(player) == true</c>.
+        /// </summary>
+        /// <param name="player">The player to determine whether is allied or not.</param>
+        /// <returns><c>true</c> if the specified player is allied with; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="player"/> is <c>null</c></exception>
+        /// <seealso cref="IsAlliedWithOrNull(Player)"/>
+        public bool IsAlliedWith(Player player)
+        {
+            return (player != null && player.Team == Team);
+        }
+
+        /// <summary>
+        /// Whether the specified player is null or allied with this player.
+        /// </summary>
+        /// <param name="player">The player to determine whether is allied or not.</param>
+        /// <returns><c>true</c> if the specified player is null or allied with this player; otherwise, <c>false</c>.</returns>
+        /// <seealso cref="IsAlliedWith(Player)"/>
+        public bool IsAlliedWithOrNull(Player player)
+        {
+            return (player == null || player.Team == Team);
         }
 
         /// <summary>

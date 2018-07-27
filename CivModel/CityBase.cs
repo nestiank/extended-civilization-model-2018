@@ -87,13 +87,14 @@ namespace CivModel
         /// <param name="owner">The player who owns this city.</param>
         /// <param name="constants">constants of this actor.</param>
         /// <param name="point">The tile where the object will be.</param>
+        /// <param name="donator">The player donated this TileBuilding. If this TileBuilding is not donated, <c>null</c>.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="owner"/> is <c>null</c>.
         /// or
         /// <paramref name="constants"/> is <c>null</c>.
         /// </exception>
-        public CityBase(Player owner, ActorConstants constants, Terrain.Point point)
-            : base(owner, constants, point)
+        public CityBase(Player owner, ActorConstants constants, Terrain.Point point, Player donator)
+            : base(owner, constants, point, donator)
         {
             string name;
             do

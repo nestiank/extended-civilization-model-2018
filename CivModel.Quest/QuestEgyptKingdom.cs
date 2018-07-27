@@ -56,9 +56,9 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void TileObjectCreated(TileObject obj)
+        public void TileObjectProduced(TileObject obj)
         {
-            if(obj is CivModel.Hwan.Preternaturality Pyramid && Pyramid.Owner == Requestee && Pyramid.PlacedPoint.Value.TileOwner == Requestee.Game.Players[2])
+            if(obj is CivModel.Hwan.Preternaturality pyramid && pyramid.Owner == Requester && pyramid.Donator == Requestee)
             {
                 Status = QuestStatus.Completed;
             }

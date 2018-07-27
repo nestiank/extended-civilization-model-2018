@@ -22,10 +22,13 @@ namespace CivModel.Hwan
 
         public override double ProvidedHappiness => 1;
 
-        public HwanEmpireIbiza(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public HwanEmpireIbiza(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
+        {
+        }
     }
 
-    public class HwanEmpireIbizaProductionFactory : ITileObjectProductionFactory
+    public class HwanEmpireIbizaProductionFactory : ITileBuildingProductionFactory
     {
         public static HwanEmpireIbizaProductionFactory Instance => _instance.Value;
         private static Lazy<HwanEmpireIbizaProductionFactory> _instance
@@ -44,13 +47,19 @@ namespace CivModel.Hwan
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && !IsCityNeer(production, point)
-                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[2] || point.TileOwner == production.Owner.Game.Players[4] || point.TileOwner == production.Owner.Game.Players[6]);
+            return point.TileBuilding == null && !IsCityNeer(production, point) && production.Owner.IsAlliedWith(point.TileOwner);
+        }
+        public TileObject CreateTileObject(Player owner, Terrain.Point point)
+        {
+            return new HwanEmpireIbiza(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new HwanEmpireIbiza(owner, point, donator);
         }
 
         private bool IsCityNeer(TileObjectProduction production, Terrain.Point point)
@@ -136,11 +145,6 @@ namespace CivModel.Hwan
                 }
             }
             return false;
-        }
-
-        public TileObject CreateTileObject(Player owner, Terrain.Point point)
-        {
-            return new HwanEmpireIbiza(owner, point);
         }
     }
 }

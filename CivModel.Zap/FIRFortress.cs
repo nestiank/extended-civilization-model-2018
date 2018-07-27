@@ -19,7 +19,8 @@ namespace CivModel.Zap
             MaxHealPerTurn = 10
         };
 
-        public FIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public FIRFortress(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
         {
             owner.Game.TileObjectObservable.AddObserver(this);
         }
@@ -41,7 +42,7 @@ namespace CivModel.Zap
 
         private Unit AboveUnit = null;
 
-        public void TileObjectCreated(TileObject obj) { }
+        public void TileObjectProduced(TileObject obj) { }
 
         public void TileObjectPlaced(TileObject obj)
         {
@@ -63,7 +64,7 @@ namespace CivModel.Zap
         }
     }
 
-    public class FIRFortressProductionFactory : ITileObjectProductionFactory
+    public class FIRFortressProductionFactory : ITileBuildingProductionFactory
     {
         public static FIRFortressProductionFactory Instance => _instance.Value;
         private static Lazy<FIRFortressProductionFactory> _instance
@@ -82,16 +83,19 @@ namespace CivModel.Zap
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && point.TileOwner == production.Owner;
+            return point.TileBuilding == null && production.Owner.IsAlliedWith(point.TileOwner);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             return new FIRFortress(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new FIRFortress(owner, point, donator);
         }
     }
 }

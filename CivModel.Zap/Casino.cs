@@ -19,7 +19,10 @@ namespace CivModel.Zap
             MaxHealPerTurn = 5
         };
 
-        public Casino(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public Casino(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
+        {
+        }
 
         public override void PostTurn()
         {
@@ -31,7 +34,7 @@ namespace CivModel.Zap
         }
     }
 
-    public class CasinoProductionFactory : ITileObjectProductionFactory
+    public class CasinoProductionFactory : ITileBuildingProductionFactory
     {
         public static CasinoProductionFactory Instance => _instance.Value;
         private static Lazy<CasinoProductionFactory> _instance
@@ -50,13 +53,19 @@ namespace CivModel.Zap
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && !IsCityNeer(production, point)
-                 && point.TileOwner == production.Owner;
+            return point.TileBuilding == null && !IsCityNeer(production, point) && production.Owner.IsAlliedWith(point.TileOwner);
+        }
+        public TileObject CreateTileObject(Player owner, Terrain.Point point)
+        {
+            return new Casino(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new Casino(owner, point, donator);
         }
 
         private bool IsCityNeer(TileObjectProduction production, Terrain.Point point)
@@ -117,11 +126,6 @@ namespace CivModel.Zap
                 }
             }
             return false;
-        }
-
-        public TileObject CreateTileObject(Player owner, Terrain.Point point)
-        {
-            return new Casino(owner, point);
         }
     }
 }

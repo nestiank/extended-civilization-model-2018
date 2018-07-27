@@ -20,10 +20,13 @@ namespace CivModel.Zap
         };
         public override double ProvidedLabor => 10;
 
-        public ZapFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public ZapFactory(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
+        {
+        }
     }
 
-    public class ZapFactoryProductionFactory : ITileObjectProductionFactory
+    public class ZapFactoryProductionFactory : ITileBuildingProductionFactory
     {
         public static ZapFactoryProductionFactory Instance => _instance.Value;
         private static Lazy<ZapFactoryProductionFactory> _instance
@@ -42,16 +45,19 @@ namespace CivModel.Zap
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && point.TileOwner == production.Owner;
+            return point.TileBuilding == null && production.Owner.IsAlliedWith(point.TileOwner);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             return new ZapFactory(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new ZapFactory(owner, point, donator);
         }
     }
 }

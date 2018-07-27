@@ -17,7 +17,7 @@ namespace CivModel
         /// Called when <see cref="TileObject"/> is created.
         /// </summary>
         /// <param name="obj">The <see cref="TileObject"/>.</param>
-        void TileObjectCreated(TileObject obj);
+        void TileObjectProduced(TileObject obj);
 
         /// <summary>
         /// Called when <see cref="TileObject.PlacedPoint"/> is changed or initially set.

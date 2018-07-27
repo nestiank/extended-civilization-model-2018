@@ -20,7 +20,8 @@ namespace CivModel.Hwan
             MaxHealPerTurn = 10
         };
 
-        public HwanEmpireFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public HwanEmpireFIRFortress(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
         {
             owner.Game.TileObjectObservable.AddObserver(this);
             if (point.Unit != null)
@@ -42,7 +43,7 @@ namespace CivModel.Hwan
 
         private Unit AboveUnit = null;
 
-        public void TileObjectCreated(TileObject obj) { }
+        public void TileObjectProduced(TileObject obj) { }
 
         public void TileObjectPlaced(TileObject obj)
         {
@@ -64,7 +65,7 @@ namespace CivModel.Hwan
         }
     }
 
-    public class HwanEmpireFIRFortressProductionFactory : ITileObjectProductionFactory
+    public class HwanEmpireFIRFortressProductionFactory : ITileBuildingProductionFactory
     {
         public static HwanEmpireFIRFortressProductionFactory Instance => _instance.Value;
         private static Lazy<HwanEmpireFIRFortressProductionFactory> _instance
@@ -83,16 +84,19 @@ namespace CivModel.Hwan
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[2] || point.TileOwner == production.Owner.Game.Players[4] || point.TileOwner == production.Owner.Game.Players[6] || point.TileOwner == production.Owner.Game.Players[8]);
+            return point.TileBuilding == null && production.Owner.IsAlliedWith(point.TileOwner);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             return new HwanEmpireFIRFortress(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new HwanEmpireFIRFortress(owner, point, donator);
         }
     }
 }

@@ -20,7 +20,10 @@ namespace CivModel.Finno
             MaxHealPerTurn = 5
         };
 
-        public AncientFinnoGermaniumMine(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public AncientFinnoGermaniumMine(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
+        {
+        }
 
         public override void PostTurn()
         {
@@ -45,7 +48,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class AncientFinnoGermaniumMineProductionFactory : ITileObjectProductionFactory
+    public class AncientFinnoGermaniumMineProductionFactory : ITileBuildingProductionFactory
     {
         public static AncientFinnoGermaniumMineProductionFactory Instance => _instance.Value;
         private static Lazy<AncientFinnoGermaniumMineProductionFactory> _instance
@@ -68,12 +71,15 @@ namespace CivModel.Finno
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[3] || point.TileOwner == production.Owner.Game.Players[5] || point.TileOwner == production.Owner.Game.Players[7]);
+            return point.TileBuilding == null && production.Owner.IsAlliedWith(point.TileOwner);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             return new AncientFinnoGermaniumMine(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new AncientFinnoGermaniumMine(owner, point, donator);
         }
     }
 }

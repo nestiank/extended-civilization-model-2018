@@ -24,7 +24,8 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public HwanEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile) : base(player, Constants, point)
+        public HwanEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile)
+            : base(player, Constants, point, null)
         {
             this.Population = 5;
             _specialActs[0] = new HwanEmpireCityAction(this);

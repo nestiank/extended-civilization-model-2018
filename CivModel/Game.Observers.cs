@@ -14,6 +14,11 @@ namespace CivModel
         public Observable<ITurnObserver> TurnObservable { get; private set; }
 
         /// <summary>
+        /// An <see cref="Observable{IProductionObserver}"/> object which can be observed by <see cref="IProductionObserver"/>.
+        /// </summary>
+        public Observable<IProductionObserver> ProductionObservable { get; private set; }
+
+        /// <summary>
         /// An <see cref="Observable{ITileObjectObserver}"/> object which can be observed by <see cref="ITileObjectObserver"/>.
         /// </summary>
         public Observable<ITileObjectObserver> TileObjectObservable { get; private set; }
@@ -36,6 +41,7 @@ namespace CivModel
         private void InitializeObservable()
         {
             TurnObservable = new Observable<ITurnObserver>();
+            ProductionObservable = new Observable<IProductionObserver>();
             TileObjectObservable = new Observable<ITileObjectObserver>();
             BattleObservable = new Observable<IBattleObserver>();
             QuestObservable = new Observable<IQuestObserver>();

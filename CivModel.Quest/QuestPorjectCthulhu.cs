@@ -56,7 +56,7 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void TileObjectCreated(TileObject obj) { }
+        public void TileObjectProduced(TileObject obj) { }
 
         public void TileObjectPlaced(TileObject obj)
         {

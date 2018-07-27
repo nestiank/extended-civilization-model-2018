@@ -20,7 +20,8 @@ namespace CivModel.Finno
             MaxHealPerTurn = 10
         };
 
-        public AncientFinnoFIRFortress(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public AncientFinnoFIRFortress(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
         {
             owner.Game.TileObjectObservable.AddObserver(this);
             if(point.Unit != null)
@@ -42,7 +43,7 @@ namespace CivModel.Finno
 
         private Unit AboveUnit = null;
 
-        public void TileObjectCreated(TileObject obj) { }
+        public void TileObjectProduced(TileObject obj) { }
 
         public void TileObjectPlaced(TileObject obj)
         {
@@ -64,7 +65,7 @@ namespace CivModel.Finno
         }
     }
 
-    public class AncientFinnoFIRFortressProductionFactory : ITileObjectProductionFactory
+    public class AncientFinnoFIRFortressProductionFactory : ITileBuildingProductionFactory
     {
         public static AncientFinnoFIRFortressProductionFactory Instance => _instance.Value;
         private static Lazy<AncientFinnoFIRFortressProductionFactory> _instance
@@ -83,16 +84,19 @@ namespace CivModel.Finno
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[3] || point.TileOwner == production.Owner.Game.Players[5] || point.TileOwner == production.Owner.Game.Players[7]);
+            return point.TileBuilding == null && production.Owner.IsAlliedWith(point.TileOwner);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             return new AncientFinnoFIRFortress(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new AncientFinnoFIRFortress(owner, point, donator);
         }
     }
 }

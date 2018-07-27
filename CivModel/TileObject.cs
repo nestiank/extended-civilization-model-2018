@@ -24,7 +24,7 @@ namespace CivModel
     /// <summary>
     /// Represents an object which can be placed on <see cref="Terrain.Point"/>.
     /// </summary>
-    public abstract class TileObject : IGuidTaggedObject
+    public abstract class TileObject : IGuidTaggedObject, IProductionResult
     {
         /// <summary>
         /// The unique identifier of this class.
@@ -76,8 +76,15 @@ namespace CivModel
             _tileTag = tileTag;
 
             SetPlacedPoint(point);
+        }
 
-            Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectCreated(this));
+        /// <summary>
+        /// Called when production is finished, that is, <see cref="Production.Place(Terrain.Point)" /> is succeeded.
+        /// </summary>
+        /// <param name="production">The <see cref="Production" /> object that produced this object.</param>
+        public void OnAfterProduce(Production production)
+        {
+            Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectProduced(this));
             Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectPlaced(this));
         }
 

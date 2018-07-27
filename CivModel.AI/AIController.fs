@@ -16,21 +16,21 @@ type public AIController(player : Player) =
             match city' with
             | Some city ->
                 player.Deployment.Remove x |> ignore
-                x.Place city.PlacedPoint.Value
+                x.Place city.PlacedPoint.Value |> ignore
             | None -> ()
         | :? ITileObjectProductionFactory ->
             let pt' = player.Game.Terrain.AllTiles |> Seq.tryFind (fun pt -> x.IsPlacable pt)
             match pt' with
             | Some pt ->
                 player.Deployment.Remove x |> ignore
-                x.Place pt
+                x.Place pt |> ignore
             | None -> ()
         | _ ->
             System.Diagnostics.Debug.WriteLine "unqualified production in AIController.deploy"
             ()
     let rec doDeploy' = function
         | x :: xs ->
-            deploy x
+            deploy x |> ignore
             doDeploy' xs
         | [] -> ()
     let doDeploy() = doDeploy' (Seq.toList player.Deployment)

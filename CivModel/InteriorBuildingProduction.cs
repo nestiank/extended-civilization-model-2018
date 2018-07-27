@@ -78,7 +78,7 @@ namespace CivModel
         /// <returns>
         ///   <c>true</c> if the production is placable; otherwise, <c>false</c>.
         /// </returns>
-        public override bool IsPlacable(Terrain.Point point)
+        protected override bool CoreIsPlacable(Terrain.Point point)
         {
             if (point.TileBuilding is CityBase city && city.Owner == Owner)
                 return _factory.IsPlacable(this, city);
@@ -91,14 +91,14 @@ namespace CivModel
         /// <param name="point">The point to place the production result.</param>
         /// <exception cref="InvalidOperationException">production is not completed yet</exception>
         /// <exception cref="ArgumentException">point is invalid</exception>
-        public override void Place(Terrain.Point point)
+        protected override IProductionResult CorePlace(Terrain.Point point)
         {
             if (!IsCompleted)
                 throw new InvalidOperationException("production is not completed yet");
             if (!IsPlacable(point))
                 throw new ArgumentException("point is invalid");
 
-            var building = _factory.CreateInteriorBuilding((CityBase)point.TileBuilding);
+            return _factory.CreateInteriorBuilding((CityBase)point.TileBuilding);
         }
     }
 }

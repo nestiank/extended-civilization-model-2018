@@ -18,7 +18,8 @@ namespace CivModel.Common
             DefencePower = 21
         };
 
-        public CityCenter(Player player, Terrain.Point point, bool isLoadFromFile) : base(player, Constants, point)
+        public CityCenter(Player player, Terrain.Point point, bool isLoadFromFile)
+            : base(player, Constants, point, null)
         {
             if (!isLoadFromFile)
             {

@@ -21,10 +21,13 @@ namespace CivModel.Hwan
         };
         public override double ProvidedLabor => 10;
 
-        public HwanEmpireKimchiFactory(Player owner, Terrain.Point point) : base(owner, Constants, point) { }
+        public HwanEmpireKimchiFactory(Player owner, Terrain.Point point, Player donator = null)
+            : base(owner, Constants, point, donator)
+        {
+        }
     }
 
-    public class HwanEmpireKimchiFactoryProductionFactory : ITileObjectProductionFactory
+    public class HwanEmpireKimchiFactoryProductionFactory : ITileBuildingProductionFactory
     {
         public static HwanEmpireKimchiFactoryProductionFactory Instance => _instance.Value;
         private static Lazy<HwanEmpireKimchiFactoryProductionFactory> _instance
@@ -43,16 +46,19 @@ namespace CivModel.Hwan
 
         public Production Create(Player owner)
         {
-            return new TileObjectProduction(this, owner);
+            return new TileBuildingProduction(this, owner);
         }
         public bool IsPlacable(TileObjectProduction production, Terrain.Point point)
         {
-            return point.TileBuilding == null
-                 && (point.TileOwner == production.Owner || point.TileOwner == production.Owner.Game.Players[2] || point.TileOwner == production.Owner.Game.Players[4] || point.TileOwner == production.Owner.Game.Players[6]);
+            return point.TileBuilding == null && production.Owner.IsAlliedWith(point.TileOwner);
         }
         public TileObject CreateTileObject(Player owner, Terrain.Point point)
         {
             return new HwanEmpireKimchiFactory(owner, point);
+        }
+        public TileBuilding CreateDonation(Player owner, Terrain.Point point, Player donator)
+        {
+            return new HwanEmpireKimchiFactory(owner, point, donator);
         }
     }
 }

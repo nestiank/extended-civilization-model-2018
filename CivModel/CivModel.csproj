@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="ActionPoint.cs" />
     <Compile Include="ActorConstants.cs" />
+    <Compile Include="IActorProductionFactory.cs" />
     <Compile Include="IAIController.cs" />
     <Compile Include="AttackActorAction.cs" />
     <Compile Include="CityBase.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Game.Save.cs" />
     <Compile Include="GameConstants.cs" />
     <Compile Include="IBattleObserver.cs" />
+    <Compile Include="IProductionResult.cs" />
     <Compile Include="IVictoryObserver.cs" />
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="InteriorBuildingProduction.cs" />
     <Compile Include="IQuestObserver.cs" />
     <Compile Include="ITileObjectObserver.cs" />
+    <Compile Include="IProductionObserver.cs" />
     <Compile Include="Observable.cs" />
     <Compile Include="Quest.cs" />
     <Compile Include="ITurnObserver.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="TileBuilding.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Actor.cs" />
+    <Compile Include="TileBuildingProduction.cs" />
     <Compile Include="TileObject.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

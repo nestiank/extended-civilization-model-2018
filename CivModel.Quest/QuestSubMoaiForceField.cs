@@ -53,9 +53,9 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void TileObjectCreated(TileObject obj)
+        public void TileObjectProduced(TileObject obj)
         {
-            if (obj is CivModel.Hwan.HwanEmpireFIRFortress Moai && Moai.Owner == Requestee && Moai.PlacedPoint.Value.TileOwner == Moai.Owner.Game.Players[8])
+            if (obj is CivModel.Hwan.HwanEmpireFIRFortress moai && moai.Owner == Requester && moai.Donator == Requestee)
             {
                 Status = QuestStatus.Completed;
             }

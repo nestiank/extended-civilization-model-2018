@@ -58,6 +58,11 @@ namespace CivModel
         private readonly Player _owner;
 
         /// <summary>
+        /// The <see cref="CivModel.Game"/> object.
+        /// </summary>
+        public Game Game => Owner.Game;
+
+        /// <summary>
         /// The total labor cost to finish this production.
         /// </summary>
         public double TotalLaborCost { get; private set; }
@@ -257,7 +262,14 @@ namespace CivModel
         /// <returns>
         ///   <c>true</c> if the production is placable; otherwise, <c>false</c>.
         /// </returns>
-        public abstract bool IsPlacable(Terrain.Point point);
+        /// <remarks>
+        /// To implement this method, derived class must override <see cref="CoreIsPlacable(Terrain.Point)"/> method.
+        /// </remarks>
+        /// <seealso cref="CoreIsPlacable(Terrain.Point)"/>
+        public bool IsPlacable(Terrain.Point point)
+        {
+            return CoreIsPlacable(point);
+        }
 
         /// <summary>
         /// Places the production result at the specified point.
@@ -265,6 +277,39 @@ namespace CivModel
         /// <param name="point">The point to place the production result.</param>
         /// <exception cref="InvalidOperationException">production is not completed yet</exception>
         /// <exception cref="ArgumentException">point is invalid</exception>
-        public abstract void Place(Terrain.Point point);
+        /// <returns>The production result.</returns>
+        /// <remarks>
+        /// To implement this method, derived class must override <see cref="CorePlace(Terrain.Point)"/> method.
+        /// </remarks>
+        /// <seealso cref="CorePlace(Terrain.Point)"/>
+        public IProductionResult Place(Terrain.Point point)
+        {
+            var result = CorePlace(point);
+            result.OnAfterProduce(this);
+            Game.ProductionObservable.IterateObserver(o => o.OnProductionDeploy(point, this, result));
+            return result;
+        }
+
+        /// <summary>
+        /// Determines whether the production result is placable at the specified point.
+        /// Override this method to implement <see cref="IsPlacable(Terrain.Point)"/>.
+        /// </summary>
+        /// <param name="point">The point to test to place the production result.</param>
+        /// <returns>
+        ///   <c>true</c> if the production is placable; otherwise, <c>false</c>.
+        /// </returns>
+        /// <seealso cref="IsPlacable(Terrain.Point)"/>
+        protected abstract bool CoreIsPlacable(Terrain.Point point);
+
+        /// <summary>
+        /// Places the production result at the specified point.
+        /// Override this method to implement <see cref="Place(Terrain.Point)"/>.
+        /// </summary>
+        /// <param name="point">The point to place the production result.</param>
+        /// <returns>The production result.</returns>
+        /// <exception cref="InvalidOperationException">production is not completed yet</exception>
+        /// <exception cref="ArgumentException">point is invalid</exception>
+        /// <seealso cref="Place(Terrain.Point)"/>
+        protected abstract IProductionResult CorePlace(Terrain.Point point);
     }
 }

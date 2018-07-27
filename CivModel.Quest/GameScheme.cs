@@ -46,6 +46,19 @@ namespace CivModel.Quests
         {
             this.Game = game;
 
+            // Hwan Ally
+            game.Players[0].Team = 0;
+            game.Players[2].Team = 0;
+            game.Players[4].Team = 0;
+            game.Players[6].Team = 0;
+            game.Players[8].Team = 0;
+
+            // Finno Ally
+            game.Players[1].Team = 1;
+            game.Players[3].Team = 1;
+            game.Players[5].Team = 1;
+            game.Players[7].Team = 1;
+
             // Victory & Defeat Condition
             game.GetPlayerHwan().AddVictoryCondition(new HwanUltimateVictory());
             game.GetPlayerFinno().AddVictoryCondition(new FinnoUltimateVictory());

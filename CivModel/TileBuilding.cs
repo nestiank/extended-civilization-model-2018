@@ -40,19 +40,34 @@ namespace CivModel
         public virtual double ProvidedLabor => 0;
 
         /// <summary>
+        /// Whether this TileBuilding is given to <see cref="Actor.Owner"/> by donation or not.
+        /// </summary>
+        /// <seealso cref="Donator"/>
+        public bool IsDonated => Donator != null;
+
+        /// <summary>
+        /// The player donated this TileBuilding. If this TileBuilding is not donated, <c>null</c>.
+        /// </summary>
+        /// <seealso cref="IsDonated"/>
+        public Player Donator { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TileBuilding"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this TileBuilding.</param>
         /// <param name="constants">constants of this actor.</param>
         /// <param name="point">The tile where the object will be.</param>
+        /// <param name="donator">The player donated this TileBuilding. If this TileBuilding is not donated, <c>null</c>.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="owner"/> is <c>null</c>.
         /// or
         /// <paramref name="constants"/> is <c>null</c>.
         /// </exception>
-        public TileBuilding(Player owner, ActorConstants constants, Terrain.Point point)
+        public TileBuilding(Player owner, ActorConstants constants, Terrain.Point point, Player donator)
             : base(owner, constants, point, TileTag.TileBuilding)
         {
+            Donator = donator;
+
             owner.TryAddTerritory(point);
             Owner.AddTileBuildingToList(this);
         }
