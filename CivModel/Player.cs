@@ -387,10 +387,33 @@ namespace CivModel
         private readonly Game _game;
 
         /// <summary>
+        /// The player number of this player.
+        /// </summary>
+        public int PlayerNumber
+        {
+            get
+            {
+                if (_playerNumber != -1)
+                    return _playerNumber;
+
+                for (int idx = 0; idx < Game.Players.Count; ++idx)
+                {
+                    if (Game.Players[idx] == this)
+                    {
+                        _playerNumber = idx;
+                        return idx;
+                    }
+                }
+
+                throw new InvalidOperationException("player object is invalid");
+            }
+        }
+        private int _playerNumber = -1;
+
+        /// <summary>
         /// The team of this player.
         /// </summary>
-        public int Team => _team;
-        private readonly int _team;
+        public int Team { get; }
 
         // this property is used by CityBase class
         internal bool BeforeLandingCity { get; set; }
@@ -407,7 +430,7 @@ namespace CivModel
 
             if (team < 0 || team >= game.TeamCount)
                 throw new ArgumentOutOfRangeException(nameof(team), team, "team number is invalid");
-            _team = team;
+            Team = team;
 
             _specialResourceProxy = new SpecialResourceProxy { thiz = this };
 
