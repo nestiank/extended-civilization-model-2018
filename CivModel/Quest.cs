@@ -287,9 +287,7 @@ namespace CivModel
             {
                 if (--LeftTurn <= 0)
                 {
-                    if (Status == QuestStatus.Accepted)
-                        Deploy();
-                    else if (Status == QuestStatus.Deployed)
+                    if (Status == QuestStatus.Accepted || Status == QuestStatus.Deployed)
                         Disable();
                 }
             }
