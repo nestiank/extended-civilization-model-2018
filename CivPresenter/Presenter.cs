@@ -1048,9 +1048,9 @@ namespace CivPresenter
                     }
                     else if (quest.Status == QuestStatus.Accepted)
                     {
-                        quest.Deploy();
+                        quest.Disable();
                         _acceptedQuests.Remove(quest);
-                        _deployedQuests.Insert(0, quest);
+                        _disabledQuests.Insert(0, quest);
                         SelectedQuest = _acceptedQuests.Count;
                     }
                 }
