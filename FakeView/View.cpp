@@ -833,7 +833,7 @@ namespace FakeView
             msg += "(unqualified actor): ";
 
         msg += cli2str(actor->GetType()->FullName);
-        msg += ", Unit HP: " + std::to_string(actor->RemainHP) + " / " + std::to_string(actor->MaxHP);
+        msg += ", HP: " + std::to_string(actor->RemainHP) + " / " + std::to_string(actor->MaxHP);
         msg += ", AP: " + std::to_string(actor->RemainAP) + " / " + std::to_string(actor->MaxAP);
 
         m_screen->PrintString(0, line, color, msg);
