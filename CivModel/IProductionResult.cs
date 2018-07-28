@@ -15,7 +15,10 @@ namespace CivModel
         /// <summary>
         /// Called when production is finished, that is, <see cref="Production.Place(Terrain.Point)"/> is succeeded.
         /// </summary>
-        /// <param name="production">The <see cref="Production"/> object that produced this object.</param>
+        /// <param name="production">
+        /// The <see cref="Production"/> object that produced this object.
+        /// If this method is called by initialization purpose, <c>null</c>.
+        /// </param>
         void OnAfterProduce(Production production);
     }
 }

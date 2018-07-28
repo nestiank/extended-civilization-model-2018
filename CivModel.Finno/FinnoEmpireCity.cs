@@ -35,11 +35,11 @@ namespace CivModel.Finno
             if (PlacedPoint is Terrain.Point thisPoint)
             {
                 var creators = new Action<Terrain.Point>[] {
-                    pt => DecentralizedMilitaryProductionFactory.Instance.Create(Owner).Place(pt),
-                    pt => EMUHorseArcherProductionFactory.Instance.Create(Owner).Place(pt),
-                    pt => ElephantCavalryProductionFactory.Instance.Create(Owner).Place(pt),
-                    pt => AncientSorcererProductionFactory.Instance.Create(Owner).Place(pt),
-                    pt => JediKnightProductionFactory.Instance.Create(Owner).Place(pt),
+                    pt => new DecentralizedMilitary(Owner, pt).OnAfterProduce(null),
+                    pt => new EMUHorseArcher(Owner, pt).OnAfterProduce(null),
+                    pt => new ElephantCavalry(Owner, pt).OnAfterProduce(null),
+                    pt => new AncientSorcerer(Owner, pt).OnAfterProduce(null),
+                    pt => new JediKnight(Owner, pt).OnAfterProduce(null),
                 };
                 var creator = creators[Game.Random.Next(creators.Length)];
 

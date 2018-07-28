@@ -111,8 +111,8 @@ namespace CivModel.Finno
                     Owner.PlacedPoint.Value.TileBuilding.Destroy();
                 }
 
-                var production = AncientFinnoFIRFortressProductionFactory.Instance.Create(Owner.Owner);
-                production.Place(Owner.PlacedPoint.Value);
+                var fortress = new AncientFinnoFIRFortress(Owner.Owner, Owner.PlacedPoint.Value);
+                fortress.OnAfterProduce(null);
 
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);
