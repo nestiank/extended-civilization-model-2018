@@ -75,32 +75,34 @@ namespace CivModel.Hwan
                 _owner = owner;
             }
 
-            private Exception CheckError(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point origin, Terrain.Point? target)
             {
-                if (pt != null)
-                    return new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    return new InvalidOperationException("Actor is not placed yet");
+                if (target != null)
+                    return new ArgumentException("target is invalid");
                 if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
                     return new InvalidOperationException("Skill is not turned on");
 
                 return null;
             }
 
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
             {
-                if (CheckError(pt) != null)
+                if (CheckError(origin, target) != null)
                     return double.NaN;
 
                 return 0;
             }
 
-            public void Act(Terrain.Point? pt)
+            public void Act(Terrain.Point? target)
             {
-                if (CheckError(pt) is Exception e)
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                var origin = _owner.PlacedPoint.Value;
+
+                if (CheckError(origin, target) is Exception e)
                     throw e;
 
-                ActionPoint Ap = GetRequiredAP(pt);
+                ActionPoint Ap = GetRequiredAP(origin, target);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 

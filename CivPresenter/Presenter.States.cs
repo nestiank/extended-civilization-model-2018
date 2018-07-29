@@ -81,9 +81,13 @@ namespace CivPresenter
             /// </summary>
             AIControl,
             /// <summary>
-            /// State [city view]. This state indicates player is viewint the city.
+            /// State [city view]. This state indicates player is viewing the city.
             /// </summary>
-            CityView
+            CityView,
+            /// <summary>
+            /// State [path finding]. This state indicates path of actor is being found.
+            /// </summary>
+            PathFinding
         }
     }
 }

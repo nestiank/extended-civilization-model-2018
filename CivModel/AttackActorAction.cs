@@ -44,20 +44,21 @@ namespace CivModel
         /// Test if the action with given parameter is valid and return required AP to act.
         /// Returns <see cref="ActionPoint.NonAvailable"/> if the action is invalid.
         /// </summary>
-        /// <param name="pt">the parameter with which action will be tested.</param>
+        /// <param name="origin">the point where <see cref="Owner"/> would be while testing.</param>
+        /// <param name="target">the parameter with which action will be tested.</param>
         /// <returns>
         /// the required AP to act. If the action is invalid, <see cref="ActionPoint.NonAvailable"/>.
         /// </returns>
-        public ActionPoint GetRequiredAP(Terrain.Point? pt)
+        public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
         {
-            if (pt is Terrain.Point target && _owner.PlacedPoint is Terrain.Point origin)
+            if (target is Terrain.Point pt)
             {
-                Actor targetObject = GetTargetObject(target);
+                Actor targetObject = GetTargetObject(pt);
 
                 if (targetObject != null && targetObject.Owner != _owner.Owner)
                 {
-                    if (Terrain.Point.Distance(origin, target) == 1)
-                        return _owner.GetRequiredAPToMoveNearBy(target);
+                    if (Terrain.Point.Distance(origin, pt) == 1)
+                        return _owner.GetRequiredAPToMoveNearBy(origin, pt);
                 }
             }
 
@@ -72,12 +73,13 @@ namespace CivModel
         /// <exception cref="InvalidOperationException">Actor is not placed yet</exception>
         public void Act(Terrain.Point? pt)
         {
-            ActionPoint requiredAP = GetRequiredAP(pt);
+            if (!_owner.PlacedPoint.HasValue)
+                throw new InvalidOperationException("Actor is not placed yet");
+
+            ActionPoint requiredAP = GetRequiredAP(_owner.PlacedPoint.Value, pt);
 
             if (!_owner.CanConsumeAP(requiredAP))
                 throw new ArgumentException("parameter is invalid");
-            if (!_owner.PlacedPoint.HasValue)
-                throw new InvalidOperationException("Actor is not placed yet");
 
             Actor targetObject = GetTargetObject(pt.Value);
 

@@ -52,107 +52,110 @@ namespace CivModel.Hwan
 
             public int LastSkillCalled = -5;
 
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
             {
-                if (CheckError(pt) != null)
+                if (CheckError(origin, target) != null)
                     return double.NaN;
 
                 return 1;
             }
 
-            private Exception CheckError(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point origin, Terrain.Point? target)
             {
-                if (pt != null)
-                    return new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    return new InvalidOperationException("Actor is not placed yet");
+                if (target != null)
+                    return new ArgumentException("target is invalid");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 4)
                     return new InvalidOperationException("Skill is not turned on");
 
                 return null;
             }
 
-            public void Act(Terrain.Point? pt)
+            public void Act(Terrain.Point? target)
             {
-                if (CheckError(pt) is Exception e)
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                var origin = _owner.PlacedPoint.Value;
+
+                if (CheckError(origin, target) is Exception e)
                     throw e;
 
-                ActionPoint Ap = GetRequiredAP(pt);
+                ActionPoint Ap = GetRequiredAP(origin, target);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
-                int A = Owner.PlacedPoint.Value.Position.A;
-                int B = Owner.PlacedPoint.Value.Position.B;
-                int C = Owner.PlacedPoint.Value.Position.C;
+                int A = origin.Position.A;
+                int B = origin.Position.B;
+                int C = origin.Position.C;
+                var terrain = origin.Terrain;
 
                 if (B + (C - 1 + Math.Sign(C - 1)) / 2 >= 0 && C - 1 >= 0)
                 {
-                    if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B, C - 1)).Unit != null)
+                    if ((terrain.GetPoint(A + 1, B, C - 1)).Unit != null)
                     {
-                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B, C - 1)).Unit.Owner != Owner.Owner && (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B, C - 1)).Unit.BattleClassLevel < 4)
+                        if ((terrain.GetPoint(A + 1, B, C - 1)).Unit.Owner != Owner.Owner && (terrain.GetPoint(A + 1, B, C - 1)).Unit.BattleClassLevel < 4)
                         {
-                            double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B, C - 1)).Unit.MaxHP;
-                            Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B, C - 1)).Unit, 0, false, true);
+                            double Damage = (terrain.GetPoint(A + 1, B, C - 1)).Unit.MaxHP;
+                            Owner.AttackTo(Damage, (terrain.GetPoint(A + 1, B, C - 1)).Unit, 0, false, true);
                         }
                     }
                 }
 
                 if (B - 1 + (C + Math.Sign(C)) / 2 >= 0)
                 {
-                    if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B - 1, C)).Unit != null)
+                    if ((terrain.GetPoint(A + 1, B - 1, C)).Unit != null)
                     {
-                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B - 1, C)).Unit.Owner != Owner.Owner && (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B - 1, C)).Unit.BattleClassLevel < 4)
+                        if ((terrain.GetPoint(A + 1, B - 1, C)).Unit.Owner != Owner.Owner && (terrain.GetPoint(A + 1, B - 1, C)).Unit.BattleClassLevel < 4)
                         {
-                            double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B - 1, C)).Unit.MaxHP;
-                            Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A + 1, B - 1, C)).Unit, 0, false, true);
+                            double Damage = (terrain.GetPoint(A + 1, B - 1, C)).Unit.MaxHP;
+                            Owner.AttackTo(Damage, (terrain.GetPoint(A + 1, B - 1, C)).Unit, 0, false, true);
                         }
                     }
                 }
 
-                if (B + 1 + (C - 1 + Math.Sign(C - 1)) / 2 < Owner.PlacedPoint.Value.Terrain.Width && C - 1 >= 0)
+                if (B + 1 + (C - 1 + Math.Sign(C - 1)) / 2 < terrain.Width && C - 1 >= 0)
                 {
-                    if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 1, C - 1)).Unit != null)
+                    if ((terrain.GetPoint(A, B + 1, C - 1)).Unit != null)
                     {
-                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 1, C - 1)).Unit.Owner != Owner.Owner && (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 1, C - 1)).Unit.BattleClassLevel < 4)
+                        if ((terrain.GetPoint(A, B + 1, C - 1)).Unit.Owner != Owner.Owner && (terrain.GetPoint(A, B + 1, C - 1)).Unit.BattleClassLevel < 4)
                         {
-                            double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 1, C - 1)).Unit.MaxHP;
-                            Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B + 1, C - 1)).Unit, 0, false, true);
+                            double Damage = (terrain.GetPoint(A, B + 1, C - 1)).Unit.MaxHP;
+                            Owner.AttackTo(Damage, (terrain.GetPoint(A, B + 1, C - 1)).Unit, 0, false, true);
                         }
                     }
                 }
 
-                if (B + 1 + (C + Math.Sign(C)) / 2 < Owner.PlacedPoint.Value.Terrain.Width)
+                if (B + 1 + (C + Math.Sign(C)) / 2 < terrain.Width)
                 {
-                    if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B + 1, C)).Unit != null)
+                    if ((terrain.GetPoint(A - 1, B + 1, C)).Unit != null)
                     {
-                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B + 1, C)).Unit.Owner != Owner.Owner && (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B + 1, C)).Unit.BattleClassLevel < 4)
+                        if ((terrain.GetPoint(A - 1, B + 1, C)).Unit.Owner != Owner.Owner && (terrain.GetPoint(A - 1, B + 1, C)).Unit.BattleClassLevel < 4)
                         {
-                            double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B + 1, C)).Unit.MaxHP;
-                            Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B + 1, C)).Unit, 0, false, true);
+                            double Damage = (terrain.GetPoint(A - 1, B + 1, C)).Unit.MaxHP;
+                            Owner.AttackTo(Damage, (terrain.GetPoint(A - 1, B + 1, C)).Unit, 0, false, true);
                         }
                     }
                 }
 
-                if (B - 1 + (C + 1 + Math.Sign(C + 1)) / 2 >= 0 && C + 1 < Owner.PlacedPoint.Value.Terrain.Height)
+                if (B - 1 + (C + 1 + Math.Sign(C + 1)) / 2 >= 0 && C + 1 < terrain.Height)
                 {
-                    if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 1, C + 1)).Unit != null)
+                    if ((terrain.GetPoint(A, B - 1, C + 1)).Unit != null)
                     {
-                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 1, C + 1)).Unit.Owner != Owner.Owner && (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 1, C + 1)).Unit.BattleClassLevel < 4)
+                        if ((terrain.GetPoint(A, B - 1, C + 1)).Unit.Owner != Owner.Owner && (terrain.GetPoint(A, B - 1, C + 1)).Unit.BattleClassLevel < 4)
                         {
-                            double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 1, C + 1)).Unit.MaxHP;
-                            Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A, B - 1, C + 1)).Unit, 0, false, true);
+                            double Damage = (terrain.GetPoint(A, B - 1, C + 1)).Unit.MaxHP;
+                            Owner.AttackTo(Damage, (terrain.GetPoint(A, B - 1, C + 1)).Unit, 0, false, true);
                         }
                     }
                 }
 
-                if (B + (C + 1 + Math.Sign(C + 1)) / 2 < Owner.PlacedPoint.Value.Terrain.Width && C + 1 < Owner.PlacedPoint.Value.Terrain.Height)
+                if (B + (C + 1 + Math.Sign(C + 1)) / 2 < terrain.Width && C + 1 < terrain.Height)
                 {
-                    if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B, C + 1)).Unit != null)
+                    if ((terrain.GetPoint(A - 1, B, C + 1)).Unit != null)
                     {
-                        if ((Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B, C + 1)).Unit.Owner != Owner.Owner && (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B, C + 1)).Unit.BattleClassLevel < 4)
+                        if ((terrain.GetPoint(A - 1, B, C + 1)).Unit.Owner != Owner.Owner && (terrain.GetPoint(A - 1, B, C + 1)).Unit.BattleClassLevel < 4)
                         {
-                            double Damage = (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B, C + 1)).Unit.MaxHP;
-                            Owner.AttackTo(Damage, (Owner.PlacedPoint.Value.Terrain.GetPoint(A - 1, B, C + 1)).Unit, 0, false, true);
+                            double Damage = (terrain.GetPoint(A - 1, B, C + 1)).Unit.MaxHP;
+                            Owner.AttackTo(Damage, (terrain.GetPoint(A - 1, B, C + 1)).Unit, 0, false, true);
                         }
                     }
                 }

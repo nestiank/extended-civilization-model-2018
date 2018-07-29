@@ -64,6 +64,10 @@
       <Project>{257a17a7-e9db-4d7b-8469-0b3ad9e91937}</Project>
       <Name>CivModel.Hwan</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CivModel.Path\CivModel.Path.fsproj">
+      <Project>{841006d0-e2e4-454c-8333-7f4a1c62fed1}</Project>
+      <Name>CivModel.Path</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CivModel.Quest\CivModel.Quests.csproj">
       <Project>{c7375e51-cb93-4405-b82a-64508ed2959c}</Project>
       <Name>CivModel.Quests</Name>

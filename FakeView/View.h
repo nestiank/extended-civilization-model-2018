@@ -30,6 +30,8 @@ namespace FakeView
         void PrintUnit(int px, int py, CivModel::Unit^ unit);
         void PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding);
 
+        void PrintMovePath(CivModel::IMovePath^ path);
+
         unsigned char GetPlayerColor(CivModel::Player^ player);
 
         std::string GetFactoryDescription(CivModel::IProductionFactory^ factory);

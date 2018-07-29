@@ -52,51 +52,52 @@ namespace CivModel.Hwan
 
             public int LastSkillCalled = -3;
 
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
             {
-                if (CheckError(pt) != null)
+                if (CheckError(origin, target) != null)
                     return double.NaN;
 
                 return 1;
             }
 
-            private Exception CheckError(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point origin, Terrain.Point? target)
             {
-                if (pt == null)
-                    return new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    return new InvalidOperationException("Actor is not placed yet");
+                if (target == null)
+                    return new ArgumentNullException(nameof(target));
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     return new InvalidOperationException("Skill is not turned on");
-                if (pt.Value.Unit == null)
+                if (target.Value.Unit == null)
                     return new InvalidOperationException("There is no target");
-                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(pt.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(pt.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) > 2)
+                if (Math.Max(Math.Max(Math.Abs(target.Value.Position.A - Owner.PlacedPoint.Value.Position.A), Math.Abs(target.Value.Position.B - Owner.PlacedPoint.Value.Position.B)), Math.Abs(target.Value.Position.C - Owner.PlacedPoint.Value.Position.C)) > 2)
                     return new InvalidOperationException("Too far to attack");
-                if (pt.Value.Unit.Owner == Owner.Owner)
+                if (target.Value.Unit.Owner == Owner.Owner)
                     return new InvalidOperationException("The Unit is friendly");
-                if (pt.Value.TileBuilding != null)
+                if (target.Value.TileBuilding != null)
                     return new InvalidOperationException("The Unit is in Building");
-                if (pt.Value.Unit.BattleClassLevel > 3)
+                if (target.Value.Unit.BattleClassLevel > 3)
                     return new InvalidOperationException("The Unit's ClassLevel is more then limit");
 
                 return null;
             }
 
-            public void Act(Terrain.Point? pt)
+            public void Act(Terrain.Point? target)
             {
-                if (CheckError(pt) is Exception e)
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                var origin = _owner.PlacedPoint.Value;
+
+                if (CheckError(origin, target) is Exception e)
                     throw e;
 
-                ActionPoint Ap = GetRequiredAP(pt);
+                ActionPoint Ap = GetRequiredAP(origin, target);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
+                Owner.AttackTo(target.Value.Unit.MaxHP, target.Value.Unit, 0, true, true);
 
-                Owner.AttackTo(pt.Value.Unit.MaxHP, pt.Value.Unit, 0, true, true);
-
-                if (pt.Value.Unit == null && Owner != null)
+                if (target.Value.Unit == null && Owner != null)
                 {
-                    Owner.PlacedPoint = pt;
+                    Owner.PlacedPoint = target;
                 }
                 LastSkillCalled = Owner.Owner.Game.TurnNumber;
                 Owner.ConsumeAP(Ap);

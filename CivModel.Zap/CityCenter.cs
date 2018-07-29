@@ -53,11 +53,9 @@ namespace CivModel.Zap
                 _owner = owner;
             }
 
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
             {
-                if (pt != null)
-                    return double.NaN;
-                if (!_owner.PlacedPoint.HasValue)
+                if (target != null)
                     return double.NaN;
                 if (Owner.Owner.Game.TurnNumber == LastSkillCalled)
                     return double.NaN;

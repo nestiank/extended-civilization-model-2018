@@ -332,6 +332,26 @@ namespace CivModel
         private bool _sleepFlag = false;
 
         /// <summary>
+        /// The path of this actor to move along at the end of subturn.
+        /// </summary>
+        public IMovePath MovePath
+        {
+            get
+            {
+                if (_movePath != null && _movePath.IsInvalid)
+                    _movePath = null;
+                return _movePath;
+            }
+            set
+            {
+                if (value.Actor != this)
+                    throw new ArgumentException("the actor of path is not this actor", nameof(value));
+                _movePath = value;
+            }
+        }
+        private IMovePath _movePath;
+
+        /// <summary>
         /// Whether this actor is cloacking.
         /// </summary>
         public bool IsCloacking { get; set; }
@@ -811,22 +831,19 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Gets the required AP to move to point, assuming the point is near the position of this actor.
+        /// Gets the required AP to move from point to point, assuming two points are nearby
         /// </summary>
-        /// <param name="point">The <see cref="Terrain.Point"/> struct object</param>
+        /// <param name="from">The <see cref="Terrain.Point"/> to move from</param>
+        /// <param name="to">The <see cref="Terrain.Point"/> to move to</param>
         /// <returns>the required AP.</returns>
-        /// <remarks>
-        /// This method assumes <paramref name="point"/> is near <see cref="TileObject.PlacedPoint"/> of this actor.<br/>
-        /// Thus, <see cref="Terrain.Point.Position"/> of <paramref name="point"/> can be ignored.
-        /// </remarks>
-        public virtual ActionPoint GetRequiredAPToMoveNearBy(Terrain.Point point)
+        public virtual ActionPoint GetRequiredAPToMoveNearBy(Terrain.Point from, Terrain.Point to)
         {
             // POMFSTIH
-            switch (point.Type)
+            switch (to.Type)
             {
                 case TerrainType.Plain: return 1;
                 case TerrainType.Ocean:
-                    if (PlacedPoint?.Type != TerrainType.Ocean)
+                    if (from.Type != TerrainType.Ocean)
                         return new ActionPoint(0.5, consumeAll: true);
                     else
                         return 0.5;
@@ -917,6 +934,15 @@ namespace CivModel
         {
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
+
+            if (playerInTurn == Owner)
+            {
+                while (MovePath != null)
+                {
+                    if (!MovePath.ActFirstWalk())
+                        break;
+                }
+            }
 
             foreach (var effect in _effects)
                 effect?.PostPlayerSubTurn(playerInTurn);

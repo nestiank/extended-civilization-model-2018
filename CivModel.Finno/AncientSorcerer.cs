@@ -52,50 +52,48 @@ namespace CivModel.Finno
             }
 
 
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
             {
-                if (CheckError(pt) != null)
+                if (CheckError(origin, target) != null)
                     return double.NaN;
 
                 return 1;
             }
 
-            private bool IsInDistance(Terrain.Point? pt)
+            private bool IsInDistance(Terrain.Point origin, Terrain.Point target)
             {
-                int A = Owner.PlacedPoint.Value.Position.A;
-                int B = Owner.PlacedPoint.Value.Position.B;
-                int C = Owner.PlacedPoint.Value.Position.C;
-                int Width = Owner.PlacedPoint.Value.Terrain.Width;
+                int A = origin.Position.A;
+                int B = origin.Position.B;
+                int C = origin.Position.C;
+                int Width = origin.Terrain.Width;
 
-                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - A), Math.Abs(pt.Value.Position.B - B)), Math.Abs(pt.Value.Position.C - C)) > 2)
+                if (Math.Max(Math.Max(Math.Abs(target.Position.A - A), Math.Abs(target.Position.B - B)), Math.Abs(target.Position.C - C)) > 2)
                 {
-                    if(pt.Value.Position.B > B) // pt가 맵 오른쪽
+                    if(target.Position.B > B) // pt가 맵 오른쪽
                     {
-                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B - Width - B), Math.Abs(pt.Value.Position.A + Width - A)),Math.Abs(pt.Value.Position.C - C)) > 2)
+                        if (Math.Max(Math.Max(Math.Abs(target.Position.B - Width - B), Math.Abs(target.Position.A + Width - A)),Math.Abs(target.Position.C - C)) > 2)
                             return false;
                     }
                     else //pt가 맵 왼쪽
                     {
-                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B + Width - B), Math.Abs(pt.Value.Position.A - Width - A)), Math.Abs(pt.Value.Position.C - C)) > 2)
+                        if (Math.Max(Math.Max(Math.Abs(target.Position.B + Width - B), Math.Abs(target.Position.A - Width - A)), Math.Abs(target.Position.C - C)) > 2)
                             return false;
                     }
                 }
                 return true;
             }
 
-            private Exception CheckError(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point origin, Terrain.Point? target)
             {
-                if (pt == null)
-                    return new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    return new InvalidOperationException("Actor is not placed yet");
-                if (pt.Value.Unit == null)
+                if (target == null)
+                    return new ArgumentNullException(nameof(target));
+                if (target.Value.Unit == null)
                     return new InvalidOperationException("There is no target");
-                if (pt.Value.Unit.Owner != Owner.Owner)
+                if (target.Value.Unit.Owner != Owner.Owner)
                     return new InvalidOperationException("The Unit is hostile");
-                if(pt.Value.Unit.MaxHP == pt.Value.Unit.RemainHP)
+                if (target.Value.Unit.MaxHP == target.Value.Unit.RemainHP)
                     return new InvalidOperationException("The Unit Has Full HP"); //만피 회복 불가
-                if (!this.IsInDistance(pt))
+                if (!this.IsInDistance(origin, target.Value))
                     return new InvalidOperationException("Too Far to Heal");
 
                 return null;
@@ -103,10 +101,12 @@ namespace CivModel.Finno
 
             public void Act(Terrain.Point? pt)
             {
-                if (CheckError(pt) is Exception e)
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                if (CheckError(_owner.PlacedPoint.Value, pt) is Exception e)
                     throw e;
 
-                ActionPoint Ap = GetRequiredAP(pt);
+                ActionPoint Ap = GetRequiredAP(_owner.PlacedPoint.Value, pt);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
