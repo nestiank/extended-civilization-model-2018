@@ -344,7 +344,7 @@ namespace CivModel
             }
             set
             {
-                if (value.Actor != this)
+                if (value != null && value.Actor != this)
                     throw new ArgumentException("the actor of path is not this actor", nameof(value));
                 _movePath = value;
             }
