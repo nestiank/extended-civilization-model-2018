@@ -9,7 +9,7 @@ using static CivModel.Zap.EmuPlayerNumber;
 
 namespace CivModel.Quests
 {
-    public class QuestWarAliance : Quest, IBattleObserver
+    public class QuestWarAliance : Quest, ITileObjectObserver
     {
         public override string Name => "[전쟁 동맹] - 에뮤 연방";
 
@@ -38,12 +38,12 @@ namespace CivModel.Quests
 
         protected override void OnAccept()
         {
-            Game.BattleObservable.AddObserver(this);
+            Game.TileObjectObservable.AddObserver(this);
         }
 
         private void Cleanup()
         {
-            Game.BattleObservable.RemoveObserver(this);
+            Game.TileObjectObservable.RemoveObserver(this);
         }
 
         protected override void OnGiveup()
@@ -58,21 +58,20 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void OnBeforeBattle(Actor attacker, Actor defender)
+        public void TileObjectProduced(TileObject obj)
         {
-        }
-
-        public void OnAfterBattle(Actor attacker, Actor defender, Player atkOwner, Player defOwner, BattleResult result)
-        {
-            if (atkOwner == Requestee && attacker is CivModel.Finno.AutismBeamDrone && defOwner == Game.Players[4] && flag < 2)
+            if (obj is CivModel.Finno.AutismBeamDrone && obj.PlacedPoint.Value.TileOwner == Game.Players[1] && flag < 2)
             {
                 flag += 1;
             }
-            else if(atkOwner == Requestee && attacker is CivModel.Finno.AutismBeamDrone && defOwner == Game.Players[4] && flag >= 2)
+            else if(obj is CivModel.Finno.AutismBeamDrone && obj.PlacedPoint.Value.TileOwner == Game.Players[1] && flag >= 2)
             {
                 flag = 0;
                 Status = QuestStatus.Completed;
             }
+
         }
+
+        public void TileObjectPlaced(TileObject obj) { }
     }
 }
