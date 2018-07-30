@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 using static CivModel.Hwan.HwanPlayerNumber;
+using static CivModel.Finno.FinnoPlayerNumber;
 using static CivModel.Zap.AtlantisPlayerNumber;
 
 namespace CivModel.Quests
 {
-    public class QuestPorjectCthulhu : Quest, ITileObjectObserver
+    public class QuestPorjectCthulhu : Quest
     {
         public override string Name => "첩보 - 크툴루 계획";
 
@@ -36,12 +37,12 @@ namespace CivModel.Quests
 
         protected override void OnAccept()
         {
-            Game.TileObjectObservable.AddObserver(this);
+            CivModel.Hwan.Spy.SpyActionEvent += Spy_SpyActionEvent;
         }
 
         private void Cleanup()
         {
-            Game.TileObjectObservable.RemoveObserver(this);
+            CivModel.Hwan.Spy.SpyActionEvent -= Spy_SpyActionEvent;
         }
 
         protected override void OnGiveup()
@@ -56,18 +57,15 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public void TileObjectProduced(TileObject obj) { }
-
-        public void TileObjectPlaced(TileObject obj)
+        private void Spy_SpyActionEvent(Hwan.Spy spy)
         {
-            if (obj is CivModel.Hwan.Spy Spy && Spy.Owner == Requestee && Spy.PlacedPoint.Value.TileOwner == Requestee.Game.Players[1])
+            if (spy.PlacedPoint is Terrain.Point pt)
             {
-                if (Spy.QuestFlag)
+                if (spy.Owner == Requestee && pt.TileOwner == Game.GetPlayerFinno())
                 {
-                    Status = QuestStatus.Completed;
+                    Complete();
                 }
             }
         }
-
     }
 }

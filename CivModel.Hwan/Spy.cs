@@ -9,7 +9,7 @@ namespace CivModel.Hwan
     public class Spy : Unit
     {
         public static Guid ClassGuid { get; } = new Guid("A3037080-69D5-4B90-8B35-44CAB18B7867");
-        public override Guid Guid => ClassGuid;        
+        public override Guid Guid => ClassGuid;
 
         public static readonly ActorConstants Constants = new ActorConstants
         {
@@ -22,7 +22,7 @@ namespace CivModel.Hwan
             BattleClassLevel = 1
         };
 
-        public bool QuestFlag = false;
+        public static event Action<Spy> SpyActionEvent = delegate { };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -31,14 +31,13 @@ namespace CivModel.Hwan
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
-        private readonly IActorAction[] _specialActs = new IActorAction[2];
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
 
         public Spy(Player owner, Terrain.Point point) : base(owner, Constants, point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
             _specialActs[0] = new SpyAction(this);
-            _specialActs[1] = new SpyRealAct(this);
 
             this.IsCloacking = true;
         }
@@ -55,7 +54,6 @@ namespace CivModel.Hwan
                 _owner = owner;
             }
 
-
             public ActionPoint GetRequiredAP(Terrain.Point? pt)
             {
                 if (CheckError(pt) != null)
@@ -70,7 +68,7 @@ namespace CivModel.Hwan
                     return new ArgumentException("pt is invalid");
                 if (!_owner.PlacedPoint.HasValue)
                     return new InvalidOperationException("Actor is not placed yet");
-                if (pt.Value.TileOwner == Owner.Owner)
+                if (_owner.Owner.IsAlliedWithOrNull(_owner.PlacedPoint.Value.TileOwner))
                     return new InvalidOperationException("Actor is not placed in Hostile");
 
                 return null;
@@ -85,55 +83,7 @@ namespace CivModel.Hwan
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
-                _owner.QuestFlag = true;
-
-                Owner.ConsumeAP(Ap);
-            }
-        }
-
-        private class SpyRealAct : IActorAction
-        {
-            private readonly Spy _owner;
-            public Actor Owner => _owner;
-
-            public bool IsParametered => false;
-
-            public SpyRealAct(Spy owner)
-            {
-                _owner = owner;
-            }
-
-
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
-            {
-                if (CheckError(pt) != null)
-                    return double.NaN;
-
-                return 1;
-            }
-
-            private Exception CheckError(Terrain.Point? pt)
-            {
-                if (pt != null)
-                    return new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    return new InvalidOperationException("Actor is not placed yet");
-                if (pt.Value.TileOwner == Owner.Owner)
-                    return new InvalidOperationException("Actor is not placed in Hostile");
-
-                return null;
-            }
-
-            public void Act(Terrain.Point? pt)
-            {
-                if (CheckError(pt) is Exception e)
-                    throw e;
-
-                ActionPoint Ap = GetRequiredAP(pt);
-                if (!Owner.CanConsumeAP(Ap))
-                    throw new InvalidOperationException("Not enough Ap");
-
-                _owner.QuestFlag = true;
+                SpyActionEvent(_owner);
 
                 Owner.ConsumeAP(Ap);
             }
