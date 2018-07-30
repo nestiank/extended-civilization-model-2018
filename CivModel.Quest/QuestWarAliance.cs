@@ -39,6 +39,7 @@ namespace CivModel.Quests
         protected override void OnAccept()
         {
             Game.TileObjectObservable.AddObserver(this);
+            flag = 0;
         }
 
         private void Cleanup()
@@ -60,16 +61,15 @@ namespace CivModel.Quests
 
         public void TileObjectProduced(TileObject obj)
         {
-            if (obj is CivModel.Finno.AutismBeamDrone && obj.PlacedPoint.Value.TileOwner == Game.Players[1] && flag < 2)
+            if (obj is CivModel.Finno.AutismBeamDrone drone && drone.Owner == Game.GetPlayerFinno())
             {
                 flag += 1;
+                if (flag == 3)
+                {
+                    flag = 0;
+                    Status = QuestStatus.Completed;
+                }
             }
-            else if(obj is CivModel.Finno.AutismBeamDrone && obj.PlacedPoint.Value.TileOwner == Game.Players[1] && flag >= 2)
-            {
-                flag = 0;
-                Status = QuestStatus.Completed;
-            }
-
         }
 
         public void TileObjectPlaced(TileObject obj) { }
