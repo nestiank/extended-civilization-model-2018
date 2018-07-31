@@ -802,10 +802,13 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Called before a turn.
+        /// Check whether the victory/defeat condition of this player and process it if necessary.
         /// </summary>
-        public void PreTurn()
+        /// <returns>Whether the victory/defeat process was done or not.</returns>
+        public bool VictoryDefeatCheck()
         {
+            bool ret = false;
+
             if (!IsVictoried && !IsDefeated)
             {
                 foreach (var victory in AvailableVictories)
@@ -813,10 +816,12 @@ namespace CivModel
                     if (victory.CheckVictory(this))
                     {
                         Victory(victory);
+                        ret = true;
                         break;
                     }
                 }
             }
+
             if (!IsVictoried && !IsDefeated)
             {
                 foreach (var defeat in AvailableDefeats)
@@ -824,11 +829,20 @@ namespace CivModel
                     if (defeat.CheckDefeat(this))
                     {
                         Defeat(defeat);
+                        ret = false;
                         break;
                     }
                 }
             }
 
+            return ret;
+        }
+
+        /// <summary>
+        /// Called before a turn.
+        /// </summary>
+        public void PreTurn()
+        {
             foreach (var unit in Units)
                 unit.PreTurn();
             foreach (var building in TileBuildings)
@@ -861,6 +875,11 @@ namespace CivModel
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
         public void PrePlayerSubTurn(Player playerInTurn)
         {
+            if (playerInTurn == this)
+            {
+                VictoryDefeatCheck();
+            }
+
             foreach (var unit in Units)
                 unit.PrePlayerSubTurn(playerInTurn);
             foreach (var building in TileBuildings)
