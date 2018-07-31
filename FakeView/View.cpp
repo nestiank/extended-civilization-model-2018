@@ -1,7 +1,8 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "View.h"
 
 #include "Screen.h"
+#include "AIControlDialog.h"
 
 namespace
 {
@@ -654,6 +655,15 @@ namespace FakeView
                             }
                         }
                     }
+                }
+                break;
+
+            case '[':
+            case '{':
+                if (m_presenter->State == CivPresenter::Presenter::States::Normal)
+                {
+                    auto dialog = gcnew AIControlDialog(m_presenter->Game);
+                    dialog->ShowDialog();
                 }
                 break;
 
