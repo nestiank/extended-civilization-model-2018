@@ -14,7 +14,7 @@ namespace CivModel.Quests
         public override string Name => "[불가사의] - R'̧l̨̜y͎͎̜̺̬e͕͇͇͚͓̹h̢̳͎̗͇͇̙";
 
         public override int PostingTurn => 5;
-        public override int LimitTurn => 5;
+        public override int LimitTurn => 15;
 
         public override string GoalNotice => "R'̧l̨̜y͎͎̜̺̬e͕͇͇͚͓̹h̢̳͎̗͇͇̙의 영토내에 [불가사의]를 건설해 주세요.";
         public override string RewardNotice => "[특수 자원: G̼͈͉̖a̙͉͔͍̙t͍̞͕e̺̹̼̬s̷̘̯ ͉̪͙̯ͅo̮̝͔̩̖f͚͚͖̳̻͇ ̮̻̮͎͇͇R̝'̥̬͝l͚̼y҉̫e͏̜̲͔͈̲͖ͅh́] 1 획득";

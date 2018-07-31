@@ -51,7 +51,7 @@ namespace CivModel.Quests
 
         protected override void OnComplete()
         {
-            Requestee.SpecialResource[SpecialResourceAutismBeamReflex.Instance] = 1;
+            Requestee.SpecialResource[SpecialResourceAlienCommunication.Instance] = 1;
 
             Cleanup();
         }
