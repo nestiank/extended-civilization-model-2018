@@ -1,15 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace CivModel
 {
     /// <summary>
+    /// The result of <see cref="Player.TryRemoveTerritory(Terrain.Point)"/>
+    /// </summary>
+    /// <seealso cref="Player.TryRemoveTerritory(Terrain.Point)"/>
+    public enum RemoveTerritoryResult
+    {
+        /// <summary>
+        /// Indicates the owner of the tile was successfully removed.
+        /// </summary>
+        Success,
+        /// <summary>
+        /// Indicates the owner of the tile is not this player.
+        /// </summary>
+        NotOwner,
+        /// <summary>
+        /// Indicates The owner of the tile cannot be changed.
+        /// </summary>
+        CannotRemove,
+    }
+
+    /// <summary>
     /// Represents a player of a game.
     /// </summary>
     /// <seealso cref="ITurnObserver"/>
+    [DebuggerDisplay("Player (Number = {PlayerNumber})")]
     public sealed class Player : ITurnObserver
     {
         /// <summary>
@@ -565,15 +586,19 @@ namespace CivModel
         /// <c>false</c> if the owner of the tile is not this player and cannot be changed.
         /// </returns>
         /// <seealso cref="AddTerritory(Terrain.Point)"/>
+        /// <seealso cref="TryRemoveTerritory(Terrain.Point)"/>
+        /// <seealso cref="RemoveTerritory(Terrain.Point)"/>
         public bool TryAddTerritory(Terrain.Point pt)
         {
             if (pt.TileOwner == this)
                 return true;
-            if (pt.TileOwner != null && pt.TileBuilding != null)
-                return false;
 
-            if (pt.TileOwner != null)
-                pt.TileOwner.RemoveTerritory(pt);
+            if (pt.TileOwner is Player other)
+            {
+                var rs = other.TryRemoveTerritory(pt);
+                if (rs == RemoveTerritoryResult.CannotRemove)
+                    return false;
+            }
 
             pt.SetTileOwner(this);
             _territory.Add(pt);
@@ -586,10 +611,36 @@ namespace CivModel
         /// <param name="pt">The tile to be in the territory.</param>
         /// <exception cref="InvalidOperationException">the owner of the tile is not this player and cannot be changed</exception>
         /// <seealso cref="TryAddTerritory(Terrain.Point)"/>
+        /// <seealso cref="TryRemoveTerritory(Terrain.Point)"/>
+        /// <seealso cref="RemoveTerritory(Terrain.Point)"/>
         public void AddTerritory(Terrain.Point pt)
         {
             if (!TryAddTerritory(pt))
                 throw new InvalidOperationException("the owner of the tile is not this player and cannot be changed");
+        }
+
+        /// <summary>
+        /// Removes the territory of this player if possible.
+        /// </summary>
+        /// <param name="pt">The tile to be out of the territory.</param>
+        /// <returns>The result of an operation. See <see cref="RemoveTerritoryResult"/> for more information.</returns>
+        /// <seealso cref="RemoveTerritoryResult"/>
+        /// <seealso cref="TryAddTerritory(Terrain.Point)"/>
+        /// <seealso cref="AddTerritory(Terrain.Point)"/>
+        /// <seealso cref="RemoveTerritory(Terrain.Point)"/>
+        public RemoveTerritoryResult TryRemoveTerritory(Terrain.Point pt)
+        {
+            if (pt.TileOwner != this)
+                return RemoveTerritoryResult.NotOwner;
+
+            // if (pt.TileBuilding != null) 은 사용할 수 없음
+            // TileBuilding의 ctor와 OnAfterChangeOwner에서 territory를 변경할 때 실패하면 안 됌.
+            if (pt.TileBuilding?.Owner == this)
+                return RemoveTerritoryResult.CannotRemove;
+
+            _territory.Remove(pt);
+            pt.SetTileOwner(null);
+            return RemoveTerritoryResult.Success;
         }
 
         /// <summary>
@@ -598,18 +649,22 @@ namespace CivModel
         /// <param name="pt">The tile to be out of the territory.</param>
         /// <exception cref="ArgumentException"><paramref name="pt"/> is not in the territoriy of this player</exception>
         /// <exception cref="InvalidOperationException">the tile where a <see cref="TileBuilding"/> is cannot be removed from the territory</exception>
+        /// <seealso cref="TryAddTerritory(Terrain.Point)"/>
+        /// <seealso cref="AddTerritory(Terrain.Point)"/>
+        /// <seealso cref="TryRemoveTerritory(Terrain.Point)"/>
         public void RemoveTerritory(Terrain.Point pt)
         {
-            if (pt.TileOwner != this)
-                throw new ArgumentException("pt is not in the territoriy of this player", "pt");
-
-            // if (pt.TileBuilding == null) 은 사용할 수 없음
-            // TileBuilding.OnAfterChangeOwner에서 RemoveTerritory할 때 실패하면 안 됌.
-            if (pt.TileBuilding?.Owner == this)
-                throw new InvalidOperationException("the tile where a TileBuilding is cannot be removed from the territory");
-
-            _territory.Remove(pt);
-            pt.SetTileOwner(null);
+            switch (TryRemoveTerritory(pt))
+            {
+                case RemoveTerritoryResult.Success:
+                    return;
+                case RemoveTerritoryResult.NotOwner:
+                    throw new ArgumentException("pt is not in the territoriy of this player", nameof(pt));
+                case RemoveTerritoryResult.CannotRemove:
+                    throw new InvalidOperationException("the tile where a TileBuilding is cannot be removed from the territory");
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         /// <summary>

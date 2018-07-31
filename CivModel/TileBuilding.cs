@@ -68,8 +68,9 @@ namespace CivModel
         {
             Donator = donator;
 
+            // Player.RemoveTerritory 코드 내 주석 참조
             owner.TryAddTerritory(point);
-            Owner.AddTileBuildingToList(this);
+            owner.AddTileBuildingToList(this);
         }
 
         /// <summary>
