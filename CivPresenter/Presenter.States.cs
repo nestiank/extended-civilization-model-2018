@@ -69,13 +69,9 @@ namespace CivPresenter
             /// </summary>
             Quest,
             /// <summary>
-            /// State [victory]. This state indicates user is viewing a <strong>victory</strong> screen.
+            /// State [Ending]. This state indicates user is viewing a ending screen.
             /// </summary>
-            Victory,
-            /// <summary>
-            /// State [defeated]. This state indicates user is viewing a <strong>defeated</strong> screen.
-            /// </summary>
-            Defeated,
+            Ending,
             /// <summary>
             /// State [AI control]. This state indicates AI player is doing his job now.
             /// </summary>

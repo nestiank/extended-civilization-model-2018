@@ -41,10 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutismBeamAmplificationCrystal.cs" />
-    <Compile Include="FinnoVictory.cs" />
+    <Compile Include="UltimateVictory.cs" />
     <Compile Include="GameScheme.cs" />
     <Compile Include="GatesOfRlyeh.cs" />
-    <Compile Include="HwanVictory.cs" />
     <Compile Include="InterstellarEnergyExtractor.cs" />
     <Compile Include="Necronomicon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,7 +63,7 @@
     <Compile Include="SpecialResourceCthulhuProjectInfo.cs" />
     <Compile Include="SpecialResourceMoaiForceField.cs" />
     <Compile Include="Ubermensch.cs" />
-    <Compile Include="ZapConquerVictory.cs" />
+    <Compile Include="ConquerVictory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">

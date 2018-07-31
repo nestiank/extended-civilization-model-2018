@@ -4,8 +4,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CivModel.Finno.FinnoPlayerNumber;
+using static CivModel.Hwan.HwanPlayerNumber;
+
 namespace CivModel.Quests
 {
+    public class FinnoConquerVictory : IVictoryCondition
+    {
+        public bool CheckVictory(Player player)
+        {
+            var game = player.Game;
+            return game.GetPlayerFinno() == player && game.GetPlayerHwan().IsEliminated;
+        }
+
+        public void DoVictory(Player player)
+        {
+        }
+    }
+
+    public class HwanConquerVictory : IVictoryCondition
+    {
+        public bool CheckVictory(Player player)
+        {
+            var game = player.Game;
+            return game.GetPlayerHwan() == player && game.GetPlayerFinno().IsEliminated;
+        }
+
+        public void DoVictory(Player player)
+        {
+        }
+    }
+
     public class ZapConquerVictory : IVictoryCondition
     {
         public bool CheckVictory(Player player)

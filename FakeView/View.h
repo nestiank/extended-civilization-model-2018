@@ -22,8 +22,7 @@ namespace FakeView
         void RenderProductUI();
         void RenderProductAdd();
         void RenderQuest();
-        void RenderVictory();
-        void RenderDefeated();
+        void RenderEnding();
         void RenderCityView();
 
         void PrintTerrain(int px, int py, CivModel::Terrain::Point point);

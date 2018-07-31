@@ -163,7 +163,7 @@ namespace CivPresenter
         /// </summary>
         public IMovePath MovePath { get; private set; }
 
-        private bool[] _victoryNotified;
+        private bool[] _endingNotified;
 
         /// <summary>
         /// The path of the save file.
@@ -247,7 +247,7 @@ namespace CivPresenter
 
         private void Initialize()
         {
-            _victoryNotified = new bool[Game.Players.Count];
+            _endingNotified = new bool[Game.Players.Count];
 
             // (0, 0) is fallback point
             // ProceedTurn() would set FocusedPoint if any actor exists.
@@ -530,9 +530,9 @@ namespace CivPresenter
             Refocus();
         }
 
-        private bool CheckVictory()
+        private bool CheckEnding()
         {
-            if (Game.PlayerInTurn.IsVictoried || Game.PlayerInTurn.IsDefeated)
+            if (Game.PlayerInTurn.HasEnding)
             {
                 StateNormal();
                 return true;
@@ -575,14 +575,11 @@ namespace CivPresenter
         {
             if (Game.PlayerInTurn.IsVictoried || Game.PlayerInTurn.IsDefeated)
             {
-                if (!_victoryNotified[Game.PlayerNumberInTurn])
+                if (!_endingNotified[Game.PlayerNumberInTurn])
                 {
-                    if (Game.PlayerInTurn.IsVictoried)
-                        StateVictory();
-                    else
-                        StateDefeated();
+                    StateEnding();
 
-                    _victoryNotified[Game.PlayerNumberInTurn] = true;
+                    _endingNotified[Game.PlayerNumberInTurn] = true;
                     return;
                 }
             }
@@ -745,7 +742,7 @@ namespace CivPresenter
                     action.Act(FocusedPoint);
                     clear();
 
-                    if (!CheckVictory())
+                    if (!CheckEnding())
                     {
                         onApplyFinished();
                     }
@@ -772,7 +769,7 @@ namespace CivPresenter
             if (action.IsActable(null))
                 action.Act(null);
 
-            CheckVictory();
+            CheckEnding();
         }
 
         private void StateProductUI()
@@ -1112,26 +1109,9 @@ namespace CivPresenter
             OnSleep = () => { };
         }
 
-        private void StateVictory()
+        private void StateEnding()
         {
-            State = States.Victory;
-
-            OnApply = () => {
-                OnCancel();
-            };
-            OnCancel = () => {
-                StateNormal();
-            };
-            OnArrowKey = direction => { };
-            OnNumeric = index => { };
-            OnRemove = () => { };
-            OnSkip = () => { };
-            OnSleep = () => { };
-        }
-
-        private void StateDefeated()
-        {
-            State = States.Defeated;
+            State = States.Ending;
 
             OnApply = () => {
                 OnCancel();

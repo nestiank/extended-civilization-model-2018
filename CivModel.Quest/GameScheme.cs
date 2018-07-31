@@ -59,7 +59,7 @@ namespace CivModel.Quests
             game.Players[5].Team = 1;
             game.Players[7].Team = 1;
 
-            // Victory & Defeat Condition
+            // Ending Condition
             game.GetPlayerHwan().AddVictoryCondition(new HwanUltimateVictory());
             game.GetPlayerHwan().AddVictoryCondition(new HwanConquerVictory());
 
@@ -76,6 +76,7 @@ namespace CivModel.Quests
             {
                 p.AddDefeatCondition(new EliminationDefeat());
                 p.AddDefeatCondition(new GameEndDefeat());
+                p.AddDrawCondition(new HyperUltimateDraw());
             }
 
             // Hwan Main

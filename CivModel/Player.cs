@@ -341,28 +341,48 @@ namespace CivModel
         public bool IsEliminated => (!BeforeLandingCity && Cities.Count() == 0) || (BeforeLandingCity && Units.Count() == 0);
 
         /// <summary>
+        /// Whether this player has ending, that is, this player is either victoried or defeated or drawed.
+        /// </summary>
+        /// <seealso cref="IsVictoried"/>
+        /// <seealso cref="IsDefeated"/>
+        /// <seealso cref="IsDrawed"/>
+        public bool HasEnding => IsVictoried || IsDefeated || IsDrawed;
+
+        /// <summary>
         /// Whether this player is victoried.
         /// </summary>
         /// <seealso cref="VictoryCondition"/>
-        /// <seealso cref="IsDefeated"/>
         public bool IsVictoried => VictoryCondition != null;
 
         /// <summary>
         /// The victory condition this player has achieved. If this player is not victoried yet, <c>null</c>.
         /// </summary>
+        /// <seealso cref="IsVictoried"/>
         public IVictoryCondition VictoryCondition { get; private set; }
 
         /// <summary>
         /// Whether this player is defeated.
         /// </summary>
-        /// <see cref="DefeatCondition"/>
-        /// <seealso cref="IsVictoried"/>
+        /// <seealso cref="DefeatCondition"/>
         public bool IsDefeated => DefeatCondition != null;
 
         /// <summary>
         /// The defeat condition this player has achieved. If this player is not defeated yet, <c>null</c>.
         /// </summary>
+        /// <seealso cref="IsDefeated"/>
         public IDefeatCondition DefeatCondition { get; private set; }
+
+        /// <summary>
+        /// Whether this player is drawed.
+        /// </summary>
+        /// <seealso cref="DrawCondition"/>
+        public bool IsDrawed => DrawCondition != null;
+
+        /// <summary>
+        /// The draw condition this player has achieved. If this player is not drawed yet, <c>null</c>.
+        /// </summary>
+        /// <seealso cref="IsDrawed"/>
+        public IDrawCondition DrawCondition { get; private set; }
 
         /// <summary>
         /// The list of available victories that this player can achieve.
@@ -375,6 +395,12 @@ namespace CivModel
         /// </summary>
         public IReadOnlyList<IDefeatCondition> AvailableDefeats => _availableDefeats;
         private readonly List<IDefeatCondition> _availableDefeats = new List<IDefeatCondition>();
+
+        /// <summary>
+        /// The list of available defeats that this player can achieve.
+        /// </summary>
+        public IReadOnlyList<IDrawCondition> AvailableDraws => _availableDraws;
+        private readonly List<IDrawCondition> _availableDraws = new List<IDrawCondition>();
 
         /// <summary>
         /// Whether this player is controlled by AI.
@@ -671,12 +697,12 @@ namespace CivModel
         /// Adds an available victory condition to this player.
         /// </summary>
         /// <param name="victory">The victory condition to add.</param>
-        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
         /// <exception cref="ArgumentException">specified <paramref name="victory"/> is already added</exception>
         public void AddVictoryCondition(IVictoryCondition victory)
         {
-            if (IsVictoried || IsDefeated)
-                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
             if (AvailableVictories.Contains(victory))
                 throw new ArgumentException("specified victory is already added", nameof(victory));
 
@@ -687,12 +713,12 @@ namespace CivModel
         /// Removes an available victory condition of this player.
         /// </summary>
         /// <param name="victory">The victory condition to remove.</param>
-        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
         /// <exception cref="ArgumentException">specific <paramref name="victory"/> has not added</exception>
         public void RemoveVictoryCondition(IVictoryCondition victory)
         {
-            if (IsVictoried || IsDefeated)
-                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
 
             bool rs = _availableVictories.Remove(victory);
 
@@ -704,12 +730,12 @@ namespace CivModel
         /// Adds an available defeat condition to this player.
         /// </summary>
         /// <param name="defeat">The defeat condition to add.</param>
-        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
         /// <exception cref="ArgumentException">specified <paramref name="defeat"/> is already added</exception>
         public void AddDefeatCondition(IDefeatCondition defeat)
         {
-            if (IsVictoried || IsDefeated)
-                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
             if (AvailableDefeats.Contains(defeat))
                 throw new ArgumentException("specified defeat is already added", nameof(defeat));
 
@@ -720,12 +746,12 @@ namespace CivModel
         /// Removes an available defeat condition of this player.
         /// </summary>
         /// <param name="defeat">The defeat condition to remove.</param>
-        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
         /// <exception cref="ArgumentException">specific <paramref name="defeat"/> has not added</exception>
         public void RemoveDefeatCondition(IDefeatCondition defeat)
         {
-            if (IsVictoried || IsDefeated)
-                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
 
             bool rs = _availableDefeats.Remove(defeat);
 
@@ -734,18 +760,52 @@ namespace CivModel
         }
 
         /// <summary>
+        /// Adds an available draw condition to this player.
+        /// </summary>
+        /// <param name="draw">The draw condition to add.</param>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
+        /// <exception cref="ArgumentException">specified <paramref name="draw"/> is already added</exception>
+        public void AddDrawCondition(IDrawCondition draw)
+        {
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
+            if (AvailableDraws.Contains(draw))
+                throw new ArgumentException("specified draw is already added", nameof(draw));
+
+            _availableDraws.Add(draw);
+        }
+
+        /// <summary>
+        /// Removes an available draw condition of this player.
+        /// </summary>
+        /// <param name="draw">The draw condition to remove.</param>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
+        /// <exception cref="ArgumentException">specific <paramref name="draw"/> has not added</exception>
+        public void RemoveDrawCondition(IDrawCondition draw)
+        {
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
+
+            bool rs = _availableDraws.Remove(draw);
+
+            if (!rs)
+                throw new ArgumentException("specific draw has not added", nameof(draw));
+        }
+
+        /// <summary>
         /// Make this player achieve the specified victory.
         /// </summary>
         /// <param name="victory">The victory.</param>
-        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
         /// <exception cref="ArgumentException">specified <paramref name="victory"/> is not available to the player</exception>
         /// <seealso cref="IsVictoried"/>
         /// <seealso cref="VictoryCondition"/>
         /// <seealso cref="Defeat(IDefeatCondition)"/>
+        /// <seealso cref="Draw(IDrawCondition)"/>
         public void Victory(IVictoryCondition victory)
         {
-            if (IsVictoried || IsDefeated)
-                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
             if (!AvailableVictories.Contains(victory))
                 throw new ArgumentException("specified victory is not available to the player", nameof(victory));
 
@@ -759,15 +819,16 @@ namespace CivModel
         /// Make this player achieve the specified defeat.
         /// </summary>
         /// <param name="defeat">The defeat.</param>
-        /// <exception cref="InvalidOperationException">the player is already victoried or defeated</exception>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
         /// <exception cref="ArgumentException">specified <paramref name="defeat"/> is not available to the player</exception>
         /// <seealso cref="IsDefeated"/>
         /// <seealso cref="DefeatCondition"/>
         /// <seealso cref="Victory(IVictoryCondition)"/>
+        /// <seealso cref="Draw(IDrawCondition)"/>
         public void Defeat(IDefeatCondition defeat)
         {
-            if (IsVictoried || IsDefeated)
-                throw new InvalidOperationException("the player is already victoried or defeated");
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
             if (!AvailableDefeats.Contains(defeat))
                 throw new ArgumentException("specified defeat is not available to the player", nameof(defeat));
 
@@ -775,6 +836,99 @@ namespace CivModel
             defeat.DoDefeat(this);
 
             Game.VictoryObservable.IterateObserver(o => o.OnDefeat(this, defeat));
+        }
+
+        /// <summary>
+        /// Make this player achieve the specified draw.
+        /// </summary>
+        /// <param name="draw">The draw.</param>
+        /// <exception cref="InvalidOperationException">the player already has ending</exception>
+        /// <exception cref="ArgumentException">specified <paramref name="draw"/> is not available to the player</exception>
+        /// <seealso cref="IsDrawed"/>
+        /// <seealso cref="DrawCondition"/>
+        /// <seealso cref="Victory(IVictoryCondition)"/>
+        /// <seealso cref="Defeat(IDefeatCondition)"/>
+        public void Draw(IDrawCondition draw)
+        {
+            if (HasEnding)
+                throw new InvalidOperationException("the player already has ending");
+            if (!AvailableDraws.Contains(draw))
+                throw new ArgumentException("specified draw is not available to the player", nameof(draw));
+
+            DrawCondition = draw;
+            draw.DoDraw(this);
+
+            Game.VictoryObservable.IterateObserver(o => o.OnDraw(this, draw));
+        }
+
+        /// <summary>
+        /// Check whether player achieves the ending condition and process it if necessary.
+        /// If <see cref="HasEnding"/> is <c>true</c>, do nothing.
+        /// </summary>
+        /// <returns>Whether the ending process was done or not.</returns>
+        public bool EndingCheck()
+        {
+            IDrawCondition draw = null;
+            IVictoryCondition victory = null;
+            IDefeatCondition defeat = null;
+
+            if (!HasEnding)
+            {
+                foreach (var obj in AvailableDraws)
+                {
+                    if (obj.CheckDraw(this))
+                    {
+                        draw = obj;
+                        break;
+                    }
+                }
+                foreach (var obj in AvailableVictories)
+                {
+                    if (obj.CheckVictory(this))
+                    {
+                        victory = obj;
+                        break;
+                    }
+                }
+                foreach (var obj in AvailableDefeats)
+                {
+                    if (obj.CheckDefeat(this))
+                    {
+                        defeat = obj;
+                        break;
+                    }
+                }
+            }
+
+            if (victory != null && defeat != null)
+            {
+                foreach (var obj in AvailableDraws)
+                {
+                    if (obj.OnBothVictoriedAndDefeated(this, victory, defeat))
+                    {
+                        Draw(obj);
+                        return true;
+                    }
+                }
+            }
+
+            if (draw != null)
+            {
+                Draw(draw);
+                return true;
+            }
+            if (victory != null)
+            {
+                Victory(victory);
+                return true;
+            }
+            if (defeat != null)
+            {
+                Defeat(defeat);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -799,43 +953,6 @@ namespace CivModel
         public bool IsAlliedWithOrNull(Player player)
         {
             return (player == null || player.Team == Team);
-        }
-
-        /// <summary>
-        /// Check whether the victory/defeat condition of this player and process it if necessary.
-        /// </summary>
-        /// <returns>Whether the victory/defeat process was done or not.</returns>
-        public bool VictoryDefeatCheck()
-        {
-            bool ret = false;
-
-            if (!IsVictoried && !IsDefeated)
-            {
-                foreach (var victory in AvailableVictories)
-                {
-                    if (victory.CheckVictory(this))
-                    {
-                        Victory(victory);
-                        ret = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!IsVictoried && !IsDefeated)
-            {
-                foreach (var defeat in AvailableDefeats)
-                {
-                    if (defeat.CheckDefeat(this))
-                    {
-                        Defeat(defeat);
-                        ret = false;
-                        break;
-                    }
-                }
-            }
-
-            return ret;
         }
 
         /// <summary>
@@ -877,7 +994,7 @@ namespace CivModel
         {
             if (playerInTurn == this)
             {
-                VictoryDefeatCheck();
+                EndingCheck();
             }
 
             foreach (var unit in Units)
