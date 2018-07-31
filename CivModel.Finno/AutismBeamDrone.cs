@@ -52,31 +52,31 @@ namespace CivModel.Finno
 
             public int LastSkillCalled = -3;
 
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
             {
-                if (CheckError(pt) != null)
+                if (CheckError(origin, target) != null)
                     return double.NaN;
 
                 return 2;
             }
 
-            private bool IsInDistance(Terrain.Point? pt)
+            private bool IsInDistance(Terrain.Point origin, Terrain.Point target)
             {
-                int A = Owner.PlacedPoint.Value.Position.A;
-                int B = Owner.PlacedPoint.Value.Position.B;
-                int C = Owner.PlacedPoint.Value.Position.C;
-                int Width = Owner.PlacedPoint.Value.Terrain.Width;
+                int A = origin.Position.A;
+                int B = origin.Position.B;
+                int C = origin.Position.C;
+                int Width = origin.Terrain.Width;
 
-                if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.A - A), Math.Abs(pt.Value.Position.B - B)), Math.Abs(pt.Value.Position.C - C)) > 3)
+                if (Math.Max(Math.Max(Math.Abs(target.Position.A - A), Math.Abs(target.Position.B - B)), Math.Abs(target.Position.C - C)) > 3)
                 {
-                    if (pt.Value.Position.B > B) // pt가 맵 오른쪽
+                    if (target.Position.B > B) // pt가 맵 오른쪽
                     {
-                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B - Width - B), Math.Abs(pt.Value.Position.A + Width - A)), Math.Abs(pt.Value.Position.C - C)) > 3)
+                        if (Math.Max(Math.Max(Math.Abs(target.Position.B - Width - B), Math.Abs(target.Position.A + Width - A)), Math.Abs(target.Position.C - C)) > 3)
                             return false;
                     }
                     else //pt가 맵 왼쪽
                     {
-                        if (Math.Max(Math.Max(Math.Abs(pt.Value.Position.B + Width - B), Math.Abs(pt.Value.Position.A - Width - A)), Math.Abs(pt.Value.Position.C - C)) > 3)
+                        if (Math.Max(Math.Max(Math.Abs(target.Position.B + Width - B), Math.Abs(target.Position.A - Width - A)), Math.Abs(target.Position.C - C)) > 3)
                             return false;
                     }
                 }
@@ -85,10 +85,12 @@ namespace CivModel.Finno
 
             public void Act(Terrain.Point? pt)
             {
-                if (CheckError(pt) is Exception e)
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                if (CheckError(_owner.PlacedPoint.Value, pt) is Exception e)
                     throw e;
 
-                ActionPoint Ap = GetRequiredAP(pt);
+                ActionPoint Ap = GetRequiredAP(_owner.PlacedPoint.Value, pt);
                 if (!_owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
@@ -99,20 +101,18 @@ namespace CivModel.Finno
                 Owner.ConsumeAP(Ap);
             }
 
-            private Exception CheckError(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point origin, Terrain.Point? target)
             {
-                if (!_owner.PlacedPoint.HasValue)
-                    return new InvalidOperationException("Actor is not placed yet");
-                if (pt == null)
-                    return new ArgumentNullException(nameof(pt));
+                if (target == null)
+                    return new ArgumentNullException(nameof(target));
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 2)
                     return new InvalidOperationException("Skill is not turned on");
-                if (!this.IsInDistance(pt))
+                if (!this.IsInDistance(origin, target.Value))
                     return new InvalidOperationException("Too Far to Use Autism Beam");
 
-                if (pt.Value.Unit is Unit unit && unit.Owner != Owner.Owner)
+                if (target.Value.Unit is Unit unit && unit.Owner != Owner.Owner)
                 {
-                    if (pt.Value.TileBuilding != null)
+                    if (target.Value.TileBuilding != null)
                         return new InvalidOperationException("the ownership of unit on TileBuilding cannot be changed");
 
                     return null;

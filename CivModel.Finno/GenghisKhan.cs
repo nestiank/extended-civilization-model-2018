@@ -22,14 +22,14 @@ namespace CivModel.Finno
             BattleClassLevel = 4
         };
 
-        public override ActionPoint GetRequiredAPToMoveNearBy(Terrain.Point point)
+        public override ActionPoint GetRequiredAPToMoveNearBy(Terrain.Point from, Terrain.Point to)
         {
             // POMFSTIH
-            switch (point.Type)
+            switch (to.Type)
             {
                 case TerrainType.Plain: return 1;
                 case TerrainType.Ocean:
-                    if (PlacedPoint?.Type != TerrainType.Ocean)
+                    if (from.Type != TerrainType.Ocean)
                         return new ActionPoint(0.5, consumeAll: true);
                     else
                         return 0.5;
@@ -73,20 +73,18 @@ namespace CivModel.Finno
 
             public int LastSkillCalled = -2;
 
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
             {
-                if (CheckError(pt) != null)
+                if (CheckError(origin, target) != null)
                     return double.NaN;
 
                 return 1;
             }
 
-            private Exception CheckError(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point origin, Terrain.Point? target)
             {
-                if (pt != null)
+                if (target != null)
                     return new ArgumentException("pt is invalid");
-                if (!_owner.PlacedPoint.HasValue)
-                    return new InvalidOperationException("Actor is not placed yet");
                 if (Owner.Owner.Game.TurnNumber <= LastSkillCalled + 1)
                     return new InvalidOperationException("Skill is not turned on");
                 if (Owner.PlacedPoint.Value.TileOwner == Owner.Owner)
@@ -95,15 +93,18 @@ namespace CivModel.Finno
                 return null;
             }
 
-            public void Act(Terrain.Point? pt)
+            public void Act(Terrain.Point? target)
             {
-                if (CheckError(pt) is Exception e)
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                var origin = _owner.PlacedPoint.Value;
+
+                if (CheckError(origin, target) is Exception e)
                     throw e;
 
-                ActionPoint Ap = GetRequiredAP(pt);
+                ActionPoint Ap = GetRequiredAP(origin, target);
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
-
 
                 Owner.Owner.AddTerritory(Owner.PlacedPoint.Value);
                 if (Owner.PlacedPoint.Value.TileBuilding != null)

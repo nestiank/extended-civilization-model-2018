@@ -50,9 +50,9 @@ namespace CivModel.Common
                 _owner = owner;
             }
 
-            public ActionPoint GetRequiredAP(Terrain.Point? pt)
+            public ActionPoint GetRequiredAP(Terrain.Point origin, Terrain.Point? target)
             {
-                if (CheckError(pt) != null)
+                if (CheckError(origin, target) != null)
                     return double.NaN;
 
                 return 1;
@@ -60,22 +60,23 @@ namespace CivModel.Common
 
             public void Act(Terrain.Point? pt)
             {
-                if (CheckError(pt) is Exception e)
+                if (!_owner.PlacedPoint.HasValue)
+                    throw new InvalidOperationException("Actor is not placed yet");
+                if (CheckError(_owner.PlacedPoint.Value, pt) is Exception e)
                     throw e;
 
                 new ControlHijackEffect(pt.Value.Unit, Owner.Owner).EffectOn();
+                Owner.ConsumeAP(GetRequiredAP(_owner.PlacedPoint.Value, pt));
             }
 
-            private Exception CheckError(Terrain.Point? pt)
+            private Exception CheckError(Terrain.Point origin, Terrain.Point? target)
             {
-                if (!_owner.PlacedPoint.HasValue)
-                    return new InvalidOperationException("Actor is not placed yet");
-                if (pt == null)
-                    return new ArgumentNullException(nameof(pt));
+                if (target == null)
+                    return new ArgumentNullException(nameof(target));
 
-                if (pt.Value.Unit is Unit unit && unit.Owner != Owner.Owner)
+                if (target.Value.Unit is Unit unit && unit.Owner != Owner.Owner)
                 {
-                    if (pt.Value.TileBuilding != null)
+                    if (target.Value.TileBuilding != null)
                         return new InvalidOperationException("the ownership of unit on TileBuilding cannot be changed");
 
                     return null;

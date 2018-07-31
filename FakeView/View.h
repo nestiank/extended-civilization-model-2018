@@ -31,6 +31,7 @@ namespace FakeView
         void PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding);
 
         void PrintActorInfo(int line, unsigned char color, const std::string& prefix, CivModel::Actor^ actor);
+        void PrintMovePath(CivModel::IMovePath^ path);
 
         unsigned char GetPlayerColor(CivModel::Player^ player);
 

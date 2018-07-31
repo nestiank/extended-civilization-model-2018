@@ -2,6 +2,7 @@
 #include "View.h"
 
 #include "Screen.h"
+
 namespace
 {
     std::string cli2str(System::String^ str)
@@ -162,7 +163,13 @@ namespace FakeView
 
         if (m_presenter->SelectedActor != nullptr)
         {
-            PrintActorInfo(scrsz.height - 2, 0b00000111, "< selected>: ", m_presenter->SelectedActor);
+            auto actor = m_presenter->SelectedActor;
+            PrintActorInfo(scrsz.height - 2, 0b00000111, "< selected>: ", actor);
+
+            if (actor->MovePath != nullptr)
+            {
+                PrintMovePath(actor->MovePath);
+            }
         }
 
         switch (m_presenter->State)
@@ -224,6 +231,21 @@ namespace FakeView
 
             case CivPresenter::Presenter::States::AIControl:
                 m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "AI is running ...");
+                break;
+
+            case CivPresenter::Presenter::States::PathFinding:
+                if (m_presenter->MovePath)
+                {
+                    PrintMovePath(m_presenter->MovePath);
+                }
+                else
+                {
+                    auto pt = m_presenter->FocusedPoint;
+                    auto spt = TerrainToScreen(pt.Position.X, pt.Position.Y);
+                    auto& ch = m_screen->GetChar(spt.first, spt.second);
+                    ch.color = 0b1100'1110;
+                }
+                m_screen->PrintString(0, scrsz.height - 1, 0b00001111, "Move along path");
                 break;
         }
     }
@@ -672,6 +694,16 @@ namespace FakeView
                 m_presenter->CommandMove();
                 break;
 
+            case 'n':
+            case 'N':
+                m_presenter->CommandPathFinding();
+                break;
+
+            case 'c':
+            case 'C':
+                m_presenter->CommandActorCancel();
+                break;
+
             case 'z':
             case 'Z':
                 m_presenter->CommandSkip();
@@ -837,6 +869,48 @@ namespace FakeView
         msg += ", AP: " + std::to_string(actor->RemainAP) + " / " + std::to_string(actor->MaxAP);
 
         m_screen->PrintString(0, line, color, msg);
+    }
+
+    void View::PrintMovePath(CivModel::IMovePath^ path)
+    {
+        char num = '*';
+        double ap = path->Actor->RemainAP;
+        CivModel::Terrain::Point prev;
+
+        for each (auto pt in path->Path)
+        {
+            auto spt = TerrainToScreen(pt.Position.X, pt.Position.Y);
+            if (auto print = m_screen->TryGetChar(spt.first, spt.second))
+            {
+                char ch;
+
+                if (num == '*')
+                {
+                    ch = num;
+                    num = '1';
+                }
+                else
+                {
+                    double required = path->Actor->GetRequiredAPToMoveNearBy(prev, pt).Value;
+                    if (ap >= required)
+                    {
+                        ap -= required;
+                    }
+                    else
+                    {
+                        ap = path->Actor->MaxAP - required;
+                        if (++num > '9')
+                            num = '0';
+                    }
+
+                    ch = num;
+                }
+
+                print->color = 0b10011111;
+                print->ch = ch;
+                prev = pt;
+            }
+        }
     }
 
     unsigned char View::GetPlayerColor(CivModel::Player^ player)

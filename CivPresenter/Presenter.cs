@@ -157,6 +157,12 @@ namespace CivPresenter
         /// </summary>
         public CityBase SelectedCity { get; private set; }
 
+        /// <summary>
+        /// The path to move. If there is no vaild path, <c>null</c>.
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.PathFinding"/></c>
+        /// </summary>
+        public IMovePath MovePath { get; private set; }
+
         private bool[] _victoryNotified;
 
         /// <summary>
@@ -422,6 +428,30 @@ namespace CivPresenter
                 OnCancel();
         }
 
+        /// <summary>
+        /// Gives the command [path finding].
+        /// This method may introduce <see cref="States.PathFinding"/> state.
+        /// </summary>
+        public void CommandPathFinding()
+        {
+            if (State == States.Normal && SelectedActor?.MoveAct != null)
+                StatePathFinding();
+            else if (State == States.PathFinding)
+                OnCancel();
+        }
+
+        /// <summary>
+        /// Gives the command [actor cancel].
+        /// </summary>
+        public void CommandActorCancel()
+        {
+            if (State == States.Normal)
+            {
+                if (SelectedActor?.MovePath != null)
+                    SelectedActor.MovePath = null;
+            }
+        }
+
         private void ProceedTurn()
         {
             if (Game.IsInsideTurn)
@@ -464,7 +494,8 @@ namespace CivPresenter
                 {
                     var actor = _standbyActors[idx];
                     if (actor is Unit && actor.RemainAP > 0 && !actor.SkipFlag
-                        && actor.IsControllable && actor.PlacedPoint.HasValue)
+                        && actor.IsControllable && actor.PlacedPoint.HasValue
+                        && actor.MovePath == null)
                     {
                         _standbyActorIndex = idx;
                         _selectedActor = _standbyActors[idx];
@@ -1147,6 +1178,48 @@ namespace CivPresenter
                 StateNormal();
             };
             OnArrowKey = direction => { };
+            OnNumeric = index => { };
+            OnRemove = () => { };
+            OnSkip = () => { };
+            OnSleep = () => { };
+        }
+
+        private void StatePathFinding()
+        {
+            State = States.PathFinding;
+
+            void updatePath()
+            {
+                if (SelectedActor.PlacedPoint != FocusedPoint && SelectedActor.MoveAct != null)
+                {
+                    IMovePath path = new CivModel.Path.ActorMovePath(
+                        SelectedActor, FocusedPoint, SelectedActor.MoveAct);
+                    if (!path.IsInvalid)
+                    {
+                        MovePath = path;
+                        return;
+                    }
+                }
+                MovePath = null;
+            }
+
+            updatePath();
+
+            OnApply = () => {
+                if (MovePath != null && !MovePath.IsInvalid)
+                {
+                    SelectedActor.MovePath = MovePath;
+                }
+                OnCancel();
+            };
+            OnCancel = () => {
+                MovePath = null;
+                StateNormal();
+            };
+            OnArrowKey = direction => {
+                MoveSight(direction);
+                updatePath();
+            };
             OnNumeric = index => { };
             OnRemove = () => { };
             OnSkip = () => { };

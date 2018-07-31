@@ -5,16 +5,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>0bd1baed-aa59-4707-8de5-bdde4c28e3b2</ProjectGuid>
+    <ProjectGuid>841006d0-e2e4-454c-8333-7f4a1c62fed1</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CivModel.AI</RootNamespace>
-    <AssemblyName>CivModel.AI</AssemblyName>
+    <RootNamespace>CivModel.Path</RootNamespace>
+    <AssemblyName>CivModel.Path</AssemblyName>
     <UseStandardResourceNames>true</UseStandardResourceNames>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.3.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>CivModel.AI</Name>
-    <TargetFrameworkProfile />
+    <Name>CivModel.Path</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,60 +51,28 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <None Include="script\translate-sets.py" />
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Utils.fs" />
-    <Compile Include="FuzzySystem.fs" />
-    <Compile Include="AIFuzzyModule.fs" />
-    <Compile Include="GlobalRules.fs" />
-    <Compile Include="MoveRules.fs" />
-    <Compile Include="AIController.fs" />
-    <Compile Include="GameScheme.fs" />
+    <Compile Include="ActorMovePath.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Accord">
-      <HintPath>..\external\Accord.NET\bin\Accord.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Fuzzy">
-      <HintPath>..\external\Accord.NET\bin\Accord.Fuzzy.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.4.5.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
+    <Reference Include="FSharpx.Collections">
+      <HintPath>..\packages\FSharpx.Collections.1.17.0\lib\net40\FSharpx.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.ValueTuple">
       <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
-      <Name>CivModel.Common</Name>
-      <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\CivModel.Finno\CivModel.Finno.csproj">
-      <Name>CivModel.Finno</Name>
-      <Project>{6a09ebc4-cf6d-4ba5-8710-e3d4e7f46ea5}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\CivModel.Hwan\CivModel.Hwan.csproj">
-      <Name>CivModel.Hwan</Name>
-      <Project>{257a17a7-e9db-4d7b-8469-0b3ad9e91937}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\CivModel.Quest\CivModel.Quests.csproj">
-      <Name>CivModel.Quests</Name>
-      <Project>{c7375e51-cb93-4405-b82a-64508ed2959c}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\CivModel.Zap\CivModel.Zap.csproj">
-      <Name>CivModel.Zap</Name>
-      <Project>{b6d55159-0ed4-41c6-94ae-8f1eb2b3b9f3}</Project>
-      <Private>True</Private>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Name>CivModel</Name>
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>

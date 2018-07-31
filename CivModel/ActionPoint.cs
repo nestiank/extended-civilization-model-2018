@@ -198,7 +198,7 @@ namespace CivModel
         /// </returns>
         public static bool operator ==(ActionPoint lhs, ActionPoint rhs)
         {
-            return lhs.Value == rhs.Value && lhs.IsConsumingAll == rhs.IsConsumingAll;
+            return lhs.Value.Equals(rhs.Value) && lhs.IsConsumingAll == rhs.IsConsumingAll;
         }
         /// <summary>
         /// Implements the operator !=.
