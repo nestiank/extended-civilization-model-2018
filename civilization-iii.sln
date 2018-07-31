@@ -45,6 +45,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CivModel.UnitTest", "CivMod
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CivModel.Path", "CivModel.Path\CivModel.Path.fsproj", "{841006D0-E2E4-454C-8333-7F4A1C62FED1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "markdown", "markdown", "{14FB3CBE-954C-4B1A-BF14-C4F9376E0900}"
+	ProjectSection(SolutionItems) = preProject
+		docs\markdown\Events.md = docs\markdown\Events.md
+		docs\markdown\FakeView-사용법.md = docs\markdown\FakeView-사용법.md
+		docs\markdown\전투-매커니즘.md = docs\markdown\전투-매커니즘.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_2 Library", "_2 Library", "{B23D9C3B-879E-4B27-9468-5A116D743A08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CivObservable", "CivObservable\CivObservable.csproj", "{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CivObservable.UnitTest", "CivObservable.UnitTest\CivObservable.UnitTest.csproj", "{201139EF-1B05-4352-8416-4B26A899DF98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +210,30 @@ Global
 		{841006D0-E2E4-454C-8333-7F4A1C62FED1}.Release|x64.Build.0 = Release|Any CPU
 		{841006D0-E2E4-454C-8333-7F4A1C62FED1}.Release|x86.ActiveCfg = Release|Any CPU
 		{841006D0-E2E4-454C-8333-7F4A1C62FED1}.Release|x86.Build.0 = Release|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Debug|x64.Build.0 = Debug|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Debug|x86.Build.0 = Debug|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Release|x64.ActiveCfg = Release|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Release|x64.Build.0 = Release|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Release|x86.ActiveCfg = Release|Any CPU
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5}.Release|x86.Build.0 = Release|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Debug|x64.Build.0 = Debug|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Debug|x86.Build.0 = Debug|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Release|x64.ActiveCfg = Release|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Release|x64.Build.0 = Release|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Release|x86.ActiveCfg = Release|Any CPU
+		{201139EF-1B05-4352-8416-4B26A899DF98}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -209,6 +246,9 @@ Global
 		{C7375E51-CB93-4405-B82A-64508ED2959C} = {80D609BF-AE55-4880-9836-E3DD2BA26253}
 		{B6D55159-0ED4-41C6-94AE-8F1EB2B3B9F3} = {80D609BF-AE55-4880-9836-E3DD2BA26253}
 		{0A56220E-0453-4161-A240-61692903DAF6} = {D8951F1B-B79D-4985-96E8-0107B3A094F7}
+		{14FB3CBE-954C-4B1A-BF14-C4F9376E0900} = {E74582AE-B8A5-4EB8-9C36-E877E3E07167}
+		{76CC2C4F-12F3-4DD5-9ABB-8903A4954FD5} = {B23D9C3B-879E-4B27-9468-5A116D743A08}
+		{201139EF-1B05-4352-8416-4B26A899DF98} = {D8951F1B-B79D-4985-96E8-0107B3A094F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DD936702-8420-428D-BEB2-CF750CE8A7D0}
