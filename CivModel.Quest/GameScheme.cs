@@ -61,11 +61,19 @@ namespace CivModel.Quests
 
             // Victory & Defeat Condition
             game.GetPlayerHwan().AddVictoryCondition(new HwanUltimateVictory());
+            game.GetPlayerHwan().AddVictoryCondition(new HwanConquerVictory());
+
             game.GetPlayerFinno().AddVictoryCondition(new FinnoUltimateVictory());
+            game.GetPlayerFinno().AddVictoryCondition(new FinnoConquerVictory());
+
+            for (int idx = 2; idx < game.Players.Count; ++idx)
+            {
+                var p = game.Players[idx];
+                p.AddVictoryCondition(new ZapConquerVictory());
+            }
 
             foreach (var p in game.Players)
             {
-                p.AddVictoryCondition(new ConquerVictory());
                 p.AddDefeatCondition(new EliminationDefeat());
                 p.AddDefeatCondition(new GameEndDefeat());
             }

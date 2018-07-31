@@ -531,7 +531,11 @@ namespace FakeView
             msg = "YOU ARE C'THULHU SUMMOER";
         else if (auto victory = dynamic_cast<CivModel::Quests::HwanUltimateVictory^>(m_presenter->Game->PlayerInTurn->VictoryCondition))
             msg = "YOU ARE CHOSEN PEOPLE";
-        else if (auto victory = dynamic_cast<CivModel::Quests::ConquerVictory^>(m_presenter->Game->PlayerInTurn->VictoryCondition))
+        else if (auto victory = dynamic_cast<CivModel::Quests::FinnoConquerVictory^>(m_presenter->Game->PlayerInTurn->VictoryCondition))
+            msg = "YOU ARE NOT SLAVE BUT CONQUERER";
+        else if (auto victory = dynamic_cast<CivModel::Quests::HwanConquerVictory^>(m_presenter->Game->PlayerInTurn->VictoryCondition))
+            msg = "YOU ARE NOT SLAVE BUT CONQUERER";
+        else if (auto victory = dynamic_cast<CivModel::Quests::ZapConquerVictory^>(m_presenter->Game->PlayerInTurn->VictoryCondition))
             msg = "YOU ARE NOT SLAVE BUT CONQUERER";
         else
             msg = "HOW DO YOU VICTORIED? (unqualified)";

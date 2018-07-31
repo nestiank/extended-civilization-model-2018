@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Quests
 {
-    public class ConquerVictory : IVictoryCondition
+    public class ZapConquerVictory : IVictoryCondition
     {
         public bool CheckVictory(Player player)
         {
