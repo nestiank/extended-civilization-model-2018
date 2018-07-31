@@ -15,7 +15,7 @@ namespace CivModel.Quests
         public override string Name => "[불가사의] - 아틀란티스";
 
         public override int PostingTurn => 10;
-        public override int LimitTurn => 5;
+        public override int LimitTurn => 15;
 
         public override string GoalNotice => "아틀란티스의 영토내에 [불가사의]를 건설해 주세요.";
         public override string RewardNotice => "[특수 자원: 네크로노미콘] 1 획득";
