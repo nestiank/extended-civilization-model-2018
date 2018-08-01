@@ -573,7 +573,7 @@ namespace CivPresenter
 
         private void StateNormal()
         {
-            if (Game.PlayerInTurn.IsVictoried || Game.PlayerInTurn.IsDefeated)
+            if (Game.PlayerInTurn.HasEnding)
             {
                 if (!_endingNotified[Game.PlayerNumberInTurn])
                 {
