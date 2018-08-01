@@ -15,15 +15,17 @@ namespace CivObservable.UnitTest
         }
 
         [TestMethod]
-        public void ListInitTest()
+        public void InitTest()
         {
             Assert.AreEqual(0, _list.Count);
             foreach (int x in _list)
                 Assert.Fail();
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => _list[0]);
         }
 
         [TestMethod]
-        public void ListAddTest()
+        public void AddTest()
         {
             _list.Add(1);
             _list.Add(2);
