@@ -84,6 +84,7 @@ namespace CivModel
         /// <param name="point">The point to place the production result.</param>
         /// <exception cref="InvalidOperationException">production is not completed yet</exception>
         /// <exception cref="ArgumentException">point is invalid</exception>
+        /// <returns>The production result.</returns>
         protected override IProductionResult CorePlace(Terrain.Point point)
         {
             if (!IsCompleted)
