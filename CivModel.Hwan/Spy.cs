@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace CivModel.Hwan
 {
+    public interface ISpyRelatedQuest
+    {
+        void OnSpyAction(Spy spy);
+    }
+
     public class Spy : Unit
     {
         public static Guid ClassGuid { get; } = new Guid("A3037080-69D5-4B90-8B35-44CAB18B7867");
@@ -21,8 +26,6 @@ namespace CivModel.Hwan
             FullLaborForRepair = 2,
             BattleClassLevel = 1
         };
-
-        public static event Action<Spy> SpyActionEvent = delegate { };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -85,7 +88,11 @@ namespace CivModel.Hwan
                 if (!Owner.CanConsumeAP(Ap))
                     throw new InvalidOperationException("Not enough Ap");
 
-                SpyActionEvent(_owner);
+                foreach (var quest in _owner.Owner.Quests)
+                {
+                    if (quest is ISpyRelatedQuest q)
+                        q.OnSpyAction(_owner);
+                }
 
                 Owner.ConsumeAP(Ap);
             }

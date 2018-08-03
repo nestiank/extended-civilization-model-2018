@@ -10,7 +10,7 @@ using static CivModel.Zap.AtlantisPlayerNumber;
 
 namespace CivModel.Quests
 {
-    public class QuestPorjectCthulhu : Quest
+    public class QuestPorjectCthulhu : Quest, Hwan.ISpyRelatedQuest
     {
         public override string Name => "첩보 - 크툴루 계획";
 
@@ -28,21 +28,19 @@ namespace CivModel.Quests
 
         public override void OnQuestDeployTime()
         {
-            if (Requestee.SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0)
+            //if (Requestee.SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0)
             {
-                if (Game.Random.Next(10) < 7)
+                //if (Game.Random.Next(10) < 7)
                     Deploy();
             }
         }
 
         protected override void OnAccept()
         {
-            CivModel.Hwan.Spy.SpyActionEvent += Spy_SpyActionEvent;
         }
 
         private void Cleanup()
         {
-            CivModel.Hwan.Spy.SpyActionEvent -= Spy_SpyActionEvent;
         }
 
         protected override void OnGiveup()
@@ -57,9 +55,9 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        private void Spy_SpyActionEvent(Hwan.Spy spy)
+        void Hwan.ISpyRelatedQuest.OnSpyAction(Hwan.Spy spy)
         {
-            if (spy.PlacedPoint is Terrain.Point pt)
+            if (Status == QuestStatus.Accepted && spy.PlacedPoint is Terrain.Point pt)
             {
                 if (spy.Owner == Requestee && pt.TileOwner == Game.GetPlayerFinno())
                 {
