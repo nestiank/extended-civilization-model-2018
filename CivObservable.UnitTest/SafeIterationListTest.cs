@@ -9,13 +9,13 @@ namespace CivObservable.UnitTest
         private SafeIterationList<int> _list;
 
         [TestInitialize]
-        public void TestInit()
+        public void Initialize()
         {
             _list = new SafeIterationList<int>();
         }
 
         [TestMethod]
-        public void InitTest()
+        public void InitialTest()
         {
             Assert.AreEqual(0, _list.Count);
             foreach (int x in _list)

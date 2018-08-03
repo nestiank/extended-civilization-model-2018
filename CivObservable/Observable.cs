@@ -8,41 +8,85 @@ namespace CivObservable
     /// Represents an object observable by observer interface.
     /// </summary>
     /// <typeparam name="T">The observer interface to receive</typeparam>
-    public sealed class Observable<T>
+    /// <remarks>
+    /// <para>
+    /// The observable object from which observers can be modified during event is raised.
+    /// </para>
+    /// <para>
+    /// If observer is removed during event, the observer list is immediately affected.<br/>
+    /// If observer is added during event, the effect on the observer list is delayed until event raising is finished,
+    /// that is, the added observer is not called during current event but next event.<br/>
+    /// However, the added observer can be safely removed during the same event.
+    /// </para>
+    /// <para>
+    /// The same observer cannot be registered on the same observable twice or more.
+    /// Equality of observer is checked by <see cref="object.ReferenceEquals(object, object)"/>.
+    /// </para>
+    /// </remarks>
+    public sealed class Observable<T> where T : class
     {
-        private struct Observer
+        private struct PriorityPair
         {
-            public T value;
-            public int refcount;
-            public void IncRef()
+            public T observer;
+            public int priority;
+            public static PriorityPair Create(T obs, int prior)
             {
-                ++refcount;
-            }
-            public void DecRef()
-            {
-                --refcount;
+                return new PriorityPair { observer = obs, priority = prior };
             }
         }
 
-        private List<Observer> _observerList = new List<Observer>();
-        private List<Observer> _observerAddList = new List<Observer>();
+        private List<T>[] _observerList;
+        private List<PriorityPair> _observerAddList = new List<PriorityPair>();
 
-        private int counter = 0;
+        private int _countOfEnumerator = 0;
+
+        /// <summary>
+        /// The count of priorities of an observer to this observable.
+        /// </summary>
+        public int CountOfPriority { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Observable{T}"/> class.
+        /// </summary>
+        /// <param name="countOfPriority">The count of priorities of an observer to this observable.</param>
+        public Observable(int countOfPriority)
+        {
+            CountOfPriority = countOfPriority;
+
+            _observerList = new List<T>[countOfPriority];
+            for (int i = 0; i < countOfPriority; ++i)
+                _observerList[i] = new List<T>();
+        }
 
         /// <summary>
         /// Registers an observer object.
         /// </summary>
         /// <param name="observer">The observer.</param>
+        /// <param name="priority">The priority of the observer.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="observer"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="priority"/> is invalid</exception>
+        /// <exception cref="ArgumentException"><paramref name="observer"/> is already registered</exception>
         /// <seealso cref="RemoveObserver(T)"/>
-        public void AddObserver(T observer)
+        public void AddObserver(T observer, int priority)
         {
-            if (counter > 0)
+            if (observer == null)
+                throw new ArgumentNullException(nameof(observer));
+            if (priority < 0 || priority >= CountOfPriority)
+                throw new ArgumentOutOfRangeException("priority is invalid");
+
+            if (_observerList.Any(list => list.Any(obs => object.ReferenceEquals(obs, observer)))
+                || _observerAddList.Any(obs => object.ReferenceEquals(obs, observer)))
             {
-                AddToList(_observerAddList, observer);
+                throw new ArgumentException("observer is already registered");
+            }
+
+            if (_countOfEnumerator > 0)
+            {
+                _observerAddList.Add(PriorityPair.Create(observer, priority));
             }
             else
             {
-                AddToList(_observerList, observer);
+                _observerList[priority].Add(observer);
             }
         }
 
@@ -51,21 +95,31 @@ namespace CivObservable
         /// </summary>
         /// <param name="observer">The observer.</param>
         /// <exception cref="ArgumentException">observer is not registered</exception>
-        /// <seealso cref="AddObserver(T)"/>
+        /// <seealso cref="AddObserver(T, int)"/>
         public void RemoveObserver(T observer)
         {
-            int idx = _observerAddList.FindIndex(o => object.ReferenceEquals(o.value, observer));
-            if (idx != -1 && _observerAddList[idx].refcount > 0)
+            int idx = _observerAddList.FindLastIndex(o => object.ReferenceEquals(o, observer));
+            if (idx != -1)
             {
-                _observerAddList[idx].DecRef();
+                _observerAddList.RemoveAt(idx);
             }
             else
             {
-                idx = _observerList.FindIndex(o => object.ReferenceEquals(o.value, observer));
-                if (idx == -1 || _observerList[idx].refcount <= 0)
-                    throw new ArgumentException("observer is not registered", nameof(observer));
+                foreach (var list in _observerList)
+                {
+                    idx = list.FindLastIndex(o => object.ReferenceEquals(o, observer));
+                    if (idx != -1)
+                    {
+                        if (_countOfEnumerator == 0)
+                            list.RemoveAt(idx);
+                        else
+                            list[idx] = null;
 
-                _observerList[idx].DecRef();
+                        return;
+                    }
+                }
+
+                throw new ArgumentException("observer is not registered", nameof(observer));
             }
         }
 
@@ -75,30 +129,29 @@ namespace CivObservable
         /// <param name="action">The action to do in iteration.</param>
         public void IterateObserver(Action<T> action)
         {
-            ++counter;
-            foreach (var obs in _observerList)
-            {
-                if (obs.refcount > 0)
-                    action(obs.value);
-            }
-            if (--counter == 0)
-            {
-                _observerList.RemoveAll(obs => obs.refcount <= 0);
-                _observerList.AddRange(_observerAddList.Where(obs => obs.refcount > 0));
-                _observerAddList.Clear();
-            }
-        }
+            ++_countOfEnumerator;
 
-        private static void AddToList(List<Observer> list, T val)
-        {
-            int idx = list.FindIndex(o => object.ReferenceEquals(o.value, val));
-            if (idx != -1)
+            foreach (var list in _observerList)
             {
-                list[idx].IncRef();
+                for (int i = 0; i < list.Count; ++i)
+                {
+                    if (list[i] != null)
+                        action(list[i]);
+                }
             }
-            else
+
+            if (--_countOfEnumerator == 0)
             {
-                list.Add(new Observer { value = val, refcount = 1 });
+                foreach (var list in _observerList)
+                {
+                    list.RemoveAll(obs => obs == null);
+                }
+
+                foreach (var pair in _observerAddList)
+                {
+                    _observerList[pair.priority].Add(pair.observer);
+                }
+                _observerAddList.Clear();
             }
         }
     }
