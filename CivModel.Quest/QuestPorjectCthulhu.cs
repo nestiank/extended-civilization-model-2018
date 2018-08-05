@@ -28,9 +28,9 @@ namespace CivModel.Quests
 
         public override void OnQuestDeployTime()
         {
-            //if (Requestee.SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0)
+            if (Requestee.SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0)
             {
-                //if (Game.Random.Next(10) < 7)
+                if (Game.Random.Next(10) < 7)
                     Deploy();
             }
         }
