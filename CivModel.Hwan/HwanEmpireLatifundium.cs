@@ -52,14 +52,14 @@ namespace CivModel.Hwan
             _skillExpireTurn = -1;
         }
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
             if (_skillExpireTurn >= Game.TurnNumber)
             {
                 SkillModeOff();
             }
 
-            base.PostTurn();
+            base.FixedPostTurn();
         }
 
         private class HwanEmpireLatifundiumAction : IActorAction

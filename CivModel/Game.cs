@@ -282,10 +282,14 @@ namespace CivModel
             {
                 if (SubTurnNumber % Players.Count == 0)
                 {
-                    TurnObservable.IterateObserver(obj => obj.PreTurn());
+                    TurnEvent.RaiseFixedForward(r => r.FixedPreTurn());
+                    TurnEvent.RaiseFixedForward(r => r.FixedAfterPreTurn());
+                    TurnEvent.RaiseObservable(o => o.PreTurn());
                 }
 
-                TurnObservable.IterateObserver(obj => obj.PrePlayerSubTurn(PlayerInTurn));
+                TurnEvent.RaiseFixedForward(r => r.FixedPreSubTurn(PlayerInTurn));
+                TurnEvent.RaiseFixedForward(r => r.FixedAfterPreSubTurn(PlayerInTurn));
+                TurnEvent.RaiseObservable(o => o.PreSubTurn(PlayerInTurn));
             }
 
             IsInsideTurn = true;
@@ -300,11 +304,15 @@ namespace CivModel
             if (!IsInsideTurn)
                 throw new InvalidOperationException("the turn is not started yet");
 
-            TurnObservable.IterateObserver(obj => obj.PostPlayerSubTurn(PlayerInTurn));
+            TurnEvent.RaiseFixedBackward(r => r.FixedBeforePostSubTurn(PlayerInTurn));
+            TurnEvent.RaiseFixedBackward(r => r.FixedPostSubTurn(PlayerInTurn));
+            TurnEvent.RaiseObservable(o => o.PostSubTurn(PlayerInTurn));
 
             if ((SubTurnNumber + 1) % Players.Count == 0)
             {
-                TurnObservable.IterateObserver(obj => obj.PostTurn());
+                TurnEvent.RaiseFixedBackward(r => r.FixedBeforePostTurn());
+                TurnEvent.RaiseFixedBackward(r => r.FixedPostTurn());
+                TurnEvent.RaiseObservable(o => o.PostTurn());
             }
 
             ++SubTurnNumber;

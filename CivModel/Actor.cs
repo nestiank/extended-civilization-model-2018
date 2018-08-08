@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CivObservable;
 
 namespace CivModel
 {
@@ -39,8 +40,7 @@ namespace CivModel
     /// An absract class represents the <see cref="TileObject"/> which can have actions and action point (AP).
     /// </summary>
     /// <seealso cref="CivModel.TileObject" />
-    /// <seealso cref="ITurnObserver"/>
-    public abstract class Actor : TileObject, ITurnObserver
+    public abstract class Actor : TileObject, IFixedTurnReceiver
     {
         /// <summary>
         /// The player who owns this actor. <c>null</c> if this actor is destroyed.
@@ -87,7 +87,7 @@ namespace CivModel
 
         /// <summary>
         /// The remaining AP. It must be in [0, <see cref="MaxAP"/>].
-        /// It is reset to <see cref="MaxAP"/> when <see cref="PreTurn"/> is called.
+        /// It is reset to <see cref="MaxAP"/> when <see cref="FixedPreTurn"/> is called.
         /// </summary>
         /// <remarks>
         /// When setting this property with the value close to <c>0</c> or <see cref="MaxAP"/> within small error,
@@ -155,7 +155,7 @@ namespace CivModel
         /// <remarks>
         /// If this is lower than <see cref="MaxHP"/>,
         ///  this value is increased to min{<see cref="MaxHP"/>, value + <see cref="MaxHealPerTurn"/>}
-        ///  when <see cref="PreTurn"/> is called.
+        ///  when <see cref="FixedPreTurn"/> is called.
         /// </remarks>
         /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
         /// <exception cref="ArgumentOutOfRangeException"><see cref="RemainHP"/> is not in [0, <see cref="MaxHP"/>]</exception>
@@ -671,7 +671,7 @@ namespace CivModel
             if (opposite.Owner == null)
                 throw new InvalidOperationException("Opposite actor is already destroyed");
 
-            Game.BattleObservable.IterateObserver(obj => obj.OnBeforeBattle(this, opposite));
+            Game.BattleEvent.RaiseObservable(obj => obj.OnBeforeBattle(this, opposite));
 
             double atk = CalculateAttackPower(thisAttack, opposite, isMelee, isSkillAttack);
             double def = opposite.CalculateDefencePower(oppositeDefence, this, isMelee, isSkillAttack);
@@ -711,7 +711,7 @@ namespace CivModel
             opposite.OnAfterDamage(atk, def, myDamage, yourDamage,
                 this, opposite, myOwner, yourOwner, isMelee, isSkillAttack);
 
-            Game.BattleObservable.IterateObserver(obj => obj.OnAfterBattle(this, opposite, myOwner, yourOwner, ret));
+            Game.BattleEvent.RaiseObservable(obj => obj.OnAfterBattle(this, opposite, myOwner, yourOwner, ret));
 
             return ret;
         }
@@ -880,61 +880,88 @@ namespace CivModel
             Destroy();
         }
 
-        /// <summary>
-        /// Called before a turn.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        public virtual void PreTurn()
-        {
-            if (Owner == null)
-                throw new InvalidOperationException("actor is already destroyed");
+        IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> IFixedEventReceiver<IFixedTurnReceiver>.Children => FixedTurnReceiverChildren();
+        IFixedTurnReceiver IFixedEventReceiver<IFixedTurnReceiver>.Receiver => this;
 
+        internal virtual IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> FixedTurnReceiverChildren()
+        {
+            var clone = (Effect[])_effects.Clone();
+            for (int i = 0; i < _effects.Length; ++i)
+            {
+                if (_effects[i] != null && _effects[i] == clone[i])
+                    yield return _effects[i];
+            }
+        }
+
+        /// <summary>
+        /// Called on fixed event [pre turn].
+        /// </summary>
+        protected virtual void FixedPreTurn()
+        {
             _remainAP = MaxAP;
 
             if (!SleepFlag)
                 SkipFlag = false;
-
-            foreach (var effect in _effects)
-                effect?.PreTurn();
         }
+        void IFixedTurnReceiver.FixedPreTurn() => FixedPreTurn();
 
         /// <summary>
-        /// Called after a turn.
+        /// Called on fixed event [after pre turn].
         /// </summary>
-        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        public virtual void PostTurn()
+        protected virtual void FixedAfterPreTurn()
         {
-            if (Owner == null)
-                throw new InvalidOperationException("actor is already destroyed");
-
-            foreach (var effect in _effects)
-                effect?.PostTurn();
         }
+        void IFixedTurnReceiver.FixedAfterPreTurn() => FixedAfterPreTurn();
 
         /// <summary>
-        /// Called before a sub turn.
+        /// Called on fixed event [post turn].
         /// </summary>
-        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        public virtual void PrePlayerSubTurn(Player playerInTurn)
+        protected virtual void FixedPostTurn()
         {
-            if (Owner == null)
-                throw new InvalidOperationException("actor is already destroyed");
-
-            foreach (var effect in _effects)
-                effect?.PrePlayerSubTurn(playerInTurn);
         }
+        void IFixedTurnReceiver.FixedPostTurn() => FixedPostTurn();
 
         /// <summary>
-        /// Called after a sub turn.
+        /// Called on fixed event [before post turn].
+        /// </summary>
+        protected virtual void FixedBeforePostTurn()
+        {
+        }
+        void IFixedTurnReceiver.FixedBeforePostTurn() => FixedBeforePostTurn();
+
+        /// <summary>
+        /// Called on fixed event [pre subturn].
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        /// <exception cref="InvalidOperationException">actor is already destroyed</exception>
-        public virtual void PostPlayerSubTurn(Player playerInTurn)
+        protected virtual void FixedPreSubTurn(Player playerInTurn)
         {
-            if (Owner == null)
-                throw new InvalidOperationException("actor is already destroyed");
+        }
+        void IFixedTurnReceiver.FixedPreSubTurn(Player playerInTurn) => FixedPreSubTurn(playerInTurn);
 
+        /// <summary>
+        /// Called on fixed event [after pre subturn].
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        protected virtual void FixedAfterPreSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedAfterPreSubTurn(Player playerInTurn) => FixedAfterPreSubTurn(playerInTurn);
+
+        /// <summary>
+        /// Called on fixed event [post subturn].
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        protected virtual void FixedPostSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedPostSubTurn(Player playerInTurn) => FixedPostSubTurn(playerInTurn);
+
+        /// <summary>
+        /// Called on fixed event [before post subturn]
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        protected virtual void FixedBeforePostSubTurn(Player playerInTurn)
+        {
             if (playerInTurn == Owner)
             {
                 while (MovePath != null)
@@ -943,10 +970,8 @@ namespace CivModel
                         break;
                 }
             }
-
-            foreach (var effect in _effects)
-                effect?.PostPlayerSubTurn(playerInTurn);
         }
+        void IFixedTurnReceiver.FixedBeforePostSubTurn(Player playerInTurn) => FixedBeforePostSubTurn(playerInTurn);
 
         // compare floating point with relative error.
         // https://stackoverflow.com/questions/2411392/double-epsilon-for-equality-greater-than-less-than-less-than-or-equal-to-gre

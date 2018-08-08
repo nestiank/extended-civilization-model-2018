@@ -23,7 +23,7 @@ namespace CivModel.Hwan
         public HwanEmpireFIRFortress(Player owner, Terrain.Point point, Player donator = null)
             : base(owner, Constants, point, donator)
         {
-            owner.Game.TileObjectObservable.AddObserver(this);
+            owner.Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
             if (point.Unit != null)
             {
                 if (point.Unit.Owner == this.Owner)

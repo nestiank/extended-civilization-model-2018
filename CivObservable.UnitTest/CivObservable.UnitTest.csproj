@@ -51,9 +51,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FixedEventReceiverTest.cs" />
+    <Compile Include="FixedEventTest.cs" />
+    <Compile Include="FixedObservableEventTest.cs" />
     <Compile Include="ObservableTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SafeIterationListTest.cs" />
+    <Compile Include="ObservableEventTest.cs" />
+    <Compile Include="TestEventReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

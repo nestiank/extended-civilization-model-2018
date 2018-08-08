@@ -24,9 +24,9 @@ namespace CivModel.Zap
         {
         }
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
-            base.PostTurn();
+            base.FixedPostTurn();
             if (Owner.Happiness + 1 <= 100)
                 Owner.Happiness += 1;
             else

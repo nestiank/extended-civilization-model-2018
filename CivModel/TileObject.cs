@@ -57,7 +57,7 @@ namespace CivModel
                     SetPlacedPoint(value);
                     OnChangePlacedPoint(oldPoint);
 
-                    Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectPlaced(this));
+                    Game.TileObjectEvent.RaiseObservable(obj => obj.TileObjectPlaced(this));
                 }
             }
         }
@@ -84,8 +84,8 @@ namespace CivModel
         /// <param name="production">The <see cref="Production" /> object that produced this object.</param>
         public void OnAfterProduce(Production production)
         {
-            Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectProduced(this));
-            Game.TileObjectObservable.IterateObserver(obj => obj.TileObjectPlaced(this));
+            Game.TileObjectEvent.RaiseObservable(obj => obj.TileObjectProduced(this));
+            Game.TileObjectEvent.RaiseObservable(obj => obj.TileObjectPlaced(this));
         }
 
         private void SetPlacedPoint(Terrain.Point? value)

@@ -54,7 +54,7 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
             if (Status == QuestStatus.Accepted)
             {
@@ -64,7 +64,7 @@ namespace CivModel.Quests
                 }
             }
 
-            base.PostTurn();
+            base.FixedPostTurn();
         }
     }
 }

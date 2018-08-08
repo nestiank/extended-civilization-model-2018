@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CivObservable;
 
 namespace CivModel
 {
@@ -13,25 +14,62 @@ namespace CivModel
     public interface ITurnObserver
     {
         /// <summary>
-        /// Called before a turn.
+        /// Called on observable event [pre turn].
         /// </summary>
         void PreTurn();
 
         /// <summary>
-        /// Called after a turn.
+        /// Called on observable event [after pre turn].
+        /// </summary>
+        void AfterPreTurn();
+
+        /// <summary>
+        /// Called on observable event [post turn].
         /// </summary>
         void PostTurn();
 
         /// <summary>
-        /// Called before a sub turn.
+        /// Called on observable event [before post turn].
         /// </summary>
-        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        void PrePlayerSubTurn(Player playerInTurn);
+        void BeforePostTurn();
 
         /// <summary>
-        /// Called after a sub turn.
+        /// Called on observable event [pre subturn].
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        void PostPlayerSubTurn(Player playerInTurn);
+        void PreSubTurn(Player playerInTurn);
+
+        /// <summary>
+        /// Called on observable event [after pre subturn].
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        void AfterPreSubTurn(Player playerInTurn);
+
+        /// <summary>
+        /// Called on observable event [post subturn].
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        void PostSubTurn(Player playerInTurn);
+
+        /// <summary>
+        /// Called on observable event [before post subturn].
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        void BeforePostSubTurn(Player playerInTurn);
+    }
+
+    interface IFixedTurnReceiver : IFixedEventReceiver<IFixedTurnReceiver>
+    {
+        void FixedPreTurn();
+        void FixedAfterPreTurn();
+
+        void FixedPostTurn();
+        void FixedBeforePostTurn();
+
+        void FixedPreSubTurn(Player playerInTurn);
+        void FixedAfterPreSubTurn(Player playerInTurn);
+
+        void FixedPostSubTurn(Player playerInTurn);
+        void FixedBeforePostSubTurn(Player playerInTurn);
     }
 }

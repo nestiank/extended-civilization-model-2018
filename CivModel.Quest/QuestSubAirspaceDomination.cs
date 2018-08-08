@@ -38,7 +38,7 @@ namespace CivModel.Quests
 
         protected override void OnAccept()
         {
-            Game.BattleObservable.AddObserver(this);
+            Game.BattleObservable.AddObserver(this, ObserverPriority.Model);
         }
 
         private void Cleanup()

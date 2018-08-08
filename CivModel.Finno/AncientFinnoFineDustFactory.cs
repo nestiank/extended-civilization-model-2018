@@ -26,7 +26,7 @@ namespace CivModel.Finno
         {
         }
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
             foreach (var player in Owner.Game.Players) // 행복도 감소
             {
@@ -36,7 +36,7 @@ namespace CivModel.Finno
                 }
             }
 
-            base.PostTurn();
+            base.FixedPostTurn();
         }
     }
 

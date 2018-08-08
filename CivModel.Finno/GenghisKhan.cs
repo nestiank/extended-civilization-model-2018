@@ -121,9 +121,9 @@ namespace CivModel.Finno
         }
 
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
-            base.PostTurn();
+            base.FixedPostTurn();
 
             int GetUnit = Game.Random.Next(100);
 

@@ -286,7 +286,7 @@ namespace CivModel
         {
             var result = CorePlace(point);
             result.OnAfterProduce(this);
-            Game.ProductionObservable.IterateObserver(o => o.OnProductionDeploy(point, this, result));
+            Game.ProductionEvent.RaiseObservable(o => o.OnProductionDeploy(point, this, result));
             return result;
         }
 

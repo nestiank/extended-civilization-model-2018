@@ -18,14 +18,14 @@ namespace CivModel.Finno
 
         public AncientFinnoVigilant(CityBase city) : base(city, Constants) { }
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
             if (Game.Random.Next(5) == 0)
             {
                 SendUnit();
             }
 
-            base.PostTurn();
+            base.FixedPostTurn();
         }
 
         private void SendUnit()

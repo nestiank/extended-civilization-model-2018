@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CivObservable;
 
 namespace CivModel
 {
@@ -79,7 +78,7 @@ namespace CivModel
         /// The list of <see cref="InteriorBuilding"/> this city owns.
         /// </summary>
         public IReadOnlyList<InteriorBuilding> InteriorBuildings => _interiorBuildings;
-        private readonly SafeIterationCollection<InteriorBuilding> _interiorBuildings = new SafeIterationCollection<InteriorBuilding>();
+        private readonly SafeIterationList<InteriorBuilding> _interiorBuildings = new SafeIterationList<InteriorBuilding>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CityBase"/> class.
@@ -196,26 +195,21 @@ namespace CivModel
             }
         }
 
-        /// <summary>
-        /// Called before a turn.
-        /// </summary>
-        public override void PreTurn()
+        internal override IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> FixedTurnReceiverChildren()
         {
-            base.PreTurn();
-
-            foreach (var building in InteriorBuildings)
-                building.PreTurn();
+            var super = base.FixedTurnReceiverChildren();
+            foreach (var b in InteriorBuildings)
+                yield return b;
+            foreach (var r in super)
+                yield return r;
         }
 
         /// <summary>
-        /// Called after a turn.
+        /// Called on fixed event [post turn].
         /// </summary>
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
-            foreach (var building in InteriorBuildings)
-                building.PostTurn();
-
-            base.PostTurn();
+            base.FixedPostTurn();
 
             if (Owner != null)
             {
@@ -225,30 +219,6 @@ namespace CivModel
                     Destroy();
                 }
             }
-        }
-
-        /// <summary>
-        /// Called before a sub turn.
-        /// </summary>
-        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public override void PrePlayerSubTurn(Player playerInTurn)
-        {
-            base.PrePlayerSubTurn(playerInTurn);
-
-            foreach (var building in InteriorBuildings)
-                building.PrePlayerSubTurn(playerInTurn);
-        }
-
-        /// <summary>
-        /// Called after a sub turn.
-        /// </summary>
-        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public override void PostPlayerSubTurn(Player playerInTurn)
-        {
-            foreach (var building in InteriorBuildings)
-                building.PostPlayerSubTurn(playerInTurn);
-
-            base.PostPlayerSubTurn(playerInTurn);
         }
     }
 }

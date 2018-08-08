@@ -42,7 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FixedEvent.cs" />
+    <Compile Include="FixedEventReceiver.cs" />
+    <Compile Include="FixedObservableEvent.cs" />
+    <Compile Include="IFixedEventReceiver.cs" />
+    <Compile Include="IObservable.cs" />
     <Compile Include="Observable.cs" />
+    <Compile Include="ObservableEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SafeIterationList.cs" />
   </ItemGroup>

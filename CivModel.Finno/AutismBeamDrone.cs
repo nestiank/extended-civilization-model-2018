@@ -156,9 +156,9 @@ namespace CivModel.Finno
         {
         }
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
-            base.PostTurn();
+            base.FixedPostTurn();
             if (Enabled && LeftTurn == _stunTurn)
             {
                 DoOff();

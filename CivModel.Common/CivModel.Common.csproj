@@ -56,6 +56,10 @@
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
       <Name>CivModel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CivObservable\CivObservable.csproj">
+      <Project>{76cc2c4f-12f3-4dd5-9abb-8903a4954fd5}</Project>
+      <Name>CivObservable</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

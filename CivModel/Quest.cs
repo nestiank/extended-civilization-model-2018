@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CivObservable;
 
 namespace CivModel
 {
@@ -33,7 +34,7 @@ namespace CivModel
     /// <summary>
     /// Represents a quest.
     /// </summary>
-    public abstract class Quest : ITurnObserver
+    public abstract class Quest : IFixedTurnReceiver
     {
         /// <summary>
         /// The requester of this quest. <c>null</c> if not exists.
@@ -158,8 +159,6 @@ namespace CivModel
                 throw new ArgumentException("requester and requestee do not involve in the same game");
 
             requestee.AddQuestToList(this);
-
-            Game.TurnObservable.AddObserver(this);
         }
 
         /// <summary>
@@ -267,21 +266,33 @@ namespace CivModel
         /// </summary>
         public abstract void OnQuestDeployTime();
 
+        IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> IFixedEventReceiver<IFixedTurnReceiver>.Children => null;
+        IFixedTurnReceiver IFixedEventReceiver<IFixedTurnReceiver>.Receiver => this;
+
         /// <summary>
-        /// Called before a turn.
+        /// Called on fixed event [pre turn].
         /// </summary>
-        public virtual void PreTurn()
+        protected virtual void FixedPreTurn()
         {
             if (Status == QuestStatus.Disabled)
             {
                 OnQuestDeployTime();
             }
         }
+        void IFixedTurnReceiver.FixedPreTurn() => FixedPreTurn();
 
         /// <summary>
-        /// Called after a turn.
+        /// Called on fixed event [after pre turn].
         /// </summary>
-        public virtual void PostTurn()
+        protected virtual void FixedAfterPreTurn()
+        {
+        }
+        void IFixedTurnReceiver.FixedAfterPreTurn() => FixedAfterPreTurn();
+
+        /// <summary>
+        /// Called on fixed event [post turn].
+        /// </summary>
+        protected virtual void FixedPostTurn()
         {
             if (LeftTurn >= 0)
             {
@@ -292,39 +303,68 @@ namespace CivModel
                 }
             }
         }
+        void IFixedTurnReceiver.FixedPostTurn() => FixedBeforePostTurn();
 
         /// <summary>
-        /// Called before a sub turn.
+        /// Called on fixed event [before post turn].
         /// </summary>
-        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public virtual void PrePlayerSubTurn(Player playerInTurn)
+        protected virtual void FixedBeforePostTurn()
         {
         }
+        void IFixedTurnReceiver.FixedBeforePostTurn() => FixedBeforePostTurn();
 
         /// <summary>
-        /// Called after a sub turn.
+        /// Called on fixed event [pre subturn].
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public virtual void PostPlayerSubTurn(Player playerInTurn)
+        protected virtual void FixedPreSubTurn(Player playerInTurn)
         {
         }
+        void IFixedTurnReceiver.FixedPreSubTurn(Player playerInTurn) => FixedPreSubTurn(playerInTurn);
+
+        /// <summary>
+        /// Called on fixed event [after pre subturn].
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        protected virtual void FixedAfterPreSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedAfterPreSubTurn(Player playerInTurn) => FixedAfterPreSubTurn(playerInTurn);
+
+        /// <summary>
+        /// Called on fixed event [post subturn].
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        protected virtual void FixedPostSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedPostSubTurn(Player playerInTurn) => FixedPostSubTurn(playerInTurn);
+
+        /// <summary>
+        /// Called on fixed event [before post subturn]
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        protected virtual void FixedBeforePostSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedBeforePostSubTurn(Player playerInTurn) => FixedBeforePostSubTurn(playerInTurn);
 
         private void CallOnAccept()
         {
             OnAccept();
-            Game.QuestObservable.IterateObserver(obs => obs.QuestAccepted(this));
+            Game.QuestEvent.RaiseObservable(obs => obs.QuestAccepted(this));
         }
 
         private void CallOnGiveup()
         {
             OnGiveup();
-            Game.QuestObservable.IterateObserver(obs => obs.QuestGivenup(this));
+            Game.QuestEvent.RaiseObservable(obs => obs.QuestGivenup(this));
         }
 
         private void CallOnComplete()
         {
             OnComplete();
-            Game.QuestObservable.IterateObserver(obs => obs.QuestCompleted(this));
+            Game.QuestEvent.RaiseObservable(obs => obs.QuestCompleted(this));
         }
 
         /// <summary>

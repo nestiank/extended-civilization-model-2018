@@ -1,51 +1,73 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CivObservable;
 
 namespace CivModel
 {
+    /// <summary>
+    /// The enumeration represents priority of an observer to an observable event.
+    /// </summary>
+    public enum ObserverPriority
+    {
+        /// <summary>
+        /// The priority of an observer of model extension module.
+        /// </summary>
+        Model = 0,
+        /// <summary>
+        /// The priority of an observer of view module.
+        /// </summary>
+        View = 1,
+    }
+
     partial class Game
     {
         /// <summary>
-        /// An <see cref="Observable{ITurnObserver}"/> object which can be observed by <see cref="ITurnObserver"/>.
+        /// An <see cref="IObservable{ITurnObserver, ObserverPriority}"/> object which can be observed by <see cref="ITurnObserver"/>.
         /// </summary>
-        public Observable<ITurnObserver> TurnObservable { get; private set; }
+        public IObservable<ITurnObserver, ObserverPriority> TurnObservable => TurnEvent;
+        internal FixedObservableEvent<ITurnObserver, ObserverPriority, IFixedTurnReceiver> TurnEvent { get; private set; }
 
         /// <summary>
-        /// An <see cref="Observable{IProductionObserver}"/> object which can be observed by <see cref="IProductionObserver"/>.
+        /// An <see cref="IObservable{IProductionObserver, ObserverPriority}"/> object which can be observed by <see cref="IProductionObserver"/>.
         /// </summary>
-        public Observable<IProductionObserver> ProductionObservable { get; private set; }
+        public IObservable<IProductionObserver, ObserverPriority> ProductionObservable => ProductionEvent;
+        internal ObservableEvent<IProductionObserver, ObserverPriority> ProductionEvent { get; private set; }
 
         /// <summary>
-        /// An <see cref="Observable{ITileObjectObserver}"/> object which can be observed by <see cref="ITileObjectObserver"/>.
+        /// An <see cref="IObservable{ITileObjectObserver, ObserverPriority}"/> object which can be observed by <see cref="ITileObjectObserver"/>.
         /// </summary>
-        public Observable<ITileObjectObserver> TileObjectObservable { get; private set; }
+        public IObservable<ITileObjectObserver, ObserverPriority> TileObjectObservable => TileObjectEvent;
+        internal ObservableEvent<ITileObjectObserver, ObserverPriority> TileObjectEvent { get; private set; }
 
         /// <summary>
-        /// An <see cref="Observable{IBattleObserver}"/> object which can be observed by <see cref="IBattleObserver"/>.
+        /// An <see cref="IObservable{IBattleObserver, ObserverPriority}"/> object which can be observed by <see cref="IBattleObserver"/>.
         /// </summary>
-        public Observable<IBattleObserver> BattleObservable { get; private set; }
+        public IObservable<IBattleObserver, ObserverPriority> BattleObservable => BattleEvent;
+        internal ObservableEvent<IBattleObserver, ObserverPriority> BattleEvent { get; private set; }
 
         /// <summary>
-        /// An <see cref="Observable{IQuestObserver}"/> object which can be observed by <see cref="IQuestObserver"/>.
+        /// An <see cref="IObservable{IQuestObserver, ObserverPriority}"/> object which can be observed by <see cref="IQuestObserver"/>.
         /// </summary>
-        public Observable<IQuestObserver> QuestObservable { get; private set; }
+        public IObservable<IQuestObserver, ObserverPriority> QuestObservable => QuestEvent;
+        internal ObservableEvent<IQuestObserver, ObserverPriority> QuestEvent { get; private set; }
 
         /// <summary>
-        /// An <see cref="Observable{IVictoryObserver}"/> object which can be observed by <see cref="IVictoryObserver"/>.
+        /// An <see cref="IObservable{IVictoryObserver, ObserverPriority}"/> object which can be observed by <see cref="IVictoryObserver"/>.
         /// </summary>
-        public Observable<IVictoryObserver> VictoryObservable { get; private set; }
+        public IObservable<IVictoryObserver, ObserverPriority> VictoryObservable => VictoryEvent;
+        internal ObservableEvent<IVictoryObserver, ObserverPriority> VictoryEvent { get; private set; }
 
         private void InitializeObservable()
         {
-            TurnObservable = new Observable<ITurnObserver>();
-            ProductionObservable = new Observable<IProductionObserver>();
-            TileObjectObservable = new Observable<ITileObjectObserver>();
-            BattleObservable = new Observable<IBattleObserver>();
-            QuestObservable = new Observable<IQuestObserver>();
-            VictoryObservable = new Observable<IVictoryObserver>();
+            // fixed & observable
+            TurnEvent = new FixedObservableEvent<ITurnObserver, ObserverPriority, IFixedTurnReceiver>(
+                () => Players.Cast<IFixedTurnReceiver>());
+
+            // observable
+            ProductionEvent = new ObservableEvent<IProductionObserver, ObserverPriority>();
+            TileObjectEvent = new ObservableEvent<ITileObjectObserver, ObserverPriority>();
+            BattleEvent = new ObservableEvent<IBattleObserver, ObserverPriority>();
+            QuestEvent = new ObservableEvent<IQuestObserver, ObserverPriority>();
+            VictoryEvent = new ObservableEvent<IVictoryObserver, ObserverPriority>();
         }
     }
 }

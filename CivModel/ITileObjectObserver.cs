@@ -14,7 +14,7 @@ namespace CivModel
     public interface ITileObjectObserver
     {
         /// <summary>
-        /// Called when <see cref="TileObject"/> is created.
+        /// Called when <see cref="TileObject"/> is produced.
         /// </summary>
         /// <param name="obj">The <see cref="TileObject"/>.</param>
         void TileObjectProduced(TileObject obj);

@@ -25,9 +25,9 @@ namespace CivModel.Finno
         {
         }
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
-            base.PostTurn();
+            base.FixedPostTurn();
 
             int GetGold = Game.Random.Next(100);
 

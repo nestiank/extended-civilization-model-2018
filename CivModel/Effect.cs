@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CivObservable;
 
 namespace CivModel
 {
@@ -20,7 +21,7 @@ namespace CivModel
     /// <summary>
     /// Represents an effect to <see cref="Actor"/>.
     /// </summary>
-    public abstract class Effect : ITurnObserver
+    public abstract class Effect : IFixedTurnReceiver
     {
         /// <summary>
         /// The target <see cref="Actor"/> of this effect. <c>null</c> if target was destroyed.
@@ -150,10 +151,29 @@ namespace CivModel
         /// </summary>
         protected abstract void OnTargetDestroy();
 
+        IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> IFixedEventReceiver<IFixedTurnReceiver>.Children => null;
+        IFixedTurnReceiver IFixedEventReceiver<IFixedTurnReceiver>.Receiver => this;
+
         /// <summary>
-        /// Called after a turn.
+        /// Called on fixed event [pre turn].
         /// </summary>
-        public virtual void PostTurn()
+        protected virtual void FixedPreTurn()
+        {
+        }
+        void IFixedTurnReceiver.FixedPreTurn() => FixedPreTurn();
+
+        /// <summary>
+        /// Called on fixed event [after pre turn].
+        /// </summary>
+        protected virtual void FixedAfterPreTurn()
+        {
+        }
+        void IFixedTurnReceiver.FixedAfterPreTurn() => FixedAfterPreTurn();
+
+        /// <summary>
+        /// Called on fixed event [post turn].
+        /// </summary>
+        protected virtual void FixedPostTurn()
         {
             if (Enabled && LeftTurn >= 0)
             {
@@ -163,20 +183,50 @@ namespace CivModel
                 }
             }
         }
+        void IFixedTurnReceiver.FixedPostTurn() => FixedPostTurn();
 
         /// <summary>
-        /// Called before a turn.
+        /// Called on fixed event [before post turn].
         /// </summary>
-        public virtual void PreTurn() { }
+        protected virtual void FixedBeforePostTurn()
+        {
+        }
+        void IFixedTurnReceiver.FixedBeforePostTurn() => FixedBeforePostTurn();
+
         /// <summary>
-        /// Called before a sub turn.
+        /// Called on fixed event [pre subturn].
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public virtual void PrePlayerSubTurn(Player playerInTurn) { }
+        protected virtual void FixedPreSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedPreSubTurn(Player playerInTurn) => FixedPreSubTurn(playerInTurn);
+
         /// <summary>
-        /// Called after a sub turn.
+        /// Called on fixed event [after pre subturn].
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public virtual void PostPlayerSubTurn(Player playerInTurn) { }
+        protected virtual void FixedAfterPreSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedAfterPreSubTurn(Player playerInTurn) => FixedAfterPreSubTurn(playerInTurn);
+
+        /// <summary>
+        /// Called on fixed event [post subturn].
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        protected virtual void FixedPostSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedPostSubTurn(Player playerInTurn) => FixedPostSubTurn(playerInTurn);
+
+        /// <summary>
+        /// Called on fixed event [before post subturn]
+        /// </summary>
+        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
+        protected virtual void FixedBeforePostSubTurn(Player playerInTurn)
+        {
+        }
+        void IFixedTurnReceiver.FixedBeforePostSubTurn(Player playerInTurn) => FixedBeforePostSubTurn(playerInTurn);
     }
 }

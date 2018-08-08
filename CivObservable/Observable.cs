@@ -23,7 +23,8 @@ namespace CivObservable
     /// Equality of observer is checked by <see cref="object.ReferenceEquals(object, object)"/>.
     /// </para>
     /// </remarks>
-    public sealed class Observable<T> where T : class
+    public sealed class Observable<T> : IObservable<T, int>
+        where T : class
     {
         private struct PriorityPair
         {

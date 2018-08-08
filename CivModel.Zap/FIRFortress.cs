@@ -22,7 +22,7 @@ namespace CivModel.Zap
         public FIRFortress(Player owner, Terrain.Point point, Player donator = null)
             : base(owner, Constants, point, donator)
         {
-            owner.Game.TileObjectObservable.AddObserver(this);
+            owner.Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
         }
 
         protected override void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,

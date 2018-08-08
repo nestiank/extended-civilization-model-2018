@@ -21,9 +21,9 @@ namespace CivModel.Hwan
 
         public int SoBoRo = 0;
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
-            base.PostTurn();
+            base.FixedPostTurn();
 
             int GetSoBoRo = Game.Random.Next(100);
 

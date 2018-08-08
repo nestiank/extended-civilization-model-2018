@@ -30,17 +30,21 @@ namespace CivModel.Common
             {
                 _player = player;
 
-                player.Game.TurnObservable.AddObserver(this);
+                player.Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
             }
 
-            public void PostTurn()
+            public void BeforePostTurn()
             {
                 System.Diagnostics.Debug.WriteLine("TestResource: " + _player.SpecialResource[Instance]);
             }
 
-            public void PostPlayerSubTurn(Player playerInTurn) { }
-            public void PrePlayerSubTurn(Player playerInTurn) { }
             public void PreTurn() { }
+            public void AfterPreTurn() { }
+            public void PostTurn() { }
+            public void PreSubTurn(Player playerInTurn) { }
+            public void AfterPreSubTurn(Player playerInTurn) { }
+            public void PostSubTurn(Player playerInTurn) { }
+            public void BeforePostSubTurn(Player playerInTurn) { }
         }
     }
 }

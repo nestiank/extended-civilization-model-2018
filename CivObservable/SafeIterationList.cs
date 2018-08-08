@@ -34,40 +34,13 @@ namespace CivObservable
         public bool IsReadOnly => false;
 
         /// <summary>
-        /// 이 <see cref="SafeIterationList{T}"/> 개체에 대해 <see cref="GetEnumerator"/>를 호출하지 못하게 잠기었는지 여부를 나타냅니다.
+        /// 이 <see cref="SafeIterationList{T}"/> 개체에 대한 작업이 진행중인지 여부를 나타내는 값을 가져옵니다.
         /// </summary>
         /// <remarks>
-        /// 이 값이 <c>true</c>이면 <see cref="UnderlyingList"/>를 사용할 수 있지만, <see cref="GetEnumerator"/>를 사용할 수 없게 되어
-        ///  <see langword="foreach"/> 반복문을 수행할 수 없게 됩니다.
+        /// 이 값이 <c>true</c>이면 이 객체에 대한 작업이 순회 작업과 동시에 일어날 수 있도록 처리됩니다.
         /// </remarks>
-        /// <exception cref="InvalidOperationException">Cannot lock collection while enumerators exist</exception>
-        /// <seealso cref="UnderlyingList"/>
         /// <seealso cref="GetEnumerator"/>
-        public bool Locked
-        {
-            get => _locked;
-            set
-            {
-                if (!_locked && value)
-                {
-                    if (_countOfEnumerator != 0)
-                        throw new InvalidOperationException("Cannot lock collection while enumerators exist");
-                }
-                _locked = value;
-            }
-        }
-        private bool _locked = false;
-
-        /// <summary>
-        /// 이 <see cref="SafeIterationList{T}"/> 개체의 요소를 갖고있는 <see cref="List{T}"/> 개체를 가져옵니다.
-        /// </summary>
-        /// <remarks>
-        /// 이 속성은 오직 <see cref="Locked"/>가 <c>true</c>일 때만 사용될 수 있습니다.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Cannot retrieve underlying list of unlocked collection</exception>
-        /// <seealso cref="Locked"/>
-        public List<T> UnderlyingList => Locked ? _list
-            : throw new InvalidOperationException("Cannot retrieve underlying list of unlocked collection");
+        public bool IsWorking => _countOfEnumerator > 0;
 
         /// <summary>
         /// 읽기 전용 목록에서 지정된 인덱스의 요소를 가져옵니다.
@@ -83,7 +56,7 @@ namespace CivObservable
         {
             get
             {
-                if (_countOfEnumerator == 0)
+                if (!IsWorking)
                 {
                     return _list[index];
                 }
@@ -109,7 +82,7 @@ namespace CivObservable
         /// <param name="item"><see cref="T:System.Collections.Generic.ICollection`1" />에 추가할 개체입니다.</param>
         public void Add(T item)
         {
-            if (_countOfEnumerator != 0 && _removeList.Contains(item))
+            if (_removeList.Contains(item))
             {
                 _removeList.Remove(item);
             }
@@ -129,7 +102,7 @@ namespace CivObservable
         /// </returns>
         public bool Remove(T item)
         {
-            if (_countOfEnumerator == 0)
+            if (!IsWorking)
             {
                 return _list.Remove(item);
             }
@@ -149,7 +122,7 @@ namespace CivObservable
         /// </summary>
         public void Clear()
         {
-            if (_countOfEnumerator == 0)
+            if (!IsWorking)
             {
                 _list.Clear();
             }
@@ -177,34 +150,58 @@ namespace CivObservable
         }
 
         /// <summary>
-        /// 컬렉션을 반복하는 열거자를 반환합니다.
+        /// 컬렉션을 반복하는 열거자를 반환합니다. 열거하는 동안 <see cref="IsWorking"/>은 <c>true</c>가 됩니다.
         /// </summary>
         /// <returns>
         /// 컬렉션을 반복하는 데 사용할 수 있는 열거자입니다.
         /// </returns>
-        /// <remarks>
-        /// 이 메서드는 오직 <see cref="Locked"/>가 <c>true</c>일 때만 사용될 수 있습니다.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">collection is locked</exception>
-        /// <seealso cref="Locked"/>
         public IEnumerator<T> GetEnumerator()
         {
-            if (Locked)
-                throw new InvalidOperationException("collection is locked");
-
             ++_countOfEnumerator;
-
-            for (int i = 0; i < _list.Count; ++i)
+            try
             {
-                var item = _list[i];
-                if (!_removeList.Contains(item))
-                    yield return item;
+                for (int i = 0; i < _list.Count; ++i)
+                {
+                    var item = _list[i];
+                    if (!_removeList.Contains(item))
+                        yield return item;
+                }
             }
-
-            if (--_countOfEnumerator == 0)
+            finally
             {
-                _list.RemoveAll(item => _removeList.Contains(item));
-                _removeList.Clear();
+                --_countOfEnumerator;
+                if (!IsWorking)
+                {
+                    _list.RemoveAll(item => _removeList.Contains(item));
+                    _removeList.Clear();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 시퀀스의 요소 순서를 반전합니다.
+        /// </summary>
+        /// <returns>시퀀스의 요소 순서를 뒤집은 시퀀스입니다.</returns>
+        public IEnumerable<T> Reverse()
+        {
+            ++_countOfEnumerator;
+            try
+            {
+                for (int i = _list.Count - 1; i >= 0; --i)
+                {
+                    var item = _list[i];
+                    if (!_removeList.Contains(item))
+                        yield return item;
+                }
+            }
+            finally
+            {
+                --_countOfEnumerator;
+                if (!IsWorking)
+                {
+                    _list.RemoveAll(item => _removeList.Contains(item));
+                    _removeList.Clear();
+                }
             }
         }
 
@@ -224,7 +221,7 @@ namespace CivObservable
         /// <exception cref="ArgumentException">The available space from arrayIndex to the end of the destination array is not enough</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            if (_countOfEnumerator == 0)
+            if (!IsWorking)
             {
                 _list.CopyTo(array, arrayIndex);
             }

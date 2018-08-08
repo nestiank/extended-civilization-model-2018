@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using CivObservable;
 
 namespace CivModel
 {
@@ -31,7 +32,7 @@ namespace CivModel
     /// </summary>
     /// <seealso cref="ITurnObserver"/>
     [DebuggerDisplay("Player (Number = {PlayerNumber})")]
-    public sealed class Player : ITurnObserver
+    public sealed class Player : IFixedTurnReceiver
     {
         /// <summary>
         /// The happiness of this player. This value is in [-100, 100].
@@ -266,14 +267,14 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="Unit"/>
         public IReadOnlyList<Unit> Units => _units;
-        private readonly SafeIterationCollection<Unit> _units = new SafeIterationCollection<Unit>();
+        private readonly SafeIterationList<Unit> _units = new SafeIterationList<Unit>();
 
         /// <summary>
         /// The list of tile buildings of this player.
         /// </summary>
         /// <seealso cref="TileBuilding"/>
         public IReadOnlyList<TileBuilding> TileBuildings => _tileBuildings;
-        private readonly SafeIterationCollection<TileBuilding> _tileBuildings = new SafeIterationCollection<TileBuilding>();
+        private readonly SafeIterationList<TileBuilding> _tileBuildings = new SafeIterationList<TileBuilding>();
 
         /// <summary>
         /// <see cref="IEnumerable{T}"/> object which contains cities this player owns.
@@ -291,7 +292,7 @@ namespace CivModel
         /// The list of <see cref="Quest"/> which this player is <see cref="Quest.Requestee"/>.
         /// </summary>
         public IReadOnlyList<Quest> Quests => _quests;
-        private readonly SafeIterationCollection<Quest> _quests = new SafeIterationCollection<Quest>();
+        private readonly SafeIterationList<Quest> _quests = new SafeIterationList<Quest>();
 
         /// <summary>
         /// The list of the not-finished productions of this player.
@@ -488,8 +489,6 @@ namespace CivModel
             Team = team;
 
             _specialResourceProxy = new SpecialResourceProxy { thiz = this };
-
-            game.TurnObservable.AddObserver(this);
         }
 
         /// <summary>
@@ -812,7 +811,7 @@ namespace CivModel
             VictoryCondition = victory;
             victory.DoVictory(this);
 
-            Game.VictoryObservable.IterateObserver(o => o.OnVictory(this, victory));
+            Game.VictoryEvent.RaiseObservable(o => o.OnVictory(this, victory));
         }
 
         /// <summary>
@@ -835,7 +834,7 @@ namespace CivModel
             DefeatCondition = defeat;
             defeat.DoDefeat(this);
 
-            Game.VictoryObservable.IterateObserver(o => o.OnDefeat(this, defeat));
+            Game.VictoryEvent.RaiseObservable(o => o.OnDefeat(this, defeat));
         }
 
         /// <summary>
@@ -858,7 +857,7 @@ namespace CivModel
             DrawCondition = draw;
             draw.DoDraw(this);
 
-            Game.VictoryObservable.IterateObserver(o => o.OnDraw(this, draw));
+            Game.VictoryEvent.RaiseObservable(o => o.OnDraw(this, draw));
         }
 
         /// <summary>
@@ -955,27 +954,33 @@ namespace CivModel
             return (player == null || player.Team == Team);
         }
 
-        /// <summary>
-        /// Called before a turn.
-        /// </summary>
-        public void PreTurn()
+        IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> IFixedEventReceiver<IFixedTurnReceiver>.Children
         {
-            foreach (var unit in Units)
-                unit.PreTurn();
-            foreach (var building in TileBuildings)
-                building.PreTurn();
+            // safe iteration by SafeIterationList<>
+            get
+            {
+                foreach (var tb in _tileBuildings)
+                    if (tb is CityBase)
+                        yield return tb;
+                foreach (var tb in _tileBuildings)
+                    if (!(tb is CityBase))
+                        yield return tb;
+                foreach (var u in _units)
+                    yield return u;
+            }
+        }
+        IFixedTurnReceiver IFixedEventReceiver<IFixedTurnReceiver>.Receiver => this;
+
+        void IFixedTurnReceiver.FixedPreTurn()
+        {
         }
 
-        /// <summary>
-        /// Called after a turn.
-        /// </summary>
-        public void PostTurn()
+        void IFixedTurnReceiver.FixedAfterPreTurn()
         {
-            foreach (var building in TileBuildings)
-                building.PostTurn();
-            foreach (var unit in Units)
-                unit.PostTurn();
+        }
 
+        void IFixedTurnReceiver.FixedPostTurn()
+        {
             // this will update GoldNetIncome
             productionProcess();
 
@@ -986,33 +991,28 @@ namespace CivModel
             Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
         }
 
-        /// <summary>
-        /// Called before a sub turn.
-        /// </summary>
-        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public void PrePlayerSubTurn(Player playerInTurn)
+        void IFixedTurnReceiver.FixedBeforePostTurn()
+        {
+        }
+
+        void IFixedTurnReceiver.FixedPreSubTurn(Player playerInTurn)
         {
             if (playerInTurn == this)
             {
                 EndingCheck();
             }
-
-            foreach (var unit in Units)
-                unit.PrePlayerSubTurn(playerInTurn);
-            foreach (var building in TileBuildings)
-                building.PrePlayerSubTurn(playerInTurn);
         }
 
-        /// <summary>
-        /// Called after a sub turn.
-        /// </summary>
-        /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        public void PostPlayerSubTurn(Player playerInTurn)
+        void IFixedTurnReceiver.FixedAfterPreSubTurn(Player playerInTurn)
         {
-            foreach (var building in TileBuildings)
-                building.PostPlayerSubTurn(playerInTurn);
-            foreach (var unit in Units)
-                unit.PostPlayerSubTurn(playerInTurn);
+        }
+
+        void IFixedTurnReceiver.FixedPostSubTurn(Player playerInTurn)
+        {
+        }
+
+        void IFixedTurnReceiver.FixedBeforePostSubTurn(Player playerInTurn)
+        {
         }
 
         /// <summary>

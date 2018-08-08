@@ -20,14 +20,14 @@ namespace CivModel.Finno
             MaxHealPerTurn = 20
         };
 
-        public override void PostTurn()
+        protected override void FixedPostTurn()
         {
             if (Game.Random.Next(100) == 7)
             {
                 SendUnit();
             }
 
-            base.PostTurn();
+            base.FixedPostTurn();
         }
 
         private void SendUnit()
