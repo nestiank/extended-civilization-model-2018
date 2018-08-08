@@ -186,12 +186,12 @@ namespace CivModel
         void IFixedTurnReceiver.FixedPostTurn() => FixedPostTurn();
 
         /// <summary>
-        /// Called on fixed event [before post turn].
+        /// Called on fixed event [after post turn].
         /// </summary>
-        protected virtual void FixedBeforePostTurn()
+        protected virtual void FixedAfterPostTurn()
         {
         }
-        void IFixedTurnReceiver.FixedBeforePostTurn() => FixedBeforePostTurn();
+        void IFixedTurnReceiver.FixedAfterPostTurn() => FixedAfterPostTurn();
 
         /// <summary>
         /// Called on fixed event [pre subturn].
@@ -221,12 +221,12 @@ namespace CivModel
         void IFixedTurnReceiver.FixedPostSubTurn(Player playerInTurn) => FixedPostSubTurn(playerInTurn);
 
         /// <summary>
-        /// Called on fixed event [before post subturn]
+        /// Called on fixed event [after post subturn]
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        protected virtual void FixedBeforePostSubTurn(Player playerInTurn)
+        protected virtual void FixedAfterPostSubTurn(Player playerInTurn)
         {
         }
-        void IFixedTurnReceiver.FixedBeforePostSubTurn(Player playerInTurn) => FixedBeforePostSubTurn(playerInTurn);
+        void IFixedTurnReceiver.FixedAfterPostSubTurn(Player playerInTurn) => FixedAfterPostSubTurn(playerInTurn);
     }
 }

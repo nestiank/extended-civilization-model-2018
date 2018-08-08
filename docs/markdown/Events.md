@@ -62,9 +62,9 @@ Observer의 우선순위는 2가지가 있다.
 
      Turn이 끝날 때 발생한다.
 
-  - Before Post Turn *(backward DFS)*
+  - After Post Turn *(backward DFS)*
 
-     `Post Turn` 이벤트가 발생하기 전에 발생한다.
+     `Post Turn` 이벤트가 발생한 후에 발생한다.
 
   - Pre SubTurn *(forward DFS)*
 
@@ -78,9 +78,9 @@ Observer의 우선순위는 2가지가 있다.
 
      SubTurn이 끝날 때 발생한다.
 
-  - Before Post SubTurn *(backward DFS)*
+  - After Post SubTurn *(backward DFS)*
 
-     `Post SubTurn` 이벤트가 발생하기 전에 발생한다.
+     `Post SubTurn` 이벤트가 발생한 후에 발생한다.
 
 - Production Event *(observable)*
   - OnProductionDeploy

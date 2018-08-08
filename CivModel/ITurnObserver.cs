@@ -29,9 +29,9 @@ namespace CivModel
         void PostTurn();
 
         /// <summary>
-        /// Called on observable event [before post turn].
+        /// Called on observable event [after post turn].
         /// </summary>
-        void BeforePostTurn();
+        void AfterPostTurn();
 
         /// <summary>
         /// Called on observable event [pre subturn].
@@ -52,10 +52,10 @@ namespace CivModel
         void PostSubTurn(Player playerInTurn);
 
         /// <summary>
-        /// Called on observable event [before post subturn].
+        /// Called on observable event [after post subturn].
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        void BeforePostSubTurn(Player playerInTurn);
+        void AfterPostSubTurn(Player playerInTurn);
     }
 
     interface IFixedTurnReceiver : IFixedEventReceiver<IFixedTurnReceiver>
@@ -64,12 +64,12 @@ namespace CivModel
         void FixedAfterPreTurn();
 
         void FixedPostTurn();
-        void FixedBeforePostTurn();
+        void FixedAfterPostTurn();
 
         void FixedPreSubTurn(Player playerInTurn);
         void FixedAfterPreSubTurn(Player playerInTurn);
 
         void FixedPostSubTurn(Player playerInTurn);
-        void FixedBeforePostSubTurn(Player playerInTurn);
+        void FixedAfterPostSubTurn(Player playerInTurn);
     }
 }

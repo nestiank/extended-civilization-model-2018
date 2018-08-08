@@ -304,15 +304,19 @@ namespace CivModel
             if (!IsInsideTurn)
                 throw new InvalidOperationException("the turn is not started yet");
 
-            TurnEvent.RaiseFixedBackward(r => r.FixedBeforePostSubTurn(PlayerInTurn));
             TurnEvent.RaiseFixedBackward(r => r.FixedPostSubTurn(PlayerInTurn));
+            TurnEvent.RaiseObservable(o => o.PostSubTurn(PlayerInTurn));
+
+            TurnEvent.RaiseFixedBackward(r => r.FixedAfterPostSubTurn(PlayerInTurn));
             TurnEvent.RaiseObservable(o => o.PostSubTurn(PlayerInTurn));
 
             if ((SubTurnNumber + 1) % Players.Count == 0)
             {
-                TurnEvent.RaiseFixedBackward(r => r.FixedBeforePostTurn());
                 TurnEvent.RaiseFixedBackward(r => r.FixedPostTurn());
                 TurnEvent.RaiseObservable(o => o.PostTurn());
+
+                TurnEvent.RaiseFixedBackward(r => r.FixedAfterPostTurn());
+                TurnEvent.RaiseObservable(o => o.AfterPostTurn());
             }
 
             ++SubTurnNumber;

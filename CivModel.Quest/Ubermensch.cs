@@ -33,18 +33,18 @@ namespace CivModel.Quests
                 player.Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
             }
 
-            public void BeforePostTurn()
+            public void PostTurn()
             {
                 // TODO
             }
 
             public void PreTurn() { }
             public void AfterPreTurn() { }
-            public void PostTurn() { }
+            public void AfterPostTurn() { }
             public void PreSubTurn(Player playerInTurn) { }
             public void AfterPreSubTurn(Player playerInTurn) { }
             public void PostSubTurn(Player playerInTurn) { }
-            public void BeforePostSubTurn(Player playerInTurn) { }
+            public void AfterPostSubTurn(Player playerInTurn) { }
         }
     }
 }

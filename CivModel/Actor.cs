@@ -922,12 +922,12 @@ namespace CivModel
         void IFixedTurnReceiver.FixedPostTurn() => FixedPostTurn();
 
         /// <summary>
-        /// Called on fixed event [before post turn].
+        /// Called on fixed event [after post turn].
         /// </summary>
-        protected virtual void FixedBeforePostTurn()
+        protected virtual void FixedAfterPostTurn()
         {
         }
-        void IFixedTurnReceiver.FixedBeforePostTurn() => FixedBeforePostTurn();
+        void IFixedTurnReceiver.FixedAfterPostTurn() => FixedAfterPostTurn();
 
         /// <summary>
         /// Called on fixed event [pre subturn].
@@ -957,10 +957,10 @@ namespace CivModel
         void IFixedTurnReceiver.FixedPostSubTurn(Player playerInTurn) => FixedPostSubTurn(playerInTurn);
 
         /// <summary>
-        /// Called on fixed event [before post subturn]
+        /// Called on fixed event [after post subturn]
         /// </summary>
         /// <param name="playerInTurn">The player which the sub turn is dedicated to.</param>
-        protected virtual void FixedBeforePostSubTurn(Player playerInTurn)
+        protected virtual void FixedAfterPostSubTurn(Player playerInTurn)
         {
             if (playerInTurn == Owner)
             {
@@ -971,7 +971,7 @@ namespace CivModel
                 }
             }
         }
-        void IFixedTurnReceiver.FixedBeforePostSubTurn(Player playerInTurn) => FixedBeforePostSubTurn(playerInTurn);
+        void IFixedTurnReceiver.FixedAfterPostSubTurn(Player playerInTurn) => FixedAfterPostSubTurn(playerInTurn);
 
         // compare floating point with relative error.
         // https://stackoverflow.com/questions/2411392/double-epsilon-for-equality-greater-than-less-than-less-than-or-equal-to-gre

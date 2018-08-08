@@ -991,7 +991,7 @@ namespace CivModel
             Happiness = Math.Max(-100, Math.Min(100, Happiness + dh));
         }
 
-        void IFixedTurnReceiver.FixedBeforePostTurn()
+        void IFixedTurnReceiver.FixedAfterPostTurn()
         {
         }
 
@@ -1011,7 +1011,7 @@ namespace CivModel
         {
         }
 
-        void IFixedTurnReceiver.FixedBeforePostSubTurn(Player playerInTurn)
+        void IFixedTurnReceiver.FixedAfterPostSubTurn(Player playerInTurn)
         {
         }
 
