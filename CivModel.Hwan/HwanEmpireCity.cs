@@ -40,6 +40,12 @@ namespace CivModel.Hwan
             }
         }
 
+        protected override void OnAfterChangeOwner(Player prevOwner)
+        {
+            base.OnAfterChangeOwner(prevOwner);
+            StealAdjacentTerritory(prevOwner);
+        }
+
         private class HwanEmpireCityAction : IActorAction
         {
             private readonly HwanEmpireCity _owner;

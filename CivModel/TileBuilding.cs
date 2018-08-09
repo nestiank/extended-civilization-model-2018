@@ -113,6 +113,29 @@ namespace CivModel
         }
 
         /// <summary>
+        /// Steals the adjacent territory from other player.
+        /// </summary>
+        /// <param name="targetPlayer">The target player.</param>
+        public void StealAdjacentTerritory(Player targetPlayer)
+        {
+            foreach (var adjacent in PlacedPoint.Value.Adjacents())
+            {
+                if (adjacent is Terrain.Point pt && pt.TileOwner == targetPlayer)
+                {
+                    if (pt.TileBuilding is CityBase)
+                        continue;
+                    if (pt.Adjacents().Any(x => x?.TileBuilding is CityBase city && city.Owner != Owner))
+                        continue;
+
+                    if (pt.TileBuilding != null)
+                        pt.TileBuilding.ChangeOwner(Owner);
+                    else
+                        Owner.AddTerritory(pt);
+                }
+            }
+        }
+
+        /// <summary>
         /// Called before [destroy], by <see cref="Actor.Destroy" />
         /// </summary>
         protected override void OnBeforeDestroy()

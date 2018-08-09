@@ -20,7 +20,6 @@ namespace CivModel.Zap
 
         };
 
-
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
@@ -38,6 +37,12 @@ namespace CivModel.Zap
                         Owner.TryAddTerritory(pt.Value);
                 }
             }
+        }
+
+        protected override void OnAfterChangeOwner(Player prevOwner)
+        {
+            base.OnAfterChangeOwner(prevOwner);
+            StealAdjacentTerritory(prevOwner);
         }
 
         private class CityCenterAction : IActorAction

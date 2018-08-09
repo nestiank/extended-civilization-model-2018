@@ -20,6 +20,31 @@ namespace CivModel.Finno
             MaxHealPerTurn = 20
         };
 
+        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
+        private readonly IActorAction[] _specialActs = new IActorAction[1];
+
+        public FinnoEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile)
+            : base(player, Constants, point, null)
+        {
+            this.Population = 5;
+            _specialActs[0] = new FinnoEmpireCityAction(this);
+
+            if (!isLoadFromFile)
+            {
+                foreach (var pt in PlacedPoint.Value.Adjacents())
+                {
+                    if (pt.HasValue)
+                        Owner.TryAddTerritory(pt.Value);
+                }
+            }
+        }
+
+        protected override void OnAfterChangeOwner(Player prevOwner)
+        {
+            base.OnAfterChangeOwner(prevOwner);
+            StealAdjacentTerritory(prevOwner);
+        }
+
         protected override void FixedPostTurn()
         {
             if (Game.Random.Next(100) == 7)
@@ -51,25 +76,6 @@ namespace CivModel.Finno
                         creator(pt);
                         return;
                     }
-                }
-            }
-        }
-
-        public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
-        private readonly IActorAction[] _specialActs = new IActorAction[1];
-
-        public FinnoEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile)
-            : base(player, Constants, point, null)
-        {
-            this.Population = 5;
-            _specialActs[0] = new FinnoEmpireCityAction(this);
-
-            if (!isLoadFromFile)
-            {
-                foreach (var pt in PlacedPoint.Value.Adjacents())
-                {
-                    if (pt.HasValue)
-                        Owner.TryAddTerritory(pt.Value);
                 }
             }
         }

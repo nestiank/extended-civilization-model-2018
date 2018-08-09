@@ -34,6 +34,12 @@ namespace CivModel.Common
                 }
             }
         }
+
+        protected override void OnAfterChangeOwner(Player prevOwner)
+        {
+            base.OnAfterChangeOwner(prevOwner);
+            StealAdjacentTerritory(prevOwner);
+        }
     }
 
     public class CityCenterProductionFactory : IActorProductionFactory
