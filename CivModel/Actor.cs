@@ -818,15 +818,29 @@ namespace CivModel
         /// <returns>the required AP.</returns>
         public virtual ActionPoint GetRequiredAPToMoveNearBy(Terrain.Point from, Terrain.Point to)
         {
-            // POMFSTIH
-            switch (to.Type)
+            ActionPoint ap = GetRequiredAPForTile(to.Type);
+            bool consumeAll = ap.IsConsumingAll;
+
+            if (from.Type == TerrainType.Ocean && to.Type != TerrainType.Ocean)
+                consumeAll = true;
+            if (from.Type != TerrainType.Ocean && to.Type == TerrainType.Ocean)
+                consumeAll = true;
+
+            return new ActionPoint(ap.Value, consumeAll);
+        }
+
+        /// <summary>
+        /// Gets the required ap for a specific type of <see cref="Terrain.Point"/>.
+        /// This method is used for a default implementation of <see cref="GetRequiredAPToMoveNearBy(Terrain.Point, Terrain.Point)"/>.
+        /// </summary>
+        /// <param name="type">The type of tile.</param>
+        /// <returns>the required AP.</returns>
+        public virtual ActionPoint GetRequiredAPForTile(TerrainType type)
+        {
+            switch (type)
             {
                 case TerrainType.Plain: return 1;
-                case TerrainType.Ocean:
-                    if (from.Type != TerrainType.Ocean)
-                        return new ActionPoint(0.5, consumeAll: true);
-                    else
-                        return 0.5;
+                case TerrainType.Ocean: return 0.5;
                 case TerrainType.Mount: return 3;
                 case TerrainType.Forest: return 2;
                 case TerrainType.Swamp: return 2;

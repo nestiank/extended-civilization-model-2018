@@ -22,25 +22,13 @@ namespace CivModel.Finno
             BattleClassLevel = 4
         };
 
-        public override ActionPoint GetRequiredAPToMoveNearBy(Terrain.Point from, Terrain.Point to)
+        public override ActionPoint GetRequiredAPForTile(TerrainType type)
         {
-            // POMFSTIH
-            switch (to.Type)
-            {
-                case TerrainType.Plain: return 1;
-                case TerrainType.Ocean:
-                    if (from.Type != TerrainType.Ocean)
-                        return new ActionPoint(0.5, consumeAll: true);
-                    else
-                        return 0.5;
-                case TerrainType.Mount: return 1;
-                case TerrainType.Forest: return 1;
-                case TerrainType.Swamp: return 1;
-                case TerrainType.Tundra: return 1;
-                case TerrainType.Ice: return 1;
-                case TerrainType.Hill: return 1;
-                default: throw new NotImplementedException("unqualified TerrainType");
-            }
+            ActionPoint ap = base.GetRequiredAPForTile(type);
+            if (ap > 1)
+                return 1;
+            else
+                return ap;
         }
 
         private readonly IActorAction _holdingAttackAct;
