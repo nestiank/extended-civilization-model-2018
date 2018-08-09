@@ -9,46 +9,86 @@ using static CivModel.Hwan.HwanPlayerNumber;
 
 namespace CivModel.Quests
 {
-    public class FinnoUltimateVictory : IVictoryCondition
+    public class FinnoUltimateVictory : IVictoryCondition, ITurnObserver
     {
-        internal static bool Check(Player player)
+        private Game _game;
+
+        internal bool Condition { get; private set; }
+
+        public FinnoUltimateVictory(Game game)
         {
-            var c1 = player.SpecialResource[AutismBeamAmplificationCrystal.Instance] > 0;
-            var c2 = player.SpecialResource[Necronomicon.Instance] > 0;
-            var c3 = player.SpecialResource[GatesOfRlyeh.Instance] > 0;
-            return c1 && c2 && c3;
+            _game = game;
+            game.TurnObservable.AddObserver(this, ObserverPriority.Model);
         }
 
         public bool CheckVictory(Player player)
         {
-            var game = player.Game;
-            return game.GetPlayerFinno() == player && Check(player);
+            return Condition;
         }
 
         public void DoVictory(Player player)
         {
         }
+
+        public void PostSubTurn(Player playerInTurn)
+        {
+            if (playerInTurn == _game.GetPlayerFinno() && !playerInTurn.HasEnding)
+            {
+                var c1 = playerInTurn.SpecialResource[AutismBeamAmplificationCrystal.Instance] > 0;
+                var c2 = playerInTurn.SpecialResource[Necronomicon.Instance] > 0;
+                var c3 = playerInTurn.SpecialResource[GatesOfRlyeh.Instance] > 0;
+                Condition = c1 && c2 && c3;
+            }
+        }
+
+        public void PreTurn() { }
+        public void AfterPreTurn() { }
+        public void PostTurn() { }
+        public void AfterPostTurn() { }
+        public void PreSubTurn(Player playerInTurn) { }
+        public void AfterPreSubTurn(Player playerInTurn) { }
+        public void AfterPostSubTurn(Player playerInTurn) { }
     }
 
-    public class HwanUltimateVictory : IVictoryCondition
+    public class HwanUltimateVictory : IVictoryCondition, ITurnObserver
     {
-        internal static bool Check(Player player)
+        private Game _game;
+
+        internal bool Condition { get; private set; }
+
+        public HwanUltimateVictory(Game game)
         {
-            var c1 = player.SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0;
-            var c2 = player.SpecialResource[SpecialResourceCthulhuProjectInfo.Instance] > 0;
-            var c3 = player.SpecialResource[SpecialResourceAlienCommunication.Instance] > 0;
-            return c1 && c2 && c3;
+            _game = game;
+            game.TurnObservable.AddObserver(this, ObserverPriority.Model);
         }
 
         public bool CheckVictory(Player player)
         {
-            var game = player.Game;
-            return game.GetPlayerHwan() == player && Check(player);
+            return Condition;
         }
 
         public void DoVictory(Player player)
         {
         }
+
+        public void PostSubTurn(Player playerInTurn)
+        {
+            if (playerInTurn == _game.GetPlayerHwan() && !playerInTurn.HasEnding)
+            {
+                var c1 = playerInTurn.SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0;
+                var c2 = playerInTurn.SpecialResource[SpecialResourceCthulhuProjectInfo.Instance] > 0;
+                var c3 = playerInTurn.SpecialResource[SpecialResourceAlienCommunication.Instance] > 0;
+                Condition = c1 && c2 && c3;
+            }
+        }
+
+        public void PreTurn() { }
+        public void AfterPreTurn() { }
+        public void PostTurn() { }
+        public void AfterPostTurn() { }
+        public void PreSubTurn(Player playerInTurn) { }
+        public void AfterPreSubTurn(Player playerInTurn) { }
+        public void AfterPostSubTurn(Player playerInTurn) { }
     }
 
     public class HyperUltimateDraw : IDrawCondition
@@ -56,9 +96,9 @@ namespace CivModel.Quests
         public bool CheckDraw(Player player)
         {
             var game = player.Game;
-            var c1 = FinnoUltimateVictory.Check(game.GetPlayerFinno());
-            var c2 = HwanUltimateVictory.Check(game.GetPlayerHwan());
-            return c1 && c2;
+            var finno = game.GetPlayerFinno().AvailableVictories.OfType<FinnoUltimateVictory>().First();
+            var hwan = game.GetPlayerHwan().AvailableVictories.OfType<HwanUltimateVictory>().First();
+            return finno.Condition && hwan.Condition;
         }
 
         public bool OnBothVictoriedAndDefeated(Player player, IVictoryCondition victory, IDefeatCondition defeat)

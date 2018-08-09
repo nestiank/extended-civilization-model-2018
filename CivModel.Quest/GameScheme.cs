@@ -60,10 +60,10 @@ namespace CivModel.Quests
             game.Players[7].Team = 1;
 
             // Ending Condition
-            game.GetPlayerHwan().AddVictoryCondition(new HwanUltimateVictory());
+            game.GetPlayerHwan().AddVictoryCondition(new HwanUltimateVictory(game));
             game.GetPlayerHwan().AddVictoryCondition(new HwanConquerVictory());
 
-            game.GetPlayerFinno().AddVictoryCondition(new FinnoUltimateVictory());
+            game.GetPlayerFinno().AddVictoryCondition(new FinnoUltimateVictory(game));
             game.GetPlayerFinno().AddVictoryCondition(new FinnoConquerVictory());
 
             for (int idx = 2; idx < game.Players.Count; ++idx)
