@@ -16,7 +16,18 @@ namespace CivModel.Hwan
             GoldLogistics = 50
         };
 
-        public HwanEmpireVigilant(CityBase city) : base(city, Constants) { }
+        public HwanEmpireVigilant(CityBase city)
+            : base(city, Constants)
+        {
+            city.MaxHP += 50;
+            city.RemainHP += 50;
+        }
+
+        protected override void OnBeforeDestroy()
+        {
+            City.MaxHP -= 50;
+            base.OnBeforeDestroy();
+        }
     }
 
     public class HwanEmpireVigilantProductionFactory : IInteriorBuildingProductionFactory
