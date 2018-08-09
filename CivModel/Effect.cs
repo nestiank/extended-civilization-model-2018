@@ -7,40 +7,28 @@ using CivObservable;
 
 namespace CivModel
 {
-    /// <summary>
-    /// Tag of <see cref="Effect"/>. Effects with the same tag cannot be applied together.
-    /// </summary>
-    public enum EffectTag
+    interface IEffectTarget
     {
-        /// <summary>
-        /// Tag for ownership related effects.
-        /// </summary>
-        Ownership
+        void AddEffect(Effect effect);
+        void RemoveEffect(Effect effect);
     }
 
     /// <summary>
-    /// Represents an effect to <see cref="Actor"/>.
+    /// An abstract classs represents an effect.
+    /// This class is used internally cannot be directly inherited.
     /// </summary>
     public abstract class Effect : IFixedTurnReceiver
     {
         /// <summary>
-        /// The target <see cref="Actor"/> of this effect. <c>null</c> if target was destroyed.
+        /// The target of this effect. <c>null</c> if target was destroyed.
         /// </summary>
-        /// <seealso cref="Actor.Destroy"/>
-        public Actor Target { get; private set; }
-
-        /// <summary>
-        /// <see cref="EffectTag"/> of this effect.
-        /// </summary>
-        public EffectTag Tag => _tag;
-        private readonly EffectTag _tag;
+        internal IEffectTarget Target { get; private set; }
 
         /// <summary>
         /// The duration turn of this effect.
         /// </summary>
         /// <see cref="LeftTurn"/>
-        public int Duration => _duration;
-        private readonly int _duration;
+        public int Duration { get; }
 
         /// <summary>
         /// The left duration turn of this effect.
@@ -74,22 +62,19 @@ namespace CivModel
         /// </summary>
         /// <param name="target">The target of the effect.</param>
         /// <param name="duration">The duration of the effect. <c>-1</c> if forever.</param>
-        /// <param name="tag"><see cref="EffectTag"/> of the effect.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is negative and not -1</exception>
         /// <exception cref="ArgumentNullException"><paramref name="target"/> is <c>null</c>.</exception>
-        public Effect(Actor target, int duration, EffectTag tag)
+        internal Effect(IEffectTarget target, int duration)
         {
             if (duration < -1)
                 throw new ArgumentOutOfRangeException(nameof(duration), duration, "duration is negative and not -1");
 
             Target = target ?? throw new ArgumentNullException(nameof(target));
-            _tag = tag;
-            _duration = duration;
+            Duration = duration;
         }
 
         /// <summary>
         /// Turn on this effect on <see cref="Target"/> and set <see cref="Enabled"/> to <c>true</c>.
-        /// If other <see cref="Effect"/> object with the same <see cref="Tag"/> affects on <see cref="Target"/>, Disable it before turning on this effect.
         /// </summary>
         /// <seealso cref="Enabled"/>
         public void EffectOn()
@@ -97,13 +82,7 @@ namespace CivModel
             if (Enabled)
                 throw new InvalidOperationException("effect is already turned on");
 
-            var prevEffect = Target.GetEffectByTag(Tag);
-            if (prevEffect != null)
-            {
-                prevEffect.EffectOff();
-            }
-
-            Target.SetEffect(this);
+            Target.AddEffect(this);
             LeftTurn = Duration;
             _enabled = true;
 
@@ -119,7 +98,7 @@ namespace CivModel
             if (!Enabled)
                 throw new InvalidOperationException("effect is not turned on");
 
-            Target.UnsetEffect(Tag);
+            Target.RemoveEffect(this);
             LeftTurn = -1;
             _enabled = false;
 

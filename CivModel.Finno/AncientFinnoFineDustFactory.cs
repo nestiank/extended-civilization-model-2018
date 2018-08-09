@@ -21,22 +21,67 @@ namespace CivModel.Finno
         };
         public override double ProvidedLabor => 20;
 
+        private List<HappinessEffect> _effects = new List<HappinessEffect>();
+
         public AncientFinnoFineDustFactory(Player owner, Terrain.Point point, Player donator = null)
             : base(owner, Constants, point, donator)
         {
+            CreateEffect();
         }
 
-        protected override void FixedPostTurn()
+        protected override void OnAfterChangeOwner(Player prevOwner)
         {
-            foreach (var player in Owner.Game.Players) // 행복도 감소
+            base.OnAfterChangeOwner(prevOwner);
+
+            ClearEffect();
+            CreateEffect();
+        }
+
+        protected override void OnBeforeDestroy()
+        {
+            ClearEffect();
+
+            base.OnBeforeDestroy();
+        }
+
+        private void CreateEffect()
+        {
+            foreach (var player in Owner.Game.Players)
             {
                 if (player.Team != Owner.Team)
                 {
-                    player.Happiness = Math.Max(-100, player.Happiness - 5);
+                    var effect = new HappinessEffect(player);
+                    _effects.Add(effect);
+                    effect.EffectOn();
                 }
             }
+        }
 
-            base.FixedPostTurn();
+        private void ClearEffect()
+        {
+            foreach (var effect in _effects)
+            {
+                if (effect.Enabled)
+                    effect.EffectOff();
+            }
+            _effects.Clear();
+        }
+
+        private class HappinessEffect : PlayerEffect
+        {
+            public HappinessEffect(Player player)
+                : base(player, -1)
+            {
+            }
+
+            protected override void OnEffectOn() { }
+            protected override void OnEffectOff() { }
+            protected override void OnTargetDestroy() { }
+
+            protected override void FixedPostTurn()
+            {
+                Target.Happiness = Math.Max(-100, Target.Happiness - 5);
+            }
         }
     }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    class ControlHijackEffect : Effect
+    class ControlHijackEffect : ActorEffect
     {
         private readonly Player _hijacker;
         private Player _hijackee;
@@ -15,7 +15,7 @@ namespace CivModel.Common
         private const int _stunTurn = 1;
 
         public ControlHijackEffect(Actor target, Player hijacker)
-            : base(target, _stealTurn + _stunTurn, EffectTag.Ownership)
+            : base(target, _stealTurn + _stunTurn)
         {
             _hijacker = hijacker;
         }

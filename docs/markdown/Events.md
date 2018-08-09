@@ -33,6 +33,7 @@ forward/reverse 여부는 각 이벤트마다 다르다.
   3. 플레이어의 유닛
      1. 플레이어의 `Actor`에 적용되고 있는 `Effect` (유닛 뿐만 아니라 다른 `Actor`도 이를 포함하고 있음.)
   4. 플레이어의 퀘스트
+  5. 플레이어에 적용되고 있는 `Effect`
 
 # Observable Event
 

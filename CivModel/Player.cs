@@ -32,7 +32,7 @@ namespace CivModel
     /// </summary>
     /// <seealso cref="ITurnObserver"/>
     [DebuggerDisplay("Player (Number = {PlayerNumber})")]
-    public sealed class Player : IFixedTurnReceiver
+    public sealed class Player : IFixedTurnReceiver, IEffectTarget
     {
         /// <summary>
         /// The happiness of this player. This value is in [-100, 100].
@@ -476,6 +476,8 @@ namespace CivModel
         // this property is used by CityBase class
         internal bool BeforeLandingCity { get; set; }
 
+        private SafeIterationList<Effect> _effects = new SafeIterationList<Effect>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Player"/> class.
         /// </summary>
@@ -489,6 +491,16 @@ namespace CivModel
             Team = team;
 
             _specialResourceProxy = new SpecialResourceProxy { thiz = this };
+        }
+
+        void IEffectTarget.AddEffect(Effect effect)
+        {
+            _effects.Add(effect);
+        }
+
+        void IEffectTarget.RemoveEffect(Effect effect)
+        {
+            _effects.Remove(effect);
         }
 
         /// <summary>
@@ -967,6 +979,8 @@ namespace CivModel
                         yield return tb;
                 foreach (var u in _units)
                     yield return u;
+                foreach (var e in _effects)
+                    yield return e;
             }
         }
         IFixedTurnReceiver IFixedEventReceiver<IFixedTurnReceiver>.Receiver => this;

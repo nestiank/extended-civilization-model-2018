@@ -126,7 +126,7 @@ namespace CivModel.Finno
         }
     }
 
-    class ControlHijackEffect : Effect
+    class ControlHijackEffect : ActorEffect
     {
         private readonly Player _hijacker;
         private Player _hijackee;
@@ -137,7 +137,7 @@ namespace CivModel.Finno
         private Action DoOff;
 
         public ControlHijackEffect(Actor target, Player hijacker)
-            : base(target, _stealTurn + _stunTurn, EffectTag.Ownership)
+            : base(target, _stealTurn + _stunTurn)
         {
             _hijacker = hijacker;
         }

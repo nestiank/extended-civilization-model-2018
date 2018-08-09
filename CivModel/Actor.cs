@@ -40,7 +40,7 @@ namespace CivModel
     /// An absract class represents the <see cref="TileObject"/> which can have actions and action point (AP).
     /// </summary>
     /// <seealso cref="CivModel.TileObject" />
-    public abstract class Actor : TileObject, IFixedTurnReceiver
+    public abstract class Actor : TileObject, IFixedTurnReceiver, IEffectTarget
     {
         /// <summary>
         /// The player who owns this actor. <c>null</c> if this actor is destroyed.
@@ -356,7 +356,7 @@ namespace CivModel
         /// </summary>
         public bool IsCloacking { get; set; }
 
-        private Effect[] _effects;
+        private SafeIterationList<Effect> _effects = new SafeIterationList<Effect>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Actor"/> class.
@@ -378,8 +378,6 @@ namespace CivModel
 
             _owner = owner;
             RemainHP = MaxHP;
-
-            _effects = new Effect[Enum.GetNames(typeof(EffectTag)).Length];
         }
 
         private void CopyConstants(ActorConstants constants)
@@ -398,34 +396,17 @@ namespace CivModel
             BattleClassLevel = constants.BattleClassLevel;
         }
 
-        /// <summary>
-        /// Gets the <see cref="Effect"/> object on this actor by <see cref="EffectTag"/>.
-        /// </summary>
-        /// <param name="tag">The tag.</param>
-        /// <returns>The <see cref="Effect"/> object.</returns>
-        public Effect GetEffectByTag(EffectTag tag)
-        {
-            return _effects[(int)tag];
-        }
-
-        // this method is used by Effect class
-        internal void SetEffect(Effect effect)
-        {
-            if (Owner == null)
-                throw new InvalidOperationException("actor is already destroyed");
-            if (effect == null)
-                throw new ArgumentNullException(nameof(effect));
-
-            _effects[(int)effect.Tag] = effect;
-        }
-
-        // this method is used by Effect class
-        internal void UnsetEffect(EffectTag tag)
+        void IEffectTarget.AddEffect(Effect effect)
         {
             if (Owner == null)
                 throw new InvalidOperationException("actor is already destroyed");
 
-            _effects[(int)tag] = null;
+            _effects.Add(effect);
+        }
+
+        void IEffectTarget.RemoveEffect(Effect effect)
+        {
+            _effects.Remove(effect);
         }
 
         /// <summary>
@@ -490,10 +471,9 @@ namespace CivModel
 
             OnBeforeDestroy();
 
-            for (int i = 0; i < _effects.Length; ++i)
+            foreach (var e in _effects)
             {
-                _effects[i]?.CallOnTargetDestroy();
-                _effects[i] = null;
+                e.CallOnTargetDestroy();
             }
 
             PlacedPoint = null;
@@ -880,17 +860,13 @@ namespace CivModel
             Destroy();
         }
 
-        IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> IFixedEventReceiver<IFixedTurnReceiver>.Children => FixedTurnReceiverChildren();
+        IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> IFixedEventReceiver<IFixedTurnReceiver>.Children
+            => FixedTurnReceiverChildren();
         IFixedTurnReceiver IFixedEventReceiver<IFixedTurnReceiver>.Receiver => this;
 
         internal virtual IEnumerable<IFixedEventReceiver<IFixedTurnReceiver>> FixedTurnReceiverChildren()
         {
-            var clone = (Effect[])_effects.Clone();
-            for (int i = 0; i < _effects.Length; ++i)
-            {
-                if (_effects[i] != null && _effects[i] == clone[i])
-                    yield return _effects[i];
-            }
+            return _effects;
         }
 
         /// <summary>

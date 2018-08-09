@@ -47,11 +47,12 @@
   <ItemGroup>
     <Compile Include="ActionPoint.cs" />
     <Compile Include="ActorConstants.cs" />
+    <Compile Include="Effect.cs" />
     <Compile Include="IActorProductionFactory.cs" />
     <Compile Include="IAIController.cs" />
     <Compile Include="AttackActorAction.cs" />
     <Compile Include="CityBase.cs" />
-    <Compile Include="Effect.cs" />
+    <Compile Include="ActorEffect.cs" />
     <Compile Include="Game.Save.cs" />
     <Compile Include="GameConstants.cs" />
     <Compile Include="IBattleObserver.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="IQuestObserver.cs" />
     <Compile Include="ITileObjectObserver.cs" />
     <Compile Include="IProductionObserver.cs" />
+    <Compile Include="PlayerEffect.cs" />
     <Compile Include="Quest.cs" />
     <Compile Include="ITurnObserver.cs" />
     <Compile Include="MoveActorAction.cs" />
