@@ -48,7 +48,7 @@ namespace CivModel
             {
                 if (pt.Unit == null)
                 {
-                    if (!(pt.TileBuilding is TileBuilding building && building.Owner != Owner.Owner))
+                    if (!(pt.TileBuilding is CityBase city && city.Owner != Owner.Owner))
                     {
                         if (Terrain.Point.Distance(origin, pt) == 1)
                             return _owner.GetRequiredAPToMoveNearBy(origin, pt);

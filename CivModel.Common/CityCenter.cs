@@ -25,6 +25,8 @@ namespace CivModel.Common
             {
                 new FactoryBuilding(this);
 
+                Population = 33;
+
                 foreach (var pt in PlacedPoint.Value.Adjacents())
                 {
                     if (pt.HasValue)

@@ -66,9 +66,9 @@ namespace CivModel
             base.OnChangePlacedPoint(oldPoint);
             if (PlacedPoint is Terrain.Point pt)
             {
-                if (pt.TileBuilding is TileBuilding building && building.Owner != Owner)
+                if (pt.TileBuilding is CityBase city && city.Owner != Owner)
                 {
-                    throw new InvalidOperationException("unit cannot be placed on a TileBuilding of other players");
+                    throw new InvalidOperationException("unit cannot be placed on a city of other players");
                 }
             }
         }

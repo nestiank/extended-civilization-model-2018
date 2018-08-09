@@ -12,7 +12,7 @@ namespace CivModel.Common
         public override Guid Guid => ClassGuid;
 
         public static InteriorBuildingConstants Constants = new InteriorBuildingConstants {
-            ProvidedLabor = 1
+            ProvidedLabor = 70
         };
 
         public FactoryBuilding(CityBase city) : base(city, Constants)
