@@ -68,6 +68,7 @@
     <Compile Include="IQuestObserver.cs" />
     <Compile Include="ITileObjectObserver.cs" />
     <Compile Include="IProductionObserver.cs" />
+    <Compile Include="PillageActorAction.cs" />
     <Compile Include="PlayerEffect.cs" />
     <Compile Include="Quest.cs" />
     <Compile Include="ITurnObserver.cs" />

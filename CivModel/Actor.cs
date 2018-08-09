@@ -275,7 +275,7 @@ namespace CivModel
         /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
         /// </summary>
-        public abstract IActorAction MoveAct { get; }
+        public virtual IActorAction MoveAct => null;
 
         /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
@@ -286,6 +286,11 @@ namespace CivModel
         /// The action performing moving attack. <c>null</c> if this actor cannot do.
         /// </summary>
         public virtual IActorAction MovingAttackAct => null;
+
+        /// <summary>
+        /// The action performing pillage. <c>null</c> if this actor cannot do.
+        /// </summary>
+        public virtual IActorAction PillageAct => null;
 
         /// <summary>
         /// The list of special actions. <c>null</c> if not exists.

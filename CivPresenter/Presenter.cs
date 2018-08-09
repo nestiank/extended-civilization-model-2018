@@ -393,6 +393,20 @@ namespace CivPresenter
         }
 
         /// <summary>
+        /// Gives the command [pillage].
+        /// </summary>
+        public void CommandPillage()
+        {
+            if (State == States.Normal)
+            {
+                if (SelectedActor?.PillageAct is IActorAction act && !act.IsParametered)
+                {
+                    DoUnparameteredAction(act);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gives the command [product UI].
         /// This method may introduce <see cref="States.ProductUI"/> state.
         /// </summary>

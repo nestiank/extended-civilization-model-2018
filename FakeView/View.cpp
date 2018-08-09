@@ -746,6 +746,11 @@ namespace FakeView
                 m_presenter->CommandHoldingAttack();
                 break;
 
+            case 'e':
+            case 'E':
+                m_presenter->CommandPillage();
+                break;
+
             case 'p':
             case 'P':
                 m_presenter->CommandProductUI();

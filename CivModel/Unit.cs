@@ -15,8 +15,12 @@ namespace CivModel
         /// <summary>
         /// The action performing movement. A <see cref="MoveActorAction"/> object by default.
         /// </summary>
-        public override IActorAction MoveAct => _moveAct;
-        private readonly IActorAction _moveAct;
+        public override IActorAction MoveAct { get; }
+
+        /// <summary>
+        /// The action performing pillage. A <see cref="MoveActorAction"/> object by default.
+        /// </summary>
+        public override IActorAction PillageAct { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Unit"/> class.
@@ -33,7 +37,8 @@ namespace CivModel
             : base(owner, constants, point, TileTag.Unit)
         {
             Owner.AddUnitToList(this);
-            _moveAct = new MoveActorAction(this);
+            MoveAct = new MoveActorAction(this);
+            PillageAct = new PillageActorAction(this);
         }
 
         /// <summary>

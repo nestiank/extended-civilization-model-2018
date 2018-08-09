@@ -25,6 +25,12 @@ namespace CivModel.Hwan
             : base(owner, Constants, point, donator)
         {
         }
+
+        protected override void OnBeforePillaged(Actor pillager)
+        {
+            base.OnBeforePillaged(pillager);
+            pillager.Die(Owner);
+        }
     }
 
     public class HwanEmpireKimchiFactoryProductionFactory : ITileBuildingProductionFactory

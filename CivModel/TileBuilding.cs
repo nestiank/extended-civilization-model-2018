@@ -14,11 +14,6 @@ namespace CivModel
     public abstract class TileBuilding : Actor
     {
         /// <summary>
-        /// The action performing movement. <c>null</c> by default.
-        /// </summary>
-        public override IActorAction MoveAct => null;
-
-        /// <summary>
         /// The amount of gold this building provides.
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedGold"/>
@@ -71,6 +66,25 @@ namespace CivModel
             // Player.RemoveTerritory 코드 내 주석 참조
             owner.TryAddTerritory(point);
             owner.AddTileBuildingToList(this);
+        }
+
+        /// <summary>
+        /// Pillages this TileBuilding.
+        /// </summary>
+        /// <param name="pillager">The pillager.</param>
+        public void BePillaged(Actor pillager)
+        {
+            OnBeforePillaged(pillager);
+            Destroy();
+        }
+
+        /// <summary>
+        /// Called before pillaged.
+        /// </summary>
+        /// <param name="pillager">The pillager.</param>
+        /// <see cref="BePillaged(Actor)"/>
+        protected virtual void OnBeforePillaged(Actor pillager)
+        {
         }
 
         /// <summary>
