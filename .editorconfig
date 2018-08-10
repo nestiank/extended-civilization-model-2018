@@ -7,5 +7,8 @@ indent_style = space
 indent_size = 4
 charset = utf-8
 
+[*.{html,htm,css,xml,xsd}]
+indent_size = 2
+
 [*.{c,cpp,cc,cxx,h,hpp,hh}]
 charset = utf-8-bom
