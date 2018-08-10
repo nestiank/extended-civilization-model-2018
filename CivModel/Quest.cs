@@ -303,7 +303,7 @@ namespace CivModel
                 }
             }
         }
-        void IFixedTurnReceiver.FixedPostTurn() => FixedAfterPostTurn();
+        void IFixedTurnReceiver.FixedPostTurn() => FixedPostTurn();
 
         /// <summary>
         /// Called on fixed event [after post turn].
