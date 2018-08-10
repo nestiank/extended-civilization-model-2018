@@ -979,6 +979,8 @@ namespace CivModel
                         yield return tb;
                 foreach (var u in _units)
                     yield return u;
+                foreach (var q in _quests)
+                    yield return q;
                 foreach (var e in _effects)
                     yield return e;
             }
