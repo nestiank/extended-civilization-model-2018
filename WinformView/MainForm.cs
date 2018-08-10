@@ -58,13 +58,21 @@ namespace WinformView
         {
             ClientSize = new Size(640, 480);
 
+            string file = "map.txt";
+            if (!File.Exists(file))
+            {
+                file = Path.Combine("..", "docs", "map.txt");
+                if (!File.Exists(file))
+                    file = null;
+            }
+
             _presenter = null;
-            if (File.Exists("map.txt"))
+            if (file != null)
             {
                 if (MessageBox.Show("Save file is found. Do you want to load it?",
                     "Save file is found", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    _presenter = new Presenter(this, "map.txt");
+                    _presenter = new Presenter(this, file);
                 }
             }
             if (_presenter == null)

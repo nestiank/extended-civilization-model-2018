@@ -62,11 +62,11 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="map.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="AIControlDialog.resx">
       <Filter>리소스 파일</Filter>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
   </ItemGroup>
 </Project>

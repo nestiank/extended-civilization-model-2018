@@ -4,6 +4,12 @@
 #include "Screen.h"
 #include "AIControlDialog.h"
 
+#ifndef DEBUG_CORE
+#define MAP_FILE_PATH L"map.txt"
+#else
+#define MAP_FILE_PATH L"map-core.txt"
+#endif
+
 namespace
 {
     std::string cli2str(System::String^ str)
@@ -21,13 +27,21 @@ namespace FakeView
     View::View(Screen* screen)
         : m_screen(screen)
     {
+        System::String^ file = MAP_FILE_PATH;
+        if (!System::IO::File::Exists(file))
+        {
+            file = System::IO::Path::Combine(L"..", L"docs", MAP_FILE_PATH);
+            if (!System::IO::File::Exists(file))
+                file = nullptr;
+        }
+
         m_presenter = nullptr;
-        if (System::IO::File::Exists(L"map.txt"))
+        if (file)
         {
             if (MessageBoxW(nullptr, L"Save file is found. Do you want to load it?", L"Save file is found", MB_YESNO)
                 == IDYES)
             {
-                m_presenter = gcnew CivPresenter::Presenter(this, L"map.txt");
+                m_presenter = gcnew CivPresenter::Presenter(this, file);
             }
         }
         if (!m_presenter)
@@ -528,6 +542,8 @@ namespace FakeView
 
         if (player->IsVictoried)
         {
+            msg = "HOW DO YOU VICTORIED? (unqualified)";
+#ifndef DEBUG_CORE
             if (auto victory = dynamic_cast<CivModel::Quests::FinnoUltimateVictory^>(player->VictoryCondition))
                 msg = "YOU ARE C'THULHU SUMMOER";
             else if (auto victory = dynamic_cast<CivModel::Quests::HwanUltimateVictory^>(player->VictoryCondition))
@@ -538,24 +554,25 @@ namespace FakeView
                 msg = "YOU ARE NOT SLAVE BUT CONQUERER";
             else if (auto victory = dynamic_cast<CivModel::Quests::ZapConquerVictory^>(player->VictoryCondition))
                 msg = "YOU ARE NOT SLAVE BUT CONQUERER";
-            else
-                msg = "HOW DO YOU VICTORIED? (unqualified)";
+#endif
         }
         else if (player->IsDefeated)
         {
+            msg = "HOW DO YOU DEFEATED? (unqualified)";
+#ifndef DEBUG_CORE
             if (auto defeat = dynamic_cast<CivModel::Quests::GameEndDefeat^>(player->DefeatCondition))
                 msg = "YOU ARE DEFEATED BY ULTIMATE FORCE";
             else if (auto defeat = dynamic_cast<CivModel::Quests::EliminationDefeat^>(player->DefeatCondition))
                 msg = "YOU ARE ELIMINATED";
-            else
-                msg = "HOW DO YOU DEFEATED? (unqualified)";
+#endif
         }
         else if (player->IsDrawed)
         {
+            msg = "HOW DO YOU DRAWED? (unqualified)";
+#ifndef DEBUG_CORE
             if (auto draw = dynamic_cast<CivModel::Quests::HyperUltimateDraw^>(player->DrawCondition))
                 msg = "YOU HAVE SEEN THE END OF HYPERWAR";
-            else
-                msg = "HOW DO YOU DRAWED? (unqualified)";
+#endif
         }
         else
         {
@@ -631,7 +648,7 @@ namespace FakeView
             case ',':
             case '<':
                 if (!m_presenter->SaveFile)
-                    m_presenter->SaveFile = L"map.txt";
+                    m_presenter->SaveFile = MAP_FILE_PATH;
                 m_presenter->CommandSave();
                 MessageBoxW(nullptr, L"Saved", L"", MB_OK);
                 break;
