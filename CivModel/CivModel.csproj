@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionPoint.cs" />
-    <Compile Include="ActorConstants.cs" />
+    <Compile Include="ActorPrototype.cs" />
+    <Compile Include="CityPrototype.cs" />
     <Compile Include="Effect.cs" />
+    <Compile Include="GuidObjectPrototype.cs" />
     <Compile Include="IActorProductionFactory.cs" />
     <Compile Include="IAIController.cs" />
     <Compile Include="AttackActorAction.cs" />
@@ -56,13 +58,13 @@
     <Compile Include="Game.Save.cs" />
     <Compile Include="GameConstants.cs" />
     <Compile Include="IBattleObserver.cs" />
+    <Compile Include="IProductionFactory.cs" />
     <Compile Include="IProductionResult.cs" />
     <Compile Include="IVictoryObserver.cs" />
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
-    <Compile Include="IGuidTaggedObject.cs" />
     <Compile Include="IMovePath.cs" />
-    <Compile Include="InteriorBuildingConstants.cs" />
+    <Compile Include="InteriorBuildingPrototype.cs" />
     <Compile Include="InteriorBuilding.cs" />
     <Compile Include="InteriorBuildingProduction.cs" />
     <Compile Include="IQuestObserver.cs" />
@@ -70,12 +72,20 @@
     <Compile Include="IProductionObserver.cs" />
     <Compile Include="PillageActorAction.cs" />
     <Compile Include="PlayerEffect.cs" />
+    <Compile Include="ProductionResultPrototype.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PrototypeLoader.cs" />
     <Compile Include="Quest.cs" />
     <Compile Include="ITurnObserver.cs" />
     <Compile Include="MoveActorAction.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Production.cs" />
+    <Compile Include="QuestPrototype.cs" />
     <Compile Include="SchemeLoader.cs" />
     <Compile Include="ISpecialResource.cs" />
     <Compile Include="Terrain.Point.cs" />
@@ -84,6 +94,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="Actor.cs" />
     <Compile Include="TileBuildingProduction.cs" />
+    <Compile Include="TileBuildingPrototype.cs" />
     <Compile Include="TileObject.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,13 +102,14 @@
     <Compile Include="Unit.cs" />
     <Compile Include="TileObjectProduction.cs" />
     <Compile Include="IVictoryCondition.cs" />
+    <Compile Include="UnitPrototype.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.Observers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="schemas\PrototypeSchema.xsd">
+    <None Include="res\PrototypeSchema.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
@@ -106,6 +118,12 @@
       <Project>{76cc2c4f-12f3-4dd5-9abb-8903a4954fd5}</Project>
       <Name>CivObservable</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

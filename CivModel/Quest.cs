@@ -39,14 +39,12 @@ namespace CivModel
         /// <summary>
         /// The requester of this quest. <c>null</c> if not exists.
         /// </summary>
-        public Player Requester => _requester;
-        private readonly Player _requester;
+        public Player Requester { get; }
 
         /// <summary>
         /// The requestee of this quest.
         /// </summary>
-        public Player Requestee => _requestee;
-        private readonly Player _requestee;
+        public Player Requestee { get; }
 
         /// <summary>
         /// The <see cref="Game"/> object.
@@ -54,34 +52,39 @@ namespace CivModel
         public Game Game => Requestee.Game;
 
         /// <summary>
+        /// The unique identifier of this class.
+        /// </summary>
+        public Guid Guid { get; private set; }
+
+        /// <summary>
         /// [퀘스트 이름].
         /// </summary>
-        public abstract string Name { get; }
+        public string TextName { get; private set; }
 
         /// <summary>
         /// [퀘스트 게시 기간]. <c>-1</c> if forever.
         /// </summary>
-        public abstract int PostingTurn { get; }
+        public int PostingTurn { get; private set; }
 
         /// <summary>
         /// [퀘스트 제한 기간]. <c>-1</c> if forever.
         /// </summary>
-        public abstract int LimitTurn { get; }
+        public int LimitTurn { get; private set; }
 
         /// <summary>
         /// [퀘스트 조건].
         /// </summary>
-        public abstract string GoalNotice { get; }
+        public string GoalNotice { get; private set; }
 
         /// <summary>
         /// [퀘스트 보상].
         /// </summary>
-        public abstract string RewardNotice { get; }
+        public string RewardNotice { get; private set; }
 
         /// <summary>
         /// [교육용 알림].
         /// </summary>
-        public abstract string CompleteNotice { get; }
+        public string CompleteNotice { get; private set; }
 
         /// <summary>
         /// The left turn. <c>-1</c> if this value is invalid.
@@ -148,17 +151,31 @@ namespace CivModel
         /// </summary>
         /// <param name="requester">The requester of this quest. <c>null</c> if not exists.</param>
         /// <param name="requestee">The requestee of this quest.</param>
+        /// <param name="type">The concrete type of this object.</param>
         /// <exception cref="ArgumentNullException"><paramref name="requestee"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="requester"/> and <paramref name="requestee"/> do not involve in the same game</exception>
-        public Quest(Player requester, Player requestee)
+        public Quest(Player requester, Player requestee, Type type)
         {
-            _requester = requester;
-            _requestee = requestee ?? throw new ArgumentNullException(nameof(requestee));
+            Requester = requester;
+            Requestee = requestee ?? throw new ArgumentNullException(nameof(requestee));
 
             if (requester != null && requester.Game != requestee.Game)
                 throw new ArgumentException("requester and requestee do not involve in the same game");
 
+            ApplyPrototype(Game.PrototypeLoader.GetPrototype<QuestPrototype>(type));
+
             requestee.AddQuestToList(this);
+        }
+
+        private void ApplyPrototype(QuestPrototype proto)
+        {
+            Guid = proto.Guid;
+            TextName = proto.TextName;
+            PostingTurn = proto.PostingTurn;
+            LimitTurn = proto.LimitTurn;
+            GoalNotice = proto.GoalNotice;
+            RewardNotice = proto.RewardNotice;
+            CompleteNotice = proto.CompleteNotice;
         }
 
         /// <summary>

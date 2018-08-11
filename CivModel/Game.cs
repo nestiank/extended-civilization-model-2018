@@ -28,11 +28,8 @@ namespace CivModel
         /// <seealso cref="IGameConstantScheme"/>
         public GameConstants Constants;
 
-        /// <summary>
-        /// The manager object of <see cref="IGuidTaggedObject"/>.
-        /// This property is used by model extension modules.
-        /// </summary>
-        public GuidTaggedObjectManager GuidManager { get; private set; } // init by PreInitialize
+        // prototype loader
+        internal PrototypeLoader PrototypeLoader { get; private set; } // init by PreInitialize
 
         /// <summary>
         /// The random generator of this game.
@@ -145,9 +142,13 @@ namespace CivModel
 
             var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
 
-            foreach (var s in SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>())
+            foreach (var s in SchemeLoader.GetOverlappableScheme<IGameScheme>())
             {
-                s.RegisterGuid(this);
+                var reader = s.GetPackageData();
+                if (reader != null)
+                {
+                    PrototypeLoader.Load(reader, s.GetType().Assembly);
+                }
             }
 
             if (width == -1)
@@ -251,7 +252,7 @@ namespace CivModel
 
         private void PreInitialize()
         {
-            GuidManager = new GuidTaggedObjectManager();
+            PrototypeLoader = new PrototypeLoader();
             Random = new Random();
 
             _players = new List<Player>();

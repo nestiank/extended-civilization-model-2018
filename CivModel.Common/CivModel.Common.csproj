@@ -42,14 +42,20 @@
   <ItemGroup>
     <Compile Include="CityCenter.cs" />
     <Compile Include="ControlHijackEffect.cs" />
-    <Compile Include="FactoryBuilding.cs" />
+    <Compile Include="FakeFactory.cs" />
+    <Compile Include="FakeFortress.cs" />
     <Compile Include="GameScheme.cs" />
     <Compile Include="FakeKnight.cs" />
-    <Compile Include="LaboratoryBuilding.cs" />
+    <Compile Include="FakeLaboratory.cs" />
     <Compile Include="Pioneer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestQuest.cs" />
-    <Compile Include="TestResource.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="FakeQuest.cs" />
+    <Compile Include="FakeResource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
@@ -62,9 +68,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="package.xml">
+    <Content Include="res\package.xml">
       <SubType>Designer</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

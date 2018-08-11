@@ -87,9 +87,13 @@ namespace CivModel
 
                 var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
 
-                foreach (var s in SchemeLoader.GetOverlappableScheme<IGameAdditionScheme>())
+                foreach (var s in SchemeLoader.GetOverlappableScheme<IGameScheme>())
                 {
-                    s.RegisterGuid(this);
+                    var reader = s.GetPackageData();
+                    if (reader != null)
+                    {
+                        PrototypeLoader.Load(reader, s.GetType().Assembly);
+                    }
                 }
 
                 SubTurnNumber = Convert.ToInt32(readLine());
@@ -153,7 +157,8 @@ namespace CivModel
                     var pt = Terrain.GetPoint(pos);
 
                     guid = Guid.ParseExact(readLine(), _guidSaveFormat);
-                    var obj = GuidManager.Create(guid, Players[ints[0]], pt);
+                    var proto = PrototypeLoader.TryGetPrototype(guid);
+                    var obj = proto?.CreateOnTile(Players[ints[0]], pt);
                     switch (obj)
                     {
                         case CityBase city:
@@ -169,7 +174,10 @@ namespace CivModel
                             for (int i = 0; i < len; ++i)
                             {
                                 guid = Guid.ParseExact(readLine(), _guidSaveFormat);
-                                GuidManager.Create(guid, Players[ints[0]], city.PlacedPoint.Value);
+                                proto = PrototypeLoader.TryGetPrototype(guid);
+                                if (proto == null)
+                                    goto default;
+                                proto.CreateOnTile(Players[ints[0]], pt);
                             }
 
                             break;
@@ -249,7 +257,7 @@ namespace CivModel
                         {
                             file.WriteLine(i + "," + pos.X + "," + pos.Y);
                             file.WriteLine(city.Guid.ToString(_guidSaveFormat));
-                            file.WriteLine(city.Name);
+                            file.WriteLine(city.CityName);
                             file.WriteLine(city.Population);
 
                             file.WriteLine(city.InteriorBuildings.Count);

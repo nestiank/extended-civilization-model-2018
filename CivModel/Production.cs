@@ -7,40 +7,6 @@ using System.Threading.Tasks;
 namespace CivModel
 {
     /// <summary>
-    /// The factory interface of <see cref="Production"/>
-    /// </summary>
-    /// <seealso cref="Player.AvailableProduction"/>
-    public interface IProductionFactory
-    {
-        /// <summary>
-        /// The type of production result object. <c>null</c> if the production result is not an object.
-        /// </summary>
-        Type ResultType { get; }
-        /// <summary>
-        /// The total labor cost to finish this production.
-        /// </summary>
-        double TotalLaborCost { get; }
-        /// <summary>
-        /// The maximum labor which can put into this production per turn.
-        /// </summary>
-        double LaborCapacityPerTurn { get; }
-        /// <summary>
-        /// The total gold cost to finish this production.
-        /// </summary>
-        double TotalGoldCost { get; }
-        /// <summary>
-        /// The maximum gold which can put into this production per turn.
-        /// </summary>
-        double GoldCapacityPerTurn { get; }
-        /// <summary>
-        /// Creates the <see cref="Production"/> object
-        /// </summary>
-        /// <param name="owner">The player who owns the <see cref="Production"/> object.</param>
-        /// <returns>the created <see cref="Production"/> object</returns>
-        Production Create(Player owner);
-    }
-
-    /// <summary>
     /// An abstract class represents a production.
     /// </summary>
     public abstract class Production
@@ -140,14 +106,14 @@ namespace CivModel
         /// <param name="factory">The factory object of this production kind.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the production.</param>
         /// <exception cref="ArgumentException">
-        /// <see cref="IProductionFactory.TotalLaborCost"/> is negative
+        /// TotalLaborCost is negative
         /// or
-        /// <see cref="IProductionFactory.TotalGoldCost"/> is negative
+        /// TotalGoldCost is negative
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="IProductionFactory.LaborCapacityPerTurn"/> is not in [0, <see cref="Production.TotalLaborCost"/>]
+        /// LaborCapacityPerTurn is not in [0, TotalLaborCost]
         /// or
-        /// <see cref="IProductionFactory.GoldCapacityPerTurn"/> is not in [0, <see cref="Production.TotalGoldCost"/>]
+        /// GoldCapacityPerTurn is not in [0, TotalGoldCost]
         /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="factory"/> is <c>null</c>
@@ -159,20 +125,25 @@ namespace CivModel
             _factory = factory ?? throw new ArgumentNullException("factory");
             _owner = owner ?? throw new ArgumentNullException("owner");
 
-            if (factory.TotalLaborCost < 0)
+            var totalLaborCost = factory.GetTotalLaborCost(Game);
+            var laborCapacityPerTurn = factory.GetLaborCapacityPerTurn(Game);
+            var totalGoldCost = factory.GetTotalGoldCost(Game);
+            var goldCapacityPerTurn = factory.GetGoldCapacityPerTurn(Game);
+
+            if (totalLaborCost < 0)
                 throw new ArgumentException("TotalLaborCost is negative", nameof(factory));
-            if (factory.LaborCapacityPerTurn < 0 || factory.LaborCapacityPerTurn > factory.TotalLaborCost)
-                throw new ArgumentOutOfRangeException(nameof(factory), factory.LaborCapacityPerTurn, "LaborCapacityPerTurn is not in [0, TotalLaborCost]");
+            if (laborCapacityPerTurn < 0 || laborCapacityPerTurn > totalLaborCost)
+                throw new ArgumentOutOfRangeException(nameof(factory), laborCapacityPerTurn, "LaborCapacityPerTurn is not in [0, TotalLaborCost]");
 
-            if (factory.TotalGoldCost < 0)
+            if (totalGoldCost < 0)
                 throw new ArgumentException("TotalGoldCost is negative", nameof(factory));
-            if (factory.GoldCapacityPerTurn < 0 || factory.GoldCapacityPerTurn > factory.TotalGoldCost)
-                throw new ArgumentOutOfRangeException(nameof(factory), factory.GoldCapacityPerTurn, "GoldCapacityPerTurn is not in [0, TotalGoldCost]");
+            if (goldCapacityPerTurn < 0 || goldCapacityPerTurn > totalGoldCost)
+                throw new ArgumentOutOfRangeException(nameof(factory), goldCapacityPerTurn, "GoldCapacityPerTurn is not in [0, TotalGoldCost]");
 
-            TotalLaborCost = factory.TotalLaborCost;
-            LaborCapacityPerTurn = factory.LaborCapacityPerTurn;
-            TotalGoldCost = factory.TotalGoldCost;
-            GoldCapacityPerTurn = factory.GoldCapacityPerTurn;
+            TotalLaborCost = totalLaborCost;
+            LaborCapacityPerTurn = laborCapacityPerTurn;
+            TotalGoldCost = totalGoldCost;
+            GoldCapacityPerTurn = goldCapacityPerTurn;
         }
 
         /// <summary>

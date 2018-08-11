@@ -6,18 +6,10 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public class TestQuest : Quest, IBattleObserver
+    public sealed class FakeQuest : Quest, IBattleObserver
     {
-        public override string Name => "개꿀잼 퀘스트";
-
-        public override int PostingTurn => -1;
-        public override int LimitTurn => -1;
-
-        public override string GoalNotice => "제다이 기사로 적을 처치하십시오";
-        public override string RewardNotice => "배치 가능한 제다이 기사 생산 6개";
-        public override string CompleteNotice => "개꿀잼 ㅇㅈ ㅆㅇㅈ";
-
-        public TestQuest(Player requester, Player requestee) : base(requester, requestee)
+        public FakeQuest(Player requester, Player requestee)
+            : base(requester, requestee, typeof(FakeQuest))
         {
         }
 
@@ -50,7 +42,7 @@ namespace CivModel.Common
                 Requestee.Deployment.AddLast(production);
             }
 
-            Requestee.SpecialResource[TestResource.Instance] = 1;
+            Requestee.SpecialResource[FakeResource.Instance] = 1;
 
             Cleanup();
         }

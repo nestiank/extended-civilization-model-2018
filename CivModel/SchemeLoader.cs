@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace CivModel
 {
@@ -139,7 +138,7 @@ namespace CivModel
 
         public double ResearchRequireCoefficient => 0.2;
 
-        public IEnumerable<IProductionFactory> AdditionalProductionFactory => null;
+        public TextReader GetPackageData() => null;
 
         public void InitializeGame(Game game, bool isNewGame) { }
     }

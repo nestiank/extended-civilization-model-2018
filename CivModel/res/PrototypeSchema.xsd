@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="PrototypeSchema"
-  targetNamespace="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/PrototypeSchema"
+  targetNamespace="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema"
   elementFormDefault="qualified"
-  xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/PrototypeSchema"
-  xmlns:mstns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/PrototypeSchema"
+  xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema"
+  xmlns:mstns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <xs:simpleType name="nonNegativeDecimal">
@@ -41,15 +41,30 @@
   </xs:simpleType>
 
   <xs:complexType name="GuidObject">
+    <xs:sequence>
+      <xs:element name="TextName" type="xs:string" />
+    </xs:sequence>
     <xs:attribute name="name" use="required" type="identifier" />
     <xs:attribute name="guid" use="required" type="guid" />
   </xs:complexType>
 
-  <xs:complexType name="Actor">
+  <xs:complexType name="ProductionResult">
     <xs:complexContent>
       <xs:extension base="GuidObject">
         <xs:sequence>
-          <xs:element name="TextName" type="xs:string" />
+          <xs:element name="TotalLaborCost" type="nonNegativeDecimal"/>
+          <xs:element name="LaborCapacityPerTurn" type="nonNegativeDecimal"/>
+          <xs:element name="TotalGoldCost" type="nonNegativeDecimal"/>
+          <xs:element name="GoldCapacityPerTurn" type="nonNegativeDecimal"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Actor">
+    <xs:complexContent>
+      <xs:extension base="ProductionResult">
+        <xs:sequence>
           <xs:element name="MaxAP" type="nonNegativeDecimal" />
           <xs:element name="MaxHP" type="nonNegativeDecimal" />
           <xs:element name="MaxHealPerTurn" type="nonNegativeDecimal" />
@@ -66,9 +81,8 @@
 
   <xs:complexType name="InteriorBuilding">
     <xs:complexContent>
-      <xs:extension base="GuidObject">
+      <xs:extension base="ProductionResult">
         <xs:sequence>
-          <xs:element name="TextName" type="xs:string" />
           <xs:element name="GoldLogistics" type="nonNegativeDecimal" />
           <xs:element name="LaborLogistics" type="nonNegativeDecimal" />
           <xs:element name="ProvidedLabor" type="nonNegativeDecimal" />
@@ -113,7 +127,6 @@
     <xs:complexContent>
       <xs:extension base="GuidObject">
         <xs:sequence>
-          <xs:element name="TextName" type="xs:string" />
           <xs:element name="PostingTurn" type="questTurn" />
           <xs:element name="LimitTurn" type="questTurn" />
           <xs:element name="GoalNotice" type="xs:string" />
@@ -125,23 +138,14 @@
   </xs:complexType>
 
   <xs:complexType name="Package">
-    <xs:complexContent>
-      <xs:extension base="GuidObject">
-        <xs:sequence>
-          <xs:element name="City" maxOccurs="unbounded" type="City" />
-          <xs:element name="TileBuilding" maxOccurs="unbounded" type="TileBuilding" />
-          <xs:element name="InteriorBuilding" maxOccurs="unbounded" type="InteriorBuilding" />
-          <xs:element name="Unit" maxOccurs="unbounded" type="Unit" />
-          <xs:element name="Quest" maxOccurs="unbounded" type="Quest" />
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="City" type="City" />
+      <xs:element name="TileBuilding" type="TileBuilding" />
+      <xs:element name="InteriorBuilding" type="InteriorBuilding" />
+      <xs:element name="Unit" type="Unit" />
+      <xs:element name="Quest" type="Quest" />
+    </xs:choice>
   </xs:complexType>
 
-  <xs:element name="City" type="City" />
-  <xs:element name="TileBuilding" type="TileBuilding" />
-  <xs:element name="InteriorBuilding" type="InteriorBuilding" />
-  <xs:element name="Unit" type="Unit" />
-  <xs:element name="Quest" type="Quest" />
   <xs:element name="Package" type="Package" />
 </xs:schema>

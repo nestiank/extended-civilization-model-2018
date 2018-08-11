@@ -1,11 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Package
-  name="CivModel.Common.GameScheme" guid="AB3CC73A-5756-4266-8DAC-42A610421DDA"
-  xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/PrototypeSchema">
+  xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
 
   <City
     name="CivModel.Common.CityCenter" guid="E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019">
 
     <TextName>도시 중심부</TextName>
+    <TotalLaborCost>5</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>5</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
     <MaxAP>0</MaxAP>
     <MaxHP>5</MaxHP>
     <MaxHealPerTurn>15</MaxHealPerTurn>
@@ -20,13 +24,17 @@
     <ProvidedHappiness>0</ProvidedHappiness>
     <ProvidedLabor>0</ProvidedLabor>
 
-    <InitialPopulation>1</InitialPopulation>
+    <InitialPopulation>33</InitialPopulation>
   </City>
 
   <TileBuilding
     name="CivModel.Common.FakeFortress" guid="DE84C4BC-A430-4EFB-B5C1-76A8B5D09FA8">
 
     <TextName>가짜 요새</TextName>
+    <TotalLaborCost>3</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>3</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
     <MaxAP>0</MaxAP>
     <MaxHP>20</MaxHP>
     <MaxHealPerTurn>15</MaxHealPerTurn>
@@ -46,6 +54,10 @@
     name="CivModel.Common.FakeFactory" guid="A2AE33B4-5543-4751-8681-E958DFC1A511">
 
     <TextName>가짜 공장</TextName>
+    <TotalLaborCost>5</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>5</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
     <GoldLogistics>3</GoldLogistics>
     <LaborLogistics>3</LaborLogistics>
     <ProvidedLabor>70</ProvidedLabor>
@@ -58,6 +70,10 @@
     name="CivModel.Common.FakeLaboratory" guid="39C928FE-721D-4BB9-B7F4-995F631923AF">
 
     <TextName>가짜 연구소</TextName>
+    <TotalLaborCost>5</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>5</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
     <GoldLogistics>3</GoldLogistics>
     <LaborLogistics>3</LaborLogistics>
     <ProvidedLabor>0</ProvidedLabor>
@@ -70,6 +86,10 @@
     name="CivModel.Common.FakeKnight" guid="8209396E-45E3-441C-879F-29EFE9EDC23C">
 
     <TextName>가짜 제다이</TextName>
+    <TotalLaborCost>5</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>5</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
     <MaxAP>2</MaxAP>
     <MaxHP>30</MaxHP>
     <MaxHealPerTurn>5</MaxHealPerTurn>
@@ -79,6 +99,25 @@
     <LaborLogistics>2.5</LaborLogistics>
     <FullLaborForRepair>0.5</FullLaborForRepair>
     <BattleClassLevel>2</BattleClassLevel>
+  </Unit>
+
+  <Unit
+    name="CivModel.Common.Pioneer" guid="487BBF97-538A-45CB-A62D-B33E173F8E6F">
+
+    <TextName>짭개척자</TextName>
+    <TotalLaborCost>5</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>5</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>0</MaxHP>
+    <MaxHealPerTurn>0</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>5</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
   </Unit>
 
   <Quest

@@ -46,14 +46,14 @@ namespace CivModel
         /// <param name="factory">The factory object of this production kind.</param>
         /// <param name="owner">The <see cref="Player"/> who will own the production.</param>
         /// <exception cref="ArgumentException">
-        /// <see cref="IProductionFactory.TotalLaborCost"/> is negative
+        /// TotalLaborCost is negative
         /// or
-        /// <see cref="IProductionFactory.TotalGoldCost"/> is negative
+        /// TotalGoldCost is negative
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="IProductionFactory.LaborCapacityPerTurn"/> is not in [0, <see cref="Production.TotalLaborCost"/>]
+        /// LaborCapacityPerTurn is not in [0, TotalLaborCost]
         /// or
-        /// <see cref="IProductionFactory.GoldCapacityPerTurn"/> is not in [0, <see cref="Production.TotalGoldCost"/>]
+        /// GoldCapacityPerTurn is not in [0, TotalGoldCost]
         /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="factory"/> is <c>null</c>

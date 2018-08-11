@@ -11,23 +11,27 @@ namespace CivModel
     /// Represents a building which must be built in <see cref="CityBase"/>.
     /// </summary>
     /// <seealso cref="TileBuilding"/>
-    public abstract class InteriorBuilding : IGuidTaggedObject, IProductionResult, IFixedTurnReceiver
+    public abstract class InteriorBuilding : IProductionResult, IFixedTurnReceiver
     {
         /// <summary>
         /// The unique identifier of this class.
         /// </summary>
-        public abstract Guid Guid { get; }
+        public Guid Guid { get; private set; }
 
         /// <summary>
         /// The <see cref="Player"/> who owns this building.
         /// </summary>
-        public Player Owner => _owner;
-        private Player _owner;
+        public Player Owner { get; private set; }
 
         /// <summary>
         /// The <see cref="Game"/> object
         /// </summary>
         public Game Game => Owner.Game;
+
+        /// <summary>
+        /// The name of this building.
+        /// </summary>
+        public string TextName { get; private set; }
 
         /// <summary>
         /// The <see cref="CityBase"/> where this building is.
@@ -56,11 +60,6 @@ namespace CivModel
             }
         }
         private CityBase _city = null;
-
-        /// <summary>
-        /// The original constants of this building. The actual values can be different from the values of this property.
-        /// </summary>
-        public InteriorBuildingConstants OriginalConstants { get; }
 
         /// <summary>
         /// The amount of gold logistics of this actor.
@@ -191,19 +190,25 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
         /// </summary>
         /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
-        /// <param name="constants">constants of this actor.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="constants"/> is <c>null</c>.
-        /// or
-        /// <paramref name="city"/> is <c>null</c>.
-        /// </exception>
-        public InteriorBuilding(CityBase city, InteriorBuildingConstants constants)
+        /// <param name="type">The concrete type of this object.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="city"/> is <c>null</c>.</exception>
+        public InteriorBuilding(CityBase city, Type type)
         {
-            CopyConstants(constants);
-            OriginalConstants = constants.Clone();
-
-            _owner = city.Owner;
+            Owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");
+
+            ApplyPrototype(Game.PrototypeLoader.GetPrototype<InteriorBuildingPrototype>(type));
+        }
+
+        private void ApplyPrototype(InteriorBuildingPrototype proto)
+        {
+            Guid = proto.Guid;
+            TextName = proto.TextName;
+            _goldLogistics = proto.GoldLogistics;
+            _providedLabor = proto.ProvidedLabor;
+            _basicResearchIncome = proto.ResearchIncome;
+            _researchCapacity = proto.ResearchCapacity;
+            PopulationCoefficient = proto.PopulationCoefficient;
         }
 
         /// <summary>
@@ -212,18 +217,6 @@ namespace CivModel
         /// <param name="production">The <see cref="Production" /> object that produced this object.</param>
         public void OnAfterProduce(Production production)
         {
-        }
-
-        private void CopyConstants(InteriorBuildingConstants constants)
-        {
-            if (constants == null)
-                throw new ArgumentNullException(nameof(constants));
-
-            _goldLogistics = constants.GoldLogistics;
-            _providedLabor = constants.ProvidedLabor;
-            _basicResearchIncome = constants.ResearchIncome;
-            _researchCapacity = constants.ResearchCapacity;
-            PopulationCoefficient = constants.PopulationCoefficient;
         }
 
         /// <summary>
@@ -237,7 +230,7 @@ namespace CivModel
         {
             OnBeforeDestroy();
             City  = null;
-            _owner = null;
+            Owner = null;
         }
 
         /// <summary>

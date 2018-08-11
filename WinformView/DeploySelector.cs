@@ -50,10 +50,10 @@ namespace WinformView
 
             var player = _game.PlayerInTurn;
             var ar = new object[] {
-                new SelectionObject("CityCenter", pt => new CityCenter(player, pt, false)),
-                new SelectionObject("JediKnight", pt => new FakeKnight(player, pt)),
+                new SelectionObject("CityCenter", pt => new CityCenter(player, pt)),
+                new SelectionObject("FakeKnight", pt => new FakeKnight(player, pt)),
                 new SelectionObject("Pioneer", pt => new Pioneer(player, pt)),
-                new SelectionObject("FactoryBuilding", wrapper(city => new FactoryBuilding(city)))
+                new SelectionObject("FakeFactory", wrapper(city => new FakeFactory(city)))
             };
             lbxSelection.Items.AddRange(ar);
         }

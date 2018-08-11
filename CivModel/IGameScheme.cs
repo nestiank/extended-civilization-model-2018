@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace CivModel
 {
@@ -47,6 +45,15 @@ namespace CivModel
         /// The factory object of this instance.
         /// </summary>
         IGameSchemeFactory Factory { get; }
+
+        /// <summary>
+        /// Gets the package data of this game scheme.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="TextReader"/> object on the package data of this game scheme.
+        /// If the package data does not exists, <c>null</c>.
+        /// </returns>
+        TextReader GetPackageData();
 
         /// <summary>
         /// Called after the game is initialized.
@@ -96,24 +103,6 @@ namespace CivModel
         /// <param name="isNewGame"><c>true</c> if initializing a new game. <c>false</c> if initializing a game loaded from a save file.</param>
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
         void InitializeGame(Game game, bool isNewGame);
-    }
-
-    /// <summary>
-    /// The interface represents <see cref="IGameScheme"/> for additional objects.
-    /// This type of scheme is overlappable, that is, can be applied multiple time per a game.
-    /// </summary>
-    public interface IGameAdditionScheme : IGameScheme
-    {
-        /// <summary>
-        /// An additional list of <see cref="IProductionFactory"/>. This list will be added to <see cref="Player.AvailableProduction"/>.
-        /// </summary>
-        IEnumerable<IProductionFactory> AdditionalProductionFactory { get; }
-
-        /// <summary>
-        /// Registers <see cref="IGuidTaggedObject"/> for this scheme.
-        /// </summary>
-        /// <param name="game">The <see cref="Game"/> object.</param>
-        void RegisterGuid(Game game);
     }
 
     /// <summary>

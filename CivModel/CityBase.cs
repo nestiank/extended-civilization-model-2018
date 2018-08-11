@@ -15,14 +15,13 @@ namespace CivModel
         /// The name of this city.
         /// </summary>
         /// <remarks>
-        /// <see cref="Name"/> cannot have newline characters and cannot be empty string.
+        /// <see cref="CityName"/> cannot have newline characters and cannot be empty string.
         /// See the list of newline characters at <see href="https://en.wikipedia.org/wiki/Newline#Unicode"/>.
         /// </remarks>
         /// <exception cref="ArgumentException">the name is invalid or already used.</exception>
         /// <seealso cref="SetCityName(string)"/>
         /// <seealso cref="TrySetCityName(string)"/>
-        public override string Name => _name;
-        private string _name;
+        public string CityName { get; private set; }
 
         private static int _cityNamePrefix = 1;
 
@@ -58,21 +57,24 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedGold"/>
         /// <seealso cref="Player.GoldIncome"/>
-        public override double ProvidedGold => InteriorBuildings.Select(b => b.ProvidedGold).Sum();
+        public override double ProvidedGold
+            => base.ProvidedGold + InteriorBuildings.Select(b => b.ProvidedGold).Sum();
 
         /// <summary>
         /// The amount of happiness this building provides.
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedHappiness"/>
         /// <seealso cref="Player.HappinessIncome"/>
-        public override double ProvidedHappiness => InteriorBuildings.Select(b => b.ProvidedHappiness).Sum();
+        public override double ProvidedHappiness
+            => base.ProvidedHappiness + InteriorBuildings.Select(b => b.ProvidedHappiness).Sum();
 
         /// <summary>
         /// The labor which this city provides.
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedLabor"/>
         /// <seealso cref="Player.Labor"/>
-        public override double ProvidedLabor => Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
+        public override double ProvidedLabor
+            => base.ProvidedLabor + Math.Max(0, InteriorBuildings.Select(b => b.ProvidedLabor).Sum());
 
         /// <summary>
         /// The list of <see cref="InteriorBuilding"/> this city owns.
@@ -84,16 +86,12 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="CityBase"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this city.</param>
-        /// <param name="constants">constants of this actor.</param>
+        /// <param name="type">The concrete type of this object.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <param name="donator">The player donated this TileBuilding. If this TileBuilding is not donated, <c>null</c>.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="owner"/> is <c>null</c>.
-        /// or
-        /// <paramref name="constants"/> is <c>null</c>.
-        /// </exception>
-        public CityBase(Player owner, ActorConstants constants, Terrain.Point point, Player donator)
-            : base(owner, constants, point, donator)
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
+        public CityBase(Player owner, Type type, Terrain.Point point, Player donator)
+            : base(owner, type, point, donator)
         {
             string name;
             do
@@ -104,18 +102,25 @@ namespace CivModel
             while (!TrySetCityName(name));
 
             Owner.BeforeLandingCity = false;
+
+            ApplyPrototype(Game.PrototypeLoader.GetPrototype<CityPrototype>(type));
+        }
+
+        private void ApplyPrototype(CityPrototype proto)
+        {
+            Population = proto.InitialPopulation;
         }
 
         /// <summary>
-        /// Sets <see cref="Name"/> of the city. A return value indicates whether the setting is succeeded.
+        /// Sets <see cref="CityName"/> of the city. A return value indicates whether the setting is succeeded.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if succeded. otherwise, <c>false</c>.</returns>
-        /// <seealso cref="Name"/>
+        /// <seealso cref="CityName"/>
         /// <seealso cref="SetCityName(string)"/>
         public bool TrySetCityName(string value)
         {
-            if (value == Name)
+            if (value == CityName)
                 return true;
 
             if (value == null || value == "")
@@ -129,19 +134,19 @@ namespace CivModel
             if (!Owner.Game.UsedCityNames.Add(value))
                 return false;
 
-            if (_name != null)
-                Owner.Game.UsedCityNames.Remove(_name);
+            if (CityName != null)
+                Owner.Game.UsedCityNames.Remove(CityName);
 
-            _name = value;
+            CityName = value;
             return true;
         }
 
         /// <summary>
-        /// Sets <see cref="Name"/> of the city. The behavior of this method is equal to the setter of <see cref="Name"/>.
+        /// Sets <see cref="CityName"/> of the city. The behavior of this method is equal to the setter of <see cref="CityName"/>.
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentException">the name is invalid or already used.</exception>
-        /// <seealso cref="Name"/>
+        /// <seealso cref="CityName"/>
         /// <seealso cref="TrySetCityName(string)"/>
         public void SetCityName(string value)
         {

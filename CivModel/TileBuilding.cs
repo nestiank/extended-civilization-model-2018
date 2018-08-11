@@ -18,21 +18,24 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedGold"/>
         /// <seealso cref="Player.GoldIncome"/>
-        public virtual double ProvidedGold => 0;
+        public virtual double ProvidedGold => _providedGold;
+        private double _providedGold;
 
         /// <summary>
         /// The amount of happiness this building provides.
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedHappiness"/>
         /// <seealso cref="Player.HappinessIncome"/>
-        public virtual double ProvidedHappiness => 0;
+        public virtual double ProvidedHappiness => _providedHappiness;
+        private double _providedHappiness;
 
         /// <summary>
         /// The labor which this tile building offers.
         /// </summary>
         /// <seealso cref="InteriorBuilding.ProvidedLabor"/>
         /// <seealso cref="Player.Labor"/>
-        public virtual double ProvidedLabor => 0;
+        public virtual double ProvidedLabor => _providedLabor;
+        private double _providedLabor;
 
         /// <summary>
         /// Whether this TileBuilding is given to <see cref="Actor.Owner"/> by donation or not.
@@ -50,22 +53,27 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="TileBuilding"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this TileBuilding.</param>
-        /// <param name="constants">constants of this actor.</param>
+        /// <param name="type">The concrete type of this object.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <param name="donator">The player donated this TileBuilding. If this TileBuilding is not donated, <c>null</c>.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="owner"/> is <c>null</c>.
-        /// or
-        /// <paramref name="constants"/> is <c>null</c>.
-        /// </exception>
-        public TileBuilding(Player owner, ActorConstants constants, Terrain.Point point, Player donator)
-            : base(owner, constants, point, TileTag.TileBuilding)
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
+        public TileBuilding(Player owner, Type type, Terrain.Point point, Player donator)
+            : base(owner, type, point, TileTag.TileBuilding)
         {
             Donator = donator;
 
             // Player.RemoveTerritory 코드 내 주석 참조
             owner.TryAddTerritory(point);
             owner.AddTileBuildingToList(this);
+
+            ApplyPrototype(Game.PrototypeLoader.GetPrototype<TileBuildingPrototype>(type));
+        }
+
+        private void ApplyPrototype(TileBuildingPrototype proto)
+        {
+            _providedGold = proto.ProvidedGold;
+            _providedHappiness = proto.ProvidedHappiness;
+            _providedLabor = proto.ProvidedLabor;
         }
 
         /// <summary>

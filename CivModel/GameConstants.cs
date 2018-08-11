@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace CivModel
 {
@@ -13,11 +11,10 @@ namespace CivModel
     /// <seealso cref="Game.Constants"/>
     public sealed class GameConstants : IGameConstantScheme
     {
-        /// <summary>
-        /// This property is not used.
-        /// </summary>
+        // These member are not used.
         IGameSchemeFactory IGameScheme.Factory => null;
         void IGameScheme.OnAfterInitialized(Game game) { }
+        TextReader IGameScheme.GetPackageData() => null;
 
         /// <summary>
         /// Coefficient for <see cref="Player.GoldIncome" />.

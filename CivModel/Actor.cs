@@ -57,15 +57,14 @@ namespace CivModel
         private Player _owner;
 
         /// <summary>
-        /// The name of this actor.
+        /// The unique identifier of this class.
         /// </summary>
-        public virtual string Name => "";
+        public Guid Guid { get; private set; }
 
         /// <summary>
-        /// The original constants of this actor. The actual values can be different from the values of this property.
+        /// The name of this actor.
         /// </summary>
-        public ActorConstants OriginalConstants => _originalConstants;
-        private readonly ActorConstants _originalConstants;
+        public string TextName { get; private set; }
 
         /// <summary>
         /// The maximum AP.
@@ -367,38 +366,32 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Actor"/> class.
         /// </summary>
         /// <param name="owner">The player who owns this actor.</param>
-        /// <param name="constants">constants of this actor.</param>
+        /// <param name="type">The concrete type of this object.</param>
         /// <param name="point">The tile where the object will be.</param>
         /// <param name="tag">The <seealso cref="TileTag"/> of this actor.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="owner"/> is <c>null</c>.
-        /// or
-        /// <paramref name="constants"/> is <c>null</c>.
-        /// </exception>
-        public Actor(Player owner, ActorConstants constants, Terrain.Point point, TileTag tag)
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
+        public Actor(Player owner, Type type, Terrain.Point point, TileTag tag)
             : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
-            CopyConstants(constants);
-            _originalConstants = constants.Clone();
+            ApplyPrototype(Game.PrototypeLoader.GetPrototype<ActorPrototype>(type));
 
             _owner = owner;
             RemainHP = MaxHP;
         }
 
-        private void CopyConstants(ActorConstants constants)
+        private void ApplyPrototype(ActorPrototype proto)
         {
-            if (constants == null)
-                throw new ArgumentNullException(nameof(constants));
-
-            MaxAP = constants.MaxAP;
-            MaxHP = constants.MaxHP;
-            MaxHealPerTurn = constants.MaxHealPerTurn;
-            AttackPower = constants.AttackPower;
-            DefencePower = constants.DefencePower;
-            GoldLogistics = constants.GoldLogistics;
-            LaborLogistics = constants.LaborLogistics;
-            FullLaborForRepair = constants.FullLaborForRepair;
-            BattleClassLevel = constants.BattleClassLevel;
+            Guid = proto.Guid;
+            TextName = proto.TextName;
+            MaxAP = proto.MaxAP;
+            MaxHP = proto.MaxHP;
+            MaxHealPerTurn = proto.MaxHealPerTurn;
+            AttackPower = proto.AttackPower;
+            DefencePower = proto.DefencePower;
+            GoldLogistics = proto.GoldLogistics;
+            LaborLogistics = proto.LaborLogistics;
+            FullLaborForRepair = proto.FullLaborForRepair;
+            BattleClassLevel = proto.BattleClassLevel;
         }
 
         void IEffectTarget.AddEffect(Effect effect)

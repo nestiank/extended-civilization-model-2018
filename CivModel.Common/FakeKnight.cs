@@ -6,22 +6,8 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public class FakeKnight : Unit
+    public sealed class FakeKnight : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("8209396E-45E3-441C-879F-29EFE9EDC23C");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants {
-            MaxAP = 4,
-            MaxHP = 30,
-            AttackPower = 25,
-            DefencePower = 5,
-            GoldLogistics = 5,
-            LaborLogistics = 2.5,
-            FullLaborForRepair = 0.5,
-            BattleClassLevel = 2
-        };
-
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
         private readonly IActorAction _holdingAttackAct;
 
@@ -31,7 +17,8 @@ namespace CivModel.Common
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public FakeKnight(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public FakeKnight(Player owner, Terrain.Point point)
+            : base(owner, typeof(FakeKnight), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -99,12 +86,6 @@ namespace CivModel.Common
         }
 
         public Type ResultType => typeof(FakeKnight);
-        public ActorConstants ActorConstants => FakeKnight.Constants;
-
-        public double TotalLaborCost => 7.5;
-        public double LaborCapacityPerTurn => 3;
-        public double TotalGoldCost => 7.5;
-        public double GoldCapacityPerTurn => 3;
 
         public Production Create(Player owner)
         {

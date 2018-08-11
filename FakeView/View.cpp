@@ -589,7 +589,7 @@ namespace FakeView
 
         auto city = m_presenter->SelectedCity;
         int y = 0;
-        m_screen->PrintString(0, y, 0b0000'1111, "City View: \"" + cli2str(city->Name) + "\"");
+        m_screen->PrintString(0, y, 0b0000'1111, "City View: \"" + cli2str(city->CityName) + "\"");
 
         {
             unsigned char color = 0b0000'0111;
@@ -971,30 +971,7 @@ namespace FakeView
 
     std::string View::GetFactoryDescription(CivModel::IProductionFactory^ factory)
     {
-        if (auto product = dynamic_cast<CivModel::Common::CityCenterProductionFactory^>(factory))
-        {
-            return "CityCenter";
-        }
-        else if (auto product = dynamic_cast<CivModel::Common::PioneerProductionFactory^>(factory))
-        {
-            return "Pioneer";
-        }
-        else if (auto product = dynamic_cast<CivModel::Common::FakeKnightProductionFactory^>(factory))
-        {
-            return "Fake Knight";
-        }
-        else if (auto product = dynamic_cast<CivModel::Common::FactoryBuildingProductionFactory^>(factory))
-        {
-            return "Factory";
-        }
-        else if (auto product = dynamic_cast<CivModel::Common::LaboratoryBuildingProductionFactory^>(factory))
-        {
-            return "Laboratory";
-        }
-        else
-        {
-            return cli2str(factory->GetType()->FullName);
-        }
+        return cli2str(factory->GetType()->FullName);
     }
 
     std::pair<int, int> View::TerrainToScreen(int x, int y)

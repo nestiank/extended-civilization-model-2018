@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace CivModel.Common
 {
@@ -21,10 +20,19 @@ namespace CivModel.Common
         }
     }
 
-    public class GameScheme : IGameConstantScheme, IGameStartupScheme, IGameAdditionScheme
+    public class GameScheme : IGameConstantScheme, IGameStartupScheme
     {
-        public IGameSchemeFactory Factory => _factory;
-        private readonly GameSchemeFactory _factory;
+        private static readonly IProductionFactory[] _productions = {
+            CityCenterProductionFactory.Instance,
+            PioneerProductionFactory.Instance,
+            FakeFactoryProductionFactory.Instance,
+            FakeLaboratoryProductionFactory.Instance,
+            FakeFortressProductionFactory.Instance,
+            PioneerProductionFactory.Instance,
+        };
+
+        public GameSchemeFactory Factory { get; }
+        IGameSchemeFactory IGameScheme.Factory => Factory;
 
         public bool OnlyDefaultPlayers => false;
         public int DefaultNumberOfPlayers => 9;
@@ -48,39 +56,25 @@ namespace CivModel.Common
 
         public double ResearchRequireCoefficient => 0.2;
 
-        public IEnumerable<IProductionFactory> AdditionalProductionFactory
-        {
-            get
-            {
-                yield return CityCenterProductionFactory.Instance;
-                yield return PioneerProductionFactory.Instance;
-                yield return FactoryBuildingProductionFactory.Instance;
-                yield return LaboratoryBuildingProductionFactory.Instance;
-            }
-        }
-
         public GameScheme(GameSchemeFactory factory)
         {
-            _factory = factory ?? throw new ArgumentNullException("factory");
+            Factory = factory ?? throw new ArgumentNullException("factory");
+        }
+
+        public TextReader GetPackageData()
+        {
+            return new StringReader(Properties.Resources.package);
         }
 
         public void OnAfterInitialized(Game game)
         {
             foreach (var player in game.Players)
             {
-                foreach (var p in AdditionalProductionFactory)
+                foreach (var p in _productions)
                 {
                     player.AvailableProduction.Add(p);
                 }
             }
-        }
-
-        public void RegisterGuid(Game game)
-        {
-            game.GuidManager.RegisterGuid(CityCenter.ClassGuid, (p, t) => new CityCenter(p, t, true));
-            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
-            game.GuidManager.RegisterGuid(FactoryBuilding.ClassGuid, city => new FactoryBuilding(city));
-            game.GuidManager.RegisterGuid(LaboratoryBuilding.ClassGuid, city => new LaboratoryBuilding(city));
         }
 
         public void InitializeGame(Game game, bool isNewGame)
@@ -104,7 +98,7 @@ namespace CivModel.Common
                         pt = game.Terrain.GetPoint(x, y);
                     } while (pt.TileBuilding != null);
 
-                    new CityCenter(player, pt, false);
+                    new CityCenter(player, pt).OnAfterProduce(null);
                 }
             }
         }

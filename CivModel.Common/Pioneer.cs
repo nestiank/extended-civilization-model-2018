@@ -8,16 +8,8 @@ namespace CivModel.Common
 {
     public class Pioneer : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("487BBF97-538A-45CB-A62D-B33E173F8E6F");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants {
-            MaxAP = 2,
-            GoldLogistics = 5,
-            FullLaborForRepair = 0.5
-        };
-
-        public Pioneer(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public Pioneer(Player owner, Terrain.Point point)
+            : base(owner, typeof(Pioneer), point)
         {
         }
     }
@@ -32,12 +24,6 @@ namespace CivModel.Common
         }
 
         public Type ResultType => typeof(Pioneer);
-        public ActorConstants ActorConstants => Pioneer.Constants;
-
-        public double TotalLaborCost => 5;
-        public double LaborCapacityPerTurn => 2;
-        public double TotalGoldCost => 5;
-        public double GoldCapacityPerTurn => 2;
 
         public Production Create(Player owner)
         {

@@ -26,19 +26,21 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Unit"/> class.
         /// </summary>
         /// <param name="owner">The <see cref="Player"/> who owns this unit.</param>
-        /// <param name="constants">constants of this actor.</param>
+        /// <param name="type">The concrete type of this object.</param>
         /// <param name="point">The tile where the object will be.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="owner"/> is <c>null</c>.
-        /// or
-        /// <paramref name="constants"/> is <c>null</c>.
-        /// </exception>
-        public Unit(Player owner, ActorConstants constants, Terrain.Point point)
-            : base(owner, constants, point, TileTag.Unit)
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
+        public Unit(Player owner, Type type, Terrain.Point point)
+            : base(owner, type, point, TileTag.Unit)
         {
             Owner.AddUnitToList(this);
             MoveAct = new MoveActorAction(this);
             PillageAct = new PillageActorAction(this);
+
+            ApplyPrototype(Game.PrototypeLoader.GetPrototype<UnitPrototype>(type));
+        }
+
+        private void ApplyPrototype(UnitPrototype proto)
+        {
         }
 
         /// <summary>

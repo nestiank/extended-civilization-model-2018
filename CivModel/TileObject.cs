@@ -24,24 +24,17 @@ namespace CivModel
     /// <summary>
     /// Represents an object which can be placed on <see cref="Terrain.Point"/>.
     /// </summary>
-    public abstract class TileObject : IGuidTaggedObject, IProductionResult
+    public abstract class TileObject : IProductionResult
     {
-        /// <summary>
-        /// The unique identifier of this class.
-        /// </summary>
-        public abstract Guid Guid { get; }
-
         /// <summary>
         /// The <see cref="Game"/> object
         /// </summary>
-        public Game Game => _game;
-        private readonly Game _game;
+        public Game Game { get; }
 
         /// <summary>
         /// The value indicating the kind of this object.
         /// </summary>
-        public TileTag TileTag => _tileTag;
-        private readonly TileTag _tileTag;
+        public TileTag TileTag { get; }
 
         /// <summary>
         /// The placed point of this object. <c>null</c> if not placed.
@@ -72,8 +65,8 @@ namespace CivModel
         /// <exception cref="ArgumentNullException"><paramref name="game"/> is <c>null</c>.</exception>
         public TileObject(Game game, Terrain.Point point, TileTag tileTag)
         {
-            _game = game ?? throw new ArgumentNullException(nameof(game));
-            _tileTag = tileTag;
+            Game = game ?? throw new ArgumentNullException(nameof(game));
+            TileTag = tileTag;
 
             SetPlacedPoint(point);
         }
@@ -82,7 +75,7 @@ namespace CivModel
         /// Called when production is finished, that is, <see cref="Production.Place(Terrain.Point)" /> is succeeded.
         /// </summary>
         /// <param name="production">The <see cref="Production" /> object that produced this object.</param>
-        public void OnAfterProduce(Production production)
+        public virtual void OnAfterProduce(Production production)
         {
             Game.TileObjectEvent.RaiseObservable(obj => obj.TileObjectProduced(this));
             Game.TileObjectEvent.RaiseObservable(obj => obj.TileObjectPlaced(this));

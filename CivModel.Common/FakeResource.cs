@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CivModel.Common
 {
-    public class TestResource : ISpecialResource
+    public class FakeResource : ISpecialResource
     {
-        public static TestResource Instance => _instance.Value;
-        private static Lazy<TestResource> _instance
-            = new Lazy<TestResource>(() => new TestResource());
-        private TestResource()
+        public static FakeResource Instance => _instance.Value;
+        private static Lazy<FakeResource> _instance
+            = new Lazy<FakeResource>(() => new FakeResource());
+        private FakeResource()
         {
         }
 
@@ -35,7 +35,7 @@ namespace CivModel.Common
 
             public void PostTurn()
             {
-                System.Diagnostics.Debug.WriteLine("TestResource: " + _player.SpecialResource[Instance]);
+                System.Diagnostics.Debug.WriteLine("FakeResource: " + _player.SpecialResource[Instance]);
             }
 
             public void PreTurn() { }
