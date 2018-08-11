@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 using static CivModel.Finno.FinnoPlayerNumber;
 using static CivModel.Hwan.HwanPlayerNumber;
@@ -24,22 +23,21 @@ namespace CivModel.Quests
         }
     }
 
-    public class GameScheme : IGameAdditionScheme
+    public class GameScheme : IGameScheme
     {
+        public GameSchemeFactory Factory { get; }
+        IGameSchemeFactory IGameScheme.Factory => Factory;
+
         public Game Game { get; private set; }
-
-        public IGameSchemeFactory Factory { get; }
-
-        public IEnumerable<IProductionFactory> AdditionalProductionFactory
-            => Enumerable.Empty<IProductionFactory>();
 
         public GameScheme(GameSchemeFactory factory)
         {
             Factory = factory ?? throw new ArgumentNullException("factory");
         }
 
-        public void RegisterGuid(Game game)
+        public TextReader GetPackageData()
         {
+            return new StringReader(Properties.Resources.package);
         }
 
         public void OnAfterInitialized(Game game)
