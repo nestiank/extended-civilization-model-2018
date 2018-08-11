@@ -23,19 +23,21 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public FinnoEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile)
+        public FinnoEmpireCity(Player player, Terrain.Point point)
             : base(player, Constants, point, null)
         {
             this.Population = 5;
             _specialActs[0] = new FinnoEmpireCityAction(this);
+        }
 
-            if (!isLoadFromFile)
+        public override void OnAfterProduce(Production production)
+        {
+            base.OnAfterProduce(production);
+
+            foreach (var pt in PlacedPoint.Value.Adjacents())
             {
-                foreach (var pt in PlacedPoint.Value.Adjacents())
-                {
-                    if (pt.HasValue)
-                        Owner.TryAddTerritory(pt.Value);
-                }
+                if (pt.HasValue)
+                    Owner.TryAddTerritory(pt.Value);
             }
         }
 
@@ -202,7 +204,7 @@ namespace CivModel.Finno
             // remove pioneer
             point.Unit.Destroy();
 
-            return new FinnoEmpireCity(owner, point, false);
+            return new FinnoEmpireCity(owner, point);
         }
     }
 }

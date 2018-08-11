@@ -24,19 +24,21 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public HwanEmpireCity(Player player, Terrain.Point point, bool isLoadFromFile)
+        public HwanEmpireCity(Player player, Terrain.Point point)
             : base(player, Constants, point, null)
         {
             this.Population = 5;
             _specialActs[0] = new HwanEmpireCityAction(this);
+        }
 
-            if (!isLoadFromFile)
+        public override void OnAfterProduce(Production production)
+        {
+            base.OnAfterProduce(production);
+
+            foreach (var pt in PlacedPoint.Value.Adjacents())
             {
-                foreach (var pt in PlacedPoint.Value.Adjacents())
-                {
-                    if (pt.HasValue)
-                        Owner.TryAddTerritory(pt.Value);
-                }
+                if (pt.HasValue)
+                    Owner.TryAddTerritory(pt.Value);
             }
         }
 
@@ -180,7 +182,7 @@ namespace CivModel.Hwan
             // remove pioneer
             point.Unit.Destroy();
 
-            return new HwanEmpireCity(owner, point, false);
+            return new HwanEmpireCity(owner, point);
         }
     }
 }
