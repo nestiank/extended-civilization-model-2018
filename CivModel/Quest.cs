@@ -162,7 +162,7 @@ namespace CivModel
             if (requester != null && requester.Game != requestee.Game)
                 throw new ArgumentException("requester and requestee do not involve in the same game");
 
-            ApplyPrototype(Game.PrototypeLoader.GetPrototype<QuestPrototype>(type));
+            ApplyPrototype(Game.GetPrototype<QuestPrototype>(type));
 
             requestee.AddQuestToList(this);
         }

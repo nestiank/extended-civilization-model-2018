@@ -4,15 +4,39 @@ using System.Reflection;
 
 namespace CivModel
 {
-    class QuestPrototype : GuidObjectPrototype
+    /// <summary>
+    /// Represents a prototype of <see cref="Quest"/>.
+    /// </summary>
+    /// <seealso cref="GuidObjectPrototype"/>
+    /// <seealso cref="Quest"/>
+    public class QuestPrototype : GuidObjectPrototype
     {
+        /// <summary>
+        /// [퀘스트 게시 기간]. <c>-1</c> if forever.
+        /// </summary>
         public int PostingTurn { get; }
+
+        /// <summary>
+        /// [퀘스트 제한 기간]. <c>-1</c> if forever.
+        /// </summary>
         public int LimitTurn { get; }
+
+        /// <summary>
+        /// [퀘스트 조건].
+        /// </summary>
         public string GoalNotice { get; }
+
+        /// <summary>
+        /// [퀘스트 보상].
+        /// </summary>
         public string RewardNotice { get; }
+
+        /// <summary>
+        /// [교육용 알림].
+        /// </summary>
         public string CompleteNotice { get; }
 
-        public QuestPrototype(XElement node, Assembly packageAssembly)
+        internal QuestPrototype(XElement node, Assembly packageAssembly)
             : base(node, packageAssembly)
         {
             var xmlns = PrototypeLoader.Xmlns;

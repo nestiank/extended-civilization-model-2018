@@ -4,14 +4,34 @@ using System.Reflection;
 
 namespace CivModel
 {
-    class ProductionResultPrototype : GuidObjectPrototype
+    /// <summary>
+    /// Represents a prototype of <see cref="IProductionResult"/>.
+    /// </summary>
+    /// <seealso cref="GuidObjectPrototype"/>
+    /// <seealso cref="IProductionResult"/>
+    public class ProductionResultPrototype : GuidObjectPrototype
     {
+        /// <summary>
+        /// The total labor cost to finish this production.
+        /// </summary>
         public double TotalLaborCost { get; }
+
+        /// <summary>
+        /// The maximum labor which can put into this production per turn.
+        /// </summary>
         public double LaborCapacityPerTurn { get; }
+
+        /// <summary>
+        /// The total gold cost to finish this production.
+        /// </summary>
         public double TotalGoldCost { get; }
+
+        /// <summary>
+        /// The maximum gold which can put into this production per turn.
+        /// </summary>
         public double GoldCapacityPerTurn { get; }
 
-        public ProductionResultPrototype(XElement node, Assembly packageAssembly)
+        internal ProductionResultPrototype(XElement node, Assembly packageAssembly)
             : base(node, packageAssembly)
         {
             var xmlns = PrototypeLoader.Xmlns;

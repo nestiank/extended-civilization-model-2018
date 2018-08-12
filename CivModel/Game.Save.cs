@@ -92,7 +92,7 @@ namespace CivModel
                     var reader = s.GetPackageData();
                     if (reader != null)
                     {
-                        PrototypeLoader.Load(reader, s.GetType().Assembly);
+                        _prototypeLoader.Load(reader, s.GetType().Assembly);
                     }
                 }
 
@@ -157,7 +157,7 @@ namespace CivModel
                     var pt = Terrain.GetPoint(pos);
 
                     guid = Guid.ParseExact(readLine(), _guidSaveFormat);
-                    var proto = PrototypeLoader.TryGetPrototype(guid);
+                    var proto = _prototypeLoader.TryGetPrototype(guid);
                     var obj = proto?.CreateOnTile(Players[ints[0]], pt);
                     switch (obj)
                     {
@@ -174,7 +174,7 @@ namespace CivModel
                             for (int i = 0; i < len; ++i)
                             {
                                 guid = Guid.ParseExact(readLine(), _guidSaveFormat);
-                                proto = PrototypeLoader.TryGetPrototype(guid);
+                                proto = _prototypeLoader.TryGetPrototype(guid);
                                 if (proto == null)
                                     goto default;
                                 proto.CreateOnTile(Players[ints[0]], pt);

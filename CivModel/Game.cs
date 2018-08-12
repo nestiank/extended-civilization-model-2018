@@ -29,7 +29,7 @@ namespace CivModel
         public GameConstants Constants;
 
         // prototype loader
-        internal PrototypeLoader PrototypeLoader { get; private set; } // init by PreInitialize
+        private PrototypeLoader _prototypeLoader; // init by PreInitialize
 
         /// <summary>
         /// The random generator of this game.
@@ -147,7 +147,7 @@ namespace CivModel
                 var reader = s.GetPackageData();
                 if (reader != null)
                 {
-                    PrototypeLoader.Load(reader, s.GetType().Assembly);
+                    _prototypeLoader.Load(reader, s.GetType().Assembly);
                 }
             }
 
@@ -252,7 +252,7 @@ namespace CivModel
 
         private void PreInitialize()
         {
-            PrototypeLoader = new PrototypeLoader();
+            _prototypeLoader = new PrototypeLoader();
             Random = new Random();
 
             _players = new List<Player>();
@@ -261,6 +261,23 @@ namespace CivModel
             _shouldStartTurnResumeGame = false;
 
             InitializeObservable();
+        }
+
+        /// <summary>
+        /// Gets the prototype for specified type.
+        /// </summary>
+        /// <typeparam name="Proto">The type of the prototype.</typeparam>
+        /// <param name="type">The type targeted by the prototype.</param>
+        /// <returns>The prototype object.</returns>
+        /// <exception cref="KeyNotFoundException">
+        /// the prototype of specified type is not found
+        /// or
+        /// the prototype of specified type cannot be cast into specified prototype
+        /// </exception>
+        public Proto GetPrototype<Proto>(Type type)
+            where Proto : GuidObjectPrototype
+        {
+            return _prototypeLoader.GetPrototype<Proto>(type);
         }
 
         /// <summary>

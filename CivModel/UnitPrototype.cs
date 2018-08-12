@@ -4,9 +4,14 @@ using System.Reflection;
 
 namespace CivModel
 {
-    class UnitPrototype : ActorPrototype
+    /// <summary>
+    /// Represents a prototype of <see cref="Unit"/>.
+    /// </summary>
+    /// <seealso cref="ActorPrototype"/>
+    /// <seealso cref="Unit"/>
+    public class UnitPrototype : ActorPrototype
     {
-        public UnitPrototype(XElement node, Assembly packageAssembly)
+        internal UnitPrototype(XElement node, Assembly packageAssembly)
             : base(node, packageAssembly)
         {
         }

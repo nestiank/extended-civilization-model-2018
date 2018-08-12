@@ -36,7 +36,7 @@ namespace CivModel
             MoveAct = new MoveActorAction(this);
             PillageAct = new PillageActorAction(this);
 
-            ApplyPrototype(Game.PrototypeLoader.GetPrototype<UnitPrototype>(type));
+            ApplyPrototype(Game.GetPrototype<UnitPrototype>(type));
         }
 
         private void ApplyPrototype(UnitPrototype proto)

@@ -62,7 +62,7 @@ namespace CivModel
         private CityBase _city = null;
 
         /// <summary>
-        /// The amount of gold logistics of this actor.
+        /// The amount of gold logistics of this building.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">GoldLogistics is negative</exception>
         public double GoldLogistics
@@ -197,7 +197,7 @@ namespace CivModel
             Owner = city.Owner;
             City = city ?? throw new ArgumentNullException("city");
 
-            ApplyPrototype(Game.PrototypeLoader.GetPrototype<InteriorBuildingPrototype>(type));
+            ApplyPrototype(Game.GetPrototype<InteriorBuildingPrototype>(type));
         }
 
         private void ApplyPrototype(InteriorBuildingPrototype proto)

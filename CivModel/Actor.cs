@@ -186,9 +186,11 @@ namespace CivModel
         public double DefencePower { get; set; }
 
         /// <summary>
-        /// The amount of gold logistics of this actor.
+        /// The amount of gold logistics per turn of this actor.
+        /// Actor is starved if the owner cannot pay this logistics.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">GoldLogistics is negative</exception>
+        /// <seealso cref="IsStarved"/>
         public double GoldLogistics
         {
             get => _goldLogistics;
@@ -202,9 +204,11 @@ namespace CivModel
         private double _goldLogistics;
 
         /// <summary>
-        /// The amount of labor logistics of this actor.
+        /// The amount of labor logistics per turn of this actor.
+        /// Actor is starved if the owner cannot pay this logistics.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">LaborLogistics is negative</exception>
+        /// <seealso cref="IsStarved"/>
         public double LaborLogistics
         {
             get => _laborLogistics;
@@ -373,7 +377,7 @@ namespace CivModel
         public Actor(Player owner, Type type, Terrain.Point point, TileTag tag)
             : base(owner?.Game ?? throw new ArgumentNullException(nameof(owner)), point, tag)
         {
-            ApplyPrototype(Game.PrototypeLoader.GetPrototype<ActorPrototype>(type));
+            ApplyPrototype(Game.GetPrototype<ActorPrototype>(type));
 
             _owner = owner;
             RemainHP = MaxHP;

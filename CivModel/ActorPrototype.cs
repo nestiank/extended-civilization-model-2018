@@ -4,19 +4,61 @@ using System.Reflection;
 
 namespace CivModel
 {
-    class ActorPrototype : ProductionResultPrototype
+    /// <summary>
+    /// Represents a prototype of <see cref="Actor"/>.
+    /// </summary>
+    /// <seealso cref="ProductionResultPrototype"/>
+    /// <seealso cref="Actor"/>
+    public class ActorPrototype : ProductionResultPrototype
     {
+        /// <summary>
+        /// The maximum AP.
+        /// </summary>
         public double MaxAP { get; }
+
+        /// <summary>
+        /// The maximum HP. <c>0</c> if this actor is not a combattant.
+        /// </summary>
         public double MaxHP { get; }
+
+        /// <summary>
+        /// The maximum heal per turn.
+        /// </summary>
         public double MaxHealPerTurn { get; }
+
+        /// <summary>
+        /// The attack power.
+        /// </summary>
         public double AttackPower { get; }
+
+        /// <summary>
+        /// The defence power.
+        /// </summary>
         public double DefencePower { get; }
+
+        /// <summary>
+        /// The amount of gold logistics per turn of this actor.
+        /// Actor is starved if the owner cannot pay this logistics.
+        /// </summary>
         public double GoldLogistics { get; }
+
+        /// <summary>
+        /// The amount of labor logistics per turn of this actor.
+        /// Actor is starved if the owner cannot pay this logistics.
+        /// </summary>
         public double LaborLogistics { get; }
+
+        /// <summary>
+        /// The amount of labor for this actor to get the full heal amount of <see cref="MaxHealPerTurn"/>.
+        /// </summary>
         public double FullLaborForRepair { get; }
+
+        /// <summary>
+        /// Battle class level of this actor. This value can affect the ATK/DEF power during battle.
+        /// </summary>
         public int BattleClassLevel { get; }
 
-        public ActorPrototype(XElement node, Assembly packageAssembly)
+        internal ActorPrototype(XElement node, Assembly packageAssembly)
             : base(node, packageAssembly)
         {
             var xmlns = PrototypeLoader.Xmlns;

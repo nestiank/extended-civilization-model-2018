@@ -29,7 +29,7 @@ namespace CivModel
     {
         public static ProductionResultPrototype GetResultPrototype(this IProductionFactory factory, Game game)
         {
-            return game.PrototypeLoader.GetPrototype<ProductionResultPrototype>(factory.ResultType);
+            return game.GetPrototype<ProductionResultPrototype>(factory.ResultType);
         }
 
         public static double GetTotalLaborCost(this IProductionFactory factory, Game game)

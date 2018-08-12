@@ -4,11 +4,19 @@ using System.Reflection;
 
 namespace CivModel
 {
-    class CityPrototype : TileBuildingPrototype
+    /// <summary>
+    /// Represents a prototype of city.
+    /// </summary>
+    /// <seealso cref="CivModel.TileBuildingPrototype"/>
+    /// <seealso cref="CityBase"/>
+    public class CityPrototype : TileBuildingPrototype
     {
+        /// <summary>
+        /// The initial population of city.
+        /// </summary>
         public double InitialPopulation { get; }
 
-        public CityPrototype(XElement node, Assembly packageAssembly)
+        internal CityPrototype(XElement node, Assembly packageAssembly)
             : base(node, packageAssembly)
         {
             var xmlns = PrototypeLoader.Xmlns;

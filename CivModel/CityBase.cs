@@ -103,7 +103,7 @@ namespace CivModel
 
             Owner.BeforeLandingCity = false;
 
-            ApplyPrototype(Game.PrototypeLoader.GetPrototype<CityPrototype>(type));
+            ApplyPrototype(Game.GetPrototype<CityPrototype>(type));
         }
 
         private void ApplyPrototype(CityPrototype proto)

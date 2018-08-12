@@ -66,7 +66,7 @@ namespace CivModel
             owner.TryAddTerritory(point);
             owner.AddTileBuildingToList(this);
 
-            ApplyPrototype(Game.PrototypeLoader.GetPrototype<TileBuildingPrototype>(type));
+            ApplyPrototype(Game.GetPrototype<TileBuildingPrototype>(type));
         }
 
         private void ApplyPrototype(TileBuildingPrototype proto)

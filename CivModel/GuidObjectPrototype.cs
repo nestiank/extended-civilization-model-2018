@@ -6,19 +6,42 @@ using System.IO;
 
 namespace CivModel
 {
-    class GuidObjectPrototype
+    /// <summary>
+    /// The base class represents a prototype.
+    /// </summary>
+    public class GuidObjectPrototype
     {
+        /// <summary>
+        /// The assembly from which this prototype is.
+        /// </summary>
         public Assembly PackageAssembly { get; }
+
+        /// <summary>
+        /// The <see cref="Type.AssemblyQualifiedName"/> of <see cref="TargetType"/>.
+        /// </summary>
         public string PackageAssemblyQualifiedName => Name + ", " + PackageAssembly.FullName;
 
+        /// <summary>
+        /// The name of <see cref="TargetType"/>.
+        /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// The unique identifier of <see cref="TargetType"/>.
+        /// </summary>
         public Guid Guid { get; }
 
+        /// <summary>
+        /// The type of an object of the kind of this prototype.
+        /// </summary>
         public Type TargetType { get; }
 
+        /// <summary>
+        /// The name of an object of the kind of this prototype.
+        /// </summary>
         public string TextName { get; }
 
-        public GuidObjectPrototype(XElement node, Assembly packageAssembly)
+        internal GuidObjectPrototype(XElement node, Assembly packageAssembly)
         {
             PackageAssembly = packageAssembly;
 
@@ -33,7 +56,7 @@ namespace CivModel
             TextName = node.Element(xmlns + "TextName").Value;
         }
 
-        public object TryCreate(object[] param)
+        internal object TryCreate(object[] param)
         {
             var type = Type.GetType(PackageAssemblyQualifiedName);
             var ctor = type.GetConstructor(param.Select(x => x.GetType()).ToArray());
@@ -43,7 +66,7 @@ namespace CivModel
                 return ctor.Invoke(param);
         }
 
-        public object Create(object[] param)
+        internal object Create(object[] param)
         {
             if (TryCreate(param) is object obj)
                 return obj;
@@ -51,7 +74,7 @@ namespace CivModel
                 throw new MissingMethodException("there is no constructor to call with specified arguments");
         }
 
-        public object CreateOnTile(Player player, Terrain.Point pt)
+        internal object CreateOnTile(Player player, Terrain.Point pt)
         {
             var type = Type.GetType(PackageAssemblyQualifiedName);
 
