@@ -8,27 +8,13 @@ namespace CivModel.Zap
 {
     public class LEOSpaceArmada : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("8CA7B018-F783-4A65-9AB2-FC37A77DE6C0");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 25,
-            AttackPower = 8,
-            DefencePower = 3,
-            GoldLogistics = 20,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 2
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public LEOSpaceArmada(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public LEOSpaceArmada(Player owner, Terrain.Point point) : base(owner, typeof(LEOSpaceArmada), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -45,12 +31,6 @@ namespace CivModel.Zap
         }
 
         public Type ResultType => typeof(LEOSpaceArmada);
-        public ActorConstants ActorConstants => LEOSpaceArmada.Constants;
-
-        public double TotalLaborCost => 35;
-        public double LaborCapacityPerTurn => 15;
-        public double TotalGoldCost => 50;
-        public double GoldCapacityPerTurn => 20;
 
         public Production Create(Player owner)
         {

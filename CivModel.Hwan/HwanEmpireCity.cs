@@ -8,24 +8,11 @@ namespace CivModel.Hwan
 {
     public sealed class HwanEmpireCity : CityBase
     {
-        public static Guid ClassGuid { get; } = new Guid("D0A84907-885A-44C2-8E4C-077744E1E0C3");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 500,
-            DefencePower = 15,
-            GoldLogistics = 0,
-            LaborLogistics = 0,
-            MaxHealPerTurn = 20
-        };
-
-
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
         public HwanEmpireCity(Player player, Terrain.Point point)
-            : base(player, Constants, point, null)
+            : base(player, typeof(HwanEmpireCity), point, null)
         {
             this.Population = 5;
             _specialActs[0] = new HwanEmpireCityAction(this);
@@ -158,12 +145,7 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(HwanEmpireCity);
-        public ActorConstants Constants => HwanEmpireCity.Constants;
 
-        public double TotalLaborCost => 200;
-        public double LaborCapacityPerTurn => 20;
-        public double TotalGoldCost => 300;
-        public double GoldCapacityPerTurn => 50;
 
         public Production Create(Player owner)
         {

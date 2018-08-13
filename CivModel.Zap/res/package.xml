@@ -3,4 +3,275 @@
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
 
 
+  <City
+    name="CivModel.Zap.CityCenter" guid="BF70E402-A0BE-4587-85A3-5623667AE2E1">
+
+    <TextName>잡국 도시</TextName>
+    <TotalLaborCost>100</TotalLaborCost>
+    <LaborCapacityPerTurn>25</LaborCapacityPerTurn>
+    <TotalGoldCost>200</TotalGoldCost>
+    <GoldCapacityPerTurn>50</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>300</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>30</AttackPower>
+    <DefencePower>15</DefencePower>
+    <GoldLogistics>0</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+
+    <InitialPopulation>1</InitialPopulation>
+  </City>
+
+
+  <TileBuilding
+    name="CivModel.Zap.Casino" guid="C60920C0-5F6E-4439-8A0E-419950B2DD1A">
+
+    <TextName>잡국 카지노</TextName>
+    <TotalLaborCost>30</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>30</MaxHP>
+    <MaxHealPerTurn>5</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>1</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+  </TileBuilding>
+
+
+  <TileBuilding
+    name="CivModel.Zap.FIRFortress" guid="60835460-2FDC-4507-B8F1-7822B5283541">
+
+    <TextName>잡국 5차산업혁명 요새</TextName>
+    <TotalLaborCost>20</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>20</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>30</MaxHP>
+    <MaxHealPerTurn>10</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+  </TileBuilding>
+
+
+  <TileBuilding
+    name="CivModel.Zap.ZapFactory" guid="B998C018-EE38-4970-963C-E6B636DAF8A6">
+
+    <TextName>잡국 공장</TextName>
+    <TotalLaborCost>20</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>20</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>15</MaxHP>
+    <MaxHealPerTurn>2</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>10</ProvidedLabor>
+  </TileBuilding>
+
+  
+    <InteriorBuilding
+    name="CivModel.Zap.CityLab" guid="7D49A0B3-976E-454A-941A-E8B5FFBEAC02">
+
+    <TextName>잡국 도시 연구소</TextName>
+    <TotalLaborCost>100</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>100</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <ProvidedLabor>0</ProvidedLabor>
+    <ResearchCapacity>100</ResearchCapacity>
+    <ResearchIncome>20</ResearchIncome>
+    <PopulationCoefficient>1</PopulationCoefficient>
+  </InteriorBuilding>
+
+
+  <InteriorBuilding
+  name="CivModel.Zap.FIRFactory" guid="3948E644-33B9-4FA8-B3BA-002EAD04DF0E">
+
+    <TextName>잡국 5차 산업혁명 공장</TextName>
+    <TotalLaborCost>10</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>10</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <ProvidedLabor>3</ProvidedLabor>
+    <ResearchCapacity>0</ResearchCapacity>
+    <ResearchIncome>0</ResearchIncome>
+    <PopulationCoefficient>1</PopulationCoefficient>
+  </InteriorBuilding>
+
+
+  <Unit
+    name="CivModel.Zap.ArmedDivision" guid="68AE9D0F-3492-427A-B4F4-8EA84C14DA4A">
+
+    <TextName>기갑 사단</TextName>
+    <TotalLaborCost>30</TotalLaborCost>
+    <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
+    <TotalGoldCost>50</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>25</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>9</AttackPower>
+    <DefencePower>3</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>2</BattleClassLevel>
+  </Unit>
+
+
+  <Unit
+    name="CivModel.Zap.DecentralizedMilitary" guid="FCE532E4-E5B2-4569-B91E-A998EBC72689">
+
+    <TextName>탈중앙화 경보병 사단</TextName>
+    <TotalLaborCost>15</TotalLaborCost>
+    <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>25</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>3</AttackPower>
+    <DefencePower>2</DefencePower>
+    <GoldLogistics>10</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>1</BattleClassLevel>
+  </Unit>
+
+
+  <Unit
+    name="CivModel.Zap.InfantryDivision" guid="52104893-FC05-446F-BF3F-6C99F3556515">
+
+    <TextName>보병 사단</TextName>
+    <TotalLaborCost>15</TotalLaborCost>
+    <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>5</AttackPower>
+    <DefencePower>3</DefencePower>
+    <GoldLogistics>10</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>1</BattleClassLevel>
+  </Unit>
+
+
+  <Unit
+    name="CivModel.Zap.LEOSpaceArmada" guid="8CA7B018-F783-4A65-9AB2-FC37A77DE6C0">
+
+    <TextName>저궤도 우주 함선</TextName>
+    <TotalLaborCost>35</TotalLaborCost>
+    <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
+    <TotalGoldCost>50</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>25</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>8</AttackPower>
+    <DefencePower>3</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>2</BattleClassLevel>
+  </Unit>
+
+
+  <Unit
+    name="CivModel.Zap.Padawan" guid="04DBFD22-3990-48AC-BAF1-095BDAEFCB57">
+
+    <TextName>파다완</TextName>
+    <TotalLaborCost>50</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>75</TotalGoldCost>
+    <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>15</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>13</AttackPower>
+    <DefencePower>3</DefencePower>
+    <GoldLogistics>30</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>3</BattleClassLevel>
+  </Unit>
+
+
+  <Unit
+    name="CivModel.Zap.Pioneer" guid="6A5A25E9-1213-49B9-94F6-A8BB5B0C0A10">
+
+    <TextName>환 개척자</TextName>
+    <TotalLaborCost>5</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>5</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>0</MaxHP>
+    <MaxHealPerTurn>0</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>5</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>0.5</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+  </Unit>
+
+
+  <Unit
+    name="CivModel.Zap.ZapNinja" guid="AB1AC3DC-3F5A-43A2-9141-8468B558D6F6">
+
+    <TextName>유사 닌자</TextName>
+    <TotalLaborCost>50</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>75</TotalGoldCost>
+    <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>18</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>10</AttackPower>
+    <DefencePower>3</DefencePower>
+    <GoldLogistics>30</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>3</BattleClassLevel>
+  </Unit>
+  
 </Package>

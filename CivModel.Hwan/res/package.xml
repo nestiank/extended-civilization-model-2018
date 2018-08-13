@@ -2,5 +2,398 @@
 <Package
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
 
+  <City
+  name="CivModel.Hwan.HwanEmpireCity" guid="D0A84907-885A-44C2-8E4C-077744E1E0C3">
+
+    <TextName>환 제국 도시</TextName>
+    <TotalLaborCost>200</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>300</TotalGoldCost>
+    <GoldCapacityPerTurn>50</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>500</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>30</AttackPower>
+    <DefencePower>15</DefencePower>
+    <GoldLogistics>0</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+
+    <InitialPopulation>5</InitialPopulation>
+  </City>
+  
+
+  <TileBuilding
+    name="CivModel.Hwan.HwanEmpireFIRFortress" guid="B6BBF4C9-26F4-48C7-87EE-15E6F21B2DC2">
+
+    <TextName>환 제국 5차산업혁명 요새</TextName>
+    <TotalLaborCost>20</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>20</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>30</MaxHP>
+    <MaxHealPerTurn>10</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+  </TileBuilding>
+
+
+  <TileBuilding
+    name="CivModel.Hwan.HwanEmpireIbiza" guid="9B1A6066-6DA6-438F-A285-30D26EBD7828">
+
+    <TextName>환 제국 이비자</TextName>
+    <TotalLaborCost>30</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>30</MaxHP>
+    <MaxHealPerTurn>5</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>1</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+  </TileBuilding>
+  
+  
+  <TileBuilding
+    name="CivModel.Hwan.HwanEmpireKimchiFactory" guid="E491B144-C222-42ED-8617-C59A32E902AD">
+
+    <TextName>KIMCHI FACTORY</TextName>
+    <TotalLaborCost>20</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>20</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>15</MaxHP>
+    <MaxHealPerTurn>2</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>10</ProvidedLabor>
+  </TileBuilding>
+  
+  
+    <TileBuilding
+    name="CivModel.Hwan.HwanEmpireLatifundium" guid="10B85454-07B8-4D6A-8FF2-157870C41AF6">
+
+    <TextName>환 제국 라티푼디움</TextName>
+    <TotalLaborCost>30</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>20</MaxHP>
+    <MaxHealPerTurn>4</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+  </TileBuilding>
+  
+  
+   <TileBuilding
+    name="CivModel.Hwan.Preternaturality" guid="74265A8F-4655-4680-8F67-7C6140766107">
+
+    <TextName>불가사의</TextName>
+    <TotalLaborCost>800</TotalLaborCost>
+    <LaborCapacityPerTurn>80</LaborCapacityPerTurn>
+    <TotalGoldCost>3000</TotalGoldCost>
+    <GoldCapacityPerTurn>300</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>300</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>20</DefencePower>
+    <GoldLogistics>60</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>200</ProvidedGold>
+    <ProvidedHappiness>5</ProvidedHappiness>
+    <ProvidedLabor>50</ProvidedLabor>
+  </TileBuilding>
+  
+  
+  <InteriorBuilding
+    name="CivModel.Hwan.HwanEmpireCityCentralLab" guid="BE574FAE-BB83-4D8C-9547-BDA426F24C4A">
+
+    <TextName>환 제국 도시 연구소</TextName>
+    <TotalLaborCost>50</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>100</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <ProvidedLabor>0</ProvidedLabor>
+    <ResearchCapacity>100</ResearchCapacity>
+    <ResearchIncome>20</ResearchIncome>
+    <PopulationCoefficient>1</PopulationCoefficient>
+  </InteriorBuilding>
+  
+  
+  <InteriorBuilding
+    name="CivModel.Hwan.HwanEmpireFIRFactory" guid="5AAB5AC2-59F4-4066-889F-3BFD419C25B4">
+
+    <TextName>환 제국 5차 산업혁명 공장</TextName>
+    <TotalLaborCost>10</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>10</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <ProvidedLabor>4</ProvidedLabor>
+    <ResearchCapacity>0</ResearchCapacity>
+    <ResearchIncome>0</ResearchIncome>
+    <PopulationCoefficient>1</PopulationCoefficient>
+  </InteriorBuilding>
+  
+  
+  <InteriorBuilding
+    name="CivModel.Hwan.HwanEmpireSungsimdang" guid="D6AE6381-5B65-47EB-B99B-B3BE2C232772">
+
+    <TextName>환 제국 성심당</TextName>
+    <TotalLaborCost>30</TotalLaborCost>
+    <LaborCapacityPerTurn>5</LaborCapacityPerTurn>
+    <TotalGoldCost>50</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <ProvidedLabor>0</ProvidedLabor>
+    <ResearchCapacity>0</ResearchCapacity>
+    <ResearchIncome>0</ResearchIncome>
+    <PopulationCoefficient>1.2</PopulationCoefficient>
+  </InteriorBuilding>
+  
+  
+  <InteriorBuilding
+    name="CivModel.Hwan.HwanEmpireVigilant" guid="F0D6189E-EE05-4BD6-B9A8-A7C5E1AE374E">
+
+    <TextName>환 제국 자경단</TextName>
+    <TotalLaborCost>60</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>60</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <ProvidedLabor>0</ProvidedLabor>
+    <ResearchCapacity>0</ResearchCapacity>
+    <ResearchIncome>0</ResearchIncome>
+    <PopulationCoefficient>1</PopulationCoefficient>
+  </InteriorBuilding>
+
+  
+  <Unit
+    name="CivModel.Hwan.BrainwashedEMUKnight" guid="6C04C360-C1B9-4633-8269-B0911B1D63DA">
+
+    <TextName>환 제국 세뇌된 EMU 기사</TextName>
+    <TotalLaborCost>15</TotalLaborCost>
+    <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>75</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>10</AttackPower>
+    <DefencePower>7</DefencePower>
+    <GoldLogistics>10</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>1</BattleClassLevel>
+  </Unit>
+  
+  
+  <Unit
+    name="CivModel.Hwan.DecentralizedMilitary" guid="E9A92842-AADA-4700-BCE3-6BEC543F5BC7">
+
+    <TextName>환 제국 탈중앙화된 군인</TextName>
+    <TotalLaborCost>15</TotalLaborCost>
+    <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>13</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>10</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>1</BattleClassLevel>
+  </Unit>
+  
+  
+  <Unit
+    name="CivModel.Hwan.JackieChan" guid="3FE5F3BA-29AC-4BFD-99D7-ABA7CE9F706A">
+
+    <TextName>Jackie Chan</TextName>
+    <TotalLaborCost>100</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>100</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>35</AttackPower>
+    <DefencePower>10</DefencePower>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>3</FullLaborForRepair>
+    <BattleClassLevel>4</BattleClassLevel>
+  </Unit>
+
+  
+
+  <Unit
+    name="CivModel.Hwan.JediKnight" guid="4DCCABFE-74C5-44C9-AB5E-6340F6DF75C5">
+
+    <TextName>환 제국 제다이 기사단</TextName>
+    <TotalLaborCost>50</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>75</TotalGoldCost>
+    <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>30</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>25</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>30</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>3</BattleClassLevel>
+  </Unit>
+  
+
+  <Unit
+    name="CivModel.Hwan.LEOSpaceArmada" guid="A41789C8-823A-4B13-BDE2-3171751FC8BF">
+
+    <TextName>환 제국 저궤도 우주함대</TextName>
+    <TotalLaborCost>35</TotalLaborCost>
+    <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
+    <TotalGoldCost>50</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>15</AttackPower>
+    <DefencePower>3</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>2</BattleClassLevel>
+  </Unit>
+  
+
+   <Unit
+    name="CivModel.Hwan.Pioneer" guid="D259F783-9179-4AC1-9ACD-39A27FAB90BE">
+
+    <TextName>환 개척자</TextName>
+    <TotalLaborCost>5</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>5</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>0</MaxHP>
+    <MaxHealPerTurn>0</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>5</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>0.5</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+  </Unit>
+  
+
+   <Unit
+    name="CivModel.Hwan.ProtoNinja" guid="87710C32-94A3-4A9D-92ED-8BB29EE2B475">
+
+    <TextName>환 제국 프로토 닌자</TextName>
+    <TotalLaborCost>50</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>75</TotalGoldCost>
+    <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>35</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>20</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>30</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>3</BattleClassLevel>
+  </Unit>
+  
+
+   <Unit
+    name="CivModel.Hwan.Spy" guid="A3037080-69D5-4B90-8B35-44CAB18B7867">
+
+    <TextName>환국 암행어사</TextName>
+    <TotalLaborCost>32</TotalLaborCost>
+    <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
+    <TotalGoldCost>60</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>25</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>5</AttackPower>
+    <DefencePower>1</DefencePower>
+    <GoldLogistics>10</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>1</BattleClassLevel>
+  </Unit>
+  
+
+  <Unit
+    name="CivModel.Hwan.UnicornOrder" guid="06128735-B62C-4A40-AC4E-35F26C49A6EC">
+
+    <TextName>환 제국 유니콘 기사단</TextName>
+    <TotalLaborCost>30</TotalLaborCost>
+    <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
+    <TotalGoldCost>50</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>17</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>2</BattleClassLevel>
+  </Unit>
 
 </Package>

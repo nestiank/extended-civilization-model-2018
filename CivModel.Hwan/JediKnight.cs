@@ -8,20 +8,6 @@ namespace CivModel.Hwan
 {
     public class JediKnight : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("4DCCABFE-74C5-44C9-AB5E-6340F6DF75C5");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 30,
-            AttackPower = 25,
-            DefencePower = 5,
-            GoldLogistics = 30,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 3
-        };
-
         public int SkillDurationTime = 0;
 
         public double? SkillDamage = null;
@@ -65,7 +51,7 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public JediKnight(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public JediKnight(Player owner, Terrain.Point point) : base(owner, typeof(JediKnight), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -134,12 +120,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(JediKnight);
-        public ActorConstants ActorConstants => JediKnight.Constants;
-
-        public double TotalLaborCost => 50;
-        public double LaborCapacityPerTurn => 20;
-        public double TotalGoldCost => 75;
-        public double GoldCapacityPerTurn => 11;
 
         public Production Create(Player owner)
         {

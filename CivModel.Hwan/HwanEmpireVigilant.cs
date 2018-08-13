@@ -8,16 +8,8 @@ namespace CivModel.Hwan
 {
     public sealed class HwanEmpireVigilant : InteriorBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("F0D6189E-EE05-4BD6-B9A8-A7C5E1AE374E");
-        public override Guid Guid => ClassGuid;
-
-        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
-        {
-            GoldLogistics = 50
-        };
-
         public HwanEmpireVigilant(CityBase city)
-            : base(city, Constants)
+            : base(city, typeof(HwanEmpireVigilant))
         {
             city.MaxHP += 50;
             city.RemainHP += 50;
@@ -40,7 +32,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(HwanEmpireVigilant);
-        public InteriorBuildingConstants Constants => HwanEmpireVigilant.Constants;
 
         public double TotalLaborCost => 60;
         public double LaborCapacityPerTurn => 20;

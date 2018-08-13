@@ -8,19 +8,6 @@ namespace CivModel.Hwan
 {
     public class JackieChan : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("3FE5F3BA-29AC-4BFD-99D7-ABA7CE9F706A");
-        public override Guid Guid => ClassGuid;
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 50,
-            AttackPower = 35,
-            DefencePower = 10,
-            GoldLogistics = 50,
-            FullLaborForRepair = 3,
-            BattleClassLevel = 4
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
@@ -31,7 +18,7 @@ namespace CivModel.Hwan
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
 
-        public JackieChan(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public JackieChan(Player owner, Terrain.Point point) : base(owner, typeof(JackieChan), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -178,12 +165,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(JackieChan);
-        public ActorConstants ActorConstants => JackieChan.Constants;
-
-        public double TotalLaborCost => 100;
-        public double LaborCapacityPerTurn => 20;
-        public double TotalGoldCost => 100;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

@@ -8,23 +8,11 @@ namespace CivModel.Finno
 {
     public sealed class AncientFinnoFineDustFactory : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("26F24220-2B77-4E81-A985-77F3BBC77832");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 20,
-            DefencePower = 2,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 4
-        };
-        public override double ProvidedLabor => 20;
 
         private List<HappinessEffect> _effects = new List<HappinessEffect>();
 
         public AncientFinnoFineDustFactory(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(AncientFinnoFineDustFactory), point, donator)
         {
             CreateEffect();
         }
@@ -95,12 +83,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(AncientFinnoFineDustFactory);
-        public ActorConstants ActorConstants => AncientFinnoFineDustFactory.Constants;
-
-        public double TotalLaborCost => 20;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 20;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

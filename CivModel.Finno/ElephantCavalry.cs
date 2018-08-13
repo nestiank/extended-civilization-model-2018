@@ -8,20 +8,6 @@ namespace CivModel.Finno
 {
     public class ElephantCavalry : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("8AC71759-3B58-4637-9F09-4F483EB0F4B8");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 50,
-            AttackPower = 17,
-            DefencePower = 5,
-            GoldLogistics = 20,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 2
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
@@ -31,7 +17,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public ElephantCavalry(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public ElephantCavalry(Player owner, Terrain.Point point) : base(owner, typeof(ElephantCavalry), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -342,12 +328,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(ElephantCavalry);
-        public ActorConstants ActorConstants => ElephantCavalry.Constants;
-
-        public double TotalLaborCost => 30;
-        public double LaborCapacityPerTurn => 15;
-        public double TotalGoldCost => 50;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

@@ -8,21 +8,8 @@ namespace CivModel.Hwan
 {
     public sealed class HwanEmpireKimchiFactory : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("E491B144-C222-42ED-8617-C59A32E902AD");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 15,
-            DefencePower = 0,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 2
-        };
-        public override double ProvidedLabor => 10;
-
         public HwanEmpireKimchiFactory(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(HwanEmpireKimchiFactory), point, donator)
         {
         }
 
@@ -43,12 +30,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(HwanEmpireKimchiFactory);
-        public ActorConstants ActorConstants => HwanEmpireKimchiFactory.Constants;
-
-        public double TotalLaborCost => 20;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 20;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

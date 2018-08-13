@@ -8,25 +8,10 @@ namespace CivModel.Hwan
 {
     public sealed class Preternaturality : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("74265A8F-4655-4680-8F67-7C6140766107");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 300,
-            DefencePower = 20,
-            GoldLogistics = 60,
-            LaborLogistics = 30,
-            MaxHealPerTurn = 20
-        };
-
         public Preternaturality(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(Preternaturality), point, donator)
         {
         }
-
-        public override double ProvidedHappiness => 5;
-        public override double ProvidedGold => 200;
     }
 
     public class PreternaturalityProductionFactory : ITileBuildingProductionFactory
@@ -39,12 +24,7 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(Preternaturality);
-        public ActorConstants ActorConstants => Preternaturality.Constants;
 
-        public double TotalLaborCost => 800;
-        public double LaborCapacityPerTurn => 80;
-        public double TotalGoldCost => 3000;
-        public double GoldCapacityPerTurn => 300;
 
         public Production Create(Player owner)
         {

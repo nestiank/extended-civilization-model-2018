@@ -8,20 +8,8 @@ namespace CivModel.Finno
 {
     public sealed class AncientFinnoGermaniumMine : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("3F74C92A-A927-489E-AD81-D18D14BDF65B");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 30,
-            DefencePower = 0,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 5
-        };
-
         public AncientFinnoGermaniumMine(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(AncientFinnoGermaniumMine), point, donator)
         {
         }
 
@@ -58,12 +46,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(AncientFinnoGermaniumMine);
-        public ActorConstants ActorConstants => AncientFinnoGermaniumMine.Constants;
-
-        public double TotalLaborCost => 10;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 10;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

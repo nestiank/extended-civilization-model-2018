@@ -8,24 +8,10 @@ namespace CivModel.Finno
 {
     public sealed class AncientFinnoOctagon : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("AD9DD607-2972-40F7-8596-391955621CB3");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 20,
-            DefencePower = 0,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 4
-        };
-
         public AncientFinnoOctagon(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(AncientFinnoOctagon), point, donator)
         {
         }
-
-        public override double ProvidedHappiness => 2;
     }
 
     public class AncientFinnoOctagonProductionFactory : ITileBuildingProductionFactory
@@ -38,12 +24,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(AncientFinnoOctagon);
-        public ActorConstants ActorConstants => AncientFinnoOctagon.Constants;
-
-        public double TotalLaborCost => 20;
-        public double LaborCapacityPerTurn => 15;
-        public double TotalGoldCost => 60;
-        public double GoldCapacityPerTurn => 20;
 
         public Production Create(Player owner)
         {

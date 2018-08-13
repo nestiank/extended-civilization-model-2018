@@ -8,19 +8,8 @@ namespace CivModel.Zap
 {
     public sealed class FIRFortress : TileBuilding, ITileObjectObserver
     {
-        public static Guid ClassGuid { get; } = new Guid("60835460-2FDC-4507-B8F1-7822B5283541");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 30,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 10
-        };
-
         public FIRFortress(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(FIRFortress), point, donator)
         {
             owner.Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
         }
@@ -74,12 +63,7 @@ namespace CivModel.Zap
         }
 
         public Type ResultType => typeof(FIRFortress);
-        public ActorConstants ActorConstants => FIRFortress.Constants;
 
-        public double TotalLaborCost => 20;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 20;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

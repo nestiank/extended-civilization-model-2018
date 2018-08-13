@@ -8,27 +8,13 @@ namespace CivModel.Finno
 {
     public class DecentralizedMilitary : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("E1B2CAD9-56D5-427B-AEB7-6B291AD4F3D1");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 50,
-            AttackPower = 13,
-            DefencePower = 5,
-            GoldLogistics = 10,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 1
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public DecentralizedMilitary(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public DecentralizedMilitary(Player owner, Terrain.Point point) : base(owner, typeof(DecentralizedMilitary), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -45,12 +31,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(DecentralizedMilitary);
-        public ActorConstants ActorConstants => DecentralizedMilitary.Constants;
-
-        public double TotalLaborCost => 15;
-        public double LaborCapacityPerTurn => 8;
-        public double TotalGoldCost => 30;
-        public double GoldCapacityPerTurn => 15;
 
         public Production Create(Player owner)
         {

@@ -8,23 +8,11 @@ namespace CivModel.Zap
 {
     public sealed class CityCenter : CityBase
     {
-        public static Guid ClassGuid { get; } = new Guid("BF70E402-A0BE-4587-85A3-5623667AE2E1");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 30,
-            GoldLogistics = 0,
-            LaborLogistics = 0,
-            MaxHealPerTurn = 30
-
-        };
-
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
         public CityCenter(Player player, Terrain.Point point)
-            : base(player, Constants, point, null)
+            : base(player, typeof(CityCenter), point, null)
         {
             this.Population = 5;
             _specialActs[0] = new CityCenterAction(this);
@@ -134,12 +122,6 @@ namespace CivModel.Zap
         }
 
         public Type ResultType => typeof(CityCenter);
-        public ActorConstants Constants => CityCenter.Constants;
-
-        public double TotalLaborCost => 100;
-        public double LaborCapacityPerTurn => 25;
-        public double TotalGoldCost => 200;
-        public double GoldCapacityPerTurn => 50;
 
         public Production Create(Player owner)
         {

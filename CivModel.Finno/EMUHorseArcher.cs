@@ -8,27 +8,13 @@ namespace CivModel.Finno
 {
     public class EMUHorseArcher : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("2BCC409A-567A-4198-83BB-BD85E6B74A68");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 75,
-            AttackPower = 10,
-            DefencePower = 7,
-            GoldLogistics = 10,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 1
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public EMUHorseArcher(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public EMUHorseArcher(Player owner, Terrain.Point point) : base(owner, typeof(EMUHorseArcher), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -45,7 +31,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(EMUHorseArcher);
-        public ActorConstants ActorConstants => EMUHorseArcher.Constants;
 
         public double TotalLaborCost => 15;
         public double LaborCapacityPerTurn => 8;

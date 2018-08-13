@@ -8,20 +8,6 @@ namespace CivModel.Hwan
 {
     public class LEOSpaceArmada : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("A41789C8-823A-4B13-BDE2-3171751FC8BF");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 50,
-            AttackPower = 15,
-            DefencePower = 3,
-            GoldLogistics = 20,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 2
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
@@ -31,7 +17,7 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public LEOSpaceArmada(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public LEOSpaceArmada(Player owner, Terrain.Point point) : base(owner, typeof(LEOSpaceArmada), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -107,12 +93,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(LEOSpaceArmada);
-        public ActorConstants ActorConstants => LEOSpaceArmada.Constants;
-
-        public double TotalLaborCost => 35;
-        public double LaborCapacityPerTurn => 15;
-        public double TotalGoldCost => 50;
-        public double GoldCapacityPerTurn => 20;
 
         public Production Create(Player owner)
         {

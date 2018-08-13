@@ -8,27 +8,13 @@ namespace CivModel.Zap
 {
     public class ZapNinja : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("AB1AC3DC-3F5A-43A2-9141-8468B558D6F6");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 18,
-            AttackPower = 10,
-            DefencePower = 3,
-            GoldLogistics = 30,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 3
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public ZapNinja(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public ZapNinja(Player owner, Terrain.Point point) : base(owner, typeof(ZapNinja), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -45,12 +31,6 @@ namespace CivModel.Zap
         }
 
         public Type ResultType => typeof(ZapNinja);
-        public ActorConstants ActorConstants => ZapNinja.Constants;
-
-        public double TotalLaborCost => 50;
-        public double LaborCapacityPerTurn => 20;
-        public double TotalGoldCost => 75;
-        public double GoldCapacityPerTurn => 11;
 
         public Production Create(Player owner)
         {

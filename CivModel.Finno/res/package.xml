@@ -2,5 +2,397 @@
 <Package
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
 
+  <City
+  name="CivModel.Finno.FinnoEmpireCity" guid="300E06FD-B656-46DC-A668-BB36C75E3086">
+
+    <TextName>핀란드 제국 도시</TextName>
+    <TotalLaborCost>200</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>300</TotalGoldCost>
+    <GoldCapacityPerTurn>50</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>500</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>30</AttackPower>
+    <DefencePower>15</DefencePower>
+    <GoldLogistics>0</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+
+    <InitialPopulation>5</InitialPopulation>
+  </City>
+
+  
+  <TileBuilding
+    name="CivModel.Finno.AncientFinnoFineDustFactory" guid="26F24220-2B77-4E81-A985-77F3BBC77832">
+
+    <TextName>고대 핀란드 미세먼지 공장</TextName>
+    <TotalLaborCost>20</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>20</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>20</MaxHP>
+    <MaxHealPerTurn>4</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>2</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>20</ProvidedLabor>
+  </TileBuilding>
+
+  
+  <TileBuilding
+  name="CivModel.Finno.AncientFinnoFIRFortress" guid="F5AC55CF-C095-4525-9B87-111ED58856A2">
+
+    <TextName>고대 핀란드 5차산업혁명 요새</TextName>
+    <TotalLaborCost>20</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>20</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>30</MaxHP>
+    <MaxHealPerTurn>10</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+  </TileBuilding>
+
+  
+  <TileBuilding
+  name="CivModel.Finno.AncientFinnoOctagon" guid="AD9DD607-2972-40F7-8596-391955621CB3">
+
+    <TextName>고대 핀란드 옥타곤</TextName>
+    <TotalLaborCost>20 </TotalLaborCost>
+    <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
+    <TotalGoldCost>60</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>20</MaxHP>
+    <MaxHealPerTurn>4</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>2</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+  </TileBuilding>
+
+  
+  <TileBuilding
+  name="CivModel.Finno.AncientFinnoGermaniumMine" guid="3F74C92A-A927-489E-AD81-D18D14BDF65B">
+
+    <TextName>고대 핀란드 게르마늄 광산</TextName>
+    <TotalLaborCost>10</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>10</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>30</MaxHP>
+    <MaxHealPerTurn>5</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>0</ProvidedGold>
+    <ProvidedHappiness>0</ProvidedHappiness>
+    <ProvidedLabor>0</ProvidedLabor>
+  </TileBuilding>
+  
+  
+  <TileBuilding
+  name="CivModel.Finno.Preternaturality" guid="C6BE46D2-578B-4B50-9DF5-54F683CEE45E">
+
+    <TextName>고대 핀란드 불가사의</TextName>
+    <TotalLaborCost>800</TotalLaborCost>
+    <LaborCapacityPerTurn>80</LaborCapacityPerTurn>
+    <TotalGoldCost>3000</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <MaxAP>0</MaxAP>
+    <MaxHP>300</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>20</DefencePower>
+    <GoldLogistics>60</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <FullLaborForRepair>0</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+
+    <ProvidedGold>200</ProvidedGold>
+    <ProvidedHappiness>5</ProvidedHappiness>
+    <ProvidedLabor>50</ProvidedLabor>
+  </TileBuilding>
+  
+  
+    <InteriorBuilding
+    name="CivModel.Finno.AncientFinnoFIRFactory" guid="C07FCB2A-4D41-45F2-AF03-8663E230F3A6">
+
+    <TextName>고대 핀란드 5차 산업혁명 공장</TextName>
+    <TotalLaborCost>10</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>10</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>10</LaborLogistics>
+    <ProvidedLabor>5</ProvidedLabor>
+    <ResearchCapacity>0</ResearchCapacity>
+    <ResearchIncome>0</ResearchIncome>
+    <PopulationCoefficient>1</PopulationCoefficient>
+  </InteriorBuilding>
+  
+
+    <InteriorBuilding
+    name="CivModel.Finno.AncientFinnoLabortory" guid="2E5AF09B-7E81-451F-ADBE-11A44EDA49A6">
+
+    <TextName>고대 핀란드 도시 연구소</TextName>
+    <TotalLaborCost>120</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>100</TotalGoldCost>
+    <GoldCapacityPerTurn>25</GoldCapacityPerTurn>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <ProvidedLabor>4</ProvidedLabor>
+    <ResearchCapacity>200</ResearchCapacity>
+    <ResearchIncome>20</ResearchIncome>
+    <PopulationCoefficient>1</PopulationCoefficient>
+  </InteriorBuilding>
+  
+  
+    <InteriorBuilding
+    name="CivModel.Finno.AncientFinnoVigilant" guid="7A9A9079-361D-4ED6-92C1-24A0546AC029">
+
+    <TextName>고대 핀란드 자경단</TextName>
+    <TotalLaborCost>100</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>100</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <ProvidedLabor>0</ProvidedLabor>
+    <ResearchCapacity>0</ResearchCapacity>
+    <ResearchIncome>0</ResearchIncome>
+    <PopulationCoefficient>1</PopulationCoefficient>
+  </InteriorBuilding>
+  
+  
+    <InteriorBuilding
+    name="CivModel.Finno.AncientFinnoXylitolProductionRegion" guid="335DA15B-C38D-4FF0-AE90-543369B3C525">
+
+    <TextName>고대 핀란드 자일리톨 생산지</TextName>
+    <TotalLaborCost>100</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>70</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>30</LaborLogistics>
+    <ProvidedLabor>0</ProvidedLabor>
+    <ResearchCapacity>0</ResearchCapacity>
+    <ResearchIncome>0</ResearchIncome>
+    <PopulationCoefficient>1.3</PopulationCoefficient>
+  </InteriorBuilding>
+  
+
+  <Unit
+    name="CivModel.Finno.AutismBeamDrone" guid="C49FB444-C530-41B8-9D61-A9CF4443A4D6">
+
+    <TextName>핀란드 제국 소서러</TextName>
+    <TotalLaborCost>35</TotalLaborCost>
+    <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
+    <TotalGoldCost>50</TotalGoldCost>
+    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>15</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>2</BattleClassLevel>
+  </Unit>
+
+
+  <Unit
+    name="CivModel.Finno.AutismBeamDrone" guid="B1637348-A97F-4D7F-B160-B82E4695F2C3">
+
+    <TextName>Autism Beam Drone</TextName>
+    <TotalLaborCost>50</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>75</TotalGoldCost>
+    <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>35</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>20</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>30</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>3</BattleClassLevel>
+  </Unit>
+  
+
+    <Unit
+    name="CivModel.Finno.DecentralizedMilitary" guid="E1B2CAD9-56D5-427B-AEB7-6B291AD4F3D1">
+
+    <TextName>핀란드 제국 탈중앙화된 군인</TextName>
+    <TotalLaborCost>15</TotalLaborCost>
+    <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>13</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>10</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>1</BattleClassLevel>
+  </Unit>
+
+
+    <Unit
+    name="CivModel.Finno.ElephantCavalry" guid="8AC71759-3B58-4637-9F09-4F483EB0F4B8">
+
+    <TextName>핀란드 제국 코끼리 장갑병</TextName>
+    <TotalLaborCost>30</TotalLaborCost>
+    <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
+    <TotalGoldCost>50</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>17</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>20</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>2</BattleClassLevel>
+  </Unit>
+
+
+    <Unit
+    name="CivModel.Finno.EMUHorseArcher" guid="2BCC409A-567A-4198-83BB-BD85E6B74A68">
+
+    <TextName>고대 핀란드 EMU 궁기병</TextName>
+    <TotalLaborCost>15</TotalLaborCost>
+    <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
+    <TotalGoldCost>30</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>75</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>10</AttackPower>
+    <DefencePower>7</DefencePower>
+    <GoldLogistics>10</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>1</BattleClassLevel>
+  </Unit>
+  
+
+    <Unit
+    name="CivModel.Finno.GenghisKhan" guid="DCB724DA-430E-4B13-8703-9517F173FE4B">
+
+    <TextName>Genghis Khan</TextName>
+    <TotalLaborCost>100</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>100</TotalGoldCost>
+    <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>50</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>35</AttackPower>
+    <DefencePower>10</DefencePower>
+    <GoldLogistics>50</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>3</FullLaborForRepair>
+    <BattleClassLevel>4</BattleClassLevel>
+  </Unit>
+
+
+    <Unit
+    name="CivModel.Finno.JediKnight" guid="D4B8D80D-4C68-45AD-9EA3-B40CD3377A60">
+
+    <TextName>핀란드 제국 제다이 기사단</TextName>
+    <TotalLaborCost>50</TotalLaborCost>
+    <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
+    <TotalGoldCost>75</TotalGoldCost>
+    <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>30</MaxHP>
+    <MaxHealPerTurn>30</MaxHealPerTurn>
+    <AttackPower>25</AttackPower>
+    <DefencePower>5</DefencePower>
+    <GoldLogistics>30</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>3</BattleClassLevel>
+  </Unit>
+  
+
+    <Unit
+    name="CivModel.Finno.Pioneer" guid="6FC1C96D-2E22-48A6-9401-5CF7E8636015">
+
+    <TextName>핀란드 개척자</TextName>
+    <TotalLaborCost>5</TotalLaborCost>
+    <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
+    <TotalGoldCost>5</TotalGoldCost>
+    <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>0</MaxHP>
+    <MaxHealPerTurn>0</MaxHealPerTurn>
+    <AttackPower>0</AttackPower>
+    <DefencePower>0</DefencePower>
+    <GoldLogistics>5</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>0.5</FullLaborForRepair>
+    <BattleClassLevel>0</BattleClassLevel>
+  </Unit>
+  
+
+    <Unit
+    name="CivModel.Finno.Spy" guid="B4F8293E-EBF2-47A0-A1BB-DF6A6ECCD766">
+
+    <TextName>핀란드 Spy</TextName>
+    <TotalLaborCost>32</TotalLaborCost>
+    <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
+    <TotalGoldCost>60</TotalGoldCost>
+    <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
+    <MaxAP>2</MaxAP>
+    <MaxHP>25</MaxHP>
+    <MaxHealPerTurn>20</MaxHealPerTurn>
+    <AttackPower>5</AttackPower>
+    <DefencePower>1</DefencePower>
+    <GoldLogistics>10</GoldLogistics>
+    <LaborLogistics>0</LaborLogistics>
+    <FullLaborForRepair>2</FullLaborForRepair>
+    <BattleClassLevel>1</BattleClassLevel>
+  </Unit>
 
 </Package>
