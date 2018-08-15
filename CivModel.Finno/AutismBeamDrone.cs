@@ -8,20 +8,6 @@ namespace CivModel.Finno
 {
     public class AutismBeamDrone : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("B1637348-A97F-4D7F-B160-B82E4695F2C3");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 35,
-            AttackPower = 20,
-            DefencePower = 5,
-            GoldLogistics = 30,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 3
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
@@ -31,7 +17,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public AutismBeamDrone(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public AutismBeamDrone(Player owner, Terrain.Point point) : base(owner, typeof(AutismBeamDrone), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -203,12 +189,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(AutismBeamDrone);
-        public ActorConstants ActorConstants => AutismBeamDrone.Constants;
-
-        public double TotalLaborCost => 50;
-        public double LaborCapacityPerTurn => 20;
-        public double TotalGoldCost => 75;
-        public double GoldCapacityPerTurn => 11;
 
         public Production Create(Player owner)
         {

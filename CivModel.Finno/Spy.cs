@@ -8,19 +8,6 @@ namespace CivModel.Finno
 {
     public class Spy : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("B4F8293E-EBF2-47A0-A1BB-DF6A6ECCD766");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 25,
-            AttackPower = 5,
-            DefencePower = 1,
-            GoldLogistics = 10,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 1
-        };
 
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -31,7 +18,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public Spy(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public Spy(Player owner, Terrain.Point point) : base(owner, typeof(Spy), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -99,12 +86,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(Spy);
-        public ActorConstants ActorConstants => Spy.Constants;
-
-        public double TotalLaborCost => 32;
-        public double LaborCapacityPerTurn => 8;
-        public double TotalGoldCost => 60;
-        public double GoldCapacityPerTurn => 15;
 
         public Production Create(Player owner)
         {

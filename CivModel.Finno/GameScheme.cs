@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace CivModel.Finno
 {
@@ -30,68 +29,46 @@ namespace CivModel.Finno
         }
     }
 
-    public class GameScheme : IGameAdditionScheme
+    public class GameScheme : IGameScheme
     {
-        public IGameSchemeFactory Factory => _factory;
-        private readonly GameSchemeFactory _factory;
+        private static readonly IProductionFactory[] _productions = {
+            PioneerProductionFactory.Instance,
+            AncientSorcererProductionFactory.Instance,
+            AutismBeamDroneFactory.Instance,
+            DecentralizedMilitaryProductionFactory.Instance,
+            ElephantCavalryProductionFactory.Instance,
+            EMUHorseArcherProductionFactory.Instance,
+            GenghisKhanProductionFactory.Instance,
+            JediKnightProductionFactory.Instance,
+            SpyProductionFactory.Instance,
+            AncientFinnoFineDustFactoryProductionFactory.Instance,
+            AncientFinnoFIRFactoryProductionFactory.Instance,
+            AncientFinnoFIRFortressProductionFactory.Instance,
+            AncientFinnoGermaniumMineProductionFactory.Instance,
+            AncientFinnoLabortoryProductionFactory.Instance,
+            AncientFinnoOctagonProductionFactory.Instance,
+            AncientFinnoVigilantProductionFactory.Instance,
+            AncientFinnoXylitolProductionRegionProductionFactory.Instance,
+            FinnoEmpireCityProductionFactory.Instance,
+            PreternaturalityProductionFactory.Instance,
+        };
 
-        public IEnumerable<IProductionFactory> AdditionalProductionFactory
-        {
-            get
-            {
-                yield return PioneerProductionFactory.Instance;
-                yield return AncientSorcererProductionFactory.Instance;
-                yield return AutismBeamDroneFactory.Instance;
-                yield return DecentralizedMilitaryProductionFactory.Instance;
-                yield return ElephantCavalryProductionFactory.Instance;
-                yield return EMUHorseArcherProductionFactory.Instance;
-                yield return GenghisKhanProductionFactory.Instance;
-                yield return JediKnightProductionFactory.Instance;
-                yield return SpyProductionFactory.Instance;
-                yield return AncientFinnoFineDustFactoryProductionFactory.Instance;
-                yield return AncientFinnoFIRFactoryProductionFactory.Instance;
-                yield return AncientFinnoFIRFortressProductionFactory.Instance;
-                yield return AncientFinnoGermaniumMineProductionFactory.Instance;
-                yield return AncientFinnoLabortoryProductionFactory.Instance;
-                yield return AncientFinnoOctagonProductionFactory.Instance;
-                yield return AncientFinnoVigilantProductionFactory.Instance;
-                yield return AncientFinnoXylitolProductionRegionProductionFactory.Instance;
-                yield return FinnoEmpireCityProductionFactory.Instance;
-                yield return PreternaturalityProductionFactory.Instance;
-            }
-        }
+        public GameSchemeFactory Factory { get; }
+        IGameSchemeFactory IGameScheme.Factory => Factory;
 
         public GameScheme(GameSchemeFactory factory)
         {
-            _factory = factory ?? throw new ArgumentNullException("factory");
+            Factory = factory ?? throw new ArgumentNullException("factory");
         }
 
-        public void RegisterGuid(Game game)
+        public TextReader GetPackageData()
         {
-            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
-            game.GuidManager.RegisterGuid(AncientSorcerer.ClassGuid, (p, t) => new AncientSorcerer(p, t));
-            game.GuidManager.RegisterGuid(AutismBeamDrone.ClassGuid, (p, t) => new AutismBeamDrone(p, t));
-            game.GuidManager.RegisterGuid(DecentralizedMilitary.ClassGuid, (p, t) => new DecentralizedMilitary(p, t));
-            game.GuidManager.RegisterGuid(ElephantCavalry.ClassGuid, (p, t) => new ElephantCavalry(p, t));
-            game.GuidManager.RegisterGuid(EMUHorseArcher.ClassGuid, (p, t) => new EMUHorseArcher(p, t));
-            game.GuidManager.RegisterGuid(GenghisKhan.ClassGuid, (p, t) => new GenghisKhan(p, t));
-            game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
-            game.GuidManager.RegisterGuid(Spy.ClassGuid, (p, t) => new Spy(p, t));
-            game.GuidManager.RegisterGuid(AncientFinnoFineDustFactory.ClassGuid, (p, t) => new AncientFinnoFineDustFactory(p, t));
-            game.GuidManager.RegisterGuid(AncientFinnoFIRFactory.ClassGuid, (c) => new AncientFinnoFIRFactory(c));
-            game.GuidManager.RegisterGuid(AncientFinnoFIRFortress.ClassGuid, (p, t) => new AncientFinnoFIRFortress(p, t));
-            game.GuidManager.RegisterGuid(AncientFinnoGermaniumMine.ClassGuid, (p, t) => new AncientFinnoGermaniumMine(p, t));
-            game.GuidManager.RegisterGuid(AncientFinnoLabortory.ClassGuid, (c) => new AncientFinnoLabortory(c));
-            game.GuidManager.RegisterGuid(AncientFinnoOctagon.ClassGuid, (p, t) => new AncientFinnoOctagon(p, t));
-            game.GuidManager.RegisterGuid(AncientFinnoVigilant.ClassGuid, (c) => new AncientFinnoVigilant(c));
-            game.GuidManager.RegisterGuid(AncientFinnoXylitolProductionRegion.ClassGuid, (c) => new AncientFinnoXylitolProductionRegion(c));
-            game.GuidManager.RegisterGuid(FinnoEmpireCity.ClassGuid, (p, t) => new FinnoEmpireCity(p, t, true));
-            game.GuidManager.RegisterGuid(Preternaturality.ClassGuid, (p, t) => new Preternaturality(p, t));
+            return new StringReader(Properties.Resources.package);
         }
 
         public void OnAfterInitialized(Game game)
         {
-            foreach (var p in AdditionalProductionFactory)
+            foreach (var p in _productions)
             {
                 game.GetPlayerFinno().AvailableProduction.Add(p);
             }

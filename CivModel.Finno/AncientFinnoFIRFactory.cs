@@ -8,17 +8,7 @@ namespace CivModel.Finno
 {
     public sealed class AncientFinnoFIRFactory : InteriorBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("C07FCB2A-4D41-45F2-AF03-8663E230F3A6");
-        public override Guid Guid => ClassGuid;
-
-        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
-        {
-            ProvidedLabor = 5,
-            GoldLogistics = 20
-        };
-
-
-        public AncientFinnoFIRFactory(CityBase city) : base(city, Constants) { }
+        public AncientFinnoFIRFactory(CityBase city) : base(city, typeof(AncientFinnoFIRFactory)) { }
     }
 
     public class AncientFinnoFIRFactoryProductionFactory : IInteriorBuildingProductionFactory
@@ -31,7 +21,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(AncientFinnoFIRFactory);
-        public InteriorBuildingConstants Constants => AncientFinnoFIRFactory.Constants;
 
         public double TotalLaborCost => 10;
         public double LaborCapacityPerTurn => 10;

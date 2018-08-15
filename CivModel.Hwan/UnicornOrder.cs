@@ -8,20 +8,6 @@ namespace CivModel.Hwan
 {
     public class UnicornOrder : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("06128735-B62C-4A40-AC4E-35F26C49A6EC");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 50,
-            AttackPower = 17,
-            DefencePower = 5,
-            GoldLogistics = 20,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 2
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
@@ -31,7 +17,7 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public UnicornOrder(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public UnicornOrder(Player owner, Terrain.Point point) : base(owner, typeof(UnicornOrder), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -132,12 +118,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(UnicornOrder);
-        public ActorConstants ActorConstants => UnicornOrder.Constants;
-
-        public double TotalLaborCost => 30;
-        public double LaborCapacityPerTurn => 15;
-        public double TotalGoldCost => 50;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

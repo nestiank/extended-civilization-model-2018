@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace CivModel.Hwan
 {
@@ -30,68 +29,46 @@ namespace CivModel.Hwan
         }
     }
 
-    public class GameScheme : IGameAdditionScheme
+    public class GameScheme : IGameScheme
     {
-        public IGameSchemeFactory Factory => _factory;
-        private readonly GameSchemeFactory _factory;
+        private static readonly IProductionFactory[] _productions = {
+            PioneerProductionFactory.Instance,
+            BrainwashedEMUKnightProductionFactory.Instance,
+            DecentralizedMilitaryProductionFactory.Instance,
+            JackieChanProductionFactory.Instance,
+            JediKnightProductionFactory.Instance,
+            LEOSpaceArmadaProductionFactory.Instance,
+            ProtoNinjaProductionFactory.Instance,
+            UnicornOrderProductionFactory.Instance,
+            SpyProductionFactory.Instance,
+            HwanEmpireCityProductionFactory.Instance,
+            HwanEmpireCityCentralLabProductionFactory.Instance,
+            HwanEmpireFIRFactoryProductionFactory.Instance,
+            HwanEmpireFIRFortressProductionFactory.Instance,
+            HwanEmpireIbizaProductionFactory.Instance,
+            HwanEmpireKimchiFactoryProductionFactory.Instance,
+            HwanEmpireLatifundiumProductionFactory.Instance,
+            HwanEmpireSungsimdangProductionFactory.Instance,
+            HwanEmpireVigilantProductionFactory.Instance,
+            PreternaturalityProductionFactory.Instance,
+        };
 
-        public IEnumerable<IProductionFactory> AdditionalProductionFactory
-        {
-            get
-            {
-                yield return PioneerProductionFactory.Instance;
-                yield return BrainwashedEMUKnightProductionFactory.Instance;
-                yield return DecentralizedMilitaryProductionFactory.Instance;
-                yield return JackieChanProductionFactory.Instance;
-                yield return JediKnightProductionFactory.Instance;
-                yield return LEOSpaceArmadaProductionFactory.Instance;
-                yield return ProtoNinjaProductionFactory.Instance;
-                yield return UnicornOrderProductionFactory.Instance;
-                yield return SpyProductionFactory.Instance;
-                yield return HwanEmpireCityProductionFactory.Instance;
-                yield return HwanEmpireCityCentralLabProductionFactory.Instance;
-                yield return HwanEmpireFIRFactoryProductionFactory.Instance;
-                yield return HwanEmpireFIRFortressProductionFactory.Instance;
-                yield return HwanEmpireIbizaProductionFactory.Instance;
-                yield return HwanEmpireKimchiFactoryProductionFactory.Instance;
-                yield return HwanEmpireLatifundiumProductionFactory.Instance;
-                yield return HwanEmpireSungsimdangProductionFactory.Instance;
-                yield return HwanEmpireVigilantProductionFactory.Instance;
-                yield return PreternaturalityProductionFactory.Instance;
-            }
-        }
+        public GameSchemeFactory Factory { get; }
+        IGameSchemeFactory IGameScheme.Factory => Factory;
 
         public GameScheme(GameSchemeFactory factory)
         {
-            _factory = factory ?? throw new ArgumentNullException("factory");
+            Factory = factory ?? throw new ArgumentNullException("factory");
         }
 
-        public void RegisterGuid(Game game)
+        public TextReader GetPackageData()
         {
-            game.GuidManager.RegisterGuid(Pioneer.ClassGuid, (p, t) => new Pioneer(p, t));
-            game.GuidManager.RegisterGuid(BrainwashedEMUKnight.ClassGuid, (p, t) => new BrainwashedEMUKnight(p, t));
-            game.GuidManager.RegisterGuid(DecentralizedMilitary.ClassGuid, (p, t) => new DecentralizedMilitary(p, t));
-            game.GuidManager.RegisterGuid(JackieChan.ClassGuid, (p, t) => new JackieChan(p, t));
-            game.GuidManager.RegisterGuid(JediKnight.ClassGuid, (p, t) => new JediKnight(p, t));
-            game.GuidManager.RegisterGuid(LEOSpaceArmada.ClassGuid, (p, t) => new LEOSpaceArmada(p, t));
-            game.GuidManager.RegisterGuid(ProtoNinja.ClassGuid, (p, t) => new ProtoNinja(p, t));
-            game.GuidManager.RegisterGuid(UnicornOrder.ClassGuid, (p, t) => new UnicornOrder(p, t));
-            game.GuidManager.RegisterGuid(Spy.ClassGuid, (p, t) => new Spy(p, t));
-            game.GuidManager.RegisterGuid(HwanEmpireCity.ClassGuid, (p, t) => new HwanEmpireCity(p, t, true));
-            game.GuidManager.RegisterGuid(HwanEmpireCityCentralLab.ClassGuid, (c) => new HwanEmpireCityCentralLab(c));
-            game.GuidManager.RegisterGuid(HwanEmpireFIRFactory.ClassGuid, (c) => new HwanEmpireFIRFactory(c));
-            game.GuidManager.RegisterGuid(HwanEmpireFIRFortress.ClassGuid, (p, t) => new HwanEmpireFIRFortress(p, t));
-            game.GuidManager.RegisterGuid(HwanEmpireIbiza.ClassGuid, (p, t) => new HwanEmpireIbiza(p, t));
-            game.GuidManager.RegisterGuid(HwanEmpireKimchiFactory.ClassGuid, (p, t) => new HwanEmpireKimchiFactory(p, t));
-            game.GuidManager.RegisterGuid(HwanEmpireLatifundium.ClassGuid, (p, t) => new HwanEmpireLatifundium(p, t));
-            game.GuidManager.RegisterGuid(HwanEmpireSungsimdang.ClassGuid, (c) => new HwanEmpireSungsimdang(c));
-            game.GuidManager.RegisterGuid(HwanEmpireVigilant.ClassGuid, (c) => new HwanEmpireVigilant(c));
-            game.GuidManager.RegisterGuid(Preternaturality.ClassGuid, (p, t) => new Preternaturality(p, t));
+            return new StringReader(Properties.Resources.package);
         }
 
         public void OnAfterInitialized(Game game)
         {
-            foreach (var p in AdditionalProductionFactory)
+            foreach (var p in _productions)
             {
                 game.GetPlayerHwan().AvailableProduction.Add(p);
             }

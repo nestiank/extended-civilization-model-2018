@@ -8,20 +8,8 @@ namespace CivModel.Hwan
 {
     public sealed class HwanEmpireFIRFortress : TileBuilding, ITileObjectObserver
     {
-        public static Guid ClassGuid { get; } = new Guid("B6BBF4C9-26F4-48C7-87EE-15E6F21B2DC2");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 30,
-            DefencePower = 5,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 10
-        };
-
         public HwanEmpireFIRFortress(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(HwanEmpireFIRFortress), point, donator)
         {
             owner.Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
             if (point.Unit != null)
@@ -75,12 +63,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(HwanEmpireFIRFortress);
-        public ActorConstants ActorConstants => HwanEmpireFIRFortress.Constants;
-
-        public double TotalLaborCost => 20;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 20;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

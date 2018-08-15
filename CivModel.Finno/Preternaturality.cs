@@ -8,25 +8,10 @@ namespace CivModel.Finno
 {
     public sealed class Preternaturality : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("C6BE46D2-578B-4B50-9DF5-54F683CEE45E");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 300,
-            DefencePower = 20,
-            GoldLogistics = 60,
-            LaborLogistics = 30,
-            MaxHealPerTurn = 20
-        };
-
         public Preternaturality(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(Preternaturality), point, donator)
         {
         }
-
-        public override double ProvidedHappiness => 5;
-        public override double ProvidedGold => 200;
     }
 
     public class PreternaturalityProductionFactory : ITileBuildingProductionFactory
@@ -39,12 +24,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(Preternaturality);
-        public ActorConstants ActorConstants => Preternaturality.Constants;
-
-        public double TotalLaborCost => 800;
-        public double LaborCapacityPerTurn => 80;
-        public double TotalGoldCost => 3000;
-        public double GoldCapacityPerTurn => 300;
 
         public Production Create(Player owner)
         {

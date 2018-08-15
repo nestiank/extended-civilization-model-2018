@@ -8,17 +8,7 @@ namespace CivModel.Zap
 {
     public sealed class Pioneer : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("6A5A25E9-1213-49B9-94F6-A8BB5B0C0A10");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            GoldLogistics = 5,
-            FullLaborForRepair = 0.5
-        };
-
-        public Pioneer(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public Pioneer(Player owner, Terrain.Point point) : base(owner, typeof(Pioneer), point)
         {
         }
     }
@@ -34,12 +24,6 @@ namespace CivModel.Zap
 
 
         public Type ResultType => typeof(Pioneer);
-        public ActorConstants ActorConstants => Pioneer.Constants;
-
-        public double TotalLaborCost => 5;
-        public double LaborCapacityPerTurn => 2;
-        public double TotalGoldCost => 5;
-        public double GoldCapacityPerTurn => 2;
 
         public Production Create(Player owner)
         {

@@ -8,20 +8,6 @@ namespace CivModel.Finno
 {
     public class GenghisKhan : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("DCB724DA-430E-4B13-8703-9517F173FE4B");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 50,
-            AttackPower = 35,
-            DefencePower = 10,
-            GoldLogistics = 50,
-            FullLaborForRepair = 3,
-            BattleClassLevel = 4
-        };
-
         public override ActionPoint GetRequiredAPForTile(TerrainType type)
         {
             ActionPoint ap = base.GetRequiredAPForTile(type);
@@ -40,7 +26,7 @@ namespace CivModel.Finno
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public GenghisKhan(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public GenghisKhan(Player owner, Terrain.Point point) : base(owner, typeof(GenghisKhan), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -275,12 +261,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(GenghisKhan);
-        public ActorConstants ActorConstants => GenghisKhan.Constants;
-
-        public double TotalLaborCost => 100;
-        public double LaborCapacityPerTurn => 20;
-        public double TotalGoldCost => 100;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

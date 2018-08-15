@@ -8,27 +8,13 @@ namespace CivModel.Zap
 {
     public class Padawan : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("04DBFD22-3990-48AC-BAF1-095BDAEFCB57");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 15,
-            AttackPower = 13,
-            DefencePower = 3,
-            GoldLogistics = 30,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 3
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public Padawan(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public Padawan(Player owner, Terrain.Point point) : base(owner, typeof(Padawan), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -45,12 +31,6 @@ namespace CivModel.Zap
         }
 
         public Type ResultType => typeof(Padawan);
-        public ActorConstants ActorConstants => Padawan.Constants;
-
-        public double TotalLaborCost => 50;
-        public double LaborCapacityPerTurn => 20;
-        public double TotalGoldCost => 75;
-        public double GoldCapacityPerTurn => 11;
 
         public Production Create(Player owner)
         {

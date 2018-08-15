@@ -8,18 +8,7 @@ namespace CivModel.Hwan
 {
     public sealed class HwanEmpireCityCentralLab : InteriorBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("BE574FAE-BB83-4D8C-9547-BDA426F24C4A");
-        public override Guid Guid => ClassGuid;
-
-        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
-        {
-            ResearchCapacity = 200,
-            ResearchIncome = 20,
-            GoldLogistics = 50
-        };
-
-
-        public HwanEmpireCityCentralLab(CityBase city) : base(city, Constants) { }
+        public HwanEmpireCityCentralLab(CityBase city) : base(city, typeof(HwanEmpireCityCentralLab)) { }
     }
 
     public class HwanEmpireCityCentralLabProductionFactory : IInteriorBuildingProductionFactory
@@ -32,12 +21,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(HwanEmpireCityCentralLab);
-        public InteriorBuildingConstants Constants => HwanEmpireCityCentralLab.Constants;
-
-        public double TotalLaborCost => 50;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 100;
-        public double GoldCapacityPerTurn => 20;
 
         public Production Create(Player owner)
         {

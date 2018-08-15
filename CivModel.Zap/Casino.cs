@@ -8,19 +8,8 @@ namespace CivModel.Zap
 {
     public sealed class Casino : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("C60920C0-5F6E-4439-8A0E-419950B2DD1A");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 30,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 5
-        };
-
         public Casino(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(Casino), point, donator)
         {
         }
 
@@ -44,12 +33,6 @@ namespace CivModel.Zap
         }
 
         public Type ResultType => typeof(Casino);
-        public ActorConstants ActorConstants => Casino.Constants;
-
-        public double TotalLaborCost => 30;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 30;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

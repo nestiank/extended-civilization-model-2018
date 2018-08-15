@@ -8,20 +8,6 @@ namespace CivModel.Hwan
 {
     public class ProtoNinja : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("87710C32-94A3-4A9D-92ED-8BB29EE2B475");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 35,
-            AttackPower = 20,
-            DefencePower = 5,
-            GoldLogistics = 30,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 3
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
@@ -31,7 +17,7 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public ProtoNinja(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public ProtoNinja(Player owner, Terrain.Point point) : base(owner, typeof(ProtoNinja), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -115,12 +101,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(ProtoNinja);
-        public ActorConstants ActorConstants => ProtoNinja.Constants;
-
-        public double TotalLaborCost => 50;
-        public double LaborCapacityPerTurn => 20;
-        public double TotalGoldCost => 75;
-        public double GoldCapacityPerTurn => 11;
 
         public Production Create(Player owner)
         {

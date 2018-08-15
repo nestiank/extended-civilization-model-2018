@@ -8,27 +8,13 @@ namespace CivModel.Zap
 {
     public class InfantryDivision : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("52104893-FC05-446F-BF3F-6C99F3556515");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 50,
-            AttackPower = 5,
-            DefencePower = 3,
-            GoldLogistics = 10,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 1
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
         private readonly IActorAction _movingAttackAct;
         public override IActorAction MovingAttackAct => _movingAttackAct;
 
-        public InfantryDivision(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public InfantryDivision(Player owner, Terrain.Point point) : base(owner, typeof(InfantryDivision), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -45,12 +31,6 @@ namespace CivModel.Zap
         }
 
         public Type ResultType => typeof(InfantryDivision);
-        public ActorConstants ActorConstants => InfantryDivision.Constants;
-
-        public double TotalLaborCost => 15;
-        public double LaborCapacityPerTurn => 8;
-        public double TotalGoldCost => 30;
-        public double GoldCapacityPerTurn => 15;
 
         public Production Create(Player owner)
         {

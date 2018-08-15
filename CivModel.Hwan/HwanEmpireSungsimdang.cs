@@ -8,16 +8,7 @@ namespace CivModel.Hwan
 {
     public sealed class HwanEmpireSungsimdang : InteriorBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("D6AE6381-5B65-47EB-B99B-B3BE2C232772");
-        public override Guid Guid => ClassGuid;
-
-        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
-        {
-            GoldLogistics = 50,
-            PopulationCoefficient = 1.2
-        };
-
-        public HwanEmpireSungsimdang(CityBase city) : base(city, Constants) { }
+        public HwanEmpireSungsimdang(CityBase city) : base(city, typeof(HwanEmpireSungsimdang)) { }
 
         public int SoBoRo = 0;
 
@@ -56,12 +47,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(HwanEmpireSungsimdang);
-        public InteriorBuildingConstants Constants => HwanEmpireSungsimdang.Constants;
-
-        public double TotalLaborCost => 30;
-        public double LaborCapacityPerTurn => 5;
-        public double TotalGoldCost => 50;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

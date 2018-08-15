@@ -8,16 +8,7 @@ namespace CivModel.Zap
 {
     public sealed class FIRFactory : InteriorBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("3948E644-33B9-4FA8-B3BA-002EAD04DF0E");
-        public override Guid Guid => ClassGuid;
-
-        public static InteriorBuildingConstants Constants = new InteriorBuildingConstants
-        {
-            ProvidedLabor = 3,
-            GoldLogistics = 20
-        };
-
-        public FIRFactory(CityBase city) : base(city, Constants) { }
+        public FIRFactory(CityBase city) : base(city, typeof(FIRFactory)) { }
     }
 
     public class FIRFactoryProductionFactory : IInteriorBuildingProductionFactory
@@ -30,12 +21,6 @@ namespace CivModel.Zap
         }
 
         public Type ResultType => typeof(FIRFactory);
-        public InteriorBuildingConstants Constants => FIRFactory.Constants;
-
-        public double TotalLaborCost => 10;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 10;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

@@ -8,22 +8,8 @@ namespace CivModel.Hwan
 {
     public sealed class HwanEmpireIbiza : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("9B1A6066-6DA6-438F-A285-30D26EBD7828");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 30,
-            DefencePower = 0,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 5
-        };
-
-        public override double ProvidedHappiness => 1;
-
         public HwanEmpireIbiza(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(HwanEmpireIbiza), point, donator)
         {
         }
     }
@@ -38,12 +24,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(HwanEmpireIbiza);
-        public ActorConstants ActorConstants => HwanEmpireIbiza.Constants;
-
-        public double TotalLaborCost => 30;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 30;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {

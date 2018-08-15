@@ -8,17 +8,7 @@ namespace CivModel.Finno
 {
     public sealed class Pioneer : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("6FC1C96D-2E22-48A6-9401-5CF7E8636015");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            GoldLogistics = 5,
-            FullLaborForRepair = 0.5
-        };
-
-        public Pioneer(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public Pioneer(Player owner, Terrain.Point point) : base(owner, typeof(Pioneer), point)
         {
         }
     }
@@ -33,7 +23,6 @@ namespace CivModel.Finno
         }
 
         public Type ResultType => typeof(Pioneer);
-        public ActorConstants ActorConstants => Pioneer.Constants;
 
         public double TotalLaborCost => 5;
         public double LaborCapacityPerTurn => 2;

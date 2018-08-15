@@ -13,20 +13,6 @@ namespace CivModel.Hwan
 
     public class Spy : Unit
     {
-        public static Guid ClassGuid { get; } = new Guid("A3037080-69D5-4B90-8B35-44CAB18B7867");
-        public override Guid Guid => ClassGuid;
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxAP = 2,
-            MaxHP = 25,
-            AttackPower = 5,
-            DefencePower = 1,
-            GoldLogistics = 10,
-            FullLaborForRepair = 2,
-            BattleClassLevel = 1
-        };
-
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
 
@@ -36,7 +22,7 @@ namespace CivModel.Hwan
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
 
-        public Spy(Player owner, Terrain.Point point) : base(owner, Constants, point)
+        public Spy(Player owner, Terrain.Point point) : base(owner, typeof(Spy), point)
         {
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
@@ -109,12 +95,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(Spy);
-        public ActorConstants ActorConstants => Spy.Constants;
-
-        public double TotalLaborCost => 32;
-        public double LaborCapacityPerTurn => 8;
-        public double TotalGoldCost => 60;
-        public double GoldCapacityPerTurn => 15;
 
         public Production Create(Player owner)
         {

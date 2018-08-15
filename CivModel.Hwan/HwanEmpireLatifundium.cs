@@ -8,20 +8,8 @@ namespace CivModel.Hwan
 {
     public sealed class HwanEmpireLatifundium : TileBuilding
     {
-        public static Guid ClassGuid { get; } = new Guid("10B85454-07B8-4D6A-8FF2-157870C41AF6");
-        public override Guid Guid => ClassGuid;
-
         public override IReadOnlyList<IActorAction> SpecialActs => _specialActs;
         private readonly IActorAction[] _specialActs = new IActorAction[1];
-
-        public static readonly ActorConstants Constants = new ActorConstants
-        {
-            MaxHP = 20,
-            DefencePower = 0,
-            GoldLogistics = 20,
-            LaborLogistics = 10,
-            MaxHealPerTurn = 4
-        };
 
         public override double ProvidedGold => _providedGold;
         private double _providedGold;
@@ -32,7 +20,7 @@ namespace CivModel.Hwan
         private int _skillExpireTurn;
 
         public HwanEmpireLatifundium(Player owner, Terrain.Point point, Player donator = null)
-            : base(owner, Constants, point, donator)
+            : base(owner, typeof(HwanEmpireLatifundium), point, donator)
         {
             _specialActs[0] = new HwanEmpireLatifundiumAction(this);
 
@@ -124,12 +112,6 @@ namespace CivModel.Hwan
         }
 
         public Type ResultType => typeof(HwanEmpireLatifundium);
-        public ActorConstants ActorConstants => HwanEmpireLatifundium.Constants;
-
-        public double TotalLaborCost => 30;
-        public double LaborCapacityPerTurn => 10;
-        public double TotalGoldCost => 30;
-        public double GoldCapacityPerTurn => 10;
 
         public Production Create(Player owner)
         {
