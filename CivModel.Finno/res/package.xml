@@ -126,7 +126,7 @@
     <TotalLaborCost>800</TotalLaborCost>
     <LaborCapacityPerTurn>80</LaborCapacityPerTurn>
     <TotalGoldCost>3000</TotalGoldCost>
-    <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
+    <GoldCapacityPerTurn>300</GoldCapacityPerTurn>
     <MaxAP>0</MaxAP>
     <MaxHP>300</MaxHP>
     <MaxHealPerTurn>20</MaxHealPerTurn>

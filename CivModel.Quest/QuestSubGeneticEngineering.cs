@@ -11,7 +11,7 @@ namespace CivModel.Quests
 {
     public class QuestSubGeneticEngineering : Quest
     {
-        private const double _requiredResearch = 3000;
+        private const double _requiredResearch = 0;
         private double _targetResearch;
 
         public QuestSubGeneticEngineering(Game game)

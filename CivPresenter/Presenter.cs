@@ -618,7 +618,7 @@ namespace CivPresenter
                 }
                 else
                 {
-                    View.Shutdown();
+                    //View.Shutdown();
                 }
             };
             OnArrowKey = direction => {

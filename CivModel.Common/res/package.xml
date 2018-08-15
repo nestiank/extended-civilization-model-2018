@@ -20,11 +20,11 @@
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
 
-    <ProvidedGold>0</ProvidedGold>
+    <ProvidedGold>1000</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>
     <ProvidedLabor>0</ProvidedLabor>
 
-    <InitialPopulation>33</InitialPopulation>
+    <InitialPopulation>141</InitialPopulation>
   </City>
 
   <TileBuilding
