@@ -1,4 +1,4 @@
-namespace CivModel.AI
+namespace CivModel.AI.Fuzzy
 
 open System.Net
 

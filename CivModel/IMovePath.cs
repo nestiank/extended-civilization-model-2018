@@ -60,10 +60,7 @@ namespace CivModel
         /// If the next point is <see cref="EndPoint"/>, make <see cref="Actor"/> act <see cref="FinalAction"/> instead of moving.
         /// </summary>
         /// <returns>Whether <see cref="RecalculateFirstWalk"/> is called before moving.</returns>
-        /// <exception cref="InvalidOperationException">
-        /// the path or the first walk of path is invalid
-        /// </exception>
-        /// <returns>Whether the walk is done or not. The walk is not done if AP is not enough.</returns>
+        /// <returns>Whether the walk is done or not. The walk is not done if AP is not enough or path is invalid.</returns>
         bool ActFirstWalk();
     }
 }

@@ -17,5 +17,6 @@ type public GameSchemeFactory() =
 and public GameScheme(factory) =
     interface IGameAIScheme with
         member this.Factory = factory :> IGameSchemeFactory
+        member this.GetPackageData() = null
         member this.OnAfterInitialized game = ()
         member this.CreateAI player = AIController(player) :> IAIController

@@ -204,8 +204,8 @@ namespace CivPresenter
 
             var factory = new CivModel.Common.GameSchemeFactory();
             var knownFactory = new IGameSchemeFactory[] {
-#if !DEBUG_CORE
                 new CivModel.AI.GameSchemeFactory(),
+#if !DEBUG_CORE
                 new CivModel.Finno.GameSchemeFactory(),
                 new CivModel.Hwan.GameSchemeFactory(),
                 new CivModel.Zap.GameSchemeFactory(),
@@ -236,8 +236,8 @@ namespace CivPresenter
 
             var knownFactory = new IGameSchemeFactory[] {
                 new CivModel.Common.GameSchemeFactory(),
-#if !DEBUG_CORE
                 new CivModel.AI.GameSchemeFactory(),
+#if !DEBUG_CORE
                 new CivModel.Finno.GameSchemeFactory(),
                 new CivModel.Hwan.GameSchemeFactory(),
                 new CivModel.Zap.GameSchemeFactory(),
@@ -476,24 +476,17 @@ namespace CivPresenter
                 Game.EndTurn();
             Game.StartTurn();
 
-            if (!Game.PlayerInTurn.IsAIControlled)
+            SelectNextActor();
+            if (_selectedActor == null)
             {
-                SelectNextActor();
-                if (_selectedActor == null)
+                if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
                 {
-                    if (Game.PlayerInTurn.Cities.FirstOrDefault() is CityBase city)
-                    {
-                        if (city.PlacedPoint is Terrain.Point pt)
-                            FocusedPoint = pt;
-                    }
+                    if (city.PlacedPoint is Terrain.Point pt)
+                        FocusedPoint = pt;
                 }
+            }
 
-                StateNormal();
-            }
-            else
-            {
-                StateAIControl();
-            }
+            StateNormal();
         }
 
         private void SelectNextActor()
