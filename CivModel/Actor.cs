@@ -258,7 +258,16 @@ namespace CivModel
         /// <summary>
         /// The amount of labor for repair of this actor to get the maximum heal mount in this turn.
         /// </summary>
-        public double BasicLaborForRepair => FullLaborForRepair * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
+        public double BasicLaborForRepair
+        {
+            get
+            {
+                if (MaxHealPerTurn == 0)
+                    return 0;
+                else
+                    return FullLaborForRepair * Math.Min(MaxHP - RemainHP, MaxHealPerTurn) / MaxHealPerTurn;
+            }
+        }
 
         /// <summary>
         /// The amount of labor for repair to be inputed, estimated by <see cref="Player.EstimateResourceInputs"/>.
