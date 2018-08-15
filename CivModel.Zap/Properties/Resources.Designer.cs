@@ -65,9 +65,16 @@ namespace CivModel.Zap.Properties {
         ///&lt;Package
         ///  xmlns=&quot;https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema&quot;&gt;
         ///
+        ///  &lt;City
+        ///    name=&quot;CivModel.Zap.CityCenter&quot; guid=&quot;BF70E402-A0BE-4587-85A3-5623667AE2E1&quot;&gt;
         ///
-        ///&lt;/Package&gt;
-        ///과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///    &lt;TextName&gt;잡국 도시&lt;/TextName&gt;
+        ///    &lt;TotalLaborCost&gt;100&lt;/TotalLaborCost&gt;
+        ///    &lt;LaborCapacityPerTurn&gt;25&lt;/LaborCapacityPerTurn&gt;
+        ///    &lt;TotalGoldCost&gt;200&lt;/TotalGoldCost&gt;
+        ///    &lt;GoldCapacityPerTurn&gt;50&lt;/GoldCapacityPerTurn&gt;
+        ///    &lt;MaxAP&gt;0&lt;/MaxAP&gt;
+        ///    &lt;MaxHP&gt;300&lt;/Ma[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string package {
             get {

@@ -89,10 +89,12 @@ namespace CivModel
 
                 foreach (var s in SchemeLoader.GetOverlappableScheme<IGameScheme>())
                 {
-                    var reader = s.GetPackageData();
-                    if (reader != null)
+                    using (var reader = s.GetPackageData())
                     {
-                        _prototypeLoader.Load(reader, s.GetType().Assembly);
+                        if (reader != null)
+                        {
+                            _prototypeLoader.Load(reader, s.GetType().Assembly);
+                        }
                     }
                 }
 

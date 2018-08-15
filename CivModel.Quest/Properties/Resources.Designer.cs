@@ -65,9 +65,20 @@ namespace CivModel.Quests.Properties {
         ///&lt;Package
         ///  xmlns=&quot;https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema&quot;&gt;
         ///
+        ///  &lt;Quest
+        ///    name=&quot;CivModel.Quests.QuestAtlantis&quot; guid=&quot;738543C1-9536-4026-8238-CC5A3455D3DB&quot;&gt;
         ///
-        ///&lt;/Package&gt;
-        ///과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///    &lt;TextName&gt;
+        ///      [불가사의] - 아틀란티스
+        ///    &lt;/TextName&gt;
+        ///    &lt;PostingTurn&gt;10&lt;/PostingTurn&gt;
+        ///    &lt;LimitTurn&gt;15&lt;/LimitTurn&gt;
+        ///    &lt;GoalNotice&gt;
+        ///      아틀란티스의 영토내에 [불가사의]를 건설해 주세요.
+        ///    &lt;/GoalNotice&gt;
+        ///    &lt;RewardNotice&gt;
+        ///      [특수 자원: 네크로노미콘] 1 획득
+        ///    &lt;/Rew[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string package {
             get {

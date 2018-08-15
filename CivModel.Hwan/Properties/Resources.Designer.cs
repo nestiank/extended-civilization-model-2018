@@ -65,9 +65,16 @@ namespace CivModel.Hwan.Properties {
         ///&lt;Package
         ///  xmlns=&quot;https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema&quot;&gt;
         ///
+        ///  &lt;City
+        ///    name=&quot;CivModel.Hwan.HwanEmpireCity&quot; guid=&quot;D0A84907-885A-44C2-8E4C-077744E1E0C3&quot;&gt;
         ///
-        ///&lt;/Package&gt;
-        ///과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///    &lt;TextName&gt;환 제국 도시&lt;/TextName&gt;
+        ///    &lt;TotalLaborCost&gt;200&lt;/TotalLaborCost&gt;
+        ///    &lt;LaborCapacityPerTurn&gt;20&lt;/LaborCapacityPerTurn&gt;
+        ///    &lt;TotalGoldCost&gt;300&lt;/TotalGoldCost&gt;
+        ///    &lt;GoldCapacityPerTurn&gt;50&lt;/GoldCapacityPerTurn&gt;
+        ///    &lt;MaxAP&gt;0&lt;/MaxAP&gt;
+        ///    &lt;MaxHP&gt;[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string package {
             get {

@@ -19,8 +19,10 @@ namespace CivModel
 
         static PrototypeLoader()
         {
-            _schema.Add(null, XmlReader.Create(
-                new StringReader(Properties.Resources.PrototypeSchema)));
+            using (var reader = new StringReader(Properties.Resources.PrototypeSchema))
+            {
+                _schema.Add(null, XmlReader.Create(reader));
+            }
         }
 
         private Dictionary<Type, GuidObjectPrototype> _prototypes = new Dictionary<Type, GuidObjectPrototype>();
@@ -95,6 +97,8 @@ namespace CivModel
                 throw new NotImplementedException();
 
             if (_prototypes.ContainsKey(proto.TargetType))
+                throw new InvalidDataException("there is duplicated Type in prototype data");
+            if (_dictGuidProto.ContainsKey(proto.Guid))
                 throw new InvalidDataException("there is duplicated GUID in prototype data");
 
             _prototypes.Add(proto.TargetType, proto);

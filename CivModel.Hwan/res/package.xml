@@ -3,7 +3,7 @@
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
 
   <City
-  name="CivModel.Hwan.HwanEmpireCity" guid="D0A84907-885A-44C2-8E4C-077744E1E0C3">
+    name="CivModel.Hwan.HwanEmpireCity" guid="D0A84907-885A-44C2-8E4C-077744E1E0C3">
 
     <TextName>환 제국 도시</TextName>
     <TotalLaborCost>200</TotalLaborCost>
@@ -26,7 +26,6 @@
 
     <InitialPopulation>5</InitialPopulation>
   </City>
-  
 
   <TileBuilding
     name="CivModel.Hwan.HwanEmpireFIRFortress" guid="B6BBF4C9-26F4-48C7-87EE-15E6F21B2DC2">
@@ -51,7 +50,6 @@
     <ProvidedLabor>0</ProvidedLabor>
   </TileBuilding>
 
-
   <TileBuilding
     name="CivModel.Hwan.HwanEmpireIbiza" guid="9B1A6066-6DA6-438F-A285-30D26EBD7828">
 
@@ -74,8 +72,7 @@
     <ProvidedHappiness>1</ProvidedHappiness>
     <ProvidedLabor>0</ProvidedLabor>
   </TileBuilding>
-  
-  
+
   <TileBuilding
     name="CivModel.Hwan.HwanEmpireKimchiFactory" guid="E491B144-C222-42ED-8617-C59A32E902AD">
 
@@ -98,9 +95,8 @@
     <ProvidedHappiness>0</ProvidedHappiness>
     <ProvidedLabor>10</ProvidedLabor>
   </TileBuilding>
-  
-  
-    <TileBuilding
+
+  <TileBuilding
     name="CivModel.Hwan.HwanEmpireLatifundium" guid="10B85454-07B8-4D6A-8FF2-157870C41AF6">
 
     <TextName>환 제국 라티푼디움</TextName>
@@ -122,10 +118,9 @@
     <ProvidedHappiness>0</ProvidedHappiness>
     <ProvidedLabor>0</ProvidedLabor>
   </TileBuilding>
-  
-  
-   <TileBuilding
-    name="CivModel.Hwan.Preternaturality" guid="74265A8F-4655-4680-8F67-7C6140766107">
+
+  <TileBuilding
+   name="CivModel.Hwan.Preternaturality" guid="74265A8F-4655-4680-8F67-7C6140766107">
 
     <TextName>불가사의</TextName>
     <TotalLaborCost>800</TotalLaborCost>
@@ -146,8 +141,7 @@
     <ProvidedHappiness>5</ProvidedHappiness>
     <ProvidedLabor>50</ProvidedLabor>
   </TileBuilding>
-  
-  
+
   <InteriorBuilding
     name="CivModel.Hwan.HwanEmpireCityCentralLab" guid="BE574FAE-BB83-4D8C-9547-BDA426F24C4A">
 
@@ -163,8 +157,7 @@
     <ResearchIncome>20</ResearchIncome>
     <PopulationCoefficient>1</PopulationCoefficient>
   </InteriorBuilding>
-  
-  
+
   <InteriorBuilding
     name="CivModel.Hwan.HwanEmpireFIRFactory" guid="5AAB5AC2-59F4-4066-889F-3BFD419C25B4">
 
@@ -180,8 +173,7 @@
     <ResearchIncome>0</ResearchIncome>
     <PopulationCoefficient>1</PopulationCoefficient>
   </InteriorBuilding>
-  
-  
+
   <InteriorBuilding
     name="CivModel.Hwan.HwanEmpireSungsimdang" guid="D6AE6381-5B65-47EB-B99B-B3BE2C232772">
 
@@ -197,8 +189,7 @@
     <ResearchIncome>0</ResearchIncome>
     <PopulationCoefficient>1.2</PopulationCoefficient>
   </InteriorBuilding>
-  
-  
+
   <InteriorBuilding
     name="CivModel.Hwan.HwanEmpireVigilant" guid="F0D6189E-EE05-4BD6-B9A8-A7C5E1AE374E">
 
@@ -215,7 +206,6 @@
     <PopulationCoefficient>1</PopulationCoefficient>
   </InteriorBuilding>
 
-  
   <Unit
     name="CivModel.Hwan.BrainwashedEMUKnight" guid="6C04C360-C1B9-4633-8269-B0911B1D63DA">
 
@@ -234,8 +224,7 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>1</BattleClassLevel>
   </Unit>
-  
-  
+
   <Unit
     name="CivModel.Hwan.DecentralizedMilitary" guid="E9A92842-AADA-4700-BCE3-6BEC543F5BC7">
 
@@ -254,8 +243,7 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>1</BattleClassLevel>
   </Unit>
-  
-  
+
   <Unit
     name="CivModel.Hwan.JackieChan" guid="3FE5F3BA-29AC-4BFD-99D7-ABA7CE9F706A">
 
@@ -275,8 +263,6 @@
     <BattleClassLevel>4</BattleClassLevel>
   </Unit>
 
-  
-
   <Unit
     name="CivModel.Hwan.JediKnight" guid="4DCCABFE-74C5-44C9-AB5E-6340F6DF75C5">
 
@@ -295,7 +281,6 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>3</BattleClassLevel>
   </Unit>
-  
 
   <Unit
     name="CivModel.Hwan.LEOSpaceArmada" guid="A41789C8-823A-4B13-BDE2-3171751FC8BF">
@@ -315,10 +300,9 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>2</BattleClassLevel>
   </Unit>
-  
 
-   <Unit
-    name="CivModel.Hwan.Pioneer" guid="D259F783-9179-4AC1-9ACD-39A27FAB90BE">
+  <Unit
+   name="CivModel.Hwan.Pioneer" guid="D259F783-9179-4AC1-9ACD-39A27FAB90BE">
 
     <TextName>환 개척자</TextName>
     <TotalLaborCost>5</TotalLaborCost>
@@ -335,10 +319,9 @@
     <FullLaborForRepair>0.5</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
   </Unit>
-  
 
-   <Unit
-    name="CivModel.Hwan.ProtoNinja" guid="87710C32-94A3-4A9D-92ED-8BB29EE2B475">
+  <Unit
+   name="CivModel.Hwan.ProtoNinja" guid="87710C32-94A3-4A9D-92ED-8BB29EE2B475">
 
     <TextName>환 제국 프로토 닌자</TextName>
     <TotalLaborCost>50</TotalLaborCost>
@@ -355,10 +338,9 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>3</BattleClassLevel>
   </Unit>
-  
 
-   <Unit
-    name="CivModel.Hwan.Spy" guid="A3037080-69D5-4B90-8B35-44CAB18B7867">
+  <Unit
+   name="CivModel.Hwan.Spy" guid="A3037080-69D5-4B90-8B35-44CAB18B7867">
 
     <TextName>환국 암행어사</TextName>
     <TotalLaborCost>32</TotalLaborCost>
@@ -375,7 +357,6 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>1</BattleClassLevel>
   </Unit>
-  
 
   <Unit
     name="CivModel.Hwan.UnicornOrder" guid="06128735-B62C-4A40-AC4E-35F26C49A6EC">
@@ -395,5 +376,4 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>2</BattleClassLevel>
   </Unit>
-
 </Package>

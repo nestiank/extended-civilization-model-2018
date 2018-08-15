@@ -2,7 +2,6 @@
 <Package
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
 
-
   <City
     name="CivModel.Zap.CityCenter" guid="BF70E402-A0BE-4587-85A3-5623667AE2E1">
 
@@ -28,7 +27,6 @@
     <InitialPopulation>1</InitialPopulation>
   </City>
 
-
   <TileBuilding
     name="CivModel.Zap.Casino" guid="C60920C0-5F6E-4439-8A0E-419950B2DD1A">
 
@@ -51,7 +49,6 @@
     <ProvidedHappiness>1</ProvidedHappiness>
     <ProvidedLabor>0</ProvidedLabor>
   </TileBuilding>
-
 
   <TileBuilding
     name="CivModel.Zap.FIRFortress" guid="60835460-2FDC-4507-B8F1-7822B5283541">
@@ -76,7 +73,6 @@
     <ProvidedLabor>0</ProvidedLabor>
   </TileBuilding>
 
-
   <TileBuilding
     name="CivModel.Zap.ZapFactory" guid="B998C018-EE38-4970-963C-E6B636DAF8A6">
 
@@ -100,8 +96,7 @@
     <ProvidedLabor>10</ProvidedLabor>
   </TileBuilding>
 
-  
-    <InteriorBuilding
+  <InteriorBuilding
     name="CivModel.Zap.CityLab" guid="7D49A0B3-976E-454A-941A-E8B5FFBEAC02">
 
     <TextName>잡국 도시 연구소</TextName>
@@ -117,9 +112,8 @@
     <PopulationCoefficient>1</PopulationCoefficient>
   </InteriorBuilding>
 
-
   <InteriorBuilding
-  name="CivModel.Zap.FIRFactory" guid="3948E644-33B9-4FA8-B3BA-002EAD04DF0E">
+    name="CivModel.Zap.FIRFactory" guid="3948E644-33B9-4FA8-B3BA-002EAD04DF0E">
 
     <TextName>잡국 5차 산업혁명 공장</TextName>
     <TotalLaborCost>10</TotalLaborCost>
@@ -133,7 +127,6 @@
     <ResearchIncome>0</ResearchIncome>
     <PopulationCoefficient>1</PopulationCoefficient>
   </InteriorBuilding>
-
 
   <Unit
     name="CivModel.Zap.ArmedDivision" guid="68AE9D0F-3492-427A-B4F4-8EA84C14DA4A">
@@ -154,7 +147,6 @@
     <BattleClassLevel>2</BattleClassLevel>
   </Unit>
 
-
   <Unit
     name="CivModel.Zap.DecentralizedMilitary" guid="FCE532E4-E5B2-4569-B91E-A998EBC72689">
 
@@ -173,7 +165,6 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>1</BattleClassLevel>
   </Unit>
-
 
   <Unit
     name="CivModel.Zap.InfantryDivision" guid="52104893-FC05-446F-BF3F-6C99F3556515">
@@ -194,7 +185,6 @@
     <BattleClassLevel>1</BattleClassLevel>
   </Unit>
 
-
   <Unit
     name="CivModel.Zap.LEOSpaceArmada" guid="8CA7B018-F783-4A65-9AB2-FC37A77DE6C0">
 
@@ -213,7 +203,6 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>2</BattleClassLevel>
   </Unit>
-
 
   <Unit
     name="CivModel.Zap.Padawan" guid="04DBFD22-3990-48AC-BAF1-095BDAEFCB57">
@@ -234,7 +223,6 @@
     <BattleClassLevel>3</BattleClassLevel>
   </Unit>
 
-
   <Unit
     name="CivModel.Zap.Pioneer" guid="6A5A25E9-1213-49B9-94F6-A8BB5B0C0A10">
 
@@ -254,7 +242,6 @@
     <BattleClassLevel>0</BattleClassLevel>
   </Unit>
 
-
   <Unit
     name="CivModel.Zap.ZapNinja" guid="AB1AC3DC-3F5A-43A2-9141-8468B558D6F6">
 
@@ -273,5 +260,4 @@
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>3</BattleClassLevel>
   </Unit>
-  
 </Package>

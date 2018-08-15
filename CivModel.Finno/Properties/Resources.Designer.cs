@@ -65,9 +65,16 @@ namespace CivModel.Finno.Properties {
         ///&lt;Package
         ///  xmlns=&quot;https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema&quot;&gt;
         ///
+        ///  &lt;City
+        ///    name=&quot;CivModel.Finno.FinnoEmpireCity&quot; guid=&quot;300E06FD-B656-46DC-A668-BB36C75E3086&quot;&gt;
         ///
-        ///&lt;/Package&gt;
-        ///과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///    &lt;TextName&gt;핀란드 제국 도시&lt;/TextName&gt;
+        ///    &lt;TotalLaborCost&gt;200&lt;/TotalLaborCost&gt;
+        ///    &lt;LaborCapacityPerTurn&gt;20&lt;/LaborCapacityPerTurn&gt;
+        ///    &lt;TotalGoldCost&gt;300&lt;/TotalGoldCost&gt;
+        ///    &lt;GoldCapacityPerTurn&gt;50&lt;/GoldCapacityPerTurn&gt;
+        ///    &lt;MaxAP&gt;0&lt;/MaxAP&gt;
+        ///    &lt;Ma[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string package {
             get {
