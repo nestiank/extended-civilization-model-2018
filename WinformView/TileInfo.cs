@@ -70,7 +70,7 @@ namespace WinformView
                 tbCity.Location = cbxPlayer.Location;
                 tbCity.Size = cbxPlayer.Size;
                 tbCity.TabIndex = cbxPlayer.TabIndex;
-                tbCity.Text = city.Name;
+                tbCity.Text = city.CityName;
                 cbxPlayer.Enabled = false;
                 cbxPlayer.Visible = false;
                 Controls.Add(tbCity);
@@ -113,7 +113,7 @@ namespace WinformView
                 {
                     MessageBox.Show("도시 이름이 잘못됬거나 이미 존재하는 도시 이름입니다.", "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     DialogResult = DialogResult.None;
-                    tbCity.Text = city.Name;
+                    tbCity.Text = city.CityName;
                 }
 
                 try

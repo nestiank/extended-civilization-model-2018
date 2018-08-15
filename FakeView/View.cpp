@@ -802,6 +802,11 @@ namespace FakeView
                 break;
             }
 
+            case ';':
+                m_autoSkip = 1;
+                m_autoSkipPlayer = m_presenter->Game->PlayerInTurn;
+                break;
+
             case '1':
                 m_presenter->CommandNumeric(0);
                 break;

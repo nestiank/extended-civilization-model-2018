@@ -346,7 +346,8 @@ namespace WinformView
                         }
                         else
                         {
-                            var city = new CityCenter(_presenter.Game.PlayerInTurn, _selectedTile.Value, false);
+                            var city = new CityCenter(_presenter.Game.PlayerInTurn, _selectedTile.Value);
+                            city.OnAfterProduce(null);
                         }
                         Invalidate();
                     }
