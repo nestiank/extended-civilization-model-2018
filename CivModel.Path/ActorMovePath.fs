@@ -116,7 +116,7 @@ type public ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IA
         | Choice2Of3 () ->
             recalcFirstWalk ()
             actFirstWalk ()
-        | Choice3Of3 () -> raise (InvalidOperationException ("the path is invalid"))
+        | Choice3Of3 () -> false
 
     interface IMovePath with
         member this.Actor =  actor

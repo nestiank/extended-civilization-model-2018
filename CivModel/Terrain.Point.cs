@@ -29,6 +29,13 @@ namespace CivModel
             }
             private Position _position;
 
+            /// <summary>
+            /// The index of this tile,
+            /// which is equal to <c><see cref="Position.Y"/> * <see cref="Width"/> + <see cref="Position.X"/></c>.
+            /// </summary>
+            /// <seealso cref="GetPoint(int)"/>
+            public int Index => Position.Y * Terrain.Width + Position.X;
+
             private static int modulo(int a, int b)
             {
                 if (b < 0)

@@ -22,7 +22,7 @@ namespace CivModel
         /// Gets all tiles of this terrain.
         /// </summary>
         public IEnumerable<Point> AllTiles =>
-            Enumerable.Range(0, Width * Height).Select(i => GetPoint(i % Width, i / Width));
+            Enumerable.Range(0, Width * Height).Select(index => GetPoint(index));
 
         /// <summary>
         /// The width of this terrain.
@@ -70,6 +70,23 @@ namespace CivModel
                     _points[y * width + x].Type = (TerrainType)random.Next(len);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Point"/> from point index.
+        /// Point index is equal to <c>y * <see cref="Width"/> + x</c>.
+        /// </summary>
+        /// <param name="index">The index of point.</param>
+        /// <returns>The <see cref="Point"/> object</returns>
+        /// <exception cref="ArgumentOutOfRangeException">index is invalid</exception>
+        /// <seealso cref="Point.Index"/>
+        public Point GetPoint(int index)
+        {
+            int y = index / Width;
+            if (y < 0 || y >= Height)
+                throw new ArgumentOutOfRangeException(nameof(index), "index is invalid");
+            int x = index % Width;
+            return GetPoint(x, y);
         }
 
         /// <summary>

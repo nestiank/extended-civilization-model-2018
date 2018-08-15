@@ -209,8 +209,11 @@ namespace FakeView
                 {
                     if (m_presenter->Game->PlayerInTurn == m_autoSkipPlayer)
                     {
-                        if (m_autoSkip-- == 0)
-                            m_autoSkipPlayer = nullptr;
+                        if (m_autoSkip != -1)
+                        {
+                            if (m_autoSkip-- == 0)
+                                m_autoSkipPlayer = nullptr;
+                        }
                     }
 
                     if (m_autoSkipPlayer != nullptr)
@@ -791,7 +794,7 @@ namespace FakeView
             {
                 auto str = Microsoft::VisualBasic::Interaction::InputBox(L"input turn count to autoskip", L"", L"", -1, -1);
                 int turn;
-                if (System::Int32::TryParse(str, turn) && turn > 0)
+                if (System::Int32::TryParse(str, turn) && (turn > 0 || turn == -1))
                 {
                     m_autoSkip = turn;
                     m_autoSkipPlayer = m_presenter->Game->PlayerInTurn;
