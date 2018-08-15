@@ -5,27 +5,27 @@ open System.Linq
 open System.Threading.Tasks
 open CivModel
 
-type AIController(player : Player) =
-    let fallback fn = function
-    | Some x -> Some x
-    | None -> fn ()
+type AIController(player: Player) =
+    let actions = [
+        Produce.getAction;
+        QuestAction.getAction;
+        Deploy.getAction;
+        Movement.getAction;
+    ]
 
-    let getAction () =
-        let context = AIContext player
-        None
-        |> Option.orElseWith (fun _ -> Produce.getAction context)
-        |> Option.orElseWith (fun _ -> Deploy.getAction context)
-        |> Option.orElseWith (fun _ -> Movement.getAction context)
+    let getAction (context: AIContext) =
+        context.Update ()
+        actions |> List.tryPick ((|>) context)
 
     interface CivModel.IAIController with
         member this.DoAction() =
-            let rec action () =
-                let act = getAction ()
+            let rec action ctx =
+                let act = getAction ctx
                 match act with
                 | Some fn ->
                     fn ()
-                    action ()
+                    action ctx
                 | None -> ()
-            action ()
+            action (AIContext player)
             Task.CompletedTask
         member this.Destroy() = ()

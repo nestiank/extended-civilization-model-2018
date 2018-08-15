@@ -58,6 +58,7 @@
     <Compile Include="Produce.fs" />
     <Compile Include="Deploy.fs" />
     <Compile Include="Movement.fs" />
+    <Compile Include="QuestAction.fs" />
     <Compile Include="AIController.fs" />
     <Compile Include="GameScheme.fs" />
     <Content Include="packages.config" />
@@ -79,9 +80,34 @@
       <Project>{2a129afb-249d-4d4c-8d7c-11bf64484573}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
+      <Name>CivModel.Common</Name>
+      <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Finno\CivModel.Finno.csproj">
+      <Name>CivModel.Finno</Name>
+      <Project>{6a09ebc4-cf6d-4ba5-8710-e3d4e7f46ea5}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Hwan\CivModel.Hwan.csproj">
+      <Name>CivModel.Hwan</Name>
+      <Project>{257a17a7-e9db-4d7b-8469-0b3ad9e91937}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\CivModel.Path\CivModel.Path.fsproj">
       <Name>CivModel.Path</Name>
       <Project>{841006d0-e2e4-454c-8333-7f4a1c62fed1}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Quest\CivModel.Quests.csproj">
+      <Name>CivModel.Quests</Name>
+      <Project>{c7375e51-cb93-4405-b82a-64508ed2959c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CivModel.Zap\CivModel.Zap.csproj">
+      <Name>CivModel.Zap</Name>
+      <Project>{b6d55159-0ed4-41c6-94ae-8f1eb2b3b9f3}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">

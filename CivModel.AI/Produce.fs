@@ -38,10 +38,22 @@ module Produce =
                 player.Production.AddLast (pioneer.Create player) |> ignore)
         | _ -> None
 
+    let produceFactory (context: AIContext) =
+        let player = context.Player
+        match context.AvailableFactory with
+        | Some factory ->
+            Some (fun () ->
+                player.Production.AddLast (factory.Create player) |> ignore)
+        | None -> None
+
     let getAction (context: AIContext) =
         let player = context.Player
         let remainLabor = player.Labor - player.EstimatedUsedLabor
-        if remainLabor > 0.0 && player.GoldNetIncome > 0.0 then
+        if player.Labor < 30.0 && remainLabor / player.Labor > 0.1 then
+            produceFactory context
+        elif player.Labor < 200.0 && remainLabor / player.Labor > 0.8 then
+            produceFactory context
+        elif remainLabor > 500.0 && remainLabor / player.Labor > 0.8 then
             produceCityPioneer context
         else
             None
