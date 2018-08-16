@@ -19,7 +19,9 @@
     <Language>ko-KR</Language>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\..\CivModel\bin\Debug\CivModel.dll" />
-<DocumentationSource sourceFile="..\..\CivModel\bin\Debug\CivModel.xml" /></DocumentationSources>
+<DocumentationSource sourceFile="..\..\CivModel\bin\Debug\CivModel.xml" />
+<DocumentationSource sourceFile="..\..\CivObservable\bin\Debug\CivObservable.dll" />
+<DocumentationSource sourceFile="..\..\CivObservable\bin\Debug\CivObservable.xml" /></DocumentationSources>
     <HelpTitle>CivModel &amp;amp%3b CivPresenter module documentation</HelpTitle>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <NamingMethod>MemberName</NamingMethod>
