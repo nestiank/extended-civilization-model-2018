@@ -34,6 +34,56 @@ namespace CivModel.Quests
 
             public void PostTurn()
             {
+                if (_player.Game.Players[1].SpecialResource[AutismBeamAmplificationCrystal.Instance] > 0)
+                {
+                    if (_player.Game.Players[0].SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0)
+                    {
+                        return;
+                    }
+
+                    if(_player.Game.Random.Next(10) > 1)
+                    {
+                        Player Selected = null;
+                        while (Selected == null)
+                        {
+                            foreach (Player i in _player.Game.Players)
+                            {
+                                if(i.Team != _player.Team && Selected == null)
+                                {
+                                    if (_player.Game.Random.Next(100) < 4)
+                                    {
+                                        Selected = i;
+                                    }
+                                }
+                            }
+                        }
+
+                        CityBase city = null;
+                        while (city == null)
+                        {
+                            foreach (CityBase c in Selected.Cities)
+                            {
+                                if (c != Selected.Cities.First() && city == null)
+                                {
+                                    if (_player.Game.Random.Next(100) == 4)
+                                    {
+                                        city = c;
+                                    }
+                                }
+                            }
+                        }
+
+                        Terrain.Point point = city.PlacedPoint.Value;
+                        point.TileOwner = _player;
+
+                        city.Owner = _player;
+
+                        foreach (InteriorBuilding Interior in city.InteriorBuildings)
+                        {
+                            Interior.Destroy();
+                        }
+                    }
+                }
                 // TODO
             }
 

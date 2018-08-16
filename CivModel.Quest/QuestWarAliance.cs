@@ -47,6 +47,21 @@ namespace CivModel.Quests
         {
             Requestee.SpecialResource[AutismBeamAmplificationCrystal.Instance] = 1;
 
+            foreach (Player player in Game.Players)
+            {
+                if (player.Team == Game.Players[0].Team)
+                {
+                    foreach (Unit unit in player.Units)
+                    {
+                        if(unit is Hwan.LEOSpaceArmada || unit is Zap.LEOSpaceArmada)
+                        {
+                            unit.AttackPower = unit.AttackPower * 3;
+                            unit.MaxAP = 4;
+                        }
+                    }
+                }
+            }
+
             Cleanup();
         }
 
