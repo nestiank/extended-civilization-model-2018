@@ -490,7 +490,7 @@ namespace CivModel
 
             Team = team;
 
-            _specialResourceProxy = new SpecialResourceProxy { thiz = this };
+            SpecialResource = new SpecialResourceDictionary(this);
         }
 
         void IEffectTarget.AddEffect(Effect effect)
@@ -520,56 +520,12 @@ namespace CivModel
         }
 
         /// <summary>
-        /// The indexer proxy for special resources of this player.
+        /// The dictionary for special resources of this player.
         /// </summary>
         /// <remarks>
         /// Usage: <code>player.SpecialResource[res]</code>
         /// </remarks>
-        public SpecialResourceProxy SpecialResource => _specialResourceProxy;
-        private readonly SpecialResourceProxy _specialResourceProxy;
-        /// <summary>
-        /// The proxy class for <see cref="SpecialResource"/>
-        /// </summary>
-        /// <seealso cref="SpecialResource"/>
-        public class SpecialResourceProxy
-        {
-            internal Player thiz;
-            /// <summary>
-            /// Gets or sets the amount of the specified special resource.
-            /// </summary>
-            /// <value>
-            /// The amount of the specified special resource.
-            /// </value>
-            /// <param name="resource">The resource.</param>
-            /// <returns>The amount of the specified special resource.</returns>
-            /// <exception cref="ArgumentOutOfRangeException">value - the amount of resource is out of range</exception>
-            public int this[ISpecialResource resource]
-            {
-                get
-                {
-                    if (thiz._specialResources.TryGetValue(resource, out var x))
-                        return x.count;
-                    else
-                        return 0;
-                }
-                set
-                {
-                    if (value < 0 || value > resource.MaxCount)
-                        throw new ArgumentOutOfRangeException(nameof(value), value, "the amount of resource is out of range");
-
-                    if (thiz._specialResources.TryGetValue(resource, out var x))
-                    {
-                        thiz._specialResources[resource] = (x.data, value);
-                    }
-                    else
-                    {
-                        thiz._specialResources[resource] = (null, value);
-                        var data = resource.EnablePlayer(thiz);
-                        thiz._specialResources[resource] = (data, value);
-                    }
-                }
-            }
-        }
+        public IDictionary<ISpecialResource, int> SpecialResource { get; }
 
         /// <summary>
         /// Gets the additional data of the specified special resource.
