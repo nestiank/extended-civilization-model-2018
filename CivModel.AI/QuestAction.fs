@@ -11,6 +11,10 @@ open CivModel.Zap
 module QuestAction =
     let questProduce (context: AIContext) (quest: Quest) (product: IProductionFactory) count deploy =
         if context.QuestComplete.Contains quest then
+            if quest.Status <> QuestStatus.Accepted then
+                context.QuestComplete.Remove quest |> ignore
+
+        if context.QuestComplete.Contains quest then
             None
         elif quest.Status = QuestStatus.Deployed || quest.Status = QuestStatus.Accepted then
             let already =
@@ -115,6 +119,5 @@ module QuestAction =
         | :? QuestSubMoaiForceField as q -> getActionMoaiForce context q
 //      | :? QuestSubInterstellarEnergy as q -> getActionIntersteller context q
         | :? QuestSubGeneticEngineering as q -> getActionGenetic context q
-        | _ -> None
-        )
+        | _ -> None)
         |> Option.orElseWith (fun () -> getActionPrenatDefer context)

@@ -13,12 +13,17 @@ type AIController(player: Player) =
         Movement.getAction;
     ]
 
+    let questComplete = System.Collections.Generic.List<Quest>()
+
     let getAction (context: AIContext) =
         context.Update ()
         actions |> List.tryPick ((|>) context)
 
     interface CivModel.IAIController with
         member this.DoAction() =
+            let context = AIContext player
+            context.QuestComplete <- questComplete
+
             let rec action ctx =
                 let act = getAction ctx
                 match act with
@@ -26,6 +31,6 @@ type AIController(player: Player) =
                     fn ()
                     action ctx
                 | None -> ()
-            action (AIContext player)
+            action context
             Task.CompletedTask
         member this.Destroy() = ()

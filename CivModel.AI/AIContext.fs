@@ -17,7 +17,9 @@ type AIContext(player: Player) =
 
     member val Prefer = Preference player
 
-    member val QuestComplete = System.Collections.Generic.List<Quest>()
+    member val QuestComplete : System.Collections.Generic.List<Quest> = null
+        with get, set
+
     member val QuestProduction = System.Collections.Generic.HashSet<Production>()
     member val QuestDeploy = System.Collections.Generic.Dictionary<Production, Production -> Terrain.Point -> bool>()
 
