@@ -34,6 +34,9 @@ namespace CivModel.Quests
 
             public void PostTurn()
             {
+                if (_player.SpecialResource[AutismBeamAmplificationCrystal.Instance] < 1)
+                    return;
+
                 if (_player.Game.Players[1].SpecialResource[AutismBeamAmplificationCrystal.Instance] > 0)
                 {
                     if (_player.Game.Players[0].SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0)
@@ -61,6 +64,10 @@ namespace CivModel.Quests
                         CityBase city = null;
                         while (city == null)
                         {
+                            if (Selected.Cities.Count() <= 1)
+                            {
+                                break;
+                            }
                             foreach (CityBase c in Selected.Cities)
                             {
                                 if (c != Selected.Cities.First() && city == null)

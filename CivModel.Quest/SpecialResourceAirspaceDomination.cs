@@ -40,6 +40,9 @@ namespace CivModel.Quests
 
             public void TileObjectProduced(TileObject obj)
             {
+                if (_player.SpecialResource[SpecialResourceAirspaceDomination.Instance] < 1)
+                    return;
+
                 if (obj is Unit)
                 {
                     if (((Unit)obj).Owner.Team == _player.Team && (((Unit)obj) is Hwan.LEOSpaceArmada || ((Unit)obj) is Zap.LEOSpaceArmada))

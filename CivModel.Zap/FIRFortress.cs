@@ -31,6 +31,10 @@ namespace CivModel.Zap
 
         private Unit AboveUnit = null;
 
+        public bool IsForceFieldOn = false;
+
+        private bool DefUpFive = false;
+
         public void TileObjectProduced(TileObject obj) { }
 
         public void TileObjectPlaced(TileObject obj)
@@ -41,13 +45,30 @@ namespace CivModel.Zap
             {
                 AboveUnit = unit;
                 AboveUnit.AttackPower += 5;
-                AboveUnit.DefencePower += 5;
+
+                if (!IsForceFieldOn)
+                {
+                    AboveUnit.DefencePower += 5;
+                    DefUpFive = true;
+                }
+
+                else
+                    AboveUnit.DefencePower += 15;
             }
 
             else if (AboveUnit != null && obj == AboveUnit && obj.PlacedPoint != this.PlacedPoint)
             {
                 AboveUnit.AttackPower -= 5;
-                AboveUnit.DefencePower -= 5;
+
+                if (DefUpFive)
+                {
+                    AboveUnit.DefencePower -= 5;
+                    DefUpFive = false;
+                }
+
+                else
+                    AboveUnit.DefencePower -= 15;
+
                 AboveUnit = null;
             }
         }

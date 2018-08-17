@@ -21,7 +21,7 @@ namespace CivModel.Quests
             return new DataObject(player);
         }
 
-        private class DataObject : ITurnObserver
+        private class DataObject : ITurnObserver, ITileObjectObserver
         {
             private Player _player;
 
@@ -36,6 +36,21 @@ namespace CivModel.Quests
             {
                 // TODO
             }
+
+            public void TileObjectProduced(TileObject obj)
+            {
+                if (_player.SpecialResource[Necronomicon.Instance] < 1)
+                    return;
+
+                if (obj is Unit)
+                {
+                    if (((Unit)obj).Owner.Team == _player.Team && obj is Finno.AncientSorcerer)
+                    {
+                        ((Unit)obj).AttackPower = ((Unit)obj).AttackPower * 3;
+                    }
+                }
+            }
+            public void TileObjectPlaced(TileObject obj) { }
 
             public void PreTurn() { }
             public void AfterPreTurn() { }

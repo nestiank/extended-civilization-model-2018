@@ -22,7 +22,7 @@ namespace CivModel.Quests
             return new DataObject(player);
         }
 
-        private class DataObject : ITurnObserver
+        private class DataObject : ITurnObserver, ITileObjectObserver
         {
             private Player _player;
 
@@ -37,6 +37,29 @@ namespace CivModel.Quests
             {
                 // TODO
             }
+
+            public void TileObjectProduced(TileObject obj)
+            {
+                if (_player.SpecialResource[SpecialResourceMoaiForceField.Instance] < 1)
+                    return;
+
+                if (obj is TileBuilding)
+                {
+                   if(((TileBuilding)obj).Owner.Team == _player.Team)
+                    {
+                        if(obj is Hwan.HwanEmpireFIRFortress)
+                        {
+                            ((Hwan.HwanEmpireFIRFortress)obj).IsForceFieldOn = true;
+                        }
+
+                        else if(obj is Zap.FIRFortress)
+                        {
+                            ((Zap.FIRFortress)obj).IsForceFieldOn = true;
+                        }
+                    }
+                }
+            }
+            public void TileObjectPlaced(TileObject obj) { }
 
             public void PreTurn() { }
             public void AfterPreTurn() { }

@@ -39,7 +39,10 @@ namespace CivModel.Quests
 
             public void TileObjectProduced(TileObject obj)
             {
-                if(obj is Unit)
+                if (_player.SpecialResource[SpecialResourceCthulhuProjectInfo.Instance] < 1)
+                    return;
+
+                if (obj is Unit)
                 {
                     if(((Unit)obj).Owner.Team == _player.Team)
                     {

@@ -42,6 +42,18 @@ namespace CivModel.Quests
         protected override void OnComplete()
         {
             Requestee.SpecialResource[Ubermensch.Instance] = 1;
+
+            foreach (Player player in Game.Players)
+            {
+                if (player.Team == Game.Players[1].Team)
+                {
+                    foreach (Unit unit in player.Units)
+                    {
+                        unit.MaxAP = 3;
+                    }
+                }
+            }
+
             Cleanup();
         }
 

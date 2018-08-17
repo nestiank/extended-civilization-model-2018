@@ -21,7 +21,7 @@ namespace CivModel.Quests
             return new DataObject(player);
         }
 
-        private class DataObject : ITurnObserver
+        private class DataObject : ITurnObserver, IBattleObserver
         {
             private Player _player;
 
@@ -44,6 +44,37 @@ namespace CivModel.Quests
             public void AfterPreSubTurn(Player playerInTurn) { }
             public void PostSubTurn(Player playerInTurn) { }
             public void AfterPostSubTurn(Player playerInTurn) { }
+
+            public void OnBeforeBattle(Actor attacker, Actor defender)
+            {
+                if (_player.SpecialResource[SpecialResourceAutismBeamReflex.Instance] < 1)
+                    return;
+
+                if (attacker.Owner != _player && defender.Owner == _player)
+                {
+                    attacker.AttackPower = attacker.AttackPower / 2;
+                }
+                else if (attacker.Owner == _player && defender.Owner != _player)
+                {
+                    defender.DefencePower = defender.DefencePower / 2;
+                }
+
+            }
+
+            public void OnAfterBattle(Actor attacker, Actor defender, Player atkOwner, Player defOwner, BattleResult result)
+            {
+                if (_player.SpecialResource[SpecialResourceAutismBeamReflex.Instance] < 1)
+                    return;
+
+                if (attacker.Owner != _player && defender.Owner == _player)
+                {
+                    attacker.AttackPower = attacker.AttackPower * 2;
+                }
+                else if (attacker.Owner == _player && defender.Owner != _player)
+                {
+                    defender.DefencePower = defender.DefencePower * 2;
+                }
+            }
         }
     }
 }
