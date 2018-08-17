@@ -52,6 +52,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Dijkstra.fs" />
     <Compile Include="FreePath.fs" />
     <Compile Include="ActorMovePath.fs" />
     <Content Include="packages.config" />

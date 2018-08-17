@@ -56,7 +56,8 @@ module QuestAction =
         else None
 
     let getActionCthulhu (context: AIContext) (quest: Quest) =
-        None
+        questProduce context quest CivModel.Hwan.SpyProductionFactory.Instance 1
+            (fun _ _ _ -> true)
 
     let getActionEgypt (context: AIContext) (quest: Quest) =
         questProduce context quest CivModel.Hwan.PreternaturalityProductionFactory.Instance 1

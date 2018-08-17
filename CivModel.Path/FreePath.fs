@@ -29,7 +29,7 @@ type FreePath(startPoint: Terrain.Point, endPoint: Terrain.Point, getDistance: (
         dist.[source] <- 0.0;
         dist, prev, source
 
-    let rec dijkstra (dist : float array) (prev : int option array) (startp: Terrain.Point) (queue: (float * int) Heap) =
+    let rec dijkstra (dist: float array) (prev: int option array) (startp: Terrain.Point) (queue: (float * int) Heap) =
         let terrain = startp.Terrain
         match Heap.tryUncons queue with
         | Some ((d, v), tail) ->

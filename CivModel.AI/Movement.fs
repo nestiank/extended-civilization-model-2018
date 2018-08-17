@@ -48,6 +48,29 @@ module Movement =
             )
         else None
 
+    let moveSpy (context: AIContext) (unit: Unit) =
+        let action = unit.SpecialActs.[0]
+        if action.IsActable (Nullable ()) then
+            let isQuestAccepted =
+                context.Player.Quests
+                |> Seq.exists (
+                    function
+                    | :? CivModel.Quests.QuestPorjectCthulhu as x ->
+                        x.Status = QuestStatus.Accepted
+                    | _ -> false)
+            if isQuestAccepted then
+                Some (fun () -> action.Act (Nullable ()))
+            else
+                None
+        else
+            match SpyStuff.getCityAndPath context (Some (unit.PlacedPoint.Value)) with
+            | Some (_, endp) ->
+                let path = ActorMovePath(unit, endp, unit.MoveAct) :> IMovePath
+                if not path.IsInvalid then
+                    Some (fun() -> unit.MovePath <- path)
+                else None
+            | None -> moveNormal context unit
+
     let moveAction (context: AIContext) (unit: Unit) =
         let pioneerType =
             context.AvailablePioneer |> Option.map (fun x -> x.ResultType)
@@ -55,6 +78,8 @@ module Movement =
             None
         elif Some (unit.GetType ()) = pioneerType then
             movePioneer context unit
+        elif (unit.GetType ()).Name.IndexOf "Spy" >= 0 then
+            moveSpy context unit
         else
             moveNormal context unit
 
