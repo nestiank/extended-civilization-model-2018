@@ -21,16 +21,17 @@ type AIController(player: Player) =
 
     interface CivModel.IAIController with
         member this.DoAction() =
-            let context = AIContext player
-            context.QuestComplete <- questComplete
+            async {
+                let context = AIContext player
+                context.QuestComplete <- questComplete
 
-            let rec action ctx =
-                let act = getAction ctx
-                match act with
-                | Some fn ->
-                    fn ()
-                    action ctx
-                | None -> ()
-            action context
-            Task.CompletedTask
+                let rec action ctx =
+                    let act = getAction ctx
+                    match act with
+                    | Some fn ->
+                        fn ()
+                        action ctx
+                    | None -> ()
+                action context
+            } |> Async.StartAsTask :> Task
         member this.Destroy() = ()

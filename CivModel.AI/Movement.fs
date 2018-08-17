@@ -24,7 +24,7 @@ module Movement =
             c1 && c2
         context.Terrain.AllTiles
         |> Seq.filter placable
-        |> Seq.map (fun pt -> context.Prefer.CityPref.[pt.Index], pt.Index)
+        |> Seq.map (fun pt -> context.Prefer.CityPref pt.Index, pt.Index)
 //      |> Seq.filter (fun (p, _) -> p > 0.0)
         |> Array.ofSeq |> Array.sortDescending
         |> Array.tryPick (fun (_, ptidx) ->
@@ -38,7 +38,7 @@ module Movement =
     let moveNormal (context: AIContext) (unit: Unit) =
         if unit.MoveAct <> null then
             unit.PlacedPoint.Value.Adjacents () |> Array.choose Option.ofNullable
-            |> Array.map (fun pt -> context.Prefer.RoamPref.[pt.Index], pt.Index)
+            |> Array.map (fun pt -> context.Prefer.RoamPref pt.Index, pt.Index)
             |> Array.sortDescending
             |> Array.tryPick (fun (_, ptidx) ->
                 let pt = context.Terrain.GetPoint ptidx
