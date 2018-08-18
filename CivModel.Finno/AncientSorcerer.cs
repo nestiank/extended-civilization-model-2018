@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace CivModel.Finno
 {
+    public interface INecro { }
+
+    public interface IInterstellarE { }
+
     public class AncientSorcerer : Unit
     {
         private readonly IActorAction _holdingAttackAct;
@@ -41,6 +45,17 @@ namespace CivModel.Finno
             {
                 if (CheckError(origin, target) != null)
                     return double.NaN;
+
+                foreach (var SpecialR in _owner.Owner.SpecialResource)
+                {
+                    if (SpecialR.Key is IInterstellarE interstellar)
+                    {
+                        if (SpecialR.Value >= 1)
+                        {
+                            return 0.5;
+                        }
+                    }
+                }
 
                 return 1;
             }
@@ -100,6 +115,18 @@ namespace CivModel.Finno
                 double NeedHeal = Patient.MaxHP - Patient.RemainHP;
 
                 AmountOfHeal = Math.Min(10, Owner.RemainHP);
+
+                foreach (var SpecialR in _owner.Owner.SpecialResource)
+                {
+                    if (SpecialR.Key is INecro necro)
+                    {
+                        if (SpecialR.Value >= 1)
+                        {
+                            AmountOfHeal = AmountOfHeal * 2;
+                        }
+                    }
+                }
+
                 AmountOfHeal = Math.Min(AmountOfHeal, NeedHeal);
 
                 pt.Value.Unit.Heal(AmountOfHeal);

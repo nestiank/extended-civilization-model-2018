@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Quests
 {
-    public class Necronomicon : ISpecialResource
+    public class Necronomicon : ISpecialResource, Finno.INecro
     {
         public static Necronomicon Instance => _instance.Value;
         private static Lazy<Necronomicon> _instance
