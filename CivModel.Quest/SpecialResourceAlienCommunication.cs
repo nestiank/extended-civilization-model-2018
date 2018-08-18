@@ -34,6 +34,15 @@ namespace CivModel.Quests
 
             public void PostTurn()
             {
+                if (_player.SpecialResource[SpecialResourceAlienCommunication.Instance] < 1)
+                    return;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    var LEO = Hwan.LEOSpaceArmadaProductionFactory.Instance.Create(_player);
+                    LEO.IsCompleted = true;
+                    _player.Deployment.AddLast(LEO);
+                }
                 // TODO
             }
 

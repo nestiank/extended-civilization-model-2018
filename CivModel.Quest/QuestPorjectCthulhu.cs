@@ -43,6 +43,17 @@ namespace CivModel.Quests
         {
             Requestee.SpecialResource[SpecialResourceCthulhuProjectInfo.Instance] = 1;
 
+            foreach (Player player in Game.Players)
+            {
+                if(player.Team == Game.Players[0].Team)
+                {
+                    foreach (Unit unit in player.Units)
+                    {
+                        unit.DefencePower = unit.DefencePower * 2;
+                    }
+                }
+            }
+
             Cleanup();
         }
 
