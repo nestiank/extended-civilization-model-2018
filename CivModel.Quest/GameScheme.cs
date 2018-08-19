@@ -5,6 +5,13 @@ using System.IO;
 
 using static CivModel.Finno.FinnoPlayerNumber;
 using static CivModel.Hwan.HwanPlayerNumber;
+using static CivModel.Zap.EgyptPlayerNumber;
+using static CivModel.Zap.AtlantisPlayerNumber;
+using static CivModel.Zap.FishPlayerNumber;
+using static CivModel.Zap.EmuPlayerNumber;
+using static CivModel.Zap.SwedePlayerNumber;
+using static CivModel.Zap.RamuPlayerNumber;
+using static CivModel.Zap.EasterPlayerNumber;
 
 namespace CivModel.Quests
 {
@@ -44,18 +51,29 @@ namespace CivModel.Quests
         {
             this.Game = game;
 
+            // Player Name
+            game.GetPlayerHwan().PlayerName = "환 제국";
+            game.GetPlayerFinno().PlayerName = "수오미 제국";
+            game.GetPlayerEgypt().PlayerName = "이집트 캉덤";
+            game.GetPlayerAtlantis().PlayerName = "아틀란티스";
+            game.GetPlayerFish().PlayerName = "어류 공화국";
+            game.GetPlayerEmu().PlayerName = "에뮤 연방";
+            game.GetPlayerSwede().PlayerName = "쉬드 왕국";
+            game.GetPlayerRamu().PlayerName = "레무리아";
+            game.GetPlayerEaster().PlayerName = "이스터 왕국";
+
             // Hwan Ally
-            game.Players[0].Team = 0;
-            game.Players[2].Team = 0;
-            game.Players[4].Team = 0;
-            game.Players[6].Team = 0;
-            game.Players[8].Team = 0;
+            game.GetPlayerHwan().Team = 0;
+            game.GetPlayerEgypt().Team = 0;
+            game.GetPlayerFish().Team = 0;
+            game.GetPlayerSwede().Team = 0;
+            game.GetPlayerEaster().Team = 0;
 
             // Finno Ally
-            game.Players[1].Team = 1;
-            game.Players[3].Team = 1;
-            game.Players[5].Team = 1;
-            game.Players[7].Team = 1;
+            game.GetPlayerFinno().Team = 1;
+            game.GetPlayerAtlantis().Team = 1;
+            game.GetPlayerEmu().Team = 1;
+            game.GetPlayerRamu().Team = 1;
 
             // Ending Condition
             game.GetPlayerHwan().AddVictoryCondition(new HwanUltimateVictory(game));
