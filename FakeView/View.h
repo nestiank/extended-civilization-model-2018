@@ -45,5 +45,7 @@ namespace FakeView
 
         int m_autoSkip = 0;
         CivModel::Player^ m_autoSkipPlayer;
+
+        System::Nullable<CivModel::Terrain::Point> m_fixedCenter;
     };
 }

@@ -19,7 +19,7 @@ namespace CivModel.Common
 
             new FakeFactory(this);
 
-            foreach (var pt in PlacedPoint.Value.Adjacents())
+            foreach (var pt in PlacedPoint.Value.AdjacentsWithinDistance(3))
             {
                 if (pt.HasValue)
                     Owner.TryAddTerritory(pt.Value);

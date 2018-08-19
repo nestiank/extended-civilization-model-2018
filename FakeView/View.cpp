@@ -45,7 +45,7 @@ namespace FakeView
             }
         }
         if (!m_presenter)
-            m_presenter = gcnew CivPresenter::Presenter(this, 15, 12, -1);
+            m_presenter = gcnew CivPresenter::Presenter(this, -1, -1, -1);
     }
 
     void View::Refocus()
@@ -98,8 +98,9 @@ namespace FakeView
         int sx = scrsz.width / 3;
         int sy = scrsz.height / 3;
 
-        int bx = m_presenter->FocusedPoint.Position.X - (sx / 2);
-        int by = m_presenter->FocusedPoint.Position.Y - (sy / 2);
+        auto centerPoint = m_fixedCenter.GetValueOrDefault(m_presenter->FocusedPoint);
+        int bx = centerPoint.Position.X - (sx / 2);
+        int by = centerPoint.Position.Y - (sy / 2);
 
         for (int dy = 0; dy < sy; ++dy)
         {
@@ -145,22 +146,20 @@ namespace FakeView
             }
         }
 
-        auto posCenter = CivModel::Position::FromPhysical(bx + (sx / 2), by + (sy / 2));
-        auto ptCenter = TerrainToScreen(posCenter.X, posCenter.Y);
-        auto& chCenter = m_screen->GetChar(ptCenter.first, ptCenter.second);
+        auto ptFocused = TerrainToScreen(m_presenter->FocusedPoint.Position.X, m_presenter->FocusedPoint.Position.Y);
+        auto& chFocused = m_screen->GetChar(ptFocused.first, ptFocused.second);
 
         if (m_presenter->SelectedActor == nullptr ||
-            m_presenter->SelectedActor->PlacedPoint.Value.Position != posCenter)
+            m_presenter->SelectedActor->PlacedPoint.Value != m_presenter->FocusedPoint)
         {
-            chCenter.color ^= 0b0111'0111;
+            chFocused.color ^= 0b0111'0111;
         }
         if (m_presenter->RunningAction != nullptr)
         {
-            auto pt = m_presenter->Game->Terrain->GetPoint(posCenter);
-            if (!CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, pt))
+            if (!CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, m_presenter->FocusedPoint))
             {
-                chCenter.color ^= 0b0111'0111;
-                chCenter.color |= 0b1100'1110;
+                chFocused.color ^= 0b0111'0111;
+                chFocused.color |= 0b1100'1110;
             }
         }
 
@@ -721,6 +720,18 @@ namespace FakeView
                 m_presenter->CommandRefocus();
                 break;
 
+            case 'g':
+            case 'G':
+                if (!m_fixedCenter.HasValue)
+                {
+                    m_fixedCenter = m_presenter->FocusedPoint;
+                }
+                else
+                {
+                    m_fixedCenter = { };
+                }
+                break;
+
             case 's':
             case 'S':
                 m_presenter->CommandSelect();
@@ -989,8 +1000,9 @@ namespace FakeView
         int sx = scrsz.width / 3;
         int sy = scrsz.height / 3;
 
-        int bx = m_presenter->FocusedPoint.Position.X - (sx / 2);
-        int by = m_presenter->FocusedPoint.Position.Y - (sy / 2);
+        auto centerPoint = m_fixedCenter.GetValueOrDefault(m_presenter->FocusedPoint);
+        int bx = centerPoint.Position.X - (sx / 2);
+        int by = centerPoint.Position.Y - (sy / 2);
 
         int dx = x - bx;
         int dy = y - by;

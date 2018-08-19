@@ -4,7 +4,7 @@ open System
 open System.Collections.Generic
 open CivModel
 
-type public GameSchemeFactory() =
+type GameSchemeFactory() =
     interface IGameSchemeFactory with
         member val Guid = Guid("1A698AD2-DA40-455C-BD60-1A40C14FB76D")
         member val SchemeType = typeof<GameScheme>
@@ -14,7 +14,7 @@ type public GameSchemeFactory() =
 
         member this.Create() = GameScheme(this) :> IGameScheme
 
-and public GameScheme(factory) =
+and GameScheme(factory) =
     interface IGameAIScheme with
         member this.Factory = factory :> IGameSchemeFactory
         member this.GetPackageData() = null

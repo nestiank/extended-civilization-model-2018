@@ -7,14 +7,21 @@ type AIContext(player: Player) =
     let isFactoryOfType (expected: Type) (factory: IProductionFactory) =
         expected.IsAssignableFrom factory.ResultType
 
-    do
-        player.EstimateResourceInputs ()
+    let productIsName (s: string) (x: IProductionFactory) =
+        let t = x.ResultType
+        t.FullName.IndexOf "Common" = -1 && t.Name.IndexOf s >= 0
 
     member this.Player = player
     member this.Game = player.Game
     member this.Terrain = player.Game.Terrain
 
     member val Prefer = Preference player
+
+    member val QuestComplete : System.Collections.Generic.List<Quest> = null
+        with get, set
+
+    member val QuestProduction = System.Collections.Generic.HashSet<Production>()
+    member val QuestDeploy = System.Collections.Generic.Dictionary<Production, Production -> Terrain.Point -> bool>()
 
     member this.AvailableCity =
         player.AvailableProduction
@@ -23,5 +30,14 @@ type AIContext(player: Player) =
 
     member this.AvailablePioneer =
         player.AvailableProduction
-        |> Seq.filter (fun factory -> factory.ResultType.Name.IndexOf "Pioneer" >= 0)
+        |> Seq.filter (productIsName "Pioneer")
         |> Seq.tryHead
+
+    member this.AvailableFactory =
+        player.AvailableProduction
+        |> Seq.filter (productIsName "FIRFactory")
+        |> Seq.tryHead
+
+    member this.Update () =
+        player.EstimateResourceInputs ()
+        this.Prefer.Update ()

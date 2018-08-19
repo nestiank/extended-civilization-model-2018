@@ -38,8 +38,8 @@ namespace CivModel.Common
         public int DefaultNumberOfPlayers => 9;
 
         public bool OnlyDefaultTerrain => false;
-        public int DefaultTerrainWidth => 128;
-        public int DefaultTerrainHeight => 80;
+        public int DefaultTerrainWidth => 42;
+        public int DefaultTerrainHeight => 12;
 
         public double GoldCoefficient => 1;
 
@@ -85,18 +85,25 @@ namespace CivModel.Common
             if (isNewGame)
             {
                 var random = new Random();
+
+                int count = game.Terrain.Width * game.Terrain.Height;
+                var tiles = Enumerable.Repeat(false, count).ToArray();
+
                 foreach (var player in game.Players)
                 {
-                    Terrain.Point pt;
-                    do
-                    {
-                        int x = random.Next((int)Math.Floor(game.Terrain.Width * 0.1),
-                            (int)Math.Ceiling(game.Terrain.Width * 0.9));
-                        int y = random.Next((int)Math.Floor(game.Terrain.Height * 0.1),
-                            (int)Math.Ceiling(game.Terrain.Height * 0.9));
+                    int index = random.Next(count);
+                    while (tiles[index])
+                        ++index;
 
-                        pt = game.Terrain.GetPoint(x, y);
-                    } while (pt.TileBuilding != null);
+                    var pt = game.Terrain.GetPoint(index);
+                    foreach (var adj in pt.AdjacentsWithinDistance(6))
+                    {
+                        if (adj.HasValue && !tiles[adj.Value.Index])
+                        {
+                            tiles[adj.Value.Index] = true;
+                            --count;
+                        }
+                    }
 
                     new CityCenter(player, pt).OnAfterProduce(null);
                 }
