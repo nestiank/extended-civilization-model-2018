@@ -30,6 +30,7 @@ namespace CivModel.Quests
                 _player = player;
 
                 player.Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
+                player.Game.BattleObservable.AddObserver(this, ObserverPriority.Model);
             }
 
             public void PostTurn()

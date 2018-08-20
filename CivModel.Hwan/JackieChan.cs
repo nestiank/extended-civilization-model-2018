@@ -23,6 +23,8 @@ namespace CivModel.Hwan
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
             _specialActs[0] = new JackieChanAction(this);
+
+            Owner.Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
         }
 
         private class JackieChanAction : IActorAction
