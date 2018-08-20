@@ -20,6 +20,7 @@
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
     <PassiveSkill name="Finno의 기상" description="매 턴 1%의 확률로 임의의 군사유닛이 도시와 1칸 떨어진 곳에 아무런 자원 소모 없이 생성된다." />
+    <ActiveSkill name="원거리 공격" description="도시로부터 2칸 거리 이내 적 유닛이 있을 경우 30의 피해를 주며 원거리 공격을 한다. 방어력으로 인한 보답 피해를 입지 않는다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>

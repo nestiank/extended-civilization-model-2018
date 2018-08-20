@@ -19,6 +19,7 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
+    <ActiveSkill name="원거리 공격" description="도시로부터 2칸 거리 이내 적 유닛이 있을 경우 30의 피해를 주며 원거리 공격을 한다. 방어력으로 인한 보답 피해를 입지 않는다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>

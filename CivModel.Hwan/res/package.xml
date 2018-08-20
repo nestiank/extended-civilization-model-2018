@@ -20,6 +20,7 @@
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
     <PassiveSkill name="환민족의 지혜" description="해당 도시에 기술력 생산 건물을 지을시 해당 기술 생산 건물의 최대 기술력 저장량이 2배가 된다." />
+    <ActiveSkill name="원거리 공격" description="도시로부터 2칸 거리 이내 적 유닛이 있을 경우 30의 피해를 주며 원거리 공격을 한다. 방어력으로 인한 보답 피해를 입지 않는다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>
