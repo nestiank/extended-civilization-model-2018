@@ -12,6 +12,22 @@ namespace CivModel.Zap
             : base(owner, typeof(FIRFortress), point, donator)
         {
             owner.Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
+            if (point.Unit != null)
+            {
+                if (point.Unit.Owner == this.Owner)
+                {
+                    AboveUnit = point.Unit;
+                    AboveUnit.AttackPower += 5;
+                    if (!IsForceFieldOn)
+                    {
+                        AboveUnit.DefencePower += 5;
+                        DefUpFive = true;
+                    }
+
+                    else
+                        AboveUnit.DefencePower += 15;
+                }
+            }
         }
 
         protected override void OnAfterDamage(double atk, double def, double attackerDamage, double defenderDamage,
