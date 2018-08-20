@@ -10,6 +10,7 @@ type AIController(player: Player) =
         Produce.getAction;
         QuestAction.getAction;
         Deploy.getAction;
+        Battle.getAction;
         Movement.getAction;
     ]
 

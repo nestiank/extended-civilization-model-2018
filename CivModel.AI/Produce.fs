@@ -46,6 +46,19 @@ module Produce =
                 player.Production.AddLast (factory.Create player) |> ignore)
         | None -> None
 
+    let produceBattler (context: AIContext) =
+        let player = context.Player
+        match context.AvailableBattler with
+        | Some x ->
+            let count =
+                Seq.concat [ player.Production; player.Deployment ]
+                |> Seq.filter (fun p -> p.Factory = x)
+                |> Seq.length
+            if count < 5 then
+                Some (fun () -> player.Production.AddLast (x.Create player) |> ignore)
+            else None
+        | None -> None
+
     let getAction (context: AIContext) =
         let player = context.Player
         let remainLabor = player.Labor - player.EstimatedUsedLabor
@@ -55,5 +68,7 @@ module Produce =
             produceFactory context
         elif remainLabor > 500.0 && remainLabor / player.Labor > 0.8 then
             produceCityPioneer context
+        elif remainLabor / player.Labor > 0.6 then
+            produceBattler context
         else
             None

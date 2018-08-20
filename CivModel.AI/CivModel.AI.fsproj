@@ -59,6 +59,7 @@
     <Compile Include="Produce.fs" />
     <Compile Include="Deploy.fs" />
     <Compile Include="Movement.fs" />
+    <Compile Include="Battle.fs" />
     <Compile Include="QuestAction.fs" />
     <Compile Include="AIController.fs" />
     <Compile Include="GameScheme.fs" />

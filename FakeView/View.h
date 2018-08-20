@@ -47,5 +47,7 @@ namespace FakeView
         CivModel::Player^ m_autoSkipPlayer;
 
         System::Nullable<CivModel::Terrain::Point> m_fixedCenter;
+
+        bool m_bTeamColor = false;
     };
 }

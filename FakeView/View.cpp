@@ -725,10 +725,26 @@ namespace FakeView
                 if (!m_fixedCenter.HasValue)
                 {
                     m_fixedCenter = m_presenter->FocusedPoint;
+                    MessageBoxW(nullptr, L"Screen locked", L"FakeView", MB_OK);
                 }
                 else
                 {
                     m_fixedCenter = { };
+                    MessageBoxW(nullptr, L"Screen unlocked", L"FakeView", MB_OK);
+                }
+                break;
+
+            case 't':
+            case 'T':
+                if (m_bTeamColor)
+                {
+                    m_bTeamColor = false;
+                    MessageBoxW(nullptr, L"Player color is applied", L"Color", MB_OK);
+                }
+                else
+                {
+                    m_bTeamColor = true;
+                    MessageBoxW(nullptr, L"Team color is applied", L"Color", MB_OK);
                 }
                 break;
 
@@ -978,14 +994,8 @@ namespace FakeView
 
     unsigned char View::GetPlayerColor(CivModel::Player^ player)
     {
-        auto players = m_presenter->Game->Players;
-        int playerIndex = 0;
-        for (; playerIndex < players->Count; ++playerIndex)
-        {
-            if (players[playerIndex] == player)
-                break;
-        }
-        return static_cast<unsigned char>(playerIndex % 6) + 1;
+        int index = m_bTeamColor ? player->Team : player->PlayerNumber;
+        return static_cast<unsigned char>(index % 6) + 1;
     }
 
     std::string View::GetFactoryDescription(CivModel::IProductionFactory^ factory)
