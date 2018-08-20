@@ -40,6 +40,11 @@
     </xs:union>
   </xs:simpleType>
 
+  <xs:complexType name="skillInfo">
+    <xs:attribute name="name" use="required" type="xs:string" />
+    <xs:attribute name="description" use="required" type="xs:string" />
+  </xs:complexType>
+
   <xs:complexType name="GuidObject">
     <xs:sequence>
       <xs:element name="TextName" type="xs:string" />
@@ -52,10 +57,10 @@
     <xs:complexContent>
       <xs:extension base="GuidObject">
         <xs:sequence>
-          <xs:element name="TotalLaborCost" type="nonNegativeDecimal"/>
-          <xs:element name="LaborCapacityPerTurn" type="nonNegativeDecimal"/>
-          <xs:element name="TotalGoldCost" type="nonNegativeDecimal"/>
-          <xs:element name="GoldCapacityPerTurn" type="nonNegativeDecimal"/>
+          <xs:element name="TotalLaborCost" type="nonNegativeDecimal" />
+          <xs:element name="LaborCapacityPerTurn" type="nonNegativeDecimal" />
+          <xs:element name="TotalGoldCost" type="nonNegativeDecimal" />
+          <xs:element name="GoldCapacityPerTurn" type="nonNegativeDecimal" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -74,6 +79,8 @@
           <xs:element name="LaborLogistics" type="nonNegativeDecimal" />
           <xs:element name="FullLaborForRepair" type="nonNegativeDecimal" />
           <xs:element name="BattleClassLevel" type="xs:nonNegativeInteger" />
+          <xs:element name="PassiveSkill" minOccurs="0" maxOccurs="unbounded" type="skillInfo" />
+          <xs:element name="ActiveSkill" minOccurs="0" maxOccurs="unbounded" type="skillInfo" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -89,6 +96,7 @@
           <xs:element name="ResearchCapacity" type="nonNegativeDecimal" />
           <xs:element name="ResearchIncome" type="nonNegativeDecimal" />
           <xs:element name="PopulationCoefficient" type="nonNegativeDecimal" />
+          <xs:element name="PassiveSkill" minOccurs="0" maxOccurs="unbounded" type="skillInfo" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -129,6 +137,7 @@
         <xs:sequence>
           <xs:element name="PostingTurn" type="questTurn" />
           <xs:element name="LimitTurn" type="questTurn" />
+          <xs:element name="QuestDescription" type="xs:string" />
           <xs:element name="GoalNotice" type="xs:string" />
           <xs:element name="RewardNotice" type="xs:string" />
           <xs:element name="CompleteNotice" type="xs:string" />

@@ -99,6 +99,7 @@
     <LaborLogistics>2.5</LaborLogistics>
     <FullLaborForRepair>0.5</FullLaborForRepair>
     <BattleClassLevel>2</BattleClassLevel>
+    <ActiveSkill name="마인드컨트롤" description="감사합니다" />
   </Unit>
 
   <Unit
@@ -126,6 +127,7 @@
     <TextName>개꿀잼 퀘스트</TextName>
     <PostingTurn>forever</PostingTurn>
     <LimitTurn>forever</LimitTurn>
+    <QuestDescription>두유노우피노코리안하이퍼워?</QuestDescription>
     <GoalNotice>제다이 기사로 적을 처치하십시오</GoalNotice>
     <RewardNotice>배치 가능한 제다이 기사 생산 6개</RewardNotice>
     <CompleteNotice>개꿀잼 ㅇㅈ ㅆㅇㅈ</CompleteNotice>

@@ -88,6 +88,7 @@
     <Compile Include="QuestPrototype.cs" />
     <Compile Include="SchemeLoader.cs" />
     <Compile Include="ISpecialResource.cs" />
+    <Compile Include="SkillInfo.cs" />
     <Compile Include="Terrain.Point.cs" />
     <Compile Include="TerrainType.cs" />
     <Compile Include="TileBuilding.cs" />

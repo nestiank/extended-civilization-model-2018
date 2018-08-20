@@ -187,6 +187,11 @@ namespace CivModel
         public double PopulationCoefficient { get; set; }
 
         /// <summary>
+        /// The information about passive skills.
+        /// </summary>
+        public IReadOnlyList<SkillInfo> PassiveSkills { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="InteriorBuilding"/> class.
         /// </summary>
         /// <param name="city">The <see cref="CityBase"/> who will own the building.</param>
@@ -209,6 +214,7 @@ namespace CivModel
             _basicResearchIncome = proto.ResearchIncome;
             _researchCapacity = proto.ResearchCapacity;
             PopulationCoefficient = proto.PopulationCoefficient;
+            PassiveSkills = proto.PassiveSkills;
         }
 
         /// <summary>

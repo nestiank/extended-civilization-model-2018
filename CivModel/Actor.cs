@@ -285,6 +285,16 @@ namespace CivModel
         public int BattleClassLevel { get; set; }
 
         /// <summary>
+        /// The information about passive skills.
+        /// </summary>
+        public IReadOnlyList<SkillInfo> PassiveSkills { get; private set; }
+
+        /// <summary>
+        /// The information about active skills.
+        /// </summary>
+        public IReadOnlyList<SkillInfo> ActiveSkills { get; private set; }
+
+        /// <summary>
         /// The action performing movement. <c>null</c> if this actor cannot do.
         /// </summary>
         public virtual IActorAction MoveAct => null;
@@ -405,6 +415,8 @@ namespace CivModel
             LaborLogistics = proto.LaborLogistics;
             FullLaborForRepair = proto.FullLaborForRepair;
             BattleClassLevel = proto.BattleClassLevel;
+            PassiveSkills = proto.PassiveSkills;
+            ActiveSkills = proto.ActiveSkills;
         }
 
         void IEffectTarget.AddEffect(Effect effect)

@@ -67,6 +67,7 @@
     <LaborLogistics>10</LaborLogistics>
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
+    <PassiveSkill name="5차산업혁명의 기운" description="해당 타일에 위치한 군사 유닛의 공격력과 방어력을 5씩 증가시켜준다. 유닛이 요새에서 떠나면 이 효과는 사라진다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>

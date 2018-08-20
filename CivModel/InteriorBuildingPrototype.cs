@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using System.Reflection;
 
@@ -36,6 +38,11 @@ namespace CivModel
         /// </summary>
         public double PopulationCoefficient { get; }
 
+        /// <summary>
+        /// The information about passive skills.
+        /// </summary>
+        public IReadOnlyList<SkillInfo> PassiveSkills { get; }
+
         internal InteriorBuildingPrototype(XElement node, Assembly packageAssembly)
             : base(node, packageAssembly)
         {
@@ -45,6 +52,9 @@ namespace CivModel
             ResearchCapacity = Convert.ToDouble(node.Element(xmlns + "ResearchCapacity").Value);
             ResearchIncome = Convert.ToDouble(node.Element(xmlns + "ResearchIncome").Value);
             PopulationCoefficient = Convert.ToDouble(node.Element(xmlns + "PopulationCoefficient").Value);
+
+            PassiveSkills = node.Elements(xmlns + "PassiveSkill")
+                .Select(x => new SkillInfo(x)).ToArray();
         }
     }
 }

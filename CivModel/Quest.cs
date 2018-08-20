@@ -72,6 +72,11 @@ namespace CivModel
         public int LimitTurn { get; private set; }
 
         /// <summary>
+        /// [퀘스트 설명].
+        /// </summary>
+        public string QuestDescription { get; private set; }
+
+        /// <summary>
         /// [퀘스트 조건].
         /// </summary>
         public string GoalNotice { get; private set; }
@@ -173,6 +178,7 @@ namespace CivModel
             TextName = proto.TextName;
             PostingTurn = proto.PostingTurn;
             LimitTurn = proto.LimitTurn;
+            QuestDescription = proto.QuestDescription;
             GoalNotice = proto.GoalNotice;
             RewardNotice = proto.RewardNotice;
             CompleteNotice = proto.CompleteNotice;
