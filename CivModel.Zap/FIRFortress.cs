@@ -18,7 +18,7 @@ namespace CivModel.Zap
                 {
                     AboveUnit = point.Unit;
                     AboveUnit.AttackPower += 5;
-                    if (!IsForceFieldOn)
+                    if (!isForceFieldOn)
                     {
                         AboveUnit.DefencePower += 5;
                         DefUpFive = true;
