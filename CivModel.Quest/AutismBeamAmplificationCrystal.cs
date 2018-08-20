@@ -80,15 +80,18 @@ namespace CivModel.Quests
                             }
                         }
 
-                        foreach (InteriorBuilding Interior in city.InteriorBuildings)
+                        if (city != null)
                         {
-                            Interior.Destroy();
+                            foreach (InteriorBuilding Interior in city.InteriorBuildings)
+                            {
+                                Interior.Destroy();
+                            }
+
+                            Terrain.Point point = city.PlacedPoint.Value;
+                            city.Destroy();
+
+                            point.TileOwner = _player;
                         }
-
-                        Terrain.Point point = city.PlacedPoint.Value;
-                        city.Destroy();
-
-                        point.TileOwner = _player;
                     }
                 }
                 // TODO
