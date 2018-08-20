@@ -38,6 +38,12 @@ type AIContext(player: Player) =
         |> Seq.filter (productIsName "FIRFactory")
         |> Seq.tryHead
 
+    member this.AvailableBattler =
+        player.AvailableProduction
+        |> Seq.tryFind (fun x ->
+            x.ResultType.Name.IndexOf "Jedi" >= 0 || x.ResultType.Name.IndexOf "Decentr" >= 0)
+
+
     member this.Update () =
         player.EstimateResourceInputs ()
         this.Prefer.Update ()

@@ -25,7 +25,6 @@ module Movement =
         context.Terrain.AllTiles
         |> Seq.filter placable
         |> Seq.map (fun pt -> context.Prefer.CityPref pt.Index, pt.Index)
-//      |> Seq.filter (fun (p, _) -> p > 0.0)
         |> Array.ofSeq |> Array.sortDescending
         |> Array.tryPick (fun (_, ptidx) ->
             let pt = context.Terrain.GetPoint ptidx
