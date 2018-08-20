@@ -18,7 +18,14 @@ namespace CivModel.Hwan
                 {
                     AboveUnit = point.Unit;
                     AboveUnit.AttackPower += 5;
-                    AboveUnit.DefencePower += 5;
+                    if (!IsForceFieldOn)
+                    {
+                        AboveUnit.DefencePower += 5;
+                        DefUpFive = true;
+                    }
+
+                    else
+                        AboveUnit.DefencePower += 15;
                 }
             }
         }
@@ -31,7 +38,9 @@ namespace CivModel.Hwan
 
         private Unit AboveUnit = null;
 
-        public bool IsForceFieldOn = false;
+        private bool isForceFieldOn = false;
+        public bool IsForceFieldOn { get => isForceFieldOn; set => isForceFieldOn = value; }
+
 
         private bool DefUpFive = false;
 
@@ -46,7 +55,7 @@ namespace CivModel.Hwan
                 AboveUnit = unit;
                 AboveUnit.AttackPower += 5;
 
-                if (!IsForceFieldOn)
+                if (!isForceFieldOn)
                 {
                     AboveUnit.DefencePower += 5;
                     DefUpFive = true;

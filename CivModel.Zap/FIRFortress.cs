@@ -31,7 +31,9 @@ namespace CivModel.Zap
 
         private Unit AboveUnit = null;
 
-        public bool IsForceFieldOn = false;
+        private bool isForceFieldOn = false;
+        public bool IsForceFieldOn { get => isForceFieldOn; set => isForceFieldOn = value; }
+
 
         private bool DefUpFive = false;
 
@@ -46,7 +48,7 @@ namespace CivModel.Zap
                 AboveUnit = unit;
                 AboveUnit.AttackPower += 5;
 
-                if (!IsForceFieldOn)
+                if (!isForceFieldOn)
                 {
                     AboveUnit.DefencePower += 5;
                     DefUpFive = true;

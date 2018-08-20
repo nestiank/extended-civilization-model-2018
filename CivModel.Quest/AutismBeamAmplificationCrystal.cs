@@ -84,9 +84,10 @@ namespace CivModel.Quests
                         {
                             Interior.Destroy();
                         }
-                        city.Destroy();
 
                         Terrain.Point point = city.PlacedPoint.Value;
+                        city.Destroy();
+
                         point.TileOwner = _player;
                     }
                 }
