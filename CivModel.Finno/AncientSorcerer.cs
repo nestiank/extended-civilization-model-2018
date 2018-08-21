@@ -131,6 +131,17 @@ namespace CivModel.Finno
 
                 pt.Value.Unit.Heal(AmountOfHeal);
 
+                foreach (var SpecialR in _owner.Owner.SpecialResource)
+                {
+                    if (SpecialR.Key is INecro necro)
+                    {
+                        if (SpecialR.Value >= 1)
+                        {
+                            AmountOfHeal = AmountOfHeal / 2;
+                        }
+                    }
+                }
+
                 Owner.RemainHP = Owner.RemainHP - AmountOfHeal;
                 if(Owner.RemainHP <= 0)
                 {

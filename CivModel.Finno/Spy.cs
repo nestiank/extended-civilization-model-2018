@@ -72,6 +72,7 @@ namespace CivModel.Finno
                     throw new InvalidOperationException("Not enough Ap");
 
                 Owner.ConsumeAP(Ap);
+                _owner.Destroy();
             }
         }
     }

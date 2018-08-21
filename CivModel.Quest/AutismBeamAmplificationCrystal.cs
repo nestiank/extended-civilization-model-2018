@@ -72,7 +72,7 @@ namespace CivModel.Quests
                             {
                                 if (c != Selected.Cities.First() && city == null)
                                 {
-                                    if (_player.Game.Random.Next(100) == 4)
+                                    if (_player.Game.Random.Next(100) <= 4)
                                     {
                                         city = c;
                                     }
@@ -82,15 +82,9 @@ namespace CivModel.Quests
 
                         if (city != null)
                         {
-                            foreach (InteriorBuilding Interior in city.InteriorBuildings)
-                            {
-                                Interior.Destroy();
-                            }
-
-                            Terrain.Point point = city.PlacedPoint.Value;
-                            city.Destroy();
-
-                            point.TileOwner = _player;
+                            if (city.PlacedPoint.Value.Unit != null)
+                                city.PlacedPoint.Value.Unit.Destroy();
+                            city.ChangeOwner(_player);
                         }
                     }
                 }

@@ -63,7 +63,7 @@ namespace CivModel.Quests
                         {
                             foreach (Unit called in CalledByOrigin.Units)
                             {
-                                if (_player.Game.Random.Next(300) < 4)
+                                if (_player.Game.Random.Next(Math.Min(UnitCount * 10, 150)) < 5)
                                 {
                                     UnitToDieF = called;
                                 }
@@ -100,7 +100,7 @@ namespace CivModel.Quests
                         {
                             foreach (Unit called in CalledByOrigin.Units)
                             {
-                                if (_player.Game.Random.Next(300) < 4)
+                                if (_player.Game.Random.Next(Math.Min(UnitCount * 10, 150)) < 4)
                                 {
                                     UnitToDieH = called;
                                 }

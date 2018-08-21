@@ -81,6 +81,7 @@ namespace CivModel.Hwan
                 }
 
                 Owner.ConsumeAP(Ap);
+                _owner.Destroy();
             }
         }
     }
