@@ -62,5 +62,10 @@ namespace CivModel
         /// <returns>Whether <see cref="RecalculateFirstWalk"/> is called before moving.</returns>
         /// <returns>Whether the walk is done or not. The walk is not done if AP is not enough or path is invalid.</returns>
         bool ActFirstWalk();
+
+        /// <summary>
+        /// Call <see cref="ActFirstWalk"/> until <see cref="Actor"/> has not enough AP or path becomes invalid.
+        /// </summary>
+        void ActFullWalkForRemainAP();
     }
 }

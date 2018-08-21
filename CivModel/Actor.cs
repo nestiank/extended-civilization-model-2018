@@ -977,11 +977,7 @@ namespace CivModel
         {
             if (playerInTurn == Owner)
             {
-                while (MovePath != null)
-                {
-                    if (!MovePath.ActFirstWalk())
-                        break;
-                }
+                MovePath?.ActFullWalkForRemainAP();
             }
         }
         void IFixedTurnReceiver.FixedAfterPostSubTurn(Player playerInTurn) => FixedAfterPostSubTurn(playerInTurn);

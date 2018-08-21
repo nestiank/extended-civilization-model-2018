@@ -160,6 +160,20 @@ namespace FakeView
             {
                 chFocused.color ^= 0b0111'0111;
                 chFocused.color |= 0b1100'1110;
+                chFocused.color ^= 0b1111'1111; // flipped again in States::Move process below
+            }
+        }
+
+        if (m_presenter->State == CivPresenter::Presenter::States::Move)
+        {
+            for each (auto point in m_presenter->ReachablePoints)
+            {
+                if (point != m_presenter->SelectedActor->PlacedPoint.Value)
+                {
+                    auto pt = TerrainToScreen(point.Position.X, point.Position.Y);
+                    auto& ch = m_screen->GetChar(pt.first, pt.second);
+                    ch.color ^= 0b1111'1111;
+                }
             }
         }
 

@@ -41,6 +41,10 @@ type ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IActorAct
             else None
         | _ -> None
 
+    let isInvalid () =
+        match getFirstWalk () with
+        | Some _ -> false | None -> true
+
     let getValidFirstWalk () =
         match getFirstWalk () with
         | Some (a, b, xs) ->
@@ -68,6 +72,23 @@ type ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IActorAct
             actFirstWalk ()
         | Choice3Of3 () -> false
 
+    static member GetReachablePoint (actor: Actor) =
+        let terrain = actor.Game.Terrain
+        let len = terrain.Width * terrain.Height
+        let rec reachable ptidx (usedAp: ActionPoint) marked =
+            if Set.contains ptidx marked then marked
+            else
+                let folder (s: int Set) (x: int) =
+                    let ap = actor.MoveAct.GetRequiredAP(terrain.GetPoint ptidx, Nullable (terrain.GetPoint x))
+                    if usedAp.IsConsumingAll || ap = ActionPoint.NonAvailable then s
+                    elif usedAp.Value + ap.Value > actor.RemainAP then s
+                    else reachable x (ActionPoint (usedAp.Value + ap.Value, ap.IsConsumingAll)) s
+                (terrain.GetPoint ptidx).Adjacents ()
+                |> Array.choose (fun x -> if x.HasValue then Some x.Value.Index else None)
+                |> Array.fold folder (Set.add ptidx marked)
+        reachable actor.PlacedPoint.Value.Index (ActionPoint 0.0) Set.empty
+        |> Set.toArray |> Array.map terrain.GetPoint
+
     interface IMovePath with
         member this.Actor =  actor
 
@@ -79,9 +100,7 @@ type ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IActorAct
         member this.EndPoint =  endPoint
         member this.FinalAction = finalAction
 
-        member this.IsInvalid =
-            match getFirstWalk () with
-            | Some _ -> false | None -> true
+        member this.IsInvalid = isInvalid ()
         member this.IsFirstMoveInvalid =
             match getValidFirstWalk () with
             | Choice1Of3 _ -> false | Choice2Of3 _ -> true
@@ -94,3 +113,7 @@ type ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IActorAct
 
         member this.RecalculateFirstWalk () = recalcFirstWalk ()
         member this.ActFirstWalk () = actFirstWalk ()
+
+        member this.ActFullWalkForRemainAP () =
+            while not (isInvalid ()) && actFirstWalk () do
+                ()
