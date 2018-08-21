@@ -61,6 +61,14 @@ namespace CivModel.Quests
                 }
             }
 
+            foreach (CityBase city in Game.Players[CivModel.Zap.AtlantisPlayerNumber.Number].Cities)
+            {
+                if(city != Game.Players[CivModel.Zap.AtlantisPlayerNumber.Number].Cities.First())
+                {
+                    city.Destroy();
+                }
+            }
+
             Cleanup();
         }
 
