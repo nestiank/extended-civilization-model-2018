@@ -43,6 +43,7 @@ namespace CivModel.Quests
 
                 while (CountFinno < 3)
                 {
+                    UnitCount = 0;
                     foreach (Player i in _player.Game.Players)
                     {
                         if (i.Team == _player.Team)
@@ -80,6 +81,7 @@ namespace CivModel.Quests
 
                 while (CountHwan < 7)
                 {
+                    UnitCount = 0;
                     foreach (Player i in _player.Game.Players)
                     {
                         if (i.Team == _player.Team)
