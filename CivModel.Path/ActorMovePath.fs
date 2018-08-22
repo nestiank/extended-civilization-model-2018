@@ -72,16 +72,21 @@ type ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IActorAct
             actFirstWalk ()
         | Choice3Of3 () -> false
 
-    static member GetReachablePoint (actor: Actor) =
+    static member GetReachablePoint (actor: Actor) (isMovingAttack: bool) =
         let terrain = actor.Game.Terrain
         let len = terrain.Width * terrain.Height
         let rec reachable ptidx (usedAp: ActionPoint) marked =
             if Set.contains ptidx marked then marked
             else
                 let folder (s: int Set) (x: int) =
-                    let ap = actor.MoveAct.GetRequiredAP(terrain.GetPoint ptidx, Nullable (terrain.GetPoint x))
+                    let ptx = terrain.GetPoint x
+                    let action =
+                        if isMovingAttack && ptx.Unit <> null then actor.MovingAttackAct
+                        else actor.MoveAct
+                    let ap = action.GetRequiredAP(terrain.GetPoint ptidx, Nullable (terrain.GetPoint x))
                     if usedAp.IsConsumingAll || ap = ActionPoint.NonAvailable then s
                     elif usedAp.Value + ap.Value > actor.RemainAP then s
+                    elif action = actor.MovingAttackAct then Set.add x s
                     else reachable x (ActionPoint (usedAp.Value + ap.Value, ap.IsConsumingAll)) s
                 (terrain.GetPoint ptidx).Adjacents ()
                 |> Array.choose (fun x -> if x.HasValue then Some x.Value.Index else None)

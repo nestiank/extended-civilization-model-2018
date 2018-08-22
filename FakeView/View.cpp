@@ -164,7 +164,7 @@ namespace FakeView
             }
         }
 
-        if (m_presenter->State == CivPresenter::Presenter::States::Move)
+        if (m_presenter->ReachablePoints)
         {
             for each (auto point in m_presenter->ReachablePoints)
             {

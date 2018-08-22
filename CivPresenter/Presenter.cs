@@ -165,7 +165,7 @@ namespace CivPresenter
 
         /// <summary>
         /// The reachable points from <see cref="SelectedActor"/> in its remained AP.
-        /// This value is valid iff <c><see cref="State"/> == <see cref="States.Move"/></c>
+        /// This value is valid iff <c><see cref="State"/> == <see cref="States.Move"/> || <see cref="State"/> == <see cref="States.MovingAttack"/></c>
         /// </summary>
         public Terrain.Point[] ReachablePoints { get; private set; }
 
@@ -658,7 +658,7 @@ namespace CivPresenter
             if (SelectedActor?.MoveAct is IActorAction action)
             {
                 State = States.Move;
-                ReachablePoints = CivModel.Path.ActorMovePath.GetReachablePoint(SelectedActor);
+                ReachablePoints = CivModel.Path.ActorMovePath.GetReachablePoint(SelectedActor, false);
 
                 Action onFinished = () => {
                     ReachablePoints = null;
@@ -681,8 +681,10 @@ namespace CivPresenter
             if (SelectedActor?.MovingAttackAct is IActorAction action)
             {
                 State = States.MovingAttack;
+                ReachablePoints = CivModel.Path.ActorMovePath.GetReachablePoint(SelectedActor, true);
 
                 Action onFinished = () => {
+                    ReachablePoints = null;
                     StateNormal();
                 };
                 Action onApplyFinished = () => {
