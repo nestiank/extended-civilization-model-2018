@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package
+  name="CivModel.Quests.GameScheme" guid="63715AEC-64F9-4CCD-B8B4-E8932B4FCD21"
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
+
+  <TextName>퀘스트 확장 모듈</TextName>
 
   <Quest
   name="CivModel.Quests.QuestAutismBeamReflex" guid="B87615CB-1C41-4A60-A978-2D6E8422D4E2">

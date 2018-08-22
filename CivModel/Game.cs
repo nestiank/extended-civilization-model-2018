@@ -106,6 +106,9 @@ namespace CivModel
         /// The number of players. It must be positive.
         /// if the value is <c>-1</c>, uses <see cref="IGameStartupScheme.DefaultNumberOfPlayers"/> of the scheme.
         /// </param>
+        /// <param name="prototypes">
+        /// The array of <see cref="TextReader"/> for xml prototype data.
+        /// </param>
         /// <param name="rootFactory">The factory for <see cref="IGameScheme"/> of the game.</param>
         /// <param name="knownSchemes">
         /// the known factories of <see cref="IGameScheme"/> for the game.
@@ -121,7 +124,8 @@ namespace CivModel
         /// or
         /// parameter is not equal to default value of scheme, while scheme forces to be.
         /// </exception>
-        public Game(int width, int height, int numOfPlayer, IGameSchemeFactory rootFactory, IEnumerable<IGameSchemeFactory> knownSchemes = null)
+        public Game(int width, int height, int numOfPlayer, TextReader[] prototypes,
+            IGameSchemeFactory rootFactory, IEnumerable<IGameSchemeFactory> knownSchemes = null)
         {
             if (rootFactory == null)
                 throw new ArgumentNullException(nameof(rootFactory));
@@ -142,16 +146,7 @@ namespace CivModel
 
             var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
 
-            foreach (var s in SchemeLoader.GetOverlappableScheme<IGameScheme>())
-            {
-                using (var reader = s.GetPackageData())
-                {
-                    if (reader != null)
-                    {
-                        _prototypeLoader.Load(reader, s.GetType().Assembly);
-                    }
-                }
-            }
+            LoadPrototype(prototypes);
 
             if (width == -1)
                 width = startup.DefaultTerrainWidth;
@@ -199,6 +194,9 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Game"/> class, by loading a existing save file.
         /// </summary>
         /// <param name="saveFile">The path of the save file.</param>
+        /// <param name="prototypes">
+        /// The array of <see cref="TextReader"/> for xml prototype data.
+        /// </param>
         /// <param name="schemeFactories">the candidates of factories for <see cref="IGameScheme"/> of the game.</param>
         /// <exception cref="ArgumentNullException"><paramref name="schemeFactories"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidDataException">
@@ -212,19 +210,19 @@ namespace CivModel
         ///  See the list of the exceptions <see cref="File.OpenText(string)"/> may throw.
         /// </para>
         /// <para>
-        ///  This constructor is wrapper of <see cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/>.
-        ///  See <see cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/> for more information.
+        ///  This constructor is wrapper of <see cref="Load(StreamReader, TextReader[], IEnumerable{IGameSchemeFactory})"/>.
+        ///  See <see cref="Load(StreamReader, TextReader[], IEnumerable{IGameSchemeFactory})"/> for more information.
         /// </para>
         /// </remarks>
-        /// <seealso cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/>
-        public Game(string saveFile, IEnumerable<IGameSchemeFactory> schemeFactories)
+        /// <seealso cref="Load(StreamReader, TextReader[], IEnumerable{IGameSchemeFactory})"/>
+        public Game(string saveFile, TextReader[] prototypes, IEnumerable<IGameSchemeFactory> schemeFactories)
         {
             if (schemeFactories == null)
                 throw new ArgumentNullException(nameof(schemeFactories));
 
             using (var stream = File.OpenText(saveFile))
             {
-                Load(stream, schemeFactories);
+                Load(stream, prototypes, schemeFactories);
             }
         }
 
@@ -232,6 +230,9 @@ namespace CivModel
         /// Initializes a new instance of the <see cref="Game"/> class, by loading a existing save file from stream.
         /// </summary>
         /// <param name="stream"><see cref="StreamReader"/> object which contains a save file.</param>
+        /// <param name="prototypes">
+        /// The array of <see cref="TextReader"/> for xml prototype data.
+        /// </param>
         /// <param name="schemeFactories">the candidates of factories for <see cref="IGameScheme"/> of the game.</param>
         /// <exception cref="ArgumentNullException"><paramref name="schemeFactories"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidDataException">
@@ -240,16 +241,16 @@ namespace CivModel
         /// there is no <see cref="IGameSchemeFactory"/> for this save file.
         /// </exception>
         /// <remarks>
-        /// This constructor is wrapper of <see cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/>.
-        /// See <see cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/> for more information.
+        /// This constructor is wrapper of <see cref="Load(StreamReader, TextReader[], IEnumerable{IGameSchemeFactory})"/>.
+        /// See <see cref="Load(StreamReader, TextReader[], IEnumerable{IGameSchemeFactory})"/> for more information.
         /// </remarks>
-        /// <seealso cref="Load(StreamReader, IEnumerable{IGameSchemeFactory})"/>
-        public Game(StreamReader stream, IEnumerable<IGameSchemeFactory> schemeFactories)
+        /// <seealso cref="Load(StreamReader, TextReader[], IEnumerable{IGameSchemeFactory})"/>
+        public Game(StreamReader stream, TextReader[] prototypes, IEnumerable<IGameSchemeFactory> schemeFactories)
         {
             if (schemeFactories == null)
                 throw new ArgumentNullException(nameof(schemeFactories));
 
-            Load(stream, schemeFactories);
+            Load(stream, prototypes, schemeFactories);
         }
 
         private void PreInitialize()
@@ -263,6 +264,17 @@ namespace CivModel
             _shouldStartTurnResumeGame = false;
 
             InitializeObservable();
+        }
+
+        private void LoadPrototype(TextReader[] prototypes)
+        {
+            foreach (var r in prototypes)
+                _prototypeLoader.AddData(r);
+
+            foreach (var s in SchemeLoader.GetOverlappableScheme<IGameScheme>())
+            {
+                _prototypeLoader.EnablePackage(s.Factory.Guid, s.GetType());
+            }
         }
 
         /// <summary>

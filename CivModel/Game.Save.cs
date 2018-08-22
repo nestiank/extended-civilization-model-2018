@@ -18,6 +18,9 @@ namespace CivModel
         /// Re-initializes the <see cref="Game"/> object, by loading a existing save file from stream.
         /// </summary>
         /// <param name="stream"><see cref="StreamReader"/> object which contains a save file.</param>
+        /// <param name="prototypes">
+        /// The array of <see cref="TextReader"/> for xml prototype data.
+        /// </param>
         /// <param name="knownSchemes">
         /// the known factories of <see cref="IGameScheme"/> for the game.
         /// If <c>null</c>, use previous scheme.
@@ -29,7 +32,7 @@ namespace CivModel
         /// or
         /// there is no <see cref="IGameSchemeFactory"/> for this save file.
         /// </exception>
-        public void Load(StreamReader stream, IEnumerable<IGameSchemeFactory> knownSchemes)
+        public void Load(StreamReader stream, TextReader[] prototypes, IEnumerable<IGameSchemeFactory> knownSchemes)
         {
             if (knownSchemes == null && SchemeLoader == null)
                 throw new ArgumentNullException(nameof(knownSchemes), "knownSchemes is null and scheme is not initialized yet");
@@ -87,16 +90,7 @@ namespace CivModel
 
                 var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
 
-                foreach (var s in SchemeLoader.GetOverlappableScheme<IGameScheme>())
-                {
-                    using (var reader = s.GetPackageData())
-                    {
-                        if (reader != null)
-                        {
-                            _prototypeLoader.Load(reader, s.GetType().Assembly);
-                        }
-                    }
-                }
+                LoadPrototype(prototypes);
 
                 SubTurnNumber = Convert.ToInt32(readLine());
                 if (SubTurnNumber < 0)

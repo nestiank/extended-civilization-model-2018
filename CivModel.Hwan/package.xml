@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package
+  name="CivModel.Hwan.GameScheme" guid="E5FA297B-3BFB-472D-AD8B-01C8A78B1251"
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
+
+  <TextName>환 제국 확장 모듈</TextName>
 
   <City
     name="CivModel.Hwan.HwanEmpireCity" guid="D0A84907-885A-44C2-8E4C-077744E1E0C3">

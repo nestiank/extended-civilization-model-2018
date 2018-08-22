@@ -61,11 +61,6 @@ namespace CivModel.Finno
             Factory = factory ?? throw new ArgumentNullException("factory");
         }
 
-        public TextReader GetPackageData()
-        {
-            return new StringReader(Properties.Resources.package);
-        }
-
         public void OnAfterInitialized(Game game)
         {
             foreach (var p in _productions)
