@@ -230,7 +230,11 @@ namespace FakeView
                     }
 
                     if (m_autoSkipPlayer != nullptr)
+                    {
+                        while (m_presenter->IsThereTodos)
+                            m_presenter->CommandSkip();
                         m_presenter->CommandApply();
+                    }
                 }
 
                 break;
