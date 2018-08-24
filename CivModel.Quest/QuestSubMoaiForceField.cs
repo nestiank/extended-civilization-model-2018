@@ -41,6 +41,24 @@ namespace CivModel.Quests
         {
             Requestee.SpecialResource[SpecialResourceMoaiForceField.Instance] = 1;
 
+            foreach (Player player in Game.Players)
+            {
+                if (player.Team == Game.Players[0].Team)
+                {
+                    foreach (TileBuilding Tbuild in player.TileBuildings)
+                    {
+                        if (Tbuild is Hwan.HwanEmpireFIRFortress)
+                        {
+                            ((Hwan.HwanEmpireFIRFortress)Tbuild).IsForceFieldOn = true;
+                        }
+                        else if(Tbuild is Zap.FIRFortress)
+                        {
+                            ((Zap.FIRFortress)Tbuild).IsForceFieldOn = true;
+                        }
+                    }
+                }
+            }
+
             Cleanup();
         }
 

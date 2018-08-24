@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Quests
 {
-    public class Necronomicon : ISpecialResource
+    public class Necronomicon : ISpecialResource, Finno.INecro
     {
         public static Necronomicon Instance => _instance.Value;
         private static Lazy<Necronomicon> _instance
@@ -21,7 +21,7 @@ namespace CivModel.Quests
             return new DataObject(player);
         }
 
-        private class DataObject : ITurnObserver
+        private class DataObject : ITurnObserver, ITileObjectObserver
         {
             private Player _player;
 
@@ -30,12 +30,28 @@ namespace CivModel.Quests
                 _player = player;
 
                 player.Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
+                player.Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
             }
 
             public void PostTurn()
             {
                 // TODO
             }
+
+            public void TileObjectProduced(TileObject obj)
+            {
+                if (_player.SpecialResource[Necronomicon.Instance] < 1)
+                    return;
+
+                if (obj is Unit)
+                {
+                    if (((Unit)obj).Owner.Team == _player.Team && obj is Finno.AncientSorcerer)
+                    {
+                        ((Unit)obj).AttackPower = ((Unit)obj).AttackPower * 3;
+                    }
+                }
+            }
+            public void TileObjectPlaced(TileObject obj) { }
 
             public void PreTurn() { }
             public void AfterPreTurn() { }

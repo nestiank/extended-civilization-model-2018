@@ -47,6 +47,34 @@ namespace CivModel.Quests
         {
             Requestee.SpecialResource[Necronomicon.Instance] = 1;
 
+            foreach (Player player in Game.Players)
+            {
+                if (player.Team == Game.Players[1].Team)
+                {
+                    foreach (Unit unit in player.Units)
+                    {
+                        if (unit is Finno.AncientSorcerer)
+                        {
+                            unit.AttackPower = unit.AttackPower * 3;
+                        }
+                    }
+                }
+            }
+
+            foreach (CityBase city in (Game.GetPlayerAtlantis()).Cities)
+            {
+                if(city != (Game.GetPlayerAtlantis()).Cities.First())
+                {
+                    city.Destroy();
+                }
+            }
+
+            foreach (Terrain.Point DrownPoint in (Game.GetPlayerAtlantis()).Territory)
+            {
+                if(DrownPoint.Unit != null)
+                    DrownPoint.Unit.Destroy();
+            }
+
             Cleanup();
         }
 

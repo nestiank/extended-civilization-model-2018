@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CivModel.Hwan.HwanPlayerNumber;
+
 namespace CivModel.Quests
 {
     public class GatesOfRlyeh : ISpecialResource
@@ -34,6 +36,88 @@ namespace CivModel.Quests
 
             public void PostTurn()
             {
+                if (_player.SpecialResource[GatesOfRlyeh.Instance] < 1)
+                    return;
+
+                int CountFinno = 0;
+                int CountHwan = 0;
+                int UnitCount = 0;
+
+                while (CountFinno < 3)
+                {
+                    UnitCount = 0;
+                    foreach (Player i in _player.Game.Players)
+                    {
+                        if (i.Team == _player.Team)
+                        {
+                            UnitCount = UnitCount + i.Units.Count();
+                        }
+                    }
+
+                    if(UnitCount < 1)
+                    {
+                        break;
+                    }
+
+                    Unit UnitToDieF = null;
+                    foreach (Player CalledByOrigin in _player.Game.Players)
+                    {
+                        if(CalledByOrigin.Team == _player.Team && UnitToDieF == null)
+                        {
+                            foreach (Unit called in CalledByOrigin.Units)
+                            {
+                                if (_player.Game.Random.Next(Math.Min(UnitCount * 10, 150)) < 5)
+                                {
+                                    UnitToDieF = called;
+                                }
+                            }
+                        }
+                    }
+
+                    if(UnitToDieF != null)
+                    {
+                        UnitToDieF.Destroy();
+                        CountFinno++;
+                    }
+                }
+
+                while (CountHwan < 7)
+                {
+                    UnitCount = 0;
+                    foreach (Player i in _player.Game.Players)
+                    {
+                        if (i.Team == (_player.Game.GetPlayerHwan()).Team)
+                        {
+                            UnitCount = UnitCount + i.Units.Count();
+                        }
+                    }
+
+                    if (UnitCount < 1)
+                    {
+                        break;
+                    }
+
+                    Unit UnitToDieH = null;
+                    foreach (Player CalledByOrigin in _player.Game.Players)
+                    {
+                        if (CalledByOrigin.Team == (_player.Game.GetPlayerHwan()).Team && UnitToDieH == null)
+                        {
+                            foreach (Unit called in CalledByOrigin.Units)
+                            {
+                                if (_player.Game.Random.Next(Math.Min(UnitCount * 10, 150)) < 4)
+                                {
+                                    UnitToDieH = called;
+                                }
+                            }
+                        }
+                    }
+
+                    if (UnitToDieH != null)
+                    {
+                        UnitToDieH.Destroy();
+                        CountHwan++;
+                    }
+                }
                 // TODO
             }
 

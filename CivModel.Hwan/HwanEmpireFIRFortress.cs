@@ -18,7 +18,14 @@ namespace CivModel.Hwan
                 {
                     AboveUnit = point.Unit;
                     AboveUnit.AttackPower += 5;
-                    AboveUnit.DefencePower += 5;
+                    if (!isForceFieldOn)
+                    {
+                        AboveUnit.DefencePower += 5;
+                        DefUpFive = true;
+                    }
+
+                    else
+                        AboveUnit.DefencePower += 15;
                 }
             }
         }
@@ -31,6 +38,12 @@ namespace CivModel.Hwan
 
         private Unit AboveUnit = null;
 
+        private bool isForceFieldOn = false;
+        public bool IsForceFieldOn { get => isForceFieldOn; set => isForceFieldOn = value; }
+
+
+        private bool DefUpFive = false;
+
         public void TileObjectProduced(TileObject obj) { }
 
         public void TileObjectPlaced(TileObject obj)
@@ -41,13 +54,30 @@ namespace CivModel.Hwan
             {
                 AboveUnit = unit;
                 AboveUnit.AttackPower += 5;
-                AboveUnit.DefencePower += 5;
+
+                if (!isForceFieldOn)
+                {
+                    AboveUnit.DefencePower += 5;
+                    DefUpFive = true;
+                }
+
+                else
+                    AboveUnit.DefencePower += 15;
             }
 
             else if (AboveUnit != null && obj == AboveUnit && obj.PlacedPoint != this.PlacedPoint)
             {
                 AboveUnit.AttackPower -= 5;
-                AboveUnit.DefencePower -= 5;
+
+                if(DefUpFive)
+                {
+                    AboveUnit.DefencePower -= 5;
+                    DefUpFive = false;
+                }
+
+                else
+                    AboveUnit.DefencePower -= 15;
+
                 AboveUnit = null;
             }
         }

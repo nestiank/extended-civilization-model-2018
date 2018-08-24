@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Hwan
 {
-    public class JackieChan : Unit
+    public class JackieChan : Unit, ITurnObserver
     {
         private readonly IActorAction _holdingAttackAct;
         public override IActorAction HoldingAttackAct => _holdingAttackAct;
@@ -23,6 +23,8 @@ namespace CivModel.Hwan
             _holdingAttackAct = new AttackActorAction(this, false);
             _movingAttackAct = new AttackActorAction(this, true);
             _specialActs[0] = new JackieChanAction(this);
+
+            Owner.Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
         }
 
         private class JackieChanAction : IActorAction
@@ -151,6 +153,32 @@ namespace CivModel.Hwan
                 Owner.ConsumeAP(Ap);
             }
 
+        }
+
+        public void PreTurn()
+        {
+            foreach (var pt in this.PlacedPoint.Value.Adjacents())
+            {
+                if(pt.Value.Unit != null)
+                    pt.Value.Unit.RemainAP = 1;
+            }
+        }
+
+        public void AfterPreTurn() { }
+
+        public void PostTurn() { }
+
+        public void AfterPostTurn() { }
+
+        public void PreSubTurn(Player playerInTurn) { }
+
+        public void AfterPreSubTurn(Player playerInTurn) { }
+
+        public void PostSubTurn(Player playerInTurn) { }
+
+        public void AfterPostSubTurn(Player playerInTurn)
+        {
+            throw new NotImplementedException();
         }
     }
 

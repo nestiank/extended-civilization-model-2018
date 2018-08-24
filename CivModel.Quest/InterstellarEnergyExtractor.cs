@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CivModel.Quests
 {
-    public class InterstellarEnergyExtractor : ISpecialResource
+    public class InterstellarEnergyExtractor : ISpecialResource, Finno.IInterstellarE
     {
         public static InterstellarEnergyExtractor Instance => _instance.Value;
         private static Lazy<InterstellarEnergyExtractor> _instance
