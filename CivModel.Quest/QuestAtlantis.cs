@@ -61,12 +61,18 @@ namespace CivModel.Quests
                 }
             }
 
-            foreach (CityBase city in Game.Players[CivModel.Zap.AtlantisPlayerNumber.Number].Cities)
+            foreach (CityBase city in (Game.GetPlayerAtlantis()).Cities)
             {
-                if(city != Game.Players[CivModel.Zap.AtlantisPlayerNumber.Number].Cities.First())
+                if(city != (Game.GetPlayerAtlantis()).Cities.First())
                 {
                     city.Destroy();
                 }
+            }
+
+            foreach (Terrain.Point DrownPoint in (Game.GetPlayerAtlantis()).Territory)
+            {
+                if(DrownPoint.Unit != null)
+                    DrownPoint.Unit.Destroy();
             }
 
             Cleanup();

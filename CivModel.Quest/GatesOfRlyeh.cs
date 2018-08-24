@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CivModel.Hwan.HwanPlayerNumber;
+
 namespace CivModel.Quests
 {
     public class GatesOfRlyeh : ISpecialResource
@@ -84,7 +86,7 @@ namespace CivModel.Quests
                     UnitCount = 0;
                     foreach (Player i in _player.Game.Players)
                     {
-                        if (i.Team == _player.Team)
+                        if (i.Team == (_player.Game.GetPlayerHwan()).Team)
                         {
                             UnitCount = UnitCount + i.Units.Count();
                         }
@@ -98,7 +100,7 @@ namespace CivModel.Quests
                     Unit UnitToDieH = null;
                     foreach (Player CalledByOrigin in _player.Game.Players)
                     {
-                        if (CalledByOrigin.Team == _player.Team && UnitToDieH == null)
+                        if (CalledByOrigin.Team == (_player.Game.GetPlayerHwan()).Team && UnitToDieH == null)
                         {
                             foreach (Unit called in CalledByOrigin.Units)
                             {
