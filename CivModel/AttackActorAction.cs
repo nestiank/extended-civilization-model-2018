@@ -55,10 +55,13 @@ namespace CivModel
             {
                 Actor targetObject = GetTargetObject(pt);
 
-                if (targetObject != null && targetObject.Owner != _owner.Owner)
+                if (targetObject != null && !_owner.Owner.IsAlliedWith(targetObject.Owner))
                 {
-                    if (Terrain.Point.Distance(origin, pt) == 1)
-                        return _owner.GetRequiredAPToMoveNearBy(origin, pt);
+                    if (!_isMoving || !(pt.TileBuilding is CityBase city && city != targetObject))
+                    {
+                        if (Terrain.Point.Distance(origin, pt) == 1)
+                            return _owner.GetRequiredAPToMoveNearBy(origin, pt);
+                    }
                 }
             }
 

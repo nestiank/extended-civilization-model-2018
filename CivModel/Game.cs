@@ -156,7 +156,7 @@ namespace CivModel
             if (width == -1)
                 width = startup.DefaultTerrainWidth;
             if (height == -1)
-                height = startup.DefaultTerrainWidth;
+                height = startup.DefaultTerrainHeight;
             if (numOfPlayer == -1)
                 numOfPlayer = startup.DefaultNumberOfPlayers;
 

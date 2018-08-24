@@ -19,6 +19,8 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
+    <PassiveSkill name="Finno의 기상" description="매 턴 1%의 확률로 임의의 군사유닛이 도시와 1칸 떨어진 곳에 아무런 자원 소모 없이 생성된다." />
+    <ActiveSkill name="원거리 공격" description="도시로부터 2칸 거리 이내 적 유닛이 있을 경우 30의 피해를 주며 원거리 공격을 한다. 방어력으로 인한 보답 피해를 입지 않는다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>
@@ -44,6 +46,7 @@
     <LaborLogistics>10</LaborLogistics>
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
+    <PassiveSkill name="미세먼지" description="매턴마다 상대편 국가의 행복도를 5 낮춘다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>
@@ -67,6 +70,7 @@
     <LaborLogistics>10</LaborLogistics>
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
+    <PassiveSkill name="5차산업혁명의 기운" description="해당 타일에 위치한 군사 유닛의 공격력과 방어력을 5씩 증가시켜준다. 유닛이 요새에서 떠나면 이 효과는 사라진다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>
@@ -113,6 +117,7 @@
     <LaborLogistics>10</LaborLogistics>
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
+    <PassiveSkill name="금맥" description="턴당 5% 확률로 5금, 70% 확률로 10 금, 25% 확률로 20금을 획득한다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>
@@ -188,6 +193,8 @@
     <ResearchCapacity>0</ResearchCapacity>
     <ResearchIncome>0</ResearchIncome>
     <PopulationCoefficient>1</PopulationCoefficient>
+    <PassiveSkill name="노키아 장갑" description="해당 도시의 방어력이 15증가한다." />
+    <PassiveSkill name="EMU의 힘" description="매턴마다 20%의 확률로 하급유닛(EMU 궁병, 탈중앙화된 군인) 하나가 해당 도시 근처에 생성된다. 도시가 완전히 유닛으로 둘러쌓여있을 경우 발동되지 않는다." />
   </InteriorBuilding>
 
   <InteriorBuilding
@@ -204,6 +211,7 @@
     <ResearchCapacity>0</ResearchCapacity>
     <ResearchIncome>0</ResearchIncome>
     <PopulationCoefficient>1.3</PopulationCoefficient>
+    <PassiveSkill name="자일리톨 껌 생산" description="매턴이 시작될 마다 30%의 확률로 발동한다. 발동시 [특수 자원: 자일리톨 껌]을 1 획득한다. [특수 자원: 자일리톨 껌]의 갯수가 5이상일 경우 이 능력은 발동되지 않는다. 이 능력이 발동된 후 5턴 동안 이 능력은 발동되지 않으며, 인구 증복 능력도 무효화된다." />
   </InteriorBuilding>
 
   <Unit
@@ -223,6 +231,7 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>2</BattleClassLevel>
+    <ActiveSkill name="주술" description="자신의 HP를 최대 10까지 깍아 깍인 만큼 2칸 안에 있는 선택한 다른 아군 유닛의 HP를 높힐수 있다. HP가 풀피인 아군 유닛 상대로는 사용하지 못하며, 풀피까지만 힐을 해준다. AP를 1만큼 소모한다." />
   </Unit>
 
   <Unit
@@ -242,6 +251,7 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>3</BattleClassLevel>
+    <ActiveSkill name="Autism Beam" description="3칸 거리 안에 있는 특정 유닛을 선택해 해당 턴과 그 다음 턴 동안 유닛을 조종한다. 다다음 턴에 해당 유닛은 원래 주인으로 돌아간다. AP를 2만큼 소모한다. 해당 스킬 사용시 앞으로 2턴 동안 사용하지 못한다." />
   </Unit>
 
   <Unit
@@ -280,6 +290,7 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>2</BattleClassLevel>
+    <ActiveSkill name="돌진" description="지형 AP소모 없이 일직선상의 거리를 3칸만큼 이동하고 그 이동궤적 안에 있었던 모든 유닛과 일반건물(TileBuilding)의 체력을 20% 깎는다. 이미 유닛이나 적 도시가 있는 곳은 선택할 수 없다. AP를 1만큼 소모한다. 해당 스킬 사용시 앞으로 1턴 동안 사용하지 못한다." />
   </Unit>
 
   <Unit
@@ -318,6 +329,8 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>3</FullLaborForRepair>
     <BattleClassLevel>4</BattleClassLevel>
+    <PassiveSkill name="기마병의 기개" description="해당 유닛이 이동할때 타일의 종류에 영향을 받지않고 기본적인 이동 코스트를 지불한다. 또한, 20%의 확률로 해당 유닛과 1블럭 떨어진 타일 중에서 랜덤 위치로, 고대 핀란드 EMU 궁기병을 생성한다, 만약 해당 유닛과 1블럭 떨어진 모든 타일이 유닛으로 차있으면 해당 패시브는 발동되지 않는다." />
+    <ActiveSkill name="정복" description="해당 유닛이 있는 타일에 도시와 다른 유닛이 없고, 도시와 2타일 초과 떨어진 타일일 경우, 타일에 있던 건물을 무효화시키고, 해당 유닛이 서있는 타일을 자신의 영토로 변경한 후, 그 자리의 고대 핀란드 5차산업혁명 요새를 건설한다." />
   </Unit>
 
   <Unit
@@ -337,6 +350,7 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>3</BattleClassLevel>
+    <ActiveSkill name="제다이의 의지" description="다음 턴 까지 공격받으면, 상대의 공격을 무시한 후 그 공격력만큼 상대에게 데미지를 돌려준다. AP를 2만큼 소모한다. 해당 스킬 사용시 앞으로 2턴 동안 사용하지 못한다." />
   </Unit>
 
   <Unit
@@ -375,5 +389,8 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>2</FullLaborForRepair>
     <BattleClassLevel>1</BattleClassLevel>
+    <PassiveSkill name="클로킹" description="해당 유닛은 적국과 적대국에는 보이지 않는다." />
+    <PassiveSkill name="스파이는 스파이와 통한다" description="해당 유닛은 반경 3타일 이내에 있는 적 스파이 유닛을 볼수 있다." />
+    <ActiveSkill name="첩보공작" description="유닛이 적 영토에 있을때만 사용이 가능하다. 사용시 유닛이 소멸한다. 사용과 동시에, 해당 스파이가 있었던 영토의 주인의 자원 상태, 생산량, 궁극기 진행도를 맵 UI 알림창에 표시한다." />
   </Unit>
 </Package>

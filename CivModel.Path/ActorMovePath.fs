@@ -1,12 +1,11 @@
 namespace CivModel.Path
 
 open System
-open FSharpx.Collections
-
-open CivModel
 open System.Collections.Generic
 
-type public ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IActorAction) =
+open CivModel
+
+type ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IActorAction) =
     do
         if actor = null then
             raise (ArgumentNullException ("actor"))
@@ -25,21 +24,6 @@ type public ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IA
         if finalAction.Owner <> actor then
             raise (ArgumentException ("finalAction is not a action of actor", "finalAction"))
 
-    let indexToPt (terrain: Terrain) (index: int) =
-        terrain.GetPoint(index % terrain.Width, index / terrain.Width)
-    let ptToIndex (pos: Terrain.Point) =
-        pos.Position.Y * pos.Terrain.Width + pos.Position.X
-
-    let createGraph (terrain: Terrain) (startp: Terrain.Point) =
-        let len = terrain.Width * terrain.Height
-        let source = ptToIndex startp
-
-        let dist = Array.create len infinity
-        let prev = Array.create len Option<int>.None
-
-        dist.[source] <- 0.0;
-        dist, prev, source
-
     let getDistance (a: Terrain.Point) (b: Terrain.Point) =
         let action = if b = endPoint then finalAction else actor.MoveAct
         let ap = action.GetRequiredAP(a, Nullable b)
@@ -47,48 +31,19 @@ type public ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IA
         elif ap.Value > actor.MaxAP then infinity
         else ap.Value
 
-    let rec dijkstra (dist : float array) (prev : int option array) (startp: Terrain.Point) (queue: (float * int) Heap) =
-        let terrain = startp.Terrain
-        match Heap.tryUncons queue with
-        | Some ((d, v), tail) ->
-            let vpt = indexToPt terrain v
-            let relax (q: (float * int) Heap) (pt: Terrain.Point) =
-                let idx = ptToIndex pt
-                let nd = d + getDistance vpt pt
-                if nd < dist.[idx] then
-                    dist.[idx] <- nd
-                    prev.[idx] <- Some v
-                    q |> Heap.insert (nd, idx)
-                else q
-            let adj =
-                (indexToPt terrain v).Adjacents ()
-                |> Array.fold (fun xs p -> if p.HasValue then p.Value :: xs else xs) []
-            let nq = adj |> List.fold relax tail
-            dijkstra dist prev startp nq
-        | None -> ()
-
-    let findPath (startp: Terrain.Point) (endp: Terrain.Point) =
-        if startp = endp then []
-        else
-            let (dist, prev, source) = createGraph startp.Terrain startp
-            dijkstra dist prev startp (Heap.ofSeq false [(0.0, source)])
-
-            let rec path = function
-                | Some idx -> idx :: path prev.[idx]
-                | None -> []
-            path (Some (ptToIndex endp))
-            |> List.rev
-            |> List.map (indexToPt startp.Terrain)
-
-    let mutable (_path : Terrain.Point list) = findPath actor.PlacedPoint.Value endPoint
+    let _path = FreePath(actor.PlacedPoint.Value, endPoint, getDistance)
 
     let getFirstWalk () =
-        match _path with
-        | (a :: b :: xs) ->
+        match _path.Path with
+        | Some (a :: b :: xs) ->
             if actor.MoveAct <> null && (Nullable a) = actor.PlacedPoint then
                 Some (a, b, xs)
             else None
         | _ -> None
+
+    let isInvalid () =
+        match getFirstWalk () with
+        | Some _ -> false | None -> true
 
     let getValidFirstWalk () =
         match getFirstWalk () with
@@ -100,8 +55,7 @@ type public ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IA
 
     let recalcFirstWalk () =
         match getFirstWalk () with
-        | Some (a, b, xs) ->
-            _path <- (findPath a b) @ xs
+        | Some _ -> _path.RecalcFirstWalk ()
         | None -> raise (InvalidOperationException ("the path is invalid"))
 
     let rec actFirstWalk () =
@@ -110,7 +64,7 @@ type public ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IA
             let action = if List.isEmpty xs then finalAction else actor.MoveAct
             if action.IsActable (Nullable b) then
                 action.Act (Nullable b)
-                _path <- b :: xs
+                _path.PopFirstWalk () |> ignore
                 true
             else false
         | Choice2Of3 () ->
@@ -118,15 +72,40 @@ type public ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IA
             actFirstWalk ()
         | Choice3Of3 () -> false
 
+    static member GetReachablePoint (actor: Actor) (isMovingAttack: bool) =
+        let terrain = actor.Game.Terrain
+        let len = terrain.Width * terrain.Height
+        let rec reachable ptidx (usedAp: ActionPoint) marked =
+            if Set.contains ptidx marked then marked
+            else
+                let folder (s: int Set) (x: int) =
+                    let ptx = terrain.GetPoint x
+                    let action =
+                        if isMovingAttack && ptx.Unit <> null then actor.MovingAttackAct
+                        else actor.MoveAct
+                    let ap = action.GetRequiredAP(terrain.GetPoint ptidx, Nullable (terrain.GetPoint x))
+                    if usedAp.IsConsumingAll || ap = ActionPoint.NonAvailable then s
+                    elif usedAp.Value + ap.Value > actor.RemainAP then s
+                    elif action = actor.MovingAttackAct then Set.add x s
+                    else reachable x (ActionPoint (usedAp.Value + ap.Value, ap.IsConsumingAll)) s
+                (terrain.GetPoint ptidx).Adjacents ()
+                |> Array.choose (fun x -> if x.HasValue then Some x.Value.Index else None)
+                |> Array.fold folder (Set.add ptidx marked)
+        reachable actor.PlacedPoint.Value.Index (ActionPoint 0.0) Set.empty
+        |> Set.toArray |> Array.map terrain.GetPoint
+
     interface IMovePath with
         member this.Actor =  actor
-        member this.StartPoint = List.head _path
+
+        member this.StartPoint =
+            match getFirstWalk () with
+            | Some (a, b, xs) -> a
+            | None -> raise (InvalidOperationException ("the path is invalid"))
+
         member this.EndPoint =  endPoint
         member this.FinalAction = finalAction
 
-        member this.IsInvalid =
-            match getFirstWalk () with
-            | Some _ -> false | None -> true
+        member this.IsInvalid = isInvalid ()
         member this.IsFirstMoveInvalid =
             match getValidFirstWalk () with
             | Choice1Of3 _ -> false | Choice2Of3 _ -> true
@@ -134,8 +113,12 @@ type public ActorMovePath(actor: Actor, endPoint: Terrain.Point, finalAction: IA
 
         member this.Path =
             match getFirstWalk () with
-            | Some _ -> _path :> IEnumerable<Terrain.Point>
+            | Some (a, b, xs) -> _path.Path.Value :> IEnumerable<Terrain.Point>
             | None -> raise (InvalidOperationException ("the path is invalid"))
 
         member this.RecalculateFirstWalk () = recalcFirstWalk ()
         member this.ActFirstWalk () = actFirstWalk ()
+
+        member this.ActFullWalkForRemainAP () =
+            while not (isInvalid ()) && actFirstWalk () do
+                ()

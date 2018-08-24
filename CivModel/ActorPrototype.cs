@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using System.Reflection;
 
@@ -58,6 +60,16 @@ namespace CivModel
         /// </summary>
         public int BattleClassLevel { get; }
 
+        /// <summary>
+        /// The information about passive skills.
+        /// </summary>
+        public IReadOnlyList<SkillInfo> PassiveSkills { get; }
+
+        /// <summary>
+        /// The information about active skills.
+        /// </summary>
+        public IReadOnlyList<SkillInfo> ActiveSkills { get; }
+
         internal ActorPrototype(XElement node, Assembly packageAssembly)
             : base(node, packageAssembly)
         {
@@ -71,6 +83,12 @@ namespace CivModel
             LaborLogistics = Convert.ToDouble(node.Element(xmlns + "LaborLogistics").Value);
             FullLaborForRepair = Convert.ToDouble(node.Element(xmlns + "FullLaborForRepair").Value);
             BattleClassLevel = Convert.ToInt32(node.Element(xmlns + "BattleClassLevel").Value);
+
+            PassiveSkills = node.Elements(xmlns + "PassiveSkill")
+                .Select(x => new SkillInfo(x)).ToArray();
+
+            ActiveSkills = node.Elements(xmlns + "ActiveSkill")
+                .Select(x => new SkillInfo(x)).ToArray();
         }
     }
 }

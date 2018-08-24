@@ -473,6 +473,11 @@ namespace CivModel
         }
         private int _team;
 
+        /// <summary>
+        /// The name of this player.
+        /// </summary>
+        public string PlayerName { get; set; }
+
         // this property is used by CityBase class
         internal bool BeforeLandingCity { get; set; }
 

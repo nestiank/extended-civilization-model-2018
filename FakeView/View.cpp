@@ -45,7 +45,7 @@ namespace FakeView
             }
         }
         if (!m_presenter)
-            m_presenter = gcnew CivPresenter::Presenter(this, 15, 12, -1);
+            m_presenter = gcnew CivPresenter::Presenter(this, -1, -1, -1);
     }
 
     void View::Refocus()
@@ -98,8 +98,9 @@ namespace FakeView
         int sx = scrsz.width / 3;
         int sy = scrsz.height / 3;
 
-        int bx = m_presenter->FocusedPoint.Position.X - (sx / 2);
-        int by = m_presenter->FocusedPoint.Position.Y - (sy / 2);
+        auto centerPoint = m_fixedCenter.GetValueOrDefault(m_presenter->FocusedPoint);
+        int bx = centerPoint.Position.X - (sx / 2);
+        int by = centerPoint.Position.Y - (sy / 2);
 
         for (int dy = 0; dy < sy; ++dy)
         {
@@ -145,22 +146,34 @@ namespace FakeView
             }
         }
 
-        auto posCenter = CivModel::Position::FromPhysical(bx + (sx / 2), by + (sy / 2));
-        auto ptCenter = TerrainToScreen(posCenter.X, posCenter.Y);
-        auto& chCenter = m_screen->GetChar(ptCenter.first, ptCenter.second);
+        auto ptFocused = TerrainToScreen(m_presenter->FocusedPoint.Position.X, m_presenter->FocusedPoint.Position.Y);
+        auto& chFocused = m_screen->GetChar(ptFocused.first, ptFocused.second);
 
         if (m_presenter->SelectedActor == nullptr ||
-            m_presenter->SelectedActor->PlacedPoint.Value.Position != posCenter)
+            m_presenter->SelectedActor->PlacedPoint.Value != m_presenter->FocusedPoint)
         {
-            chCenter.color ^= 0b0111'0111;
+            chFocused.color ^= 0b0111'0111;
         }
         if (m_presenter->RunningAction != nullptr)
         {
-            auto pt = m_presenter->Game->Terrain->GetPoint(posCenter);
-            if (!CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, pt))
+            if (!CivModel::ActorActionExtension::IsActable(m_presenter->RunningAction, m_presenter->FocusedPoint))
             {
-                chCenter.color ^= 0b0111'0111;
-                chCenter.color |= 0b1100'1110;
+                chFocused.color ^= 0b0111'0111;
+                chFocused.color |= 0b1100'1110;
+                chFocused.color ^= 0b1111'1111; // flipped again in States::Move process below
+            }
+        }
+
+        if (m_presenter->ReachablePoints)
+        {
+            for each (auto point in m_presenter->ReachablePoints)
+            {
+                if (point != m_presenter->SelectedActor->PlacedPoint.Value)
+                {
+                    auto pt = TerrainToScreen(point.Position.X, point.Position.Y);
+                    auto& ch = m_screen->GetChar(pt.first, pt.second);
+                    ch.color ^= 0b1111'1111;
+                }
             }
         }
 
@@ -217,7 +230,11 @@ namespace FakeView
                     }
 
                     if (m_autoSkipPlayer != nullptr)
+                    {
+                        while (m_presenter->IsThereTodos)
+                            m_presenter->CommandSkip();
                         m_presenter->CommandApply();
+                    }
                 }
 
                 break;
@@ -721,6 +738,34 @@ namespace FakeView
                 m_presenter->CommandRefocus();
                 break;
 
+            case 'g':
+            case 'G':
+                if (!m_fixedCenter.HasValue)
+                {
+                    m_fixedCenter = m_presenter->FocusedPoint;
+                    MessageBoxW(nullptr, L"Screen locked", L"FakeView", MB_OK);
+                }
+                else
+                {
+                    m_fixedCenter = { };
+                    MessageBoxW(nullptr, L"Screen unlocked", L"FakeView", MB_OK);
+                }
+                break;
+
+            case 't':
+            case 'T':
+                if (m_bTeamColor)
+                {
+                    m_bTeamColor = false;
+                    MessageBoxW(nullptr, L"Player color is applied", L"Color", MB_OK);
+                }
+                else
+                {
+                    m_bTeamColor = true;
+                    MessageBoxW(nullptr, L"Team color is applied", L"Color", MB_OK);
+                }
+                break;
+
             case 's':
             case 'S':
                 m_presenter->CommandSelect();
@@ -967,14 +1012,8 @@ namespace FakeView
 
     unsigned char View::GetPlayerColor(CivModel::Player^ player)
     {
-        auto players = m_presenter->Game->Players;
-        int playerIndex = 0;
-        for (; playerIndex < players->Count; ++playerIndex)
-        {
-            if (players[playerIndex] == player)
-                break;
-        }
-        return static_cast<unsigned char>(playerIndex % 6) + 1;
+        int index = m_bTeamColor ? player->Team : player->PlayerNumber;
+        return static_cast<unsigned char>(index % 6) + 1;
     }
 
     std::string View::GetFactoryDescription(CivModel::IProductionFactory^ factory)
@@ -989,8 +1028,9 @@ namespace FakeView
         int sx = scrsz.width / 3;
         int sy = scrsz.height / 3;
 
-        int bx = m_presenter->FocusedPoint.Position.X - (sx / 2);
-        int by = m_presenter->FocusedPoint.Position.Y - (sy / 2);
+        auto centerPoint = m_fixedCenter.GetValueOrDefault(m_presenter->FocusedPoint);
+        int bx = centerPoint.Position.X - (sx / 2);
+        int by = centerPoint.Position.Y - (sy / 2);
 
         int dx = x - bx;
         int dy = y - by;

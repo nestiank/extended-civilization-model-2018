@@ -19,6 +19,7 @@
     <LaborLogistics>0</LaborLogistics>
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
+    <ActiveSkill name="원거리 공격" description="도시로부터 2칸 거리 이내 적 유닛이 있을 경우 30의 피해를 주며 원거리 공격을 한다. 방어력으로 인한 보답 피해를 입지 않는다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>
@@ -67,6 +68,7 @@
     <LaborLogistics>10</LaborLogistics>
     <FullLaborForRepair>0</FullLaborForRepair>
     <BattleClassLevel>0</BattleClassLevel>
+    <PassiveSkill name="5차산업혁명의 기운" description="해당 타일에 위치한 군사 유닛의 공격력과 방어력을 5씩 증가시켜준다. 유닛이 요새에서 떠나면 이 효과는 사라진다." />
 
     <ProvidedGold>0</ProvidedGold>
     <ProvidedHappiness>0</ProvidedHappiness>

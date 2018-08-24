@@ -22,6 +22,11 @@ namespace CivModel
         public int LimitTurn { get; }
 
         /// <summary>
+        /// [퀘스트 설명].
+        /// </summary>
+        public string QuestDescription { get; }
+
+        /// <summary>
         /// [퀘스트 조건].
         /// </summary>
         public string GoalNotice { get; }
@@ -42,6 +47,7 @@ namespace CivModel
             var xmlns = PrototypeLoader.Xmlns;
             PostingTurn = ParseQuestTurn(node.Element(xmlns + "PostingTurn").Value);
             LimitTurn = ParseQuestTurn(node.Element(xmlns + "LimitTurn").Value);
+            QuestDescription = node.Element(xmlns + "QuestDescription").Value;
             GoalNotice = node.Element(xmlns + "GoalNotice").Value;
             RewardNotice = node.Element(xmlns + "RewardNotice").Value;
             CompleteNotice = node.Element(xmlns + "CompleteNotice").Value;

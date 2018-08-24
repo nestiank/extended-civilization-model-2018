@@ -22,7 +22,8 @@ namespace CivModel
         /// <summary>
         /// The target of this effect. <c>null</c> if target was destroyed.
         /// </summary>
-        internal IEffectTarget Target { get; private set; }
+        public object Target => _target;
+        private IEffectTarget _target;
 
         /// <summary>
         /// The duration turn of this effect.
@@ -69,7 +70,7 @@ namespace CivModel
             if (duration < -1)
                 throw new ArgumentOutOfRangeException(nameof(duration), duration, "duration is negative and not -1");
 
-            Target = target ?? throw new ArgumentNullException(nameof(target));
+            _target = target ?? throw new ArgumentNullException(nameof(target));
             Duration = duration;
         }
 
@@ -82,7 +83,7 @@ namespace CivModel
             if (Enabled)
                 throw new InvalidOperationException("effect is already turned on");
 
-            Target.AddEffect(this);
+            _target.AddEffect(this);
             LeftTurn = Duration;
             _enabled = true;
 
@@ -98,7 +99,7 @@ namespace CivModel
             if (!Enabled)
                 throw new InvalidOperationException("effect is not turned on");
 
-            Target.RemoveEffect(this);
+            _target.RemoveEffect(this);
             LeftTurn = -1;
             _enabled = false;
 
@@ -110,7 +111,7 @@ namespace CivModel
         {
             OnTargetDestroy();
 
-            Target = null;
+            _target = null;
             LeftTurn = -1;
             _enabled = false;
         }
