@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
@@ -25,7 +26,31 @@ namespace CivModel.UnitTest
                     new CivModel.Zap.GameSchemeFactory(),
                     new CivModel.Quests.GameSchemeFactory(),
                 };
-                return new Game(reader, knownFactory);
+
+                string[] prototypes = {
+                    "../../../CivModel.Common/package.xml",
+                    "../../../CivModel.Finno/package.xml",
+                    "../../../CivModel.Hwan/package.xml",
+                    "../../../CivModel.Zap/package.xml",
+                    "../../../CivModel.Quest/package.xml",
+                };
+                var protoReaders = new List<TextReader>();
+                try
+                {
+                    foreach (var proto in prototypes)
+                    {
+                        protoReaders.Add(File.OpenText(proto));
+                    }
+
+                    return new Game(reader, protoReaders.ToArray(), knownFactory);
+                }
+                finally
+                {
+                    foreach (var r in protoReaders)
+                    {
+                        r.Dispose();
+                    }
+                }
             }
         }
 

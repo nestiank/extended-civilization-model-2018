@@ -20,6 +20,18 @@ namespace
         Marshal::FreeHGlobal(System::IntPtr(chars));
         return ret;
     }
+
+    System::String^ getFilePath(System::String^ file, System::String^ dir, System::String^ altDir)
+    {
+        System::String^ path = System::IO::Path::Combine(dir, file);
+        if (!System::IO::File::Exists(path))
+        {
+            path = System::IO::Path::Combine(altDir, file);
+            if (!System::IO::File::Exists(path))
+                path = nullptr;
+        }
+        return path;
+    }
 }
 
 namespace FakeView
@@ -27,13 +39,15 @@ namespace FakeView
     View::View(Screen* screen)
         : m_screen(screen)
     {
-        System::String^ file = MAP_FILE_PATH;
-        if (!System::IO::File::Exists(file))
-        {
-            file = System::IO::Path::Combine(L"..", L"docs", MAP_FILE_PATH);
-            if (!System::IO::File::Exists(file))
-                file = nullptr;
-        }
+        System::String^ file = getFilePath(MAP_FILE_PATH, L".", L"..\\docs");
+
+        array<System::String^>^ prototypes = {
+            getFilePath(L"package.xml", L"packages\\common", L"..\\CivModel.Common"),
+            getFilePath(L"package.xml", L"packages\\finno", L"..\\CivModel.Finno"),
+            getFilePath(L"package.xml", L"packages\\hwan", L"..\\CivModel.Hwan"),
+            getFilePath(L"package.xml", L"packages\\zap", L"..\\CivModel.Zap"),
+            getFilePath(L"package.xml", L"packages\\quests", L"..\\CivModel.Quest"),
+        };
 
         m_presenter = nullptr;
         if (file)
@@ -41,11 +55,11 @@ namespace FakeView
             if (MessageBoxW(nullptr, L"Save file is found. Do you want to load it?", L"Save file is found", MB_YESNO)
                 == IDYES)
             {
-                m_presenter = gcnew CivPresenter::Presenter(this, file);
+                m_presenter = gcnew CivPresenter::Presenter(this, prototypes, file);
             }
         }
         if (!m_presenter)
-            m_presenter = gcnew CivPresenter::Presenter(this, -1, -1, -1);
+            m_presenter = gcnew CivPresenter::Presenter(this, prototypes, -1, -1, -1);
     }
 
     void View::Refocus()

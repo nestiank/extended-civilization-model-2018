@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package
+  name="CivModel.Zap.GameScheme" guid="57FA8243-995C-460F-B88E-F30C2C7E0807"
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
+
+  <TextName>잡국 확장 모듈</TextName>
 
   <City
     name="CivModel.Zap.CityCenter" guid="BF70E402-A0BE-4587-85A3-5623667AE2E1">

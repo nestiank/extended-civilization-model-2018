@@ -147,13 +147,17 @@
   </xs:complexType>
 
   <xs:complexType name="Package">
-    <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="City" type="City" />
-      <xs:element name="TileBuilding" type="TileBuilding" />
-      <xs:element name="InteriorBuilding" type="InteriorBuilding" />
-      <xs:element name="Unit" type="Unit" />
-      <xs:element name="Quest" type="Quest" />
-    </xs:choice>
+    <xs:complexContent>
+      <xs:extension base="GuidObject">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="City" type="City" />
+          <xs:element name="TileBuilding" type="TileBuilding" />
+          <xs:element name="InteriorBuilding" type="InteriorBuilding" />
+          <xs:element name="Unit" type="Unit" />
+          <xs:element name="Quest" type="Quest" />
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:element name="Package" type="Package" />

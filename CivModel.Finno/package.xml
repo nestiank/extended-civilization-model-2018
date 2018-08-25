@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package
+  name="CivModel.Finno.GameScheme" guid="5E43CB90-F860-427D-A43B-57C96091C58B"
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
+
+  <TextName>핀란드 확장 모듈</TextName>
 
   <City
     name="CivModel.Finno.FinnoEmpireCity" guid="300E06FD-B656-46DC-A668-BB36C75E3086">

@@ -28,6 +28,8 @@ namespace CivModel
         private Dictionary<Type, GuidObjectPrototype> _prototypes = new Dictionary<Type, GuidObjectPrototype>();
         private Dictionary<Guid, GuidObjectPrototype> _dictGuidProto = new Dictionary<Guid, GuidObjectPrototype>();
 
+        private Dictionary<Guid, XDocument> _candidates = new Dictionary<Guid, XDocument>();
+
         public GuidObjectPrototype TryGetPrototype(Guid guid)
         {
             if (_dictGuidProto.TryGetValue(guid, out var proto))
@@ -61,21 +63,39 @@ namespace CivModel
                 throw new KeyNotFoundException("the prototype of specified type cannot be cast into specified prototype");
         }
 
-        public void Load(TextReader input, Assembly packageAssembly)
+        public void AddData(TextReader input)
         {
             try
             {
                 var document = XDocument.Load(input);
                 document.Validate(_schema, null);
 
-                foreach (var child in document.Root.Elements())
-                {
-                    LoadNode(child, packageAssembly);
-                }
+                var guid = Guid.Parse(document.Root.Attribute("guid").Value);
+                if (_candidates.ContainsKey(guid))
+                    throw new InvalidDataException("there is duplicated Scheme GUID in prototype packages");
+
+                _candidates.Add(guid, document);
             }
             catch (XmlSchemaException e)
             {
                 throw new InvalidDataException("invalid prototype data", e);
+            }
+        }
+
+        public void EnablePackage(Guid guid, Type type)
+        {
+            if (_candidates.TryGetValue(guid, out var document) && document != null)
+            {
+                var name = document.Root.Attribute("name").Value;
+                if (name != type.FullName)
+                    throw new KeyNotFoundException("package data type name mismatch");
+
+                foreach (var child in document.Root.Elements().Skip(1))
+                {
+                    LoadNode(child, type.Assembly);
+                }
+
+                _candidates[guid] = null;
             }
         }
 

@@ -46,11 +46,6 @@
     <Compile Include="CityLab.cs" />
     <Compile Include="DecentralizedMilitary.cs" />
     <Compile Include="PlayerNumber.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="ZapFactory.cs" />
     <Compile Include="FIRFactory.cs" />
     <Compile Include="FIRFortress.cs" />
@@ -77,13 +72,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="res\package.xml" />
+    <Content Include="package.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

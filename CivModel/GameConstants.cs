@@ -14,7 +14,6 @@ namespace CivModel
         // These member are not used.
         IGameSchemeFactory IGameScheme.Factory => null;
         void IGameScheme.OnAfterInitialized(Game game) { }
-        TextReader IGameScheme.GetPackageData() => null;
 
         /// <summary>
         /// Coefficient for <see cref="Player.GoldIncome" />.

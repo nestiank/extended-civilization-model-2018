@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using CivModel;
 
 namespace CivPresenter
@@ -188,22 +187,24 @@ namespace CivPresenter
         /// Initializes a new instance of the <see cref="Presenter"/> class, by creating a new game with testing-purpose parameters.
         /// </summary>
         /// <param name="view">The <see cref="IView"/> object.</param>
+        /// <param name="prototypes">The path of prototype files.</param>
         /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
         /// <remarks>
-        /// This constructor calls <see cref="Presenter(IView, int, int, int)"/> constructor with preset testing-purpsoe parameters.
+        /// This constructor calls <see cref="Presenter(IView, string[], int, int, int)"/> constructor with preset testing-purpsoe parameters.
         /// </remarks>
-        /// <seealso cref="Presenter(IView, int, int, int)"/>
-        public Presenter(IView view) : this(view, -1, -1, -1) { }
+        /// <seealso cref="Presenter(IView, string[], int, int, int)"/>
+        public Presenter(IView view, string[] prototypes) : this(view, prototypes, -1, -1, -1) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Presenter"/> class, by creating a new game.
         /// </summary>
         /// <param name="view">The <see cref="IView"/> object.</param>
+        /// <param name="prototypes">The path of prototype files.</param>
         /// <param name="terrainWidth"><see cref="Terrain.Width"/> of the new game. If this value is <c>-1</c>, uses default value.</param>
         /// <param name="terrainHeight"><see cref="Terrain.Height"/> of the new game. If this value is <c>-1</c>, uses default value.</param>
         /// <param name="numOfPlayer">The number of players of the new game. If this value is <c>-1</c>, uses default value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
-        public Presenter(IView view, int terrainWidth, int terrainHeight, int numOfPlayer)
+        public Presenter(IView view, string[] prototypes, int terrainWidth, int terrainHeight, int numOfPlayer)
         {
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
@@ -218,7 +219,25 @@ namespace CivPresenter
                 new CivModel.Quests.GameSchemeFactory(),
 #endif
             };
-            _game = new Game(terrainWidth, terrainHeight, numOfPlayer, factory, knownFactory);
+
+            var readers = new List<TextReader>();
+            try
+            {
+                foreach (var proto in prototypes)
+                {
+                    readers.Add(File.OpenText(proto));
+                }
+
+                _game = new Game(terrainWidth, terrainHeight, numOfPlayer,
+                    readers.ToArray(), factory, knownFactory);
+            }
+            finally
+            {
+                foreach (var r in readers)
+                {
+                    r.Dispose();
+                }
+            }
 
             Initialize();
         }
@@ -227,15 +246,16 @@ namespace CivPresenter
         /// Initializes a new instance of the <see cref="Presenter"/> class, by loading a existing save file.
         /// </summary>
         /// <param name="view">The <see cref="IView"/> object.</param>
+        /// <param name="prototypes">The path of prototype files.</param>
         /// <param name="saveFile">The path of the save file to load. If <c>null</c>, create a new game.</param>
         /// <exception cref="ArgumentNullException"><paramref name="view"/> is <c>null</c></exception>
         /// <remarks>
-        /// This constructor calls <see cref="Game.Game(string, IEnumerable{IGameSchemeFactory})"/> constructor.
+        /// This constructor calls <see cref="Game.Game(string, TextReader[], IEnumerable{IGameSchemeFactory})"/> constructor.
         /// See the <strong>exceptions</strong> and <strong>remarks</strong> parts of
-        /// the documentation of <see cref="Game.Game(string, IEnumerable{IGameSchemeFactory})"/> constructor.
+        /// the documentation of <see cref="Game.Game(string, TextReader[], IEnumerable{IGameSchemeFactory})"/> constructor.
         /// </remarks>
-        /// <seealso cref="Game.Game(string, IEnumerable{IGameSchemeFactory})"/>
-        public Presenter(IView view, string saveFile)
+        /// <seealso cref="Game.Game(string, TextReader[], IEnumerable{IGameSchemeFactory})"/>
+        public Presenter(IView view, string[] prototypes, string saveFile)
         {
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
@@ -250,7 +270,25 @@ namespace CivPresenter
                 new CivModel.Quests.GameSchemeFactory(),
 #endif
             };
-            _game = new Game(saveFile, knownFactory);
+
+            var readers = new List<TextReader>();
+            try
+            {
+                foreach (var proto in prototypes)
+                {
+                    readers.Add(File.OpenText(proto));
+                }
+
+                _game = new Game(saveFile, readers.ToArray(), knownFactory);
+            }
+            finally
+            {
+                foreach (var r in readers)
+                {
+                    r.Dispose();
+                }
+            }
+
 
             Initialize();
         }

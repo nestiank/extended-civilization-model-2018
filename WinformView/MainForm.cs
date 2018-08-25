@@ -54,17 +54,31 @@ namespace WinformView
             base.Invoke(act);
         }
 
+        private string getFilePath(string file, string dir, string altDir)
+        {
+            string path = Path.Combine(dir, file);
+            if (!File.Exists(path))
+            {
+                path = Path.Combine(altDir, file);
+                if (!File.Exists(path))
+                    path = null;
+            }
+            return path;
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             ClientSize = new Size(640, 480);
 
-            string file = "map.txt";
-            if (!File.Exists(file))
-            {
-                file = Path.Combine("..", "docs", "map.txt");
-                if (!File.Exists(file))
-                    file = null;
-            }
+            string file = getFilePath("map.txt", ".", "..\\docs");
+
+            string[] prototypes = {
+                getFilePath("package.xml", "packages\\common", "..\\CivModel.Common"),
+                getFilePath("package.xml", "packages\\finno", "..\\CivModel.Finno"),
+                getFilePath("package.xml", "packages\\hwan", "..\\CivModel.Hwan"),
+                getFilePath("package.xml", "packages\\zap", "..\\CivModel.Zap"),
+                getFilePath("package.xml", "packages\\quests", "..\\CivModel.Quest"),
+            };
 
             _presenter = null;
             if (file != null)
@@ -72,11 +86,11 @@ namespace WinformView
                 if (MessageBox.Show("Save file is found. Do you want to load it?",
                     "Save file is found", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    _presenter = new Presenter(this, file);
+                    _presenter = new Presenter(this, prototypes, file);
                 }
             }
             if (_presenter == null)
-                _presenter = new Presenter(this);
+                _presenter = new Presenter(this, prototypes);
 
             RefreshTitle();
 

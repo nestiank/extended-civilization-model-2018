@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package
+  name="CivModel.Common.GameScheme" guid="AB3CC73A-5756-4266-8DAC-42A610421DDA"
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
+
+  <TextName>테스트용 확장 모듈</TextName>
 
   <City
     name="CivModel.Common.CityCenter" guid="E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019">

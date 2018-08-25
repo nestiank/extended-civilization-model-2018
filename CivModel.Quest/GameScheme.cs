@@ -17,7 +17,7 @@ namespace CivModel.Quests
 {
     public class GameSchemeFactory : IGameSchemeFactory
     {
-        public static Guid ClassGuid { get; } = new Guid("5E43CB90-F860-427D-A43B-57C96091C58B");
+        public static Guid ClassGuid { get; } = new Guid("63715AEC-64F9-4CCD-B8B4-E8932B4FCD21");
         public Guid Guid => ClassGuid;
 
         public Type SchemeType => typeof(GameScheme);
@@ -40,11 +40,6 @@ namespace CivModel.Quests
         public GameScheme(GameSchemeFactory factory)
         {
             Factory = factory ?? throw new ArgumentNullException("factory");
-        }
-
-        public TextReader GetPackageData()
-        {
-            return new StringReader(Properties.Resources.package);
         }
 
         public void OnAfterInitialized(Game game)

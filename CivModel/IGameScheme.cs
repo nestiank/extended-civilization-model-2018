@@ -47,15 +47,6 @@ namespace CivModel
         IGameSchemeFactory Factory { get; }
 
         /// <summary>
-        /// Gets the package data of this game scheme.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="TextReader"/> object on the package data of this game scheme.
-        /// If the package data does not exists, <c>null</c>.
-        /// </returns>
-        TextReader GetPackageData();
-
-        /// <summary>
         /// Called after the game is initialized.
         /// </summary>
         /// <param name="game">The <see cref="Game"/> object.</param>
