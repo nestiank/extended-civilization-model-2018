@@ -539,6 +539,7 @@ namespace FakeView
                 if (quest->Status == CivModel::QuestStatus::Accepted)
                 {
                     msg += " (accepted: " + std::to_string(quest->LeftTurn) + " / " + std::to_string(quest->LimitTurn) + ")";
+                    msg += " [Progress: " + std::to_string(quest->TotalProgress) + " / " + std::to_string(quest->MaxTotalProgress) + "]";
                 }
                 else if (quest->Status == CivModel::QuestStatus::Deployed)
                 {
@@ -558,8 +559,21 @@ namespace FakeView
                     color = ~color;
 
                 m_screen->PrintString(0, y, color, msg);
-
                 ++y;
+
+                if (quest->Status == CivModel::QuestStatus::Accepted)
+                {
+                    int index = 0;
+                    for each (auto progress in quest->Progresses)
+                    {
+                        //msg = cli2str(progress->Description);
+                        msg = "[" + std::to_string(index++) + "]";
+                        msg += " (" + std::to_string(progress->Value) + "/" + std::to_string(progress->MaxValue) + ")";
+                        m_screen->PrintString(2, y, color, msg);
+                        ++y;
+                    }
+                }
+
                 ++count;
             }
         }

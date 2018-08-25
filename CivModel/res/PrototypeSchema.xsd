@@ -12,6 +12,12 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="population">
     <xs:restriction base="nonNegativeDecimal">
       <xs:minInclusive value="1" />
@@ -131,6 +137,12 @@
     </xs:complexContent>
   </xs:complexType>
 
+  <xs:complexType name="QuestProgress">
+    <xs:attribute name="id" use="required" type="nonEmptyString" />
+    <xs:attribute name="description" use="required" type="xs:string" />
+    <xs:attribute name="maxValue" use="required" type="xs:nonNegativeInteger" />
+  </xs:complexType>
+
   <xs:complexType name="Quest">
     <xs:complexContent>
       <xs:extension base="GuidObject">
@@ -141,7 +153,9 @@
           <xs:element name="GoalNotice" type="xs:string" />
           <xs:element name="RewardNotice" type="xs:string" />
           <xs:element name="CompleteNotice" type="xs:string" />
+          <xs:element name="Progress" minOccurs="0" maxOccurs="unbounded" type="QuestProgress" />
         </xs:sequence>
+        <xs:attribute name="visible" use="optional" type="xs:boolean" default="true" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

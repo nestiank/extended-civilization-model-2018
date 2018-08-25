@@ -131,8 +131,9 @@
     <PostingTurn>forever</PostingTurn>
     <LimitTurn>forever</LimitTurn>
     <QuestDescription>두유노우피노코리안하이퍼워?</QuestDescription>
-    <GoalNotice>제다이 기사로 적을 처치하십시오</GoalNotice>
-    <RewardNotice>배치 가능한 제다이 기사 생산 6개</RewardNotice>
+    <GoalNotice>가짜 제다이로 적을 2회 처치하십시오</GoalNotice>
+    <RewardNotice>배치 가능한 가짜 제다이 생산 6개</RewardNotice>
     <CompleteNotice>개꿀잼 ㅇㅈ ㅆㅇㅈ</CompleteNotice>
+    <Progress id="killCount" description="처치 수" maxValue="2" />
   </Quest>
 </Package>

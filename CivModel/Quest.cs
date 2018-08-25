@@ -47,7 +47,7 @@ namespace CivModel
         public Player Requestee { get; }
 
         /// <summary>
-        /// The <see cref="Game"/> object.
+        /// The <see cref="CivModel.Game"/> object.
         /// </summary>
         public Game Game => Requestee.Game;
 
@@ -60,6 +60,11 @@ namespace CivModel
         /// [퀘스트 이름].
         /// </summary>
         public string TextName { get; private set; }
+
+        /// <summary>
+        /// Whether the quest is visible to user or not.
+        /// </summary>
+        public bool IsVisible { get; private set; }
 
         /// <summary>
         /// [퀘스트 게시 기간]. <c>-1</c> if forever.
@@ -90,6 +95,23 @@ namespace CivModel
         /// [교육용 알림].
         /// </summary>
         public string CompleteNotice { get; private set; }
+
+        /// <summary>
+        /// The list of progress of this quest.
+        /// </summary>
+        public QuestProgressList Progresses;
+
+        /// <summary>
+        /// The current total progress of this quest.
+        /// This value is equal to sum of <see cref="QuestProgress.Value"/>.
+        /// </summary>
+        public int TotalProgress => Progresses.Sum(p => p.Value);
+
+        /// <summary>
+        /// The maximum total progress of this quest.
+        /// This value is equal to sum of <see cref="QuestProgress.MaxValue"/>.
+        /// </summary>
+        public int MaxTotalProgress => Progresses.Sum(p => p.MaxValue);
 
         /// <summary>
         /// The left turn. <c>-1</c> if this value is invalid.
@@ -176,12 +198,14 @@ namespace CivModel
         {
             Guid = proto.Guid;
             TextName = proto.TextName;
+            IsVisible = proto.IsVisible;
             PostingTurn = proto.PostingTurn;
             LimitTurn = proto.LimitTurn;
             QuestDescription = proto.QuestDescription;
             GoalNotice = proto.GoalNotice;
             RewardNotice = proto.RewardNotice;
             CompleteNotice = proto.CompleteNotice;
+            Progresses = new QuestProgressList(this, proto.Progresses);
         }
 
         /// <summary>

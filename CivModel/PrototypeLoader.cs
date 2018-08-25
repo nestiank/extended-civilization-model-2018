@@ -68,7 +68,7 @@ namespace CivModel
             try
             {
                 var document = XDocument.Load(input);
-                document.Validate(_schema, null);
+                document.Validate(_schema, null, true);
 
                 var guid = Guid.Parse(document.Root.Attribute("guid").Value);
                 if (_candidates.ContainsKey(guid))

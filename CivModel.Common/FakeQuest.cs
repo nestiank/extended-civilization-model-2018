@@ -8,6 +8,8 @@ namespace CivModel.Common
 {
     public sealed class FakeQuest : Quest, IBattleObserver
     {
+        private const string KillCount = "killCount";
+
         public FakeQuest(Player requester, Player requestee)
             : base(requester, requestee, typeof(FakeQuest))
         {
@@ -26,6 +28,8 @@ namespace CivModel.Common
         private void Cleanup()
         {
             Game.BattleObservable.RemoveObserver(this);
+
+            Progresses[KillCount].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -55,7 +59,11 @@ namespace CivModel.Common
         {
             if (atkOwner == Requestee && attacker is FakeKnight)
             {
-                Status = QuestStatus.Completed;
+                Progresses[KillCount].Value += 1;
+                if (Progresses[KillCount].IsFull)
+                {
+                    Status = QuestStatus.Completed;
+                }
             }
         }
     }

@@ -85,6 +85,9 @@
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Production.cs" />
+    <Compile Include="QuestProgress.cs" />
+    <Compile Include="QuestProgressList.cs" />
+    <Compile Include="QuestProgressPrototype.cs" />
     <Compile Include="QuestPrototype.cs" />
     <Compile Include="SchemeLoader.cs" />
     <Compile Include="ISpecialResource.cs" />
