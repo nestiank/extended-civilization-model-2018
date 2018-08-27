@@ -11,7 +11,8 @@ namespace CivModel.Quests
 {
     public class QuestSubAirspaceDomination : Quest, IBattleObserver
     {
-        public int flag = 0;
+        private const string KillCount = "KillCount";
+
 
         public QuestSubAirspaceDomination(Game game)
             : base(game.GetPlayerSwede(), game.GetPlayerHwan(), typeof(QuestSubAirspaceDomination))
@@ -35,6 +36,8 @@ namespace CivModel.Quests
         private void Cleanup()
         {
             Game.BattleObservable.RemoveObserver(this);
+
+            Progresses[KillCount].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -72,23 +75,21 @@ namespace CivModel.Quests
         {
             if (atkOwner == Requestee && defOwner == Game.Players[7] && defender is CivModel.Zap.LEOSpaceArmada && defender.Owner == null)
             {
-                if (flag < 3)
-                    flag += 1;
-                else if(flag >= 3)
+                if (Progresses[KillCount].Value < 3)
+                    Progresses[KillCount].Value += 1;
+                else if(Progresses[KillCount].IsFull)
                 {
                     Status = QuestStatus.Completed;
-                    flag = 0;
                 }
             }
 
             else if (atkOwner == Game.Players[7] && defOwner == Requestee && attacker is CivModel.Zap.LEOSpaceArmada && attacker.Owner == null)
             {
-                if (flag < 3)
-                    flag += 1;
-                else if (flag >= 3)
+                if (Progresses[KillCount].Value < 3)
+                    Progresses[KillCount].Value += 1;
+                else if (Progresses[KillCount].IsFull)
                 {
                     Status = QuestStatus.Completed;
-                    flag = 0;
                 }
             }
         }

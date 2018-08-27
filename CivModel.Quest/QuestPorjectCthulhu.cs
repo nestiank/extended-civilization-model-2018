@@ -12,6 +12,8 @@ namespace CivModel.Quests
 {
     public class QuestPorjectCthulhu : Quest, Hwan.ISpyRelatedQuest
     {
+        private const string Spying = "Spying";
+
         public QuestPorjectCthulhu(Game game)
             : base(game.GetPlayerAtlantis(), game.GetPlayerHwan(), typeof(QuestPorjectCthulhu))
         {
@@ -32,6 +34,7 @@ namespace CivModel.Quests
 
         private void Cleanup()
         {
+            Progresses[Spying].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -63,6 +66,7 @@ namespace CivModel.Quests
             {
                 if (spy.Owner == Requestee && pt.TileOwner == Game.GetPlayerFinno())
                 {
+                    Progresses[Spying].Value += 1;
                     Complete();
                 }
             }

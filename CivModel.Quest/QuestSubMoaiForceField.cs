@@ -11,6 +11,8 @@ namespace CivModel.Quests
 {
     public class QuestSubMoaiForceField : Quest, ITileObjectObserver
     {
+        private const string BuildCount = "BuildCount";
+
         public QuestSubMoaiForceField(Game game)
            : base(game.GetPlayerEaster(), game.GetPlayerHwan(), typeof(QuestSubMoaiForceField))
         {
@@ -30,6 +32,8 @@ namespace CivModel.Quests
         private void Cleanup()
         {
             Game.TileObjectObservable.RemoveObserver(this);
+
+            Progresses[BuildCount].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -66,6 +70,8 @@ namespace CivModel.Quests
         {
             if (obj is CivModel.Hwan.HwanEmpireFIRFortress moai && moai.Owner == Requester && moai.Donator == Requestee)
             {
+                Progresses[BuildCount].Value += 1;
+
                 Status = QuestStatus.Completed;
             }
         }

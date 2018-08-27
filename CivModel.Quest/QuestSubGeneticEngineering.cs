@@ -11,7 +11,9 @@ namespace CivModel.Quests
 {
     public class QuestSubGeneticEngineering : Quest
     {
-        private const double _requiredResearch = 0;
+        private const string TecCount = "TecCount";
+
+        private const double _requiredResearch = 7000;
         private double _targetResearch;
 
         public QuestSubGeneticEngineering(Game game)
@@ -32,6 +34,7 @@ namespace CivModel.Quests
 
         private void Cleanup()
         {
+            Progresses[TecCount].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -61,6 +64,7 @@ namespace CivModel.Quests
         {
             if (Status == QuestStatus.Accepted)
             {
+                Progresses[TecCount].Value = (int)Math.Min(_targetResearch - Requestee.Research, 7000);
                 if (Requestee.Research >= _targetResearch)
                 {
                     Status = QuestStatus.Completed;

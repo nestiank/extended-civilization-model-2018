@@ -12,6 +12,8 @@ namespace CivModel.Quests
 {
     public class QuestAutismBeamReflex : Quest
     {
+        private const string TecCount = "TecCount";
+
         public QuestAutismBeamReflex(Game game)
             : base(game.GetPlayerFish(), game.GetPlayerHwan(), typeof(QuestAutismBeamReflex))
         {
@@ -33,6 +35,7 @@ namespace CivModel.Quests
 
         private void Cleanup()
         {
+            Progresses[TecCount].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -51,7 +54,8 @@ namespace CivModel.Quests
         {
             if (Status == QuestStatus.Accepted)
             {
-                if (Requestee.Research >= 0)
+                Progresses[TecCount].Value = (int)Math.Min(Requestee.Research, 8000);
+                if (Requestee.Research >= 8000)
                 {
                     Status = QuestStatus.Completed;
                 }

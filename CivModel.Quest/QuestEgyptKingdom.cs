@@ -11,6 +11,8 @@ namespace CivModel.Quests
 {
     public class QuestEgyptKingdom : Quest, ITileObjectObserver
     {
+        private const string Preternaturality = "Preternaturality";
+
         public QuestEgyptKingdom(Game game)
             : base(game.GetPlayerEgypt(), game.GetPlayerHwan(), typeof(QuestEgyptKingdom))
         {
@@ -33,6 +35,8 @@ namespace CivModel.Quests
         private void Cleanup()
         {
             Game.TileObjectObservable.RemoveObserver(this);
+
+            Progresses[Preternaturality].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -51,6 +55,8 @@ namespace CivModel.Quests
         {
             if(obj is CivModel.Hwan.Preternaturality pyramid && pyramid.Owner == Requester && pyramid.Donator == Requestee)
             {
+                Progresses[Preternaturality].Value += 1;
+
                 Status = QuestStatus.Completed;
             }
         }

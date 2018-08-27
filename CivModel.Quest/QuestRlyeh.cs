@@ -11,6 +11,8 @@ namespace CivModel.Quests
 {
     public class QuestRlyeh :Quest, ITileObjectObserver
     {
+        private const string Preternaturality = "Preternaturality";
+
         public QuestRlyeh(Game game)
             : base(game.GetPlayerAtlantis(), game.GetPlayerFinno(), typeof(QuestRlyeh))
         {
@@ -33,6 +35,8 @@ namespace CivModel.Quests
         private void Cleanup()
         {
             Game.TileObjectObservable.RemoveObserver(this);
+
+            Progresses[Preternaturality].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -51,6 +55,7 @@ namespace CivModel.Quests
         {
             if (obj is CivModel.Finno.Preternaturality rlyeh && rlyeh.Owner == Requester && rlyeh.Donator == Requestee)
             {
+                Progresses[Preternaturality].Value += 1;
                 Status = QuestStatus.Completed;
             }
         }

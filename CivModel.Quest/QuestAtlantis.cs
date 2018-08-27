@@ -12,7 +12,8 @@ namespace CivModel.Quests
 {
     public class QuestAtlantis : Quest, ITileObjectObserver
     {
-        
+        private const string Preternaturality = "Preternaturality";
+
         public QuestAtlantis(Game game)
             : base(game.GetPlayerAtlantis(), game.GetPlayerFinno(), typeof(QuestAtlantis))
         {
@@ -36,6 +37,8 @@ namespace CivModel.Quests
         private void Cleanup()
         {
             Game.TileObjectObservable.RemoveObserver(this);
+
+            Progresses[Preternaturality].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -82,6 +85,7 @@ namespace CivModel.Quests
         {
             if (obj is CivModel.Finno.Preternaturality preter && preter.Owner == Requester && preter.Donator == Requestee)
             {
+                Progresses[Preternaturality].Value += 1;
                 Status = QuestStatus.Completed;
             }
         }

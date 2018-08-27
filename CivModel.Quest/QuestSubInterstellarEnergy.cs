@@ -11,6 +11,8 @@ namespace CivModel.Quests
 {
     public class QuestSubInterstellarEnergy : Quest, ITileObjectObserver
     {
+        private const string PreternaturalityCount = "PreternaturalityCount";
+
         private bool _finBuilt = false;
         private bool _emuBuilt = false;
 
@@ -33,6 +35,8 @@ namespace CivModel.Quests
         private void Cleanup()
         {
             Game.TileObjectObservable.RemoveObserver(this);
+
+            Progresses[PreternaturalityCount].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -52,10 +56,18 @@ namespace CivModel.Quests
             if (obj is CivModel.Finno.Preternaturality extractor)
             {
                 if (extractor.Owner == Requestee)
+                {
+                    if (!_finBuilt)
+                        Progresses[PreternaturalityCount].Value += 1;
                     _finBuilt = true;
+                }
 
                 if (extractor.Owner == Requester && extractor.Donator == Requestee)
+                {
+                    if(!_emuBuilt)
+                        Progresses[PreternaturalityCount].Value += 1;
                     _emuBuilt = true;
+                }
             }
 
             if (_finBuilt && _emuBuilt)

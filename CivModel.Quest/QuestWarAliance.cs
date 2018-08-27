@@ -11,7 +11,7 @@ namespace CivModel.Quests
 {
     public class QuestWarAliance : Quest, ITileObjectObserver
     {
-        public int flag = 0;
+        private const string ProductCount = "ProductCount";
 
         public QuestWarAliance(Game game)
             : base(game.GetPlayerEmu(), game.GetPlayerFinno(), typeof(QuestWarAliance))
@@ -30,12 +30,13 @@ namespace CivModel.Quests
         protected override void OnAccept()
         {
             Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
-            flag = 0;
         }
 
         private void Cleanup()
         {
             Game.TileObjectObservable.RemoveObserver(this);
+
+            Progresses[ProductCount].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -54,10 +55,9 @@ namespace CivModel.Quests
         {
             if (obj is CivModel.Finno.AutismBeamDrone drone && drone.Owner == Game.GetPlayerFinno())
             {
-                flag += 1;
-                if (flag == 3)
+                Progresses[ProductCount].Value += 1;
+                if (Progresses[ProductCount].IsFull)
                 {
-                    flag = 0;
                     Status = QuestStatus.Completed;
                 }
             }
