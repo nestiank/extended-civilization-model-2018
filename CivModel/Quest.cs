@@ -228,6 +228,7 @@ namespace CivModel
             if (prev == QuestStatus.Accepted)
             {
                 CallOnGiveup();
+                ClearProgress();
             }
         }
 
@@ -251,6 +252,7 @@ namespace CivModel
             if (prev == QuestStatus.Accepted)
             {
                 CallOnGiveup();
+                ClearProgress();
             }
         }
 
@@ -304,6 +306,14 @@ namespace CivModel
             LeftTurn = -1;
 
             CallOnComplete();
+        }
+
+        private void ClearProgress()
+        {
+            foreach (var progress in Progresses)
+            {
+                progress.Value = 0;
+            }
         }
 
         /// <summary>

@@ -113,6 +113,8 @@ namespace CivModel
                 proto = new UnitPrototype(node, packageAssembly);
             else if (node.Name == Xmlns + "Quest")
                 proto = new QuestPrototype(node, packageAssembly);
+            else if (node.Name == Xmlns + "Ending")
+                proto = new EndingPrototype(node, packageAssembly);
             else
                 throw new NotImplementedException();
 

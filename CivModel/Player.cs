@@ -342,66 +342,39 @@ namespace CivModel
         public bool IsEliminated => (!BeforeLandingCity && Cities.Count() == 0) || (BeforeLandingCity && Units.Count() == 0);
 
         /// <summary>
-        /// Whether this player has ending, that is, this player is either victoried or defeated or drawed.
+        /// The ending this player has achieved. If this player has not achieved ending yet, <c>null</c>.
         /// </summary>
-        /// <seealso cref="IsVictoried"/>
-        /// <seealso cref="IsDefeated"/>
-        /// <seealso cref="IsDrawed"/>
-        public bool HasEnding => IsVictoried || IsDefeated || IsDrawed;
+        public Ending AchievedEnding { get; private set; } = null;
+
+        /// <summary>
+        /// Whether this player has achieved ending.
+        /// </summary>
+        /// <seealso cref="AchievedEnding"/>
+        public bool HasEnding => AchievedEnding != null;
 
         /// <summary>
         /// Whether this player is victoried.
         /// </summary>
-        /// <seealso cref="VictoryCondition"/>
-        public bool IsVictoried => VictoryCondition != null;
-
-        /// <summary>
-        /// The victory condition this player has achieved. If this player is not victoried yet, <c>null</c>.
-        /// </summary>
-        /// <seealso cref="IsVictoried"/>
-        public IVictoryCondition VictoryCondition { get; private set; }
+        /// <seealso cref="AchievedEnding"/>
+        public bool IsVictoried => AchievedEnding?.Type == EndingType.Victory;
 
         /// <summary>
         /// Whether this player is defeated.
         /// </summary>
-        /// <seealso cref="DefeatCondition"/>
-        public bool IsDefeated => DefeatCondition != null;
-
-        /// <summary>
-        /// The defeat condition this player has achieved. If this player is not defeated yet, <c>null</c>.
-        /// </summary>
-        /// <seealso cref="IsDefeated"/>
-        public IDefeatCondition DefeatCondition { get; private set; }
+        /// <seealso cref="AchievedEnding"/>
+        public bool IsDefeated => AchievedEnding?.Type == EndingType.Defeat;
 
         /// <summary>
         /// Whether this player is drawed.
         /// </summary>
-        /// <seealso cref="DrawCondition"/>
-        public bool IsDrawed => DrawCondition != null;
+        /// <seealso cref="AchievedEnding"/>
+        public bool IsDrawed => AchievedEnding?.Type == EndingType.Draw;
 
         /// <summary>
-        /// The draw condition this player has achieved. If this player is not drawed yet, <c>null</c>.
+        /// The list of available endings that this player can achieve.
         /// </summary>
-        /// <seealso cref="IsDrawed"/>
-        public IDrawCondition DrawCondition { get; private set; }
-
-        /// <summary>
-        /// The list of available victories that this player can achieve.
-        /// </summary>
-        public IReadOnlyList<IVictoryCondition> AvailableVictories => _availableVictories;
-        private readonly List<IVictoryCondition> _availableVictories = new List<IVictoryCondition>();
-
-        /// <summary>
-        /// The list of available defeats that this player can achieve.
-        /// </summary>
-        public IReadOnlyList<IDefeatCondition> AvailableDefeats => _availableDefeats;
-        private readonly List<IDefeatCondition> _availableDefeats = new List<IDefeatCondition>();
-
-        /// <summary>
-        /// The list of available defeats that this player can achieve.
-        /// </summary>
-        public IReadOnlyList<IDrawCondition> AvailableDraws => _availableDraws;
-        private readonly List<IDrawCondition> _availableDraws = new List<IDrawCondition>();
+        public IReadOnlyList<Ending> AvailableEndings => _availableEndings;
+        private readonly List<Ending> _availableEndings = new List<Ending>();
 
         /// <summary>
         /// Whether this player is controlled by AI.
@@ -666,241 +639,63 @@ namespace CivModel
         }
 
         /// <summary>
-        /// Adds an available victory condition to this player.
+        /// Adds an available ending this player can achieve.
         /// </summary>
-        /// <param name="victory">The victory condition to add.</param>
+        /// <param name="ending">The available ending to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="ending"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specified <paramref name="victory"/> is already added</exception>
-        public void AddVictoryCondition(IVictoryCondition victory)
+        /// <exception cref="ArgumentException">specified <paramref name="ending"/> is already added</exception>
+        public void AddAvailableEnding(Ending ending)
         {
+            if (ending == null)
+                throw new ArgumentNullException(nameof(ending));
             if (HasEnding)
                 throw new InvalidOperationException("the player already has ending");
-            if (AvailableVictories.Contains(victory))
-                throw new ArgumentException("specified victory is already added", nameof(victory));
+            if (AvailableEndings.Contains(ending))
+                throw new ArgumentException("specified ending is already added", nameof(ending));
 
-            _availableVictories.Add(victory);
+            _availableEndings.Add(ending);
         }
 
         /// <summary>
-        /// Removes an available victory condition of this player.
+        /// Removes an available ending this player can achieve.
         /// </summary>
-        /// <param name="victory">The victory condition to remove.</param>
+        /// <param name="ending">The available ending to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="ending"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specific <paramref name="victory"/> has not added</exception>
-        public void RemoveVictoryCondition(IVictoryCondition victory)
+        /// <exception cref="ArgumentException">specific <paramref name="ending"/> has not added</exception>
+        public void RemoveAvailableEnding(Ending ending)
         {
+            if (ending == null)
+                throw new ArgumentNullException(nameof(ending));
             if (HasEnding)
                 throw new InvalidOperationException("the player already has ending");
 
-            bool rs = _availableVictories.Remove(victory);
+            bool rs = _availableEndings.Remove(ending);
 
             if (!rs)
-                throw new ArgumentException("specific victory has not added", nameof(victory));
+                throw new ArgumentException("specific ending has not added", nameof(ending));
         }
 
         /// <summary>
-        /// Adds an available defeat condition to this player.
+        /// Make this player achieve the specified ending.
         /// </summary>
-        /// <param name="defeat">The defeat condition to add.</param>
+        /// <param name="ending">The ending.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="ending"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specified <paramref name="defeat"/> is already added</exception>
-        public void AddDefeatCondition(IDefeatCondition defeat)
+        /// <exception cref="ArgumentException">specified <paramref name="ending"/> is not available to the player</exception>
+        public void AchieveEnding(Ending ending)
         {
+            if (ending == null)
+                throw new ArgumentNullException(nameof(ending));
             if (HasEnding)
                 throw new InvalidOperationException("the player already has ending");
-            if (AvailableDefeats.Contains(defeat))
-                throw new ArgumentException("specified defeat is already added", nameof(defeat));
+            if (!AvailableEndings.Contains(ending))
+                throw new ArgumentException("specified ending is not available to the player", nameof(ending));
 
-            _availableDefeats.Add(defeat);
-        }
+            AchievedEnding = ending;
 
-        /// <summary>
-        /// Removes an available defeat condition of this player.
-        /// </summary>
-        /// <param name="defeat">The defeat condition to remove.</param>
-        /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specific <paramref name="defeat"/> has not added</exception>
-        public void RemoveDefeatCondition(IDefeatCondition defeat)
-        {
-            if (HasEnding)
-                throw new InvalidOperationException("the player already has ending");
-
-            bool rs = _availableDefeats.Remove(defeat);
-
-            if (!rs)
-                throw new ArgumentException("specific defeat has not added", nameof(defeat));
-        }
-
-        /// <summary>
-        /// Adds an available draw condition to this player.
-        /// </summary>
-        /// <param name="draw">The draw condition to add.</param>
-        /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specified <paramref name="draw"/> is already added</exception>
-        public void AddDrawCondition(IDrawCondition draw)
-        {
-            if (HasEnding)
-                throw new InvalidOperationException("the player already has ending");
-            if (AvailableDraws.Contains(draw))
-                throw new ArgumentException("specified draw is already added", nameof(draw));
-
-            _availableDraws.Add(draw);
-        }
-
-        /// <summary>
-        /// Removes an available draw condition of this player.
-        /// </summary>
-        /// <param name="draw">The draw condition to remove.</param>
-        /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specific <paramref name="draw"/> has not added</exception>
-        public void RemoveDrawCondition(IDrawCondition draw)
-        {
-            if (HasEnding)
-                throw new InvalidOperationException("the player already has ending");
-
-            bool rs = _availableDraws.Remove(draw);
-
-            if (!rs)
-                throw new ArgumentException("specific draw has not added", nameof(draw));
-        }
-
-        /// <summary>
-        /// Make this player achieve the specified victory.
-        /// </summary>
-        /// <param name="victory">The victory.</param>
-        /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specified <paramref name="victory"/> is not available to the player</exception>
-        /// <seealso cref="IsVictoried"/>
-        /// <seealso cref="VictoryCondition"/>
-        /// <seealso cref="Defeat(IDefeatCondition)"/>
-        /// <seealso cref="Draw(IDrawCondition)"/>
-        public void Victory(IVictoryCondition victory)
-        {
-            if (HasEnding)
-                throw new InvalidOperationException("the player already has ending");
-            if (!AvailableVictories.Contains(victory))
-                throw new ArgumentException("specified victory is not available to the player", nameof(victory));
-
-            VictoryCondition = victory;
-            victory.DoVictory(this);
-
-            Game.VictoryEvent.RaiseObservable(o => o.OnVictory(this, victory));
-        }
-
-        /// <summary>
-        /// Make this player achieve the specified defeat.
-        /// </summary>
-        /// <param name="defeat">The defeat.</param>
-        /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specified <paramref name="defeat"/> is not available to the player</exception>
-        /// <seealso cref="IsDefeated"/>
-        /// <seealso cref="DefeatCondition"/>
-        /// <seealso cref="Victory(IVictoryCondition)"/>
-        /// <seealso cref="Draw(IDrawCondition)"/>
-        public void Defeat(IDefeatCondition defeat)
-        {
-            if (HasEnding)
-                throw new InvalidOperationException("the player already has ending");
-            if (!AvailableDefeats.Contains(defeat))
-                throw new ArgumentException("specified defeat is not available to the player", nameof(defeat));
-
-            DefeatCondition = defeat;
-            defeat.DoDefeat(this);
-
-            Game.VictoryEvent.RaiseObservable(o => o.OnDefeat(this, defeat));
-        }
-
-        /// <summary>
-        /// Make this player achieve the specified draw.
-        /// </summary>
-        /// <param name="draw">The draw.</param>
-        /// <exception cref="InvalidOperationException">the player already has ending</exception>
-        /// <exception cref="ArgumentException">specified <paramref name="draw"/> is not available to the player</exception>
-        /// <seealso cref="IsDrawed"/>
-        /// <seealso cref="DrawCondition"/>
-        /// <seealso cref="Victory(IVictoryCondition)"/>
-        /// <seealso cref="Defeat(IDefeatCondition)"/>
-        public void Draw(IDrawCondition draw)
-        {
-            if (HasEnding)
-                throw new InvalidOperationException("the player already has ending");
-            if (!AvailableDraws.Contains(draw))
-                throw new ArgumentException("specified draw is not available to the player", nameof(draw));
-
-            DrawCondition = draw;
-            draw.DoDraw(this);
-
-            Game.VictoryEvent.RaiseObservable(o => o.OnDraw(this, draw));
-        }
-
-        /// <summary>
-        /// Check whether player achieves the ending condition and process it if necessary.
-        /// If <see cref="HasEnding"/> is <c>true</c>, do nothing.
-        /// </summary>
-        /// <returns>Whether the ending process was done or not.</returns>
-        public bool EndingCheck()
-        {
-            IDrawCondition draw = null;
-            IVictoryCondition victory = null;
-            IDefeatCondition defeat = null;
-
-            if (!HasEnding)
-            {
-                foreach (var obj in AvailableDraws)
-                {
-                    if (obj.CheckDraw(this))
-                    {
-                        draw = obj;
-                        break;
-                    }
-                }
-                foreach (var obj in AvailableVictories)
-                {
-                    if (obj.CheckVictory(this))
-                    {
-                        victory = obj;
-                        break;
-                    }
-                }
-                foreach (var obj in AvailableDefeats)
-                {
-                    if (obj.CheckDefeat(this))
-                    {
-                        defeat = obj;
-                        break;
-                    }
-                }
-            }
-
-            if (victory != null && defeat != null)
-            {
-                foreach (var obj in AvailableDraws)
-                {
-                    if (obj.OnBothVictoriedAndDefeated(this, victory, defeat))
-                    {
-                        Draw(obj);
-                        return true;
-                    }
-                }
-            }
-
-            if (draw != null)
-            {
-                Draw(draw);
-                return true;
-            }
-            if (victory != null)
-            {
-                Victory(victory);
-                return true;
-            }
-            if (defeat != null)
-            {
-                Defeat(defeat);
-                return true;
-            }
-
-            return false;
+            Game.EndingEvent.RaiseObservable(o => o.OnEnding(this, ending));
         }
 
         /// <summary>
@@ -974,10 +769,6 @@ namespace CivModel
 
         void IFixedTurnReceiver.FixedPreSubTurn(Player playerInTurn)
         {
-            if (playerInTurn == this)
-            {
-                EndingCheck();
-            }
         }
 
         void IFixedTurnReceiver.FixedAfterPreSubTurn(Player playerInTurn)

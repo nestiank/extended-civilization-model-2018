@@ -134,4 +134,92 @@
     <CompleteNotice>핀란드의 심화된 유전자 연구는 대다수 재야사학자들에 의해 많이 연구가 되었으며 가장 잘 알려져있는, 남아있는 Hyperwar의 유산이기도 합니다. 전쟁 중기 환국의 Girl's Generation과 같은 계속된 정신적 공격에 전장에서 큰 피해를 입었던 핀란드 카가네이트는 이를 견더내기 위해 더 강인한 정신과 육체를 가진, 신 인류를 개발할 필요성을 느끼게 되었고, 아틀란티스와 함께 진행되던 이 연구의 대표적 실패작으로는 오늘날의 게르만족이라 불리는 자들이 있죠.</CompleteNotice>
     <Progress id="TecCount" description="기술력" maxValue="7000" />
   </Quest>
+
+  <Ending
+    name="CivModel.Quests.FinnoUltimateVictory" guid="76858D1C-827A-4ED0-803F-60B633E0A880"
+    type="victory">
+
+    <TextName>핀란드 궁극기 승리</TextName>
+  </Ending>
+
+  <Ending
+    name="CivModel.Quests.HwanUltimateVictory" guid="FFE216AF-9A29-40C5-8AD0-1DA96B425DFB"
+    type="victory">
+
+    <TextName>환 제국 궁극기 승리</TextName>
+  </Ending>
+  
+  <Ending
+    name="CivModel.Quests.UltimateDraw" guid="3210DD51-40A3-466E-BA9E-5C0B405F0830"
+    type="victory">
+
+    <TextName>궁극기 무승부</TextName>
+  </Ending>
+  
+  <Ending
+    name="CivModel.Quests.UltimateDefeat" guid="E1B42E56-9360-4FA4-B52D-6815D2CE7CA0"
+    type="victory">
+
+    <TextName>궁극기 패배</TextName>
+  </Ending>
+  
+  <Ending
+    name="CivModel.Quests.ConquerVictory" guid="FC467686-28CE-44E2-8374-D9EA26F60421"
+    type="victory">
+
+    <TextName>정복 승리</TextName>
+  </Ending>
+
+  <Ending
+    name="CivModel.Quests.EliminationDefeat" guid="85F15914-D467-49AE-B3F8-BA37C6000D35"
+    type="victory">
+
+    <TextName>정복 패배</TextName>
+  </Ending>
+
+  <Quest
+    name="CivModel.Quests.QuestFinnoVictory" guid="F6FC830B-C146-4CC5-BC63-15D9AEF708FD"
+    visible="false">
+
+    <TextName>핀란드 궁극기</TextName>
+    <PostingTurn>forever</PostingTurn>
+    <LimitTurn>forever</LimitTurn>
+    <QuestDescription></QuestDescription>
+    <GoalNotice></GoalNotice>
+    <RewardNotice></RewardNotice>
+    <CompleteNotice></CompleteNotice>
+    <Progress id="autism" description="오티즘 빔 증폭 크리스탈 획득" maxValue="1" />
+    <Progress id="necro" description="네크로노미콘 획득" maxValue="1" />
+    <Progress id="rlyeh" description="Gate of Rlyeh 획득" maxValue="1" />
+  </Quest>
+
+  <Quest
+    name="CivModel.Quests.QuestHwanVictory" guid="0B03A627-425D-46FC-91B9-355A48696574"
+    visible="false">
+
+    <TextName>환 제국 궁극기</TextName>
+    <PostingTurn>forever</PostingTurn>
+    <LimitTurn>forever</LimitTurn>
+    <QuestDescription></QuestDescription>
+    <GoalNotice></GoalNotice>
+    <RewardNotice></RewardNotice>
+    <CompleteNotice></CompleteNotice>
+    <Progress id="autism" description="오티즘 빔 반사 어레이 획득" maxValue="1" />
+    <Progress id="cthulhu" description="크툴루 정보 획득" maxValue="1" />
+    <Progress id="alien" description="외계 통신 기구 획득" maxValue="1" />
+  </Quest>
+
+  <Quest
+    name="CivModel.Quests.QuestConquerVictory" guid="58CDBFFC-AA12-42AD-9EBB-F331942B630D"
+    visible="false">
+
+    <TextName>정복 승리</TextName>
+    <PostingTurn>forever</PostingTurn>
+    <LimitTurn>forever</LimitTurn>
+    <QuestDescription></QuestDescription>
+    <GoalNotice></GoalNotice>
+    <RewardNotice></RewardNotice>
+    <CompleteNotice></CompleteNotice>
+    <Progress id="enemy" description="적 종주국 멸망시키기" maxValue="1"/>
+  </Quest>
 </Package>

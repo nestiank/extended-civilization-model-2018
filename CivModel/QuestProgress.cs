@@ -29,13 +29,26 @@ namespace CivModel
         /// <summary>
         /// The description of this progress.
         /// </summary>
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// The maximum value of this progress.
         /// </summary>
         /// <seealso cref="Value"/>
-        public int MaxValue { get; private set; }
+        public int MaxValue
+        {
+            get => _maxValue;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), "value is negative");
+
+                if (_value > value)
+                    _value = value;
+                _maxValue = value;
+            }
+        }
+        private int _maxValue = 0;
 
         /// <summary>
         /// The current value of this progress.
@@ -59,6 +72,17 @@ namespace CivModel
         /// This value is equal to <c><see cref="Value"/> == <see cref="MaxValue"/></c>.
         /// </summary>
         public bool IsFull => Value == MaxValue;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuestProgress"/> class.
+        /// </summary>
+        /// <param name="quest">The quest.</param>
+        /// <param name="id">The identifier of progress.</param>
+        public QuestProgress(Quest quest, string id)
+        {
+            Quest = quest;
+            Id = id;
+        }
 
         internal QuestProgress(Quest quest, QuestProgressPrototype proto)
         {

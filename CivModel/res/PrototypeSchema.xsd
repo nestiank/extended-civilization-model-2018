@@ -160,6 +160,22 @@
     </xs:complexContent>
   </xs:complexType>
 
+  <xs:complexType name="Ending">
+    <xs:complexContent>
+      <xs:extension base="GuidObject">
+        <xs:attribute name="type" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="victory" />
+              <xs:enumeration value="draw" />
+              <xs:enumeration value="defeat" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
   <xs:complexType name="Package">
     <xs:complexContent>
       <xs:extension base="GuidObject">
@@ -169,6 +185,7 @@
           <xs:element name="InteriorBuilding" type="InteriorBuilding" />
           <xs:element name="Unit" type="Unit" />
           <xs:element name="Quest" type="Quest" />
+          <xs:element name="Ending" type="Ending" />
         </xs:choice>
       </xs:extension>
     </xs:complexContent>

@@ -41,7 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutismBeamAmplificationCrystal.cs" />
-    <Compile Include="UltimateVictory.cs" />
+    <Compile Include="QuestConquerVictory.cs" />
+    <Compile Include="QuestFinnoVictory.cs" />
+    <Compile Include="QuestHwanVIctory.cs" />
+    <Compile Include="Endings.cs" />
     <Compile Include="GameScheme.cs" />
     <Compile Include="GatesOfRlyeh.cs" />
     <Compile Include="InterstellarEnergyExtractor.cs" />
@@ -63,7 +66,6 @@
     <Compile Include="SpecialResourceCthulhuProjectInfo.cs" />
     <Compile Include="SpecialResourceMoaiForceField.cs" />
     <Compile Include="Ubermensch.cs" />
-    <Compile Include="ConquerVictory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">

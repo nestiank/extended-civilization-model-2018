@@ -49,6 +49,8 @@
     <Compile Include="ActorPrototype.cs" />
     <Compile Include="CityPrototype.cs" />
     <Compile Include="Effect.cs" />
+    <Compile Include="Ending.cs" />
+    <Compile Include="EndingPrototype.cs" />
     <Compile Include="GuidObjectPrototype.cs" />
     <Compile Include="IActorProductionFactory.cs" />
     <Compile Include="IAIController.cs" />
@@ -60,7 +62,7 @@
     <Compile Include="IBattleObserver.cs" />
     <Compile Include="IProductionFactory.cs" />
     <Compile Include="IProductionResult.cs" />
-    <Compile Include="IVictoryObserver.cs" />
+    <Compile Include="IEndingObserver.cs" />
     <Compile Include="IGameScheme.cs" />
     <Compile Include="IActorAction.cs" />
     <Compile Include="IMovePath.cs" />
@@ -106,7 +108,6 @@
     <Compile Include="Terrain.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="TileObjectProduction.cs" />
-    <Compile Include="IVictoryCondition.cs" />
     <Compile Include="UnitPrototype.cs" />
   </ItemGroup>
   <ItemGroup>

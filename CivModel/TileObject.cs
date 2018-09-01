@@ -27,7 +27,7 @@ namespace CivModel
     public abstract class TileObject : IProductionResult
     {
         /// <summary>
-        /// The <see cref="Game"/> object
+        /// The <see cref="CivModel.Game"/> object
         /// </summary>
         public Game Game { get; }
 

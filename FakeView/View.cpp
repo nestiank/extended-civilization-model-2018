@@ -554,6 +554,11 @@ namespace FakeView
                     msg += " (disabled)";
                 }
 
+                if (!quest->IsVisible)
+                {
+                    msg += " {{invisible}}";
+                }
+
                 color = 0b0000'1111;
                 if (m_presenter->SelectedQuest == count)
                     color = ~color;
@@ -592,15 +597,11 @@ namespace FakeView
         {
             msg = "HOW DO YOU VICTORIED? (unqualified)";
 #ifndef DEBUG_CORE
-            if (auto victory = dynamic_cast<CivModel::Quests::FinnoUltimateVictory^>(player->VictoryCondition))
+            if (auto victory = dynamic_cast<CivModel::Quests::FinnoUltimateVictory^>(player->AchievedEnding))
                 msg = "YOU ARE C'THULHU SUMMOER";
-            else if (auto victory = dynamic_cast<CivModel::Quests::HwanUltimateVictory^>(player->VictoryCondition))
+            else if (auto victory = dynamic_cast<CivModel::Quests::HwanUltimateVictory^>(player->AchievedEnding))
                 msg = "YOU ARE CHOSEN PEOPLE";
-            else if (auto victory = dynamic_cast<CivModel::Quests::FinnoConquerVictory^>(player->VictoryCondition))
-                msg = "YOU ARE NOT SLAVE BUT CONQUERER";
-            else if (auto victory = dynamic_cast<CivModel::Quests::HwanConquerVictory^>(player->VictoryCondition))
-                msg = "YOU ARE NOT SLAVE BUT CONQUERER";
-            else if (auto victory = dynamic_cast<CivModel::Quests::ZapConquerVictory^>(player->VictoryCondition))
+            else if (auto victory = dynamic_cast<CivModel::Quests::ConquerVictory^>(player->AchievedEnding))
                 msg = "YOU ARE NOT SLAVE BUT CONQUERER";
 #endif
         }
@@ -608,9 +609,9 @@ namespace FakeView
         {
             msg = "HOW DO YOU DEFEATED? (unqualified)";
 #ifndef DEBUG_CORE
-            if (auto defeat = dynamic_cast<CivModel::Quests::GameEndDefeat^>(player->DefeatCondition))
+            if (auto defeat = dynamic_cast<CivModel::Quests::UltimateDefeat^>(player->AchievedEnding))
                 msg = "YOU ARE DEFEATED BY ULTIMATE FORCE";
-            else if (auto defeat = dynamic_cast<CivModel::Quests::EliminationDefeat^>(player->DefeatCondition))
+            else if (auto defeat = dynamic_cast<CivModel::Quests::EliminationDefeat^>(player->AchievedEnding))
                 msg = "YOU ARE ELIMINATED";
 #endif
         }
@@ -618,7 +619,7 @@ namespace FakeView
         {
             msg = "HOW DO YOU DRAWED? (unqualified)";
 #ifndef DEBUG_CORE
-            if (auto draw = dynamic_cast<CivModel::Quests::HyperUltimateDraw^>(player->DrawCondition))
+            if (auto draw = dynamic_cast<CivModel::Quests::UltimateDraw^>(player->AchievedEnding))
                 msg = "YOU HAVE SEEN THE END OF HYPERWAR";
 #endif
         }

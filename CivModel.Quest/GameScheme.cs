@@ -70,24 +70,16 @@ namespace CivModel.Quests
             game.GetPlayerEmu().Team = 1;
             game.GetPlayerRamu().Team = 1;
 
-            // Ending Condition
-            game.GetPlayerHwan().AddVictoryCondition(new HwanUltimateVictory(game));
-            game.GetPlayerHwan().AddVictoryCondition(new HwanConquerVictory());
-
-            game.GetPlayerFinno().AddVictoryCondition(new FinnoUltimateVictory(game));
-            game.GetPlayerFinno().AddVictoryCondition(new FinnoConquerVictory());
-
-            for (int idx = 2; idx < game.Players.Count; ++idx)
-            {
-                var p = game.Players[idx];
-                p.AddVictoryCondition(new ZapConquerVictory());
-            }
+            // Ending
+            game.GetPlayerHwan().AddAvailableEnding(new HwanUltimateVictory(game));
+            game.GetPlayerFinno().AddAvailableEnding(new FinnoUltimateVictory(game));
 
             foreach (var p in game.Players)
             {
-                p.AddDefeatCondition(new EliminationDefeat());
-                p.AddDefeatCondition(new GameEndDefeat());
-                p.AddDrawCondition(new HyperUltimateDraw());
+                p.AddAvailableEnding(new UltimateDraw(game));
+                p.AddAvailableEnding(new UltimateDefeat(game));
+                p.AddAvailableEnding(new ConquerVictory(game));
+                p.AddAvailableEnding(new EliminationDefeat(game));
             }
 
             // Hwan Main
@@ -107,6 +99,14 @@ namespace CivModel.Quests
             // Finno Sub
             new QuestSubInterstellarEnergy(Game);
             new QuestSubGeneticEngineering(Game);
+
+            // Ending Quest
+            new QuestHwanVictory(Game);
+            new QuestFinnoVictory(Game);
+            foreach (var p in game.Players)
+            {
+                new QuestConquerVictory(p);
+            }
         }
     }
 }

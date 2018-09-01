@@ -17,18 +17,68 @@ namespace CivModel
     /// <seealso cref="IReadOnlyDictionary{String, QuestProgress}"/>
     public class QuestProgressList : IReadOnlyList<QuestProgress>
     {
-        private QuestProgress[] _progresses;
+        private List<QuestProgress> _progresses;
         private Dictionary<string, QuestProgress> _dict = new Dictionary<string, QuestProgress>();
 
         internal QuestProgressList(Quest quest, IReadOnlyList<QuestProgressPrototype> protoList)
         {
-            _progresses = new QuestProgress[protoList.Count];
-            for (int i = 0; i < protoList.Count; ++i)
+            _progresses = protoList.Select(proto => new QuestProgress(quest, proto)).ToList();
+
+            foreach (var progress in _progresses)
             {
-                var x = new QuestProgress(quest, protoList[i]);
-                _progresses[i] = x;
-                _dict[x.Id] = x;
+                _dict[progress.Id] = progress;
             }
+        }
+
+        /// <summary>
+        /// Adds the progress into quest.
+        /// </summary>
+        /// <param name="progress">The progress.</param>
+        /// <exception cref="ArgumentException">
+        /// progress is already added
+        /// or
+        /// the id of progress is not unique
+        /// </exception>
+        public void AddProgress(QuestProgress progress)
+        {
+            if (_dict.TryGetValue(progress.Id, out var value))
+            {
+                if (value == progress)
+                    throw new ArgumentException("progress is already added", nameof(progress));
+                else
+                    throw new ArgumentException("the id of progress is not unique", nameof(progress));
+            }
+
+            _progresses.Add(progress);
+            _dict[progress.Id] = progress;
+        }
+
+        /// <summary>
+        /// Removes the progress of quest.
+        /// </summary>
+        /// <param name="progress">The progress.</param>
+        /// <exception cref="ArgumentException">progress is not added</exception>
+        public void RemoveProgress(QuestProgress progress)
+        {
+            if (!_progresses.Remove(progress))
+                throw new ArgumentException("progress is not added", nameof(progress));
+
+            _dict.Remove(progress.Id);
+        }
+
+        /// <summary>
+        /// Removes the progress.
+        /// </summary>
+        /// <param name="id">The identifier of progress.</param>
+        /// <exception cref="KeyNotFoundException">id is not found</exception>
+        public void RemoveProgress(string id)
+        {
+            int index = _progresses.FindIndex(progress => progress.Id == id);
+            if (index == -1)
+                throw new KeyNotFoundException("id is not found");
+
+            _progresses.RemoveAt(index);
+            _dict.Remove(id);
         }
 
         /// <summary>
@@ -53,7 +103,7 @@ namespace CivModel
         /// <summary>
         /// 컬렉션의 요소 수를 가져옵니다.
         /// </summary>
-        public int Count => _progresses.Length;
+        public int Count => _progresses.Count;
 
         /// <summary>
         /// 읽기 전용 사전의 키를 포함하는 열거 가능한 컬렉션을 가져옵니다.
@@ -82,7 +132,7 @@ namespace CivModel
         /// 컬렉션을 반복하는 데 사용할 수 있는 열거자입니다.
         /// </returns>
         public IEnumerator<QuestProgress> GetEnumerator()
-            => ((IEnumerable<QuestProgress>)_progresses).GetEnumerator();
+            => _progresses.GetEnumerator();
 
         /// <summary>
         /// 지정된 된 키와 연결 된 값을 가져옵니다.

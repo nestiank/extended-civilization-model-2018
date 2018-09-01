@@ -51,10 +51,10 @@ namespace CivModel
         internal ObservableEvent<IQuestObserver, ObserverPriority> QuestEvent { get; private set; }
 
         /// <summary>
-        /// An <see cref="IObservable{IVictoryObserver, ObserverPriority}"/> object which can be observed by <see cref="IVictoryObserver"/>.
+        /// An <see cref="IObservable{IEndingObserver, ObserverPriority}"/> object which can be observed by <see cref="IEndingObserver"/>.
         /// </summary>
-        public IObservable<IVictoryObserver, ObserverPriority> VictoryObservable => VictoryEvent;
-        internal ObservableEvent<IVictoryObserver, ObserverPriority> VictoryEvent { get; private set; }
+        public IObservable<IEndingObserver, ObserverPriority> EndingObservable => EndingEvent;
+        internal ObservableEvent<IEndingObserver, ObserverPriority> EndingEvent { get; private set; }
 
         private void InitializeObservable()
         {
@@ -67,7 +67,7 @@ namespace CivModel
             TileObjectEvent = new ObservableEvent<ITileObjectObserver, ObserverPriority>();
             BattleEvent = new ObservableEvent<IBattleObserver, ObserverPriority>();
             QuestEvent = new ObservableEvent<IQuestObserver, ObserverPriority>();
-            VictoryEvent = new ObservableEvent<IVictoryObserver, ObserverPriority>();
+            EndingEvent = new ObservableEvent<IEndingObserver, ObserverPriority>();
         }
     }
 }
