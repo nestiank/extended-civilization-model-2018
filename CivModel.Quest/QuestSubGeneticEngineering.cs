@@ -9,12 +9,11 @@ using static CivModel.Zap.AtlantisPlayerNumber;
 
 namespace CivModel.Quests
 {
-    public class QuestSubGeneticEngineering : Quest
+    public class QuestSubGeneticEngineering : Quest, ITurnObserver
     {
         private const string TecCount = "TecCount";
 
-        private const double _requiredResearch = 7000;
-        private double _targetResearch;
+        private double _startResearch;
 
         public QuestSubGeneticEngineering(Game game)
             : base(game.GetPlayerAtlantis(), game.GetPlayerFinno(), typeof(QuestSubGeneticEngineering))
@@ -29,11 +28,13 @@ namespace CivModel.Quests
 
         protected override void OnAccept()
         {
-            _targetResearch = Requestee.Research + _requiredResearch;
+            Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
+            _startResearch = Requestee.Research;
         }
 
         private void Cleanup()
         {
+            Game.TurnObservable.RemoveObserver(this);
             Progresses[TecCount].Value = 0;
         }
 
@@ -60,18 +61,24 @@ namespace CivModel.Quests
             Cleanup();
         }
 
-        protected override void FixedPostTurn()
+        public void PostTurn()
         {
             if (Status == QuestStatus.Accepted)
             {
-                Progresses[TecCount].Value = (int)Math.Min(_targetResearch - Requestee.Research, 7000);
-                if (Requestee.Research >= _targetResearch)
+                Progresses[TecCount].Value = (int)Math.Min(Requestee.Research - _startResearch, Progresses[TecCount].MaxValue);
+                if (Progresses[TecCount].IsFull)
                 {
                     Status = QuestStatus.Completed;
                 }
             }
-
-            base.FixedPostTurn();
         }
+
+        public void PreTurn() { }
+        public void AfterPreTurn() { }
+        public void AfterPostTurn() { }
+        public void PreSubTurn(Player playerInTurn) { }
+        public void AfterPreSubTurn(Player playerInTurn) { }
+        public void PostSubTurn(Player playerInTurn) { }
+        public void AfterPostSubTurn(Player playerInTurn) { }
     }
 }

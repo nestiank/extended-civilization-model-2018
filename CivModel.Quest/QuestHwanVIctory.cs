@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static CivModel.Finno.FinnoPlayerNumber;
 using static CivModel.Hwan.HwanPlayerNumber;
 
 namespace CivModel.Quests
@@ -75,15 +76,21 @@ namespace CivModel.Quests
             if (playerInTurn != Requestee)
                 return;
 
+            if (Requestee.HasEnding)
+            {
+                Disable();
+                return;
+            }
+
             if (_markedTurn + 1 == Game.TurnNumber && GetCondition())
             {
-                var finnoVictory = Requestee.Quests.OfType<QuestFinnoVictory>().FirstOrDefault();
+                var finnoVictory = Game.GetPlayerFinno().Quests.OfType<QuestFinnoVictory>().FirstOrDefault();
                 if (!finnoVictory.GetCondition())
                 {
                     Requestee.AchieveEnding(new HwanUltimateVictory(Game));
                     foreach (var player in Game.Players)
                     {
-                        if (player != Requestee)
+                        if (player != Requestee && !player.HasEnding)
                         {
                             player.AchieveEnding(new UltimateDefeat(Game));
                         }
@@ -93,7 +100,8 @@ namespace CivModel.Quests
                 {
                     foreach (var player in Game.Players)
                     {
-                        player.AchieveEnding(new UltimateDraw(Game));
+                        if (!player.HasEnding)
+                            player.AchieveEnding(new UltimateDraw(Game));
                     }
                 }
                 Complete();

@@ -13,7 +13,6 @@ namespace CivModel.Quests
     {
         private const string KillCount = "KillCount";
 
-
         public QuestSubAirspaceDomination(Game game)
             : base(game.GetPlayerSwede(), game.GetPlayerHwan(), typeof(QuestSubAirspaceDomination))
         {
@@ -75,9 +74,11 @@ namespace CivModel.Quests
         {
             if (atkOwner == Requestee && defOwner == Game.Players[7] && defender is CivModel.Zap.LEOSpaceArmada && defender.Owner == null)
             {
-                if (Progresses[KillCount].Value < 3)
+                if (!Progresses[KillCount].IsFull)
+                {
                     Progresses[KillCount].Value += 1;
-                else if(Progresses[KillCount].IsFull)
+                }
+                else if (Progresses[KillCount].IsFull)
                 {
                     Status = QuestStatus.Completed;
                 }
@@ -85,8 +86,10 @@ namespace CivModel.Quests
 
             else if (atkOwner == Game.Players[7] && defOwner == Requestee && attacker is CivModel.Zap.LEOSpaceArmada && attacker.Owner == null)
             {
-                if (Progresses[KillCount].Value < 3)
+                if (!Progresses[KillCount].IsFull)
+                {
                     Progresses[KillCount].Value += 1;
+                }
                 else if (Progresses[KillCount].IsFull)
                 {
                     Status = QuestStatus.Completed;
