@@ -29,21 +29,26 @@ namespace CivModel.Quests
 
         protected override void OnAccept()
         {
+            Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
+        }
+
+        private void Cleanup()
+        {
+            Game.TurnObservable.RemoveObserver(this);
         }
 
         protected override void OnComplete()
         {
+            Cleanup();
         }
 
         protected override void OnGiveup()
         {
+            Cleanup();
         }
 
-        public void AfterPostSubTurn(Player playerInTurn)
+        public void AfterPreTurn()
         {
-            if (playerInTurn != Requestee)
-                return;
-
             var enemy = Requestee.Team == 0 ? Game.GetPlayerFinno() : Game.GetPlayerHwan();
 
             if (Requestee.IsEliminated)
@@ -59,11 +64,11 @@ namespace CivModel.Quests
         }
 
         public void PreTurn() { }
-        public void AfterPreTurn() { }
         public void PostTurn() { }
         public void AfterPostTurn() { }
         public void PreSubTurn(Player playerInTurn) { }
         public void AfterPreSubTurn(Player playerInTurn) { }
         public void PostSubTurn(Player playerInTurn) { }
+        public void AfterPostSubTurn(Player playerInTurn) { }
     }
 }
