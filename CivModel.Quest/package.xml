@@ -12,10 +12,10 @@
     <PostingTurn>10</PostingTurn>
     <LimitTurn>10</LimitTurn>
     <QuestDescription>핀란드에게 조공을 바치는 에뮤 연방은 옛부터 어류 공화국을 괴롭히고 있었습니다. 어류 공화국은 위대한 환국의 아우국가로 충실하게 조공을 바치는 동맹입니다. 그런데 어느날, 갑자기 어류 공화국과의 연락이 끊기게 되었고, 이후 변방 도시들에서 급격하게 정신능력의 저하가 빈번하게 관측됩니다. 얼마 이후 어류 공화국의 생존자들이 환국 해안에 망명을 청하며, 그 아무리 똑똑한 사람이라도 순식간에 멍청이로 만드는 무시무시한 빔 형태의 병기를 핀란드가 운용하기 시작했다는 사실을 알게 됩니다. 당장 대응책을 찾지 못하면 평양이 점령당하는건 시간 문제일겁니다!</QuestDescription>
-    <GoalNotice>기술력을 제한 기간 안에 8000 이상으로 올리세요</GoalNotice>
+    <GoalNotice>기술력을 제한 기간 안에 3000 이상으로 올리세요</GoalNotice>
     <RewardNotice>[특수 자원 : 오티즘빔 반사 어레이] 1 획득</RewardNotice>
     <CompleteNotice>핀란드의 무시무시한 병기 전략 오티즘 빔은 그들이 전장에서 사용하는 전술 무기 오티즘 드론의 주무기를 키운 버전이라 설명을 할 수 있습니다. 이 광선에 맞은 사람은 순식간에 말도 제대로 못하며 집중을 못하는 바보가 되어버립니다. 오늘날 이 현상은 자폐증이라 알려져 있지요. 다행이도 위대한 환국은 재빨리 외계 통신 피라미드들을 반사 용도로 바꾸어, 핀란드가 평양을 향해 쏜 오티즘 전략 빔을 반사하는데 성공합니다. 이를 통해 핀란드는 민족 전체가 역으로 오티즘 빔에 맞아, 전쟁의 판도가 크게 바뀌게 됩니다.</CompleteNotice>
-    <Progress id="TecCount" description="기술력" maxValue="8000" />
+    <Progress id="TecCount" description="기술력" maxValue="3000" />
   </Quest>
 
   <Quest
@@ -151,14 +151,14 @@
   
   <Ending
     name="CivModel.Quests.UltimateDraw" guid="3210DD51-40A3-466E-BA9E-5C0B405F0830"
-    type="victory">
+    type="draw">
 
     <TextName>궁극기 무승부</TextName>
   </Ending>
   
   <Ending
     name="CivModel.Quests.UltimateDefeat" guid="E1B42E56-9360-4FA4-B52D-6815D2CE7CA0"
-    type="victory">
+    type="defeat">
 
     <TextName>궁극기 패배</TextName>
   </Ending>
@@ -172,7 +172,7 @@
 
   <Ending
     name="CivModel.Quests.EliminationDefeat" guid="85F15914-D467-49AE-B3F8-BA37C6000D35"
-    type="victory">
+    type="defeat">
 
     <TextName>정복 패배</TextName>
   </Ending>
@@ -191,6 +191,7 @@
     <Progress id="autism" description="오티즘 빔 증폭 크리스탈 획득" maxValue="1" />
     <Progress id="necro" description="네크로노미콘 획득" maxValue="1" />
     <Progress id="rlyeh" description="Gate of Rlyeh 획득" maxValue="1" />
+    <Progress id="delay" description="적의 승리를 막으며 한 턴 버티기" maxValue="1" />
   </Quest>
 
   <Quest
@@ -207,6 +208,7 @@
     <Progress id="autism" description="오티즘 빔 반사 어레이 획득" maxValue="1" />
     <Progress id="cthulhu" description="크툴루 정보 획득" maxValue="1" />
     <Progress id="alien" description="외계 통신 기구 획득" maxValue="1" />
+    <Progress id="delay" description="적의 승리를 막으며 한 턴 버티기" maxValue="1" />
   </Quest>
 
   <Quest

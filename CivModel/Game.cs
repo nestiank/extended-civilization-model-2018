@@ -317,11 +317,13 @@ namespace CivModel
                     TurnEvent.RaiseFixedForward(r => r.FixedPreTurn());
                     TurnEvent.RaiseFixedForward(r => r.FixedAfterPreTurn());
                     TurnEvent.RaiseObservable(o => o.PreTurn());
+                    TurnEvent.RaiseObservable(o => o.AfterPreTurn());
                 }
 
                 TurnEvent.RaiseFixedForward(r => r.FixedPreSubTurn(PlayerInTurn));
                 TurnEvent.RaiseFixedForward(r => r.FixedAfterPreSubTurn(PlayerInTurn));
                 TurnEvent.RaiseObservable(o => o.PreSubTurn(PlayerInTurn));
+                TurnEvent.RaiseObservable(o => o.AfterPreSubTurn(PlayerInTurn));
             }
 
             IsInsideTurn = true;
@@ -338,15 +340,13 @@ namespace CivModel
 
             TurnEvent.RaiseFixedBackward(r => r.FixedPostSubTurn(PlayerInTurn));
             TurnEvent.RaiseObservable(o => o.PostSubTurn(PlayerInTurn));
-
             TurnEvent.RaiseFixedBackward(r => r.FixedAfterPostSubTurn(PlayerInTurn));
-            TurnEvent.RaiseObservable(o => o.PostSubTurn(PlayerInTurn));
+            TurnEvent.RaiseObservable(o => o.AfterPostSubTurn(PlayerInTurn));
 
             if ((SubTurnNumber + 1) % Players.Count == 0)
             {
                 TurnEvent.RaiseFixedBackward(r => r.FixedPostTurn());
                 TurnEvent.RaiseObservable(o => o.PostTurn());
-
                 TurnEvent.RaiseFixedBackward(r => r.FixedAfterPostTurn());
                 TurnEvent.RaiseObservable(o => o.AfterPostTurn());
             }

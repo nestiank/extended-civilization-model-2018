@@ -78,7 +78,8 @@ namespace CivModel.Quests
                 {
                     Progresses[KillCount].Value += 1;
                 }
-                else if (Progresses[KillCount].IsFull)
+
+                if (Progresses[KillCount].IsFull)
                 {
                     Status = QuestStatus.Completed;
                 }
@@ -90,7 +91,8 @@ namespace CivModel.Quests
                 {
                     Progresses[KillCount].Value += 1;
                 }
-                else if (Progresses[KillCount].IsFull)
+
+                if (Progresses[KillCount].IsFull)
                 {
                     Status = QuestStatus.Completed;
                 }

@@ -245,8 +245,12 @@ namespace FakeView
 
                     if (m_autoSkipPlayer != nullptr)
                     {
-                        while (m_presenter->IsThereTodos)
+                        for (int i = 0; i < 1000; ++i)
+                        {
+                            if (!m_presenter->IsThereTodos)
+                                break;
                             m_presenter->CommandSkip();
+                        }
                         m_presenter->CommandApply();
                     }
                 }

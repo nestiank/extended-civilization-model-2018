@@ -31,11 +31,16 @@ namespace CivModel.Quests
 
         protected override void OnAccept()
         {
+            UpdateTecCount();
+        }
+
+        private void UpdateTecCount()
+        {
+            Progresses[TecCount].Value = Math.Min(Progresses[TecCount].MaxValue, (int)Requestee.Research);
         }
 
         private void Cleanup()
         {
-            Progresses[TecCount].Value = 0;
         }
 
         protected override void OnGiveup()
@@ -54,8 +59,9 @@ namespace CivModel.Quests
         {
             if (Status == QuestStatus.Accepted)
             {
-                Progresses[TecCount].Value = (int)Math.Min(Requestee.Research, 8000);
-                if (Requestee.Research >= 8000)
+                UpdateTecCount();
+
+                if (Progresses[TecCount].IsFull)
                 {
                     Status = QuestStatus.Completed;
                 }

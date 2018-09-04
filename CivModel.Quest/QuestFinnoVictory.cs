@@ -14,8 +14,7 @@ namespace CivModel.Quests
         private const string Autism = "autism";
         private const string Necro = "necro";
         private const string Rlyeh = "rlyeh";
-
-        private int _markedTurn;
+        private const string Delay = "delay";
 
         public QuestFinnoVictory(Game game)
             : base(null, game.GetPlayerFinno(), typeof(QuestFinnoVictory))
@@ -35,7 +34,7 @@ namespace CivModel.Quests
         {
             Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
             Game.QuestObservable.AddObserver(this, ObserverPriority.Model);
-            _markedTurn = int.MinValue;
+            Progresses[Delay].Value = 0;
         }
 
         private void Cleanup()
@@ -63,15 +62,26 @@ namespace CivModel.Quests
         public void QuestAccepted(Quest quest) { }
         public void QuestGivenup(Quest quest) { }
 
-        public void AfterPreSubTurn(Player playerInTurn)
+        public void AfterPostTurn()
         {
-            if (playerInTurn != Requestee)
+            if (Requestee.HasEnding)
+            {
+                Disable();
                 return;
+            }
 
-            _markedTurn = GetCondition() ? Game.TurnNumber : int.MinValue;
+            if (GetCondition())
+            {
+                if (!Progresses[Delay].IsFull)
+                    Progresses[Delay].Value += 1;
+            }
+            else
+            {
+                Progresses[Delay].Value = 0;
+            }
         }
 
-        public void AfterPostSubTurn(Player playerInTurn)
+        public void AfterPreSubTurn(Player playerInTurn)
         {
             if (playerInTurn != Requestee)
                 return;
@@ -82,39 +92,46 @@ namespace CivModel.Quests
                 return;
             }
 
-            if (_markedTurn + 1 == Game.TurnNumber && GetCondition())
+            if (Progresses[Delay].IsFull)
             {
-                var hwanVictory = Game.GetPlayerHwan().Quests.OfType<QuestHwanVictory>().FirstOrDefault();
-                if (!hwanVictory.GetCondition())
+                if (!GetCondition())
                 {
-                    Requestee.AchieveEnding(new FinnoUltimateVictory(Game));
-                    foreach (var player in Game.Players)
-                    {
-                        if (player != Requestee && !player.HasEnding)
-                        {
-                            player.AchieveEnding(new UltimateDefeat(Game));
-                        }
-                    }
+                    Progresses[Delay].Value = 0;
                 }
                 else
                 {
-                    foreach (var player in Game.Players)
+                    var hwanVictory = Game.GetPlayerHwan().Quests.OfType<QuestHwanVictory>().FirstOrDefault();
+                    if (!hwanVictory.GetCondition())
                     {
-                        if (!player.HasEnding)
-                            player.AchieveEnding(new UltimateDraw(Game));
+                        Requestee.AchieveEnding(new FinnoUltimateVictory(Game));
+                        foreach (var player in Game.Players)
+                        {
+                            if (player != Requestee && !player.HasEnding)
+                            {
+                                player.AchieveEnding(new UltimateDefeat(Game));
+                            }
+                        }
                     }
+                    else
+                    {
+                        foreach (var player in Game.Players)
+                        {
+                            if (!player.HasEnding)
+                                player.AchieveEnding(new UltimateDraw(Game));
+                        }
+                    }
+                    Complete();
+                    hwanVictory.Complete();
                 }
-                Complete();
-                hwanVictory.Complete();
             }
         }
 
         public void PreTurn() { }
         public void AfterPreTurn() { }
         public void PostTurn() { }
-        public void AfterPostTurn() { }
         public void PreSubTurn(Player playerInTurn) { }
         public void PostSubTurn(Player playerInTurn) { }
+        public void AfterPostSubTurn(Player playerInTurn) { }
 
         internal bool GetCondition()
         {
