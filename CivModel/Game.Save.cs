@@ -196,6 +196,15 @@ namespace CivModel
                 {
                     scheme.OnAfterInitialized(this);
                 }
+
+                foreach (var player in Players)
+                {
+                    foreach (var quest in player.Quests)
+                    {
+                        if (quest.Status == QuestStatus.Disabled)
+                            quest.OnQuestDeployTime();
+                    }
+                }
             }
             catch (InvalidCastException)
             {
