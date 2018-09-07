@@ -176,10 +176,7 @@ namespace CivModel.Hwan
 
         public void PostSubTurn(Player playerInTurn) { }
 
-        public void AfterPostSubTurn(Player playerInTurn)
-        {
-            throw new NotImplementedException();
-        }
+        public void AfterPostSubTurn(Player playerInTurn) { }
     }
 
 
