@@ -58,7 +58,7 @@ namespace CivModel.Quests
         {
             Requestee.EstimateResourceInputs();
 
-            Progresses[Happy].SafeSetValue((int)Requestee.Happiness);
+            Progresses[Happy].SafeSetValue((int)Requestee.HappinessIncome);
             Progresses[Gold].SafeSetValue((int)Requestee.GoldNetIncome);
             Progresses[Research].SafeSetValue((int)Requestee.Research);
 
@@ -66,7 +66,7 @@ namespace CivModel.Quests
                 Complete();
         }
 
-        public void PostSubTurn(Player playerInTurn)
+        public void PreSubTurn(Player playerInTurn)
         {
             if (playerInTurn == Requestee)
                 RetrieveProgress();
@@ -76,8 +76,8 @@ namespace CivModel.Quests
         public void AfterPreTurn() { }
         public void PostTurn() { }
         public void AfterPostTurn() { }
-        public void PreSubTurn(Player playerInTurn) { }
         public void AfterPreSubTurn(Player playerInTurn) { }
+        public void PostSubTurn(Player playerInTurn) { }
         public void AfterPostSubTurn(Player playerInTurn) { }
     }
 }
