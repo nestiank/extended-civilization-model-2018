@@ -49,7 +49,7 @@ namespace CivModel.Quests
                     if (((Unit)obj).Owner.Team == _player.Team && (((Unit)obj) is Hwan.LEOSpaceArmada || ((Unit)obj) is Zap.LEOSpaceArmada))
                     {
                         ((Unit)obj).AttackPower = ((Unit)obj).AttackPower * 3;
-                        ((Unit)obj).MaxAP = 4;
+                        ((Unit)obj).MaxAP = 8;
                     }
                 }
             }

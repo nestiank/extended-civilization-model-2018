@@ -22,7 +22,7 @@ namespace CivModel.Quests
         {
             if (Requestee.Research >= 0)
             {
-                if (Game.Random.Next(2) == 0)
+                if (Game.Random.Next(10) == 0)
                     Deploy();
             }
         }

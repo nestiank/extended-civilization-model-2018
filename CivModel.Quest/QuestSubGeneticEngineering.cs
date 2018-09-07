@@ -22,7 +22,7 @@ namespace CivModel.Quests
 
         public override void OnQuestDeployTime()
         {
-            if (Game.Random.Next(2) == 0)
+            if (Game.Random.Next(10) == 0)
                 Deploy();
         }
 

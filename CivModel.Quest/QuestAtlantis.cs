@@ -12,7 +12,9 @@ namespace CivModel.Quests
 {
     public class QuestAtlantis : Quest, ITileObjectObserver
     {
-        private const string Preternaturality = "Preternaturality";
+        private const string ToDoCount = "ToDoCount";
+        private int SorcererCount = 0;
+        private int DustCount = 0;
 
         public QuestAtlantis(Game game)
             : base(game.GetPlayerAtlantis(), game.GetPlayerFinno(), typeof(QuestAtlantis))
@@ -24,7 +26,7 @@ namespace CivModel.Quests
             var hwan = Game.GetPlayerHwan();
             if (hwan.SpecialResource[SpecialResourceAutismBeamReflex.Instance] > 0)
             {
-                if (Game.Random.Next(10) < 7)
+                if (Game.Random.Next(10) < 5)
                     Deploy();
             }
         }
@@ -38,7 +40,8 @@ namespace CivModel.Quests
         {
             Game.TileObjectObservable.RemoveObserver(this);
 
-            Progresses[Preternaturality].Value = 0;
+            Progresses[ToDoCount].Value = 0;
+            SorcererCount = 0;
         }
 
         protected override void OnGiveup()
@@ -83,10 +86,30 @@ namespace CivModel.Quests
 
         public void TileObjectProduced(TileObject obj)
         {
-            if (obj is CivModel.Finno.Preternaturality preter && preter.Owner == Requester && preter.Donator == Requestee)
+            if (obj is CivModel.Finno.AncientFinnoFineDustFactory Dust && Dust.Owner == Requester && Dust.Donator == Requestee)
             {
-                Progresses[Preternaturality].Value += 1;
-                Status = QuestStatus.Completed;
+                if(DustCount < 1)
+                {
+                    DustCount += 1;
+                    Progresses[ToDoCount].Value += 1;
+                    if(Progresses[ToDoCount].IsFull)
+                    {
+                        Status = QuestStatus.Completed;
+                    }
+                }
+            }
+
+            if(obj is CivModel.Finno.AncientSorcerer Sorcerer && Sorcerer.Owner == Requestee)
+            {
+                if(SorcererCount < 3)
+                {
+                    SorcererCount += 1;
+                    Progresses[ToDoCount].Value += 1;
+                    if (Progresses[ToDoCount].IsFull)
+                    {
+                        Status = QuestStatus.Completed;
+                    }
+                }
             }
         }
 

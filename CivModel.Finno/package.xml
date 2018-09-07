@@ -225,7 +225,7 @@
     <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
     <TotalGoldCost>50</TotalGoldCost>
     <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>50</MaxHP>
     <MaxHealPerTurn>20</MaxHealPerTurn>
     <AttackPower>15</AttackPower>
@@ -245,7 +245,7 @@
     <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
     <TotalGoldCost>75</TotalGoldCost>
     <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>35</MaxHP>
     <MaxHealPerTurn>30</MaxHealPerTurn>
     <AttackPower>20</AttackPower>
@@ -265,7 +265,7 @@
     <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
     <TotalGoldCost>30</TotalGoldCost>
     <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>50</MaxHP>
     <MaxHealPerTurn>20</MaxHealPerTurn>
     <AttackPower>13</AttackPower>
@@ -284,7 +284,7 @@
     <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
     <TotalGoldCost>50</TotalGoldCost>
     <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>50</MaxHP>
     <MaxHealPerTurn>30</MaxHealPerTurn>
     <AttackPower>17</AttackPower>
@@ -304,7 +304,7 @@
     <LaborCapacityPerTurn>10</LaborCapacityPerTurn>
     <TotalGoldCost>30</TotalGoldCost>
     <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>75</MaxHP>
     <MaxHealPerTurn>20</MaxHealPerTurn>
     <AttackPower>10</AttackPower>
@@ -323,7 +323,7 @@
     <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
     <TotalGoldCost>100</TotalGoldCost>
     <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>50</MaxHP>
     <MaxHealPerTurn>30</MaxHealPerTurn>
     <AttackPower>35</AttackPower>
@@ -344,7 +344,7 @@
     <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
     <TotalGoldCost>75</TotalGoldCost>
     <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>30</MaxHP>
     <MaxHealPerTurn>30</MaxHealPerTurn>
     <AttackPower>25</AttackPower>
@@ -364,7 +364,7 @@
     <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
     <TotalGoldCost>5</TotalGoldCost>
     <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>0</MaxHP>
     <MaxHealPerTurn>0</MaxHealPerTurn>
     <AttackPower>0</AttackPower>
@@ -383,7 +383,7 @@
     <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
     <TotalGoldCost>60</TotalGoldCost>
     <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>25</MaxHP>
     <MaxHealPerTurn>20</MaxHealPerTurn>
     <AttackPower>5</AttackPower>

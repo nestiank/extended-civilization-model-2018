@@ -48,7 +48,7 @@ namespace CivModel.Quests
                 {
                     if (((Unit)obj).Owner.Team == _player.Team)
                     {
-                        ((Unit)obj).MaxAP = 3;
+                        ((Unit)obj).MaxAP = 6;
                     }
                 }
             }

@@ -22,7 +22,7 @@ namespace CivModel.Quests
         {
             if (Requestee.Research >= 0)
             {
-                if (Game.Random.Next(10) < 7)
+                if (Game.Random.Next(10) < 5)
                     Deploy();
             }
         }
@@ -53,7 +53,7 @@ namespace CivModel.Quests
 
         public void TileObjectProduced(TileObject obj)
         {
-            if (obj is CivModel.Finno.AutismBeamDrone drone && drone.Owner == Game.GetPlayerFinno())
+            if (obj is CivModel.Finno.AncientFinnoFIRFortress Fortress && Fortress.Owner == Game.GetPlayerEmu() && Fortress.Donator == Game.GetPlayerFinno())
             {
                 Progresses[ProductCount].Value += 1;
                 if (Progresses[ProductCount].IsFull)
