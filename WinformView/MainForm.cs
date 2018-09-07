@@ -11,7 +11,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using CivPresenter;
 using CivModel;
-using CivModel.Common;
+using CivModel.FakeModule;
 
 namespace WinformView
 {
@@ -73,7 +73,7 @@ namespace WinformView
             string file = getFilePath("map.txt", ".", "..\\docs");
 
             string[] prototypes = {
-                getFilePath("package.xml", "packages\\common", "..\\CivModel.Common"),
+                getFilePath("package.xml", "packages\\fakemodule", "..\\CivModel.FakeModule"),
                 getFilePath("package.xml", "packages\\finno", "..\\CivModel.Finno"),
                 getFilePath("package.xml", "packages\\hwan", "..\\CivModel.Hwan"),
                 getFilePath("package.xml", "packages\\zap", "..\\CivModel.Zap"),

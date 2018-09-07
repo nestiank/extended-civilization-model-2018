@@ -42,7 +42,7 @@ namespace FakeView
         System::String^ file = getFilePath(MAP_FILE_PATH, L".", L"..\\docs");
 
         array<System::String^>^ prototypes = {
-            getFilePath(L"package.xml", L"packages\\common", L"..\\CivModel.Common"),
+            getFilePath(L"package.xml", L"packages\\fakemodule", L"..\\CivModel.FakeModule"),
             getFilePath(L"package.xml", L"packages\\finno", L"..\\CivModel.Finno"),
             getFilePath(L"package.xml", L"packages\\hwan", L"..\\CivModel.Hwan"),
             getFilePath(L"package.xml", L"packages\\zap", L"..\\CivModel.Zap"),
@@ -962,11 +962,11 @@ namespace FakeView
         c.color &= 0xf0;
         c.color |= 0x08 | GetPlayerColor(unit->Owner);
 
-        if (auto u = dynamic_cast<CivModel::Common::Pioneer^>(unit))
+        if (auto u = dynamic_cast<CivModel::FakeModule::Pioneer^>(unit))
         {
             c.ch = 'P';
         }
-        else if (auto u = dynamic_cast<CivModel::Common::FakeKnight^>(unit))
+        else if (auto u = dynamic_cast<CivModel::FakeModule::FakeKnight^>(unit))
         {
             c.ch = 'F';
         }

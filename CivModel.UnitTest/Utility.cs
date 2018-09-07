@@ -19,7 +19,7 @@ namespace CivModel.UnitTest
                 var reader = new StreamReader(stream);
 
                 var knownFactory = new IGameSchemeFactory[] {
-                    new CivModel.Common.GameSchemeFactory(),
+                    new CivModel.FakeModule.GameSchemeFactory(),
                     new CivModel.AI.GameSchemeFactory(),
                     new CivModel.Finno.GameSchemeFactory(),
                     new CivModel.Hwan.GameSchemeFactory(),
@@ -28,7 +28,7 @@ namespace CivModel.UnitTest
                 };
 
                 string[] prototypes = {
-                    "../../../CivModel.Common/package.xml",
+                    "../../../CivModel.FakeModule/package.xml",
                     "../../../CivModel.Finno/package.xml",
                     "../../../CivModel.Hwan/package.xml",
                     "../../../CivModel.Zap/package.xml",

@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinformView", "WinformView\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CivModel extensions", "CivModel extensions", "{80D609BF-AE55-4880-9836-E3DD2BA26253}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CivModel.Common", "CivModel.Common\CivModel.Common.csproj", "{19EC463E-A2C4-47C6-A0E6-BD0882E722B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CivModel.FakeModule", "CivModel.FakeModule\CivModel.FakeModule.csproj", "{19EC463E-A2C4-47C6-A0E6-BD0882E722B8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E74582AE-B8A5-4EB8-9C36-E877E3E07167}"
 	ProjectSection(SolutionItems) = preProject

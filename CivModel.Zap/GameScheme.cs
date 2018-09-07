@@ -11,7 +11,7 @@ namespace CivModel.Zap
         public Guid Guid => ClassGuid;
 
         public Type SchemeType => typeof(GameScheme);
-        public IEnumerable<Guid> Dependencies { get; } = new Guid[] { Common.GameSchemeFactory.ClassGuid };
+        public IEnumerable<Guid> Dependencies => Enumerable.Empty<Guid>();
         public IEnumerable<IGameSchemeFactory> KnownSchemeFactories => Enumerable.Empty<IGameSchemeFactory>();
 
         public IGameScheme Create()

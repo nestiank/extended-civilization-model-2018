@@ -21,7 +21,11 @@ namespace CivModel.Quests
         public Guid Guid => ClassGuid;
 
         public Type SchemeType => typeof(GameScheme);
-        public IEnumerable<Guid> Dependencies { get; } = new Guid[] { Common.GameSchemeFactory.ClassGuid };
+        public IEnumerable<Guid> Dependencies { get; } = new Guid[] {
+            Finno.GameSchemeFactory.ClassGuid,
+            Hwan.GameSchemeFactory.ClassGuid,
+            Zap.GameSchemeFactory.ClassGuid
+        };
         public IEnumerable<IGameSchemeFactory> KnownSchemeFactories => Enumerable.Empty<IGameSchemeFactory>();
 
         public IGameScheme Create()
@@ -30,12 +34,27 @@ namespace CivModel.Quests
         }
     }
 
-    public class GameScheme : IGameScheme
+    public class GameScheme : IGameConstantScheme
     {
         public GameSchemeFactory Factory { get; }
         IGameSchemeFactory IGameScheme.Factory => Factory;
 
         public Game Game { get; private set; }
+
+        public double GoldCoefficient => 1;
+
+        public double PopulationConstant => 0.1;
+        public double PopulationHappinessCoefficient => 0.01;
+
+        public double HappinessCoefficient => 1;
+
+        public double LaborHappinessCoefficient => 0.008;
+        public double ResearchHappinessCoefficient => 0.005;
+
+        public double EconomicRequireCoefficient => 0.2;
+        public double EconomicRequireTaxRateConstant => 0.2;
+
+        public double ResearchRequireCoefficient => 0.2;
 
         public GameScheme(GameSchemeFactory factory)
         {
