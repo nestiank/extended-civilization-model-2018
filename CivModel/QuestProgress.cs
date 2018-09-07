@@ -102,5 +102,27 @@ namespace CivModel
             MaxValue = proto.MaxValue;
             Enabled = proto.Enabled;
         }
+
+        /// <summary>
+        /// Increment <see cref="Value"/> by <paramref name="amount"/> safely.
+        /// If <c><see cref="Value"/> + <paramref name="amount"/></c> is bigger than <see cref="MaxValue"/>,
+        ///  set <see cref="Value"/> by <see cref="MaxValue"/>.
+        /// </summary>
+        /// <param name="amount">the amount to increment</param>
+        public void SafeIncrement(int amount = 1)
+        {
+            Value = Math.Min(MaxValue, Value + amount);
+        }
+
+        /// <summary>
+        /// Set <see cref="Value"/> by <paramref name="value"/> safely.
+        /// If <paramref name="value"/> is less than zero or bigger than <see cref="MaxValue"/>,
+        ///  set <see cref="Value"/> by zero or <see cref="MaxValue"/> respectively.
+        /// </summary>
+        /// <param name="value"></param>
+        public void SafeSetValue(int value)
+        {
+            Value = Math.Max(0, Math.Min(MaxValue, value));
+        }
     }
 }

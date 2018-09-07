@@ -32,7 +32,7 @@ namespace CivModel.Quests
             Game.QuestObservable.AddObserver(this, ObserverPriority.Model);
         }
 
-        private void Cleanup()
+        protected virtual void Cleanup()
         {
             Game.TurnObservable.RemoveObserver(this);
             Game.QuestObservable.RemoveObserver(this);
