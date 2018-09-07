@@ -334,12 +334,20 @@ namespace CivModel
             get => _skipFlag;
             set
             {
-                _skipFlag = value;
-                if (_sleepFlag && !_skipFlag)
-                    _sleepFlag = false;
+                bool prevSkip = SkipFlag;
+                bool prevSleep = SleepFlag;
+                SetSkipFlag(value);
+                Game.ActorEvent.RaiseObservable(obs => obs.OnSkipFlagChanged(this, prevSkip, prevSleep));
             }
         }
         private bool _skipFlag = false;
+
+        private void SetSkipFlag(bool value)
+        {
+            _skipFlag = value;
+            if (_sleepFlag && !_skipFlag)
+                _sleepFlag = false;
+        }
 
         /// <summary>
         /// The flag indicating this actor is skipped in every turn.
@@ -351,12 +359,20 @@ namespace CivModel
             get => _sleepFlag;
             set
             {
-                _sleepFlag = value;
-                if (_sleepFlag && !_skipFlag)
-                    _skipFlag = true;
+                bool prevSkip = SkipFlag;
+                bool prevSleep = SleepFlag;
+                SetSleepFlag(value);
+                Game.ActorEvent.RaiseObservable(obs => obs.OnSkipFlagChanged(this, prevSkip, prevSleep));
             }
         }
         private bool _sleepFlag = false;
+
+        private void SetSleepFlag(bool value)
+        {
+            _sleepFlag = value;
+            if (_sleepFlag && !_skipFlag)
+                _skipFlag = true;
+        }
 
         /// <summary>
         /// The path of this actor to move along at the end of subturn.
@@ -914,7 +930,7 @@ namespace CivModel
             _remainAP = MaxAP;
 
             if (!SleepFlag)
-                SkipFlag = false;
+                SetSkipFlag(false);
         }
         void IFixedTurnReceiver.FixedPreTurn() => FixedPreTurn();
 

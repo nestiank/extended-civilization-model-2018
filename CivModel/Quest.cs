@@ -114,6 +114,11 @@ namespace CivModel
         public int MaxTotalProgress => Progresses.Where(p => p.Enabled).Sum(p => p.MaxValue);
 
         /// <summary>
+        /// Whether the total progress is full.
+        /// </summary>
+        public bool IsTotalProgressFull => Progresses.Where(p => p.Enabled).All(p => p.IsFull);
+
+        /// <summary>
         /// The left turn. <c>-1</c> if this value is invalid.
         /// </summary>
         /// <remarks>

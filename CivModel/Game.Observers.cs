@@ -56,6 +56,12 @@ namespace CivModel
         public IObservable<IEndingObserver, ObserverPriority> EndingObservable => EndingEvent;
         internal ObservableEvent<IEndingObserver, ObserverPriority> EndingEvent { get; private set; }
 
+        /// <summary>
+        /// An <see cref="IObservable{IActorObserver, ObserverPriority}"/> object which can be observed by <see cref="IActorObserver"/>.
+        /// </summary>
+        public IObservable<IActorObserver, ObserverPriority> ActorObservable => ActorEvent;
+        internal ObservableEvent<IActorObserver, ObserverPriority> ActorEvent { get; private set; }
+
         private void InitializeObservable()
         {
             // fixed & observable
@@ -68,6 +74,7 @@ namespace CivModel
             BattleEvent = new ObservableEvent<IBattleObserver, ObserverPriority>();
             QuestEvent = new ObservableEvent<IQuestObserver, ObserverPriority>();
             EndingEvent = new ObservableEvent<IEndingObserver, ObserverPriority>();
+            ActorEvent = new ObservableEvent<IActorObserver, ObserverPriority>();
         }
     }
 }

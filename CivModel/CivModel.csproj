@@ -52,6 +52,7 @@
     <Compile Include="Ending.cs" />
     <Compile Include="EndingPrototype.cs" />
     <Compile Include="GuidObjectPrototype.cs" />
+    <Compile Include="IActorObserver.cs" />
     <Compile Include="IActorProductionFactory.cs" />
     <Compile Include="IAIController.cs" />
     <Compile Include="AttackActorAction.cs" />

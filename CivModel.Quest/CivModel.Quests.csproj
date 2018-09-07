@@ -42,7 +42,17 @@
   <ItemGroup>
     <Compile Include="AutismBeamAmplificationCrystal.cs" />
     <Compile Include="QuestConquerVictory.cs" />
+    <Compile Include="QuestFinnoTuto1.cs" />
+    <Compile Include="QuestFinnoTuto2.cs" />
+    <Compile Include="QuestFinnoTuto3.cs" />
+    <Compile Include="QuestFinnoTuto4.cs" />
+    <Compile Include="QuestFinnoTuto5.cs" />
     <Compile Include="QuestFinnoVictory.cs" />
+    <Compile Include="QuestHwanTuto1.cs" />
+    <Compile Include="QuestHwanTuto2.cs" />
+    <Compile Include="QuestHwanTuto3.cs" />
+    <Compile Include="QuestHwanTuto4.cs" />
+    <Compile Include="QuestHwanTuto5.cs" />
     <Compile Include="QuestHwanVIctory.cs" />
     <Compile Include="Endings.cs" />
     <Compile Include="GameScheme.cs" />
@@ -95,7 +105,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="package.xml" />
+    <Content Include="package.xml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

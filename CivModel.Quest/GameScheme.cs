@@ -107,6 +107,18 @@ namespace CivModel.Quests
             {
                 new QuestConquerVictory(p);
             }
+
+            // Tutorial Quest
+            new QuestHwanTuto1(Game);
+            new QuestHwanTuto2(Game);
+            new QuestHwanTuto3(Game);
+            new QuestHwanTuto4(Game);
+            new QuestHwanTuto5(Game);
+            new QuestFinnoTuto1(Game);
+            new QuestFinnoTuto2(Game);
+            new QuestFinnoTuto3(Game);
+            new QuestFinnoTuto4(Game);
+            new QuestFinnoTuto5(Game);
         }
     }
 }

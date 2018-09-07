@@ -66,6 +66,11 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CivObservable\CivObservable.csproj">
+      <Name>CivObservable</Name>
+      <Project>{76cc2c4f-12f3-4dd5-9abb-8903a4954fd5}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <Reference Include="FSharp.Collections.ParallelSeq">
       <HintPath>..\packages\FSharp.Collections.ParallelSeq.1.1.2\lib\net45\FSharp.Collections.ParallelSeq.dll</HintPath>
     </Reference>
