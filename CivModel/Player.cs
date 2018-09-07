@@ -171,7 +171,7 @@ namespace CivModel
             get => _taxRate;
             set
             {
-                if (value < 0 && value > 1)
+                if (value < 0 || value > 1)
                     throw new ArgumentOutOfRangeException(nameof(value), value, "TaxRate is not in [0, 1]");
                 _taxRate = value;
             }

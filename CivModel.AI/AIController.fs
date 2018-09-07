@@ -22,10 +22,17 @@ type AIController(player: Player) =
 
     let investAdjust (context: AIContext) =
         let player = context.Player
-        let x = if player.Happiness <= 50.0 then 2.0 else 1.0
+        let clamp a b x =
+            if a > x then a
+            elif x > b then b
+            else x
+        let x =
+            if player.Happiness < 0.0 then 2.0
+            elif player.Happiness < 30.0 then 1.1
+            else 1.0
         let N = context.Game.Constants.GoldCoefficient
         let LM = context.Game.Constants.EconomicRequireCoefficient
-        let t = N * 2.0 * player.Population / LM
+        let t = clamp 0.0 1.0 (N / LM / 2.0 / x)
         player.TaxRate <- t
         player.EconomicInvestmentRatio <- x
 
