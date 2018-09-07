@@ -20,6 +20,7 @@ namespace CivModel.Quests
 
         public override void OnQuestDeployTime()
         {
+            Deploy();Accept();
         }
 
         protected override void OnAccept()
@@ -52,8 +53,8 @@ namespace CivModel.Quests
         {
             if (player == Requestee)
             {
-                var p1 = Requestee.Production.OfType<Hwan.ProtoNinjaProductionFactory>().Count();
-                var p2 = Requestee.Production.OfType<Hwan.HwanEmpireKimchiFactoryProductionFactory>().Count();
+                var p1 = Requestee.Production.Count(p => p.Factory is Hwan.ProtoNinjaProductionFactory);
+                var p2 = Requestee.Production.Count(p => p.Factory is Hwan.HwanEmpireKimchiFactoryProductionFactory);
 
                 Progresses[Product1].SafeSetValue(p1);
                 Progresses[Product2].SafeSetValue(p2);

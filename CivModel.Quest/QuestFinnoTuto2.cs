@@ -52,8 +52,8 @@ namespace CivModel.Quests
         {
             if (player == Requestee)
             {
-                var p1 = Requestee.Production.OfType<Finno.JediKnightProductionFactory>().Count();
-                var p2 = Requestee.Production.OfType<Finno.AncientFinnoGermaniumMine>().Count();
+                var p1 = Requestee.Production.Count(p => p.Factory is Finno.JediKnightProductionFactory);
+                var p2 = Requestee.Production.Count(p => p.Factory is Finno.AncientFinnoGermaniumMineProductionFactory);
 
                 Progresses[Product1].SafeSetValue(p1);
                 Progresses[Product2].SafeSetValue(p2);
