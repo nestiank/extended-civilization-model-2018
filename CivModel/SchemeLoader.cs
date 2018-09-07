@@ -110,7 +110,7 @@ namespace CivModel
         }
     }
 
-    sealed class DefaultScheme : IGameConstantScheme, IGameStartupScheme
+    sealed class DefaultScheme : IGameConstantsScheme, IGameStartupScheme
     {
         // not used.
         IGameSchemeFactory IGameScheme.Factory => null;
@@ -123,20 +123,24 @@ namespace CivModel
         public int DefaultTerrainWidth => 128;
         public int DefaultTerrainHeight => 80;
 
-        public double GoldCoefficient => 1;
+        private class ConstantClass : IGameConstants
+        {
+            public double GoldCoefficient => 1;
 
-        public double PopulationConstant => 0.1;
-        public double PopulationHappinessCoefficient => 0.01;
+            public double PopulationConstant => 0.1;
+            public double PopulationHappinessCoefficient => 0.01;
 
-        public double HappinessCoefficient => 1;
+            public double HappinessCoefficient => 1;
 
-        public double LaborHappinessCoefficient => 0.008;
-        public double ResearchHappinessCoefficient => 0.005;
+            public double LaborHappinessCoefficient => 0.008;
+            public double ResearchHappinessCoefficient => 0.005;
 
-        public double EconomicRequireCoefficient => 0.2;
-        public double EconomicRequireTaxRateConstant => 0.2;
+            public double EconomicRequireCoefficient => 0.2;
+            public double EconomicRequireTaxRateConstant => 0.2;
 
-        public double ResearchRequireCoefficient => 0.2;
+            public double ResearchRequireCoefficient => 0.2;
+        }
+        public IGameConstants Constants { get; } = new ConstantClass();
 
         public TextReader GetPackageData() => null;
 

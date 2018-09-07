@@ -86,11 +86,16 @@ namespace CivModel
                     }
                 }
                 /////////////////////
-                Constants = new GameConstants(SchemeLoader.GetExclusiveScheme<IGameConstantScheme>());
-
-                var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
 
                 LoadPrototype(prototypes);
+
+                var constantsScheme = SchemeLoader.GetExclusiveScheme<IGameConstantsScheme>();
+                if (constantsScheme.Constants != null)
+                    Constants = new GameConstants(constantsScheme.Constants);
+                else
+                    Constants = _prototypeLoader.GetGameConstants(constantsScheme.Factory.Guid);
+
+                var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
 
                 SubTurnNumber = Convert.ToInt32(readLine());
                 if (SubTurnNumber < 0)

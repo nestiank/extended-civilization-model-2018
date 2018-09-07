@@ -29,6 +29,7 @@ namespace CivModel
         private Dictionary<Guid, GuidObjectPrototype> _dictGuidProto = new Dictionary<Guid, GuidObjectPrototype>();
 
         private Dictionary<Guid, XDocument> _candidates = new Dictionary<Guid, XDocument>();
+        private Dictionary<Guid, GameConstants> _gameConstants = new Dictionary<Guid, GameConstants>();
 
         public GuidObjectPrototype TryGetPrototype(Guid guid)
         {
@@ -63,6 +64,22 @@ namespace CivModel
                 throw new KeyNotFoundException("the prototype of specified type cannot be cast into specified prototype");
         }
 
+        public GameConstants TryGetGameConstants(Guid schemeGuid)
+        {
+            if (_gameConstants.TryGetValue(schemeGuid, out var constants))
+                return constants;
+            else
+                return null;
+        }
+
+        public GameConstants GetGameConstants(Guid schemeGuid)
+        {
+            if (TryGetGameConstants(schemeGuid) is GameConstants constants)
+                return constants;
+            else
+                throw new KeyNotFoundException("the GameConstants of specified scheme is not found");
+        }
+
         public void AddData(TextReader input)
         {
             try
@@ -92,39 +109,49 @@ namespace CivModel
 
                 foreach (var child in document.Root.Elements().Skip(1))
                 {
-                    LoadNode(child, type.Assembly);
+                    LoadNode(child, type.Assembly, guid);
                 }
 
                 _candidates[guid] = null;
             }
         }
 
-        private void LoadNode(XElement node, Assembly packageAssembly)
+        private void LoadNode(XElement node, Assembly packageAssembly, Guid schemeGuid)
         {
-            GuidObjectPrototype proto;
+            if (node.Name == Xmlns + "GameConstants")
+            {
+                if (_gameConstants.ContainsKey(schemeGuid))
+                    throw new InvalidDataException("there is duplicated GameConstants for the same game scheme.");
 
-            if (node.Name == Xmlns + "City")
-                proto = new CityPrototype(node, packageAssembly);
-            else if (node.Name == Xmlns + "TileBuilding")
-                proto = new TileBuildingPrototype(node, packageAssembly);
-            else if (node.Name == Xmlns + "InteriorBuilding")
-                proto = new InteriorBuildingPrototype(node, packageAssembly);
-            else if (node.Name == Xmlns + "Unit")
-                proto = new UnitPrototype(node, packageAssembly);
-            else if (node.Name == Xmlns + "Quest")
-                proto = new QuestPrototype(node, packageAssembly);
-            else if (node.Name == Xmlns + "Ending")
-                proto = new EndingPrototype(node, packageAssembly);
+                _gameConstants[schemeGuid] = new GameConstants(node);
+            }
             else
-                throw new NotImplementedException();
+            {
+                GuidObjectPrototype proto;
 
-            if (_prototypes.ContainsKey(proto.TargetType))
-                throw new InvalidDataException("there is duplicated Type in prototype data");
-            if (_dictGuidProto.ContainsKey(proto.Guid))
-                throw new InvalidDataException("there is duplicated GUID in prototype data");
+                if (node.Name == Xmlns + "City")
+                    proto = new CityPrototype(node, packageAssembly);
+                else if (node.Name == Xmlns + "TileBuilding")
+                    proto = new TileBuildingPrototype(node, packageAssembly);
+                else if (node.Name == Xmlns + "InteriorBuilding")
+                    proto = new InteriorBuildingPrototype(node, packageAssembly);
+                else if (node.Name == Xmlns + "Unit")
+                    proto = new UnitPrototype(node, packageAssembly);
+                else if (node.Name == Xmlns + "Quest")
+                    proto = new QuestPrototype(node, packageAssembly);
+                else if (node.Name == Xmlns + "Ending")
+                    proto = new EndingPrototype(node, packageAssembly);
+                else
+                    throw new NotImplementedException();
 
-            _prototypes.Add(proto.TargetType, proto);
-            _dictGuidProto.Add(proto.Guid, proto);
+                if (_prototypes.ContainsKey(proto.TargetType))
+                    throw new InvalidDataException("there is duplicated Type in prototype data");
+                if (_dictGuidProto.ContainsKey(proto.Guid))
+                    throw new InvalidDataException("there is duplicated GUID in prototype data");
+
+                _prototypes.Add(proto.TargetType, proto);
+                _dictGuidProto.Add(proto.Guid, proto);
+            }
         }
     }
 }

@@ -5,6 +5,18 @@
 
   <TextName>퀘스트 확장 모듈</TextName>
 
+  <GameConstants>
+    <GoldCoefficient>1</GoldCoefficient>
+    <PopulationConstant>0.1</PopulationConstant>
+    <PopulationHappinessCoefficient>0.01</PopulationHappinessCoefficient>
+    <HappinessCoefficient>1</HappinessCoefficient>
+    <LaborHappinessCoefficient>0.008</LaborHappinessCoefficient>
+    <ResearchHappinessCoefficient>0.005</ResearchHappinessCoefficient>
+    <EconomicRequireCoefficient>0.2</EconomicRequireCoefficient>
+    <EconomicRequireTaxRateConstant>0.2</EconomicRequireTaxRateConstant>
+    <ResearchRequireCoefficient>0.2</ResearchRequireCoefficient>
+  </GameConstants>
+
   <Quest
   name="CivModel.Quests.QuestAutismBeamReflex" guid="B87615CB-1C41-4A60-A978-2D6E8422D4E2">
 
