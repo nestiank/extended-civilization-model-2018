@@ -28,12 +28,14 @@ namespace CivModel.Quests
         protected override void OnAccept()
         {
             Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
+            Game.BattleObservable.AddObserver(this, ObserverPriority.Model);
             Game.ActorObservable.AddObserver(this, ObserverPriority.Model);
         }
 
         private void Cleanup()
         {
             Game.TileObjectObservable.RemoveObserver(this);
+            Game.BattleObservable.RemoveObserver(this);
             Game.ActorObservable.RemoveObserver(this);
         }
 
