@@ -43,6 +43,7 @@ namespace CivModel.Quests
             foreach (var production in p1.Concat(p2).ToArray())
             {
                 Requestee.Production.Remove(production);
+                production.IsCompleted = true;
                 Requestee.Deployment.AddLast(production);
             }
 
