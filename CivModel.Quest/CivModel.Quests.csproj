@@ -59,6 +59,7 @@
     <Compile Include="QuestSubGeneticEngineering.cs" />
     <Compile Include="QuestSubInterstellarEnergy.cs" />
     <Compile Include="QuestSubMoaiForceField.cs" />
+    <Compile Include="QuestUltimateBase.cs" />
     <Compile Include="QuestWarAliance.cs" />
     <Compile Include="SpecialResourceAirspaceDomination.cs" />
     <Compile Include="SpecialResourceAlienCommunication.cs" />
