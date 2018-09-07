@@ -46,8 +46,8 @@ namespace CivModel
         /// <summary>
         /// The population income of this city.
         /// </summary>
-        /// <seealso cref="IGameConstantScheme.PopulationConstant"/>
-        /// <seealso cref="IGameConstantScheme.PopulationHappinessCoefficient"/>
+        /// <seealso cref="IGameConstants.PopulationConstant"/>
+        /// <seealso cref="IGameConstants.PopulationHappinessCoefficient"/>
         public double PopulationIncome =>
             (Owner.Game.Constants.PopulationConstant + Owner.Game.Constants.PopulationHappinessCoefficient * Owner.Happiness)
             * (InteriorBuildings.Count == 0 ? 1 : InteriorBuildings.Select(b => b.PopulationCoefficient).Aggregate((a, x) => a * x));

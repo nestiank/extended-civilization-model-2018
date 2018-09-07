@@ -101,56 +101,19 @@ namespace CivModel
     /// This type of scheme is exclusive, that is, can be applied only once per a game.
     /// </summary>
     /// <remarks>
-    /// For performance purpose, constant values are copied into <see cref="Game.Constants"/> when game starts.
+    /// This interface is dummy to mark scheme as <see cref="IGameConstants"/> provider,
+    ///  although you can manually provide <see cref="IGameConstants"/> object.
+    /// The <see cref="IGameConstants"/> object is retrieved from xml data.
     /// </remarks>
     /// <seealso cref="Game.Constants"/>
-    /// <seealso cref="GameConstants"/>
-    public interface IGameConstantScheme : IGameScheme
+    /// <seealso cref="IGameConstants"/>
+    public interface IGameConstantsScheme : IGameScheme
     {
         /// <summary>
-        /// Coefficient for <see cref="Player.GoldIncome"/>.
+        /// The <see cref="IGameConstants"/> object manually provided.
+        /// If this value is <c>null</c>, the <see cref="IGameConstants"/> object is retrieved from xml data.
         /// </summary>
-        double GoldCoefficient { get; }
-
-        /// <summary>
-        /// Constant amount of <see cref="CityBase.Population"/>.
-        /// </summary>
-        double PopulationConstant { get; }
-
-        /// <summary>
-        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Population"/>.
-        /// </summary>
-        double PopulationHappinessCoefficient { get; }
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.HappinessIncome"/>.
-        /// </summary>
-        double HappinessCoefficient { get; }
-
-        /// <summary>
-        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.Labor"/>.
-        /// </summary>
-        double LaborHappinessCoefficient { get; }
-
-        /// <summary>
-        /// Coefficient of <see cref="Player.Happiness"/> for <see cref="Player.ResearchIncome"/>.
-        /// </summary>
-        double ResearchHappinessCoefficient { get; }
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.BasicEconomicRequire"/>.
-        /// </summary>
-        double EconomicRequireCoefficient { get; }
-
-        /// <summary>
-        /// Constant amount of <see cref="Player.TaxRate"/> for <see cref="Player.BasicEconomicRequire"/>.
-        /// </summary>
-        double EconomicRequireTaxRateConstant { get; }
-
-        /// <summary>
-        /// Coefficient for <see cref="Player.BasicResearchRequire"/>.
-        /// </summary>
-        double ResearchRequireCoefficient { get; }
+        IGameConstants Constants { get; }
     }
 
     /// <summary>

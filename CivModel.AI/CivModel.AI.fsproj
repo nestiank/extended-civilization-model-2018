@@ -93,8 +93,8 @@
       <Project>{2a129afb-249d-4d4c-8d7c-11bf64484573}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
-      <Name>CivModel.Common</Name>
+    <ProjectReference Include="..\CivModel.FakeModule\CivModel.FakeModule.csproj">
+      <Name>CivModel.FakeModule</Name>
       <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
       <Private>True</Private>
     </ProjectReference>

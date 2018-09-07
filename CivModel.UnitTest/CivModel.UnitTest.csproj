@@ -71,9 +71,9 @@
       <Project>{0bd1baed-aa59-4707-8de5-bdde4c28e3b2}</Project>
       <Name>CivModel.AI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CivModel.Common\CivModel.Common.csproj">
+    <ProjectReference Include="..\CivModel.FakeModule\CivModel.FakeModule.csproj">
       <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
-      <Name>CivModel.Common</Name>
+      <Name>CivModel.FakeModule</Name>
     </ProjectReference>
     <ProjectReference Include="..\CivModel.Finno\CivModel.Finno.csproj">
       <Project>{6a09ebc4-cf6d-4ba5-8710-e3d4e7f46ea5}</Project>

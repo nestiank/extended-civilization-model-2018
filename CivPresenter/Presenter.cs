@@ -209,7 +209,7 @@ namespace CivPresenter
             _view = view ?? throw new ArgumentNullException("view");
             SaveFile = null;
 
-            var factory = new CivModel.Common.GameSchemeFactory();
+            var factory = new CivModel.FakeModule.GameSchemeFactory();
             var knownFactory = new IGameSchemeFactory[] {
                 new CivModel.AI.GameSchemeFactory(),
 #if !DEBUG_CORE
@@ -261,7 +261,7 @@ namespace CivPresenter
             SaveFile = saveFile ?? throw new ArgumentNullException("saveFile");
 
             var knownFactory = new IGameSchemeFactory[] {
-                new CivModel.Common.GameSchemeFactory(),
+                new CivModel.FakeModule.GameSchemeFactory(),
                 new CivModel.AI.GameSchemeFactory(),
 #if !DEBUG_CORE
                 new CivModel.Finno.GameSchemeFactory(),

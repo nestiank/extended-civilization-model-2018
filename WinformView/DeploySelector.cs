@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CivModel;
-using CivModel.Common;
+using CivModel.FakeModule;
 
 namespace WinformView
 {

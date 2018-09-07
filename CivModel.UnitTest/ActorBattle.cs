@@ -51,14 +51,14 @@ namespace CivModel.UnitTest
             Assert.IsTrue(rs == BattleResult.Defeated);
         }
 
-        private static (Game game, Common.FakeKnight unit1, Common.FakeKnight unit2) Setup()
+        private static (Game game, FakeModule.FakeKnight unit1, FakeModule.FakeKnight unit2) Setup()
         {
             var game = Utility.LoadGame();
 
             var block = Utility.FindTileBlock(game, 3, pt => pt.Unit == null && pt.TileBuilding == null);
 
-            var unit1 = new Common.FakeKnight(game.Players[0], block[0]);
-            var unit2 = new Common.FakeKnight(game.Players[1], block[1]);
+            var unit1 = new FakeModule.FakeKnight(game.Players[0], block[0]);
+            var unit2 = new FakeModule.FakeKnight(game.Players[1], block[1]);
 
             return (game, unit1, unit2);
         }

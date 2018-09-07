@@ -177,17 +177,34 @@
     </xs:complexContent>
   </xs:complexType>
 
+  <xs:complexType name="GameConstants">
+    <xs:sequence>
+      <xs:element name="GoldCoefficient" type="xs:double" />
+      <xs:element name="PopulationConstant" type="xs:double" />
+      <xs:element name="PopulationHappinessCoefficient" type="xs:double" />
+      <xs:element name="HappinessCoefficient" type="xs:double" />
+      <xs:element name="LaborHappinessCoefficient" type="xs:double" />
+      <xs:element name="ResearchHappinessCoefficient" type="xs:double" />
+      <xs:element name="EconomicRequireCoefficient" type="xs:double" />
+      <xs:element name="EconomicRequireTaxRateConstant" type="xs:double" />
+      <xs:element name="ResearchRequireCoefficient" type="xs:double" />
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="Package">
     <xs:complexContent>
       <xs:extension base="GuidObject">
-        <xs:choice minOccurs="0" maxOccurs="unbounded">
-          <xs:element name="City" type="City" />
-          <xs:element name="TileBuilding" type="TileBuilding" />
-          <xs:element name="InteriorBuilding" type="InteriorBuilding" />
-          <xs:element name="Unit" type="Unit" />
-          <xs:element name="Quest" type="Quest" />
-          <xs:element name="Ending" type="Ending" />
-        </xs:choice>
+        <xs:sequence>
+          <xs:element name="GameConstants" minOccurs="0" maxOccurs="1" type="GameConstants" />
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="City" type="City" />
+            <xs:element name="TileBuilding" type="TileBuilding" />
+            <xs:element name="InteriorBuilding" type="InteriorBuilding" />
+            <xs:element name="Unit" type="Unit" />
+            <xs:element name="Quest" type="Quest" />
+            <xs:element name="Ending" type="Ending" />
+          </xs:choice>
+        </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

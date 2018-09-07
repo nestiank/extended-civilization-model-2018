@@ -53,7 +53,7 @@ namespace CivModel
         /// <summary>
         /// The happiness income of this player.
         /// </summary>
-        /// <seealso cref="IGameConstantScheme.HappinessCoefficient"/>
+        /// <seealso cref="IGameConstants.HappinessCoefficient"/>
         public double HappinessIncome =>
             Game.Constants.HappinessCoefficient * (EconomicInvestmentRatio - 1)
             + TileBuildings.Sum(b => b.ProvidedHappiness);
@@ -80,7 +80,7 @@ namespace CivModel
         /// <seealso cref="GoldNetIncomeWithoutConsumption"/>
         /// <seealso cref="GoldNetIncome"/>
         /// <seealso cref="TaxRate"/>
-        /// <seealso cref="IGameConstantScheme.GoldCoefficient"/>
+        /// <seealso cref="IGameConstants.GoldCoefficient"/>
         public double GoldIncome =>
             Game.Constants.GoldCoefficient * Population * TaxRate
             + TileBuildings.Sum(b => b.ProvidedGold);

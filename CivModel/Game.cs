@@ -22,10 +22,10 @@ namespace CivModel
         /// The constants of this game.
         /// </summary>
         /// <remarks>
-        /// For performance purpose, constant values are copied from <see cref="IGameConstantScheme"/> into this property when game starts.
+        /// For performance purpose, constant values are copied from <see cref="IGameConstantsScheme"/> into this property when game starts.
         /// </remarks>
         /// <seealso cref="GameConstants"/>
-        /// <seealso cref="IGameConstantScheme"/>
+        /// <seealso cref="IGameConstantsScheme"/>
         public GameConstants Constants;
 
         // prototype loader
@@ -142,11 +142,16 @@ namespace CivModel
                 }
             }
             /////////////////////
-            Constants = new GameConstants(SchemeLoader.GetExclusiveScheme<IGameConstantScheme>());
-
-            var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
 
             LoadPrototype(prototypes);
+
+            var constantsScheme = SchemeLoader.GetExclusiveScheme<IGameConstantsScheme>();
+            if (constantsScheme.Constants != null)
+                Constants = new GameConstants(constantsScheme.Constants);
+            else
+                Constants = _prototypeLoader.GetGameConstants(constantsScheme.Factory.Guid);
+
+            var startup = SchemeLoader.GetExclusiveScheme<IGameStartupScheme>();
 
             if (width == -1)
                 width = startup.DefaultTerrainWidth;

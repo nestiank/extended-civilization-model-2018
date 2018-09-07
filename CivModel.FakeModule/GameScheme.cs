@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-namespace CivModel.Common
+namespace CivModel.FakeModule
 {
     public class GameSchemeFactory : IGameSchemeFactory
     {
@@ -20,7 +20,7 @@ namespace CivModel.Common
         }
     }
 
-    public class GameScheme : IGameConstantScheme, IGameStartupScheme
+    public class GameScheme : IGameStartupScheme
     {
         private static readonly IProductionFactory[] _productions = {
             CityCenterProductionFactory.Instance,
@@ -40,21 +40,6 @@ namespace CivModel.Common
         public bool OnlyDefaultTerrain => false;
         public int DefaultTerrainWidth => 42;
         public int DefaultTerrainHeight => 12;
-
-        public double GoldCoefficient => 1;
-
-        public double PopulationConstant => 0.1;
-        public double PopulationHappinessCoefficient => 0.01;
-
-        public double HappinessCoefficient => 30;
-
-        public double LaborHappinessCoefficient => 0.008;
-        public double ResearchHappinessCoefficient => 0.005;
-
-        public double EconomicRequireCoefficient => 0.2;
-        public double EconomicRequireTaxRateConstant => 0.2;
-
-        public double ResearchRequireCoefficient => 0.2;
 
         public GameScheme(GameSchemeFactory factory)
         {

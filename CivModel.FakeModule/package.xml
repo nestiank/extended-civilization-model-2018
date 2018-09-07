@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package
-  name="CivModel.Common.GameScheme" guid="AB3CC73A-5756-4266-8DAC-42A610421DDA"
+  name="CivModel.FakeModule.GameScheme" guid="AB3CC73A-5756-4266-8DAC-42A610421DDA"
   xmlns="https://git.kucatdog.net/true-history-committee/civiii-model-proto/wikis/external/PrototypeSchema">
 
   <TextName>테스트용 확장 모듈</TextName>
 
   <City
-    name="CivModel.Common.CityCenter" guid="E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019">
+    name="CivModel.FakeModule.CityCenter" guid="E75CDD1D-8C9C-4D9E-8310-CCD6BEBF4019">
 
     <TextName>도시 중심부</TextName>
     <TotalLaborCost>5</TotalLaborCost>
@@ -31,7 +31,7 @@
   </City>
 
   <TileBuilding
-    name="CivModel.Common.FakeFortress" guid="DE84C4BC-A430-4EFB-B5C1-76A8B5D09FA8">
+    name="CivModel.FakeModule.FakeFortress" guid="DE84C4BC-A430-4EFB-B5C1-76A8B5D09FA8">
 
     <TextName>가짜 요새</TextName>
     <TotalLaborCost>3</TotalLaborCost>
@@ -54,7 +54,7 @@
   </TileBuilding>
 
   <InteriorBuilding
-    name="CivModel.Common.FakeFactory" guid="A2AE33B4-5543-4751-8681-E958DFC1A511">
+    name="CivModel.FakeModule.FakeFactory" guid="A2AE33B4-5543-4751-8681-E958DFC1A511">
 
     <TextName>가짜 공장</TextName>
     <TotalLaborCost>5</TotalLaborCost>
@@ -70,7 +70,7 @@
   </InteriorBuilding>
 
   <InteriorBuilding
-    name="CivModel.Common.FakeLaboratory" guid="39C928FE-721D-4BB9-B7F4-995F631923AF">
+    name="CivModel.FakeModule.FakeLaboratory" guid="39C928FE-721D-4BB9-B7F4-995F631923AF">
 
     <TextName>가짜 연구소</TextName>
     <TotalLaborCost>5</TotalLaborCost>
@@ -86,7 +86,7 @@
   </InteriorBuilding>
 
   <Unit
-    name="CivModel.Common.FakeKnight" guid="8209396E-45E3-441C-879F-29EFE9EDC23C">
+    name="CivModel.FakeModule.FakeKnight" guid="8209396E-45E3-441C-879F-29EFE9EDC23C">
 
     <TextName>가짜 제다이</TextName>
     <TotalLaborCost>5</TotalLaborCost>
@@ -106,7 +106,7 @@
   </Unit>
 
   <Unit
-    name="CivModel.Common.Pioneer" guid="487BBF97-538A-45CB-A62D-B33E173F8E6F">
+    name="CivModel.FakeModule.Pioneer" guid="487BBF97-538A-45CB-A62D-B33E173F8E6F">
 
     <TextName>짭개척자</TextName>
     <TotalLaborCost>5</TotalLaborCost>
@@ -125,7 +125,7 @@
   </Unit>
 
   <Quest
-    name="CivModel.Common.FakeQuest" guid="19C818CD-DC24-4FA3-91BB-A72594F91715">
+    name="CivModel.FakeModule.FakeQuest" guid="19C818CD-DC24-4FA3-91BB-A72594F91715">
 
     <TextName>개꿀잼 퀘스트</TextName>
     <PostingTurn>forever</PostingTurn>

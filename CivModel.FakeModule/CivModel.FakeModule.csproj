@@ -7,8 +7,8 @@
     <ProjectGuid>{19EC463E-A2C4-47C6-A0E6-BD0882E722B8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CivModel.Common</RootNamespace>
-    <AssemblyName>CivModel.Common</AssemblyName>
+    <RootNamespace>CivModel.FakeModule</RootNamespace>
+    <AssemblyName>CivModel.FakeModule</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
