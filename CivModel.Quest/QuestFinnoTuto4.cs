@@ -60,7 +60,7 @@ namespace CivModel.Quests
 
             Progresses[Happy].SafeSetValue((int)Requestee.HappinessIncome);
             Progresses[Gold].SafeSetValue((int)Requestee.GoldNetIncome);
-            Progresses[Research].SafeSetValue((int)Requestee.Research);
+            Progresses[Research].SafeSetValue((int)Requestee.ResearchIncome);
 
             if (IsTotalProgressFull)
                 Complete();
