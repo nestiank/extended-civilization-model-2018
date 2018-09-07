@@ -235,9 +235,6 @@
     <Image Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CivModel.FakeModule\CivModel.FakeModule.csproj">
-      <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\CivModel\CivModel.csproj">
       <Project>{c9fd2f31-4c7a-461c-9095-d9ad5090b09b}</Project>
     </ProjectReference>
@@ -256,6 +253,13 @@
         </ProjectReference>
       </ItemGroup>
     </When>
+    <Otherwise>
+      <ItemGroup>
+        <ProjectReference Include="..\CivModel.FakeModule\CivModel.FakeModule.csproj">
+          <Project>{19ec463e-a2c4-47c6-a0e6-bd0882e722b8}</Project>
+        </ProjectReference>
+      </ItemGroup>
+    </Otherwise>
   </Choose>
   <ItemGroup>
     <EmbeddedResource Include="AIControlDialog.resx">

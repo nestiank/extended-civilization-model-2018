@@ -42,11 +42,14 @@ namespace FakeView
         System::String^ file = getFilePath(MAP_FILE_PATH, L".", L"..\\docs");
 
         array<System::String^>^ prototypes = {
+#ifdef DEBUG_CORE
             getFilePath(L"package.xml", L"packages\\fakemodule", L"..\\CivModel.FakeModule"),
+#else
             getFilePath(L"package.xml", L"packages\\finno", L"..\\CivModel.Finno"),
             getFilePath(L"package.xml", L"packages\\hwan", L"..\\CivModel.Hwan"),
             getFilePath(L"package.xml", L"packages\\zap", L"..\\CivModel.Zap"),
             getFilePath(L"package.xml", L"packages\\quests", L"..\\CivModel.Quest"),
+#endif
         };
 
         m_presenter = nullptr;
@@ -963,19 +966,7 @@ namespace FakeView
         auto& c = m_screen->GetChar(px, py);
         c.color &= 0xf0;
         c.color |= 0x08 | GetPlayerColor(unit->Owner);
-
-        if (auto u = dynamic_cast<CivModel::FakeModule::Pioneer^>(unit))
-        {
-            c.ch = 'P';
-        }
-        else if (auto u = dynamic_cast<CivModel::FakeModule::FakeKnight^>(unit))
-        {
-            c.ch = 'F';
-        }
-        else
-        {
-            c.ch = cli2str(unit->GetType()->FullName)[15];
-        }
+        c.ch = cli2str(unit->GetType()->FullName)[15];
     }
 
     void View::PrintTileBuilding(int px, int py, CivModel::TileBuilding^ tileBuilding)
