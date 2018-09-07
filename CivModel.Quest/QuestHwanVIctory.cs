@@ -70,6 +70,11 @@ namespace CivModel.Quests
             }
         }
 
+        protected override Ending GetVictoryEnding()
+        {
+            return new HwanUltimateVictory(Game);
+        }
+
         protected override QuestUltimateBase GetEnemyUltimateQuest()
         {
             return Game.GetPlayerFinno().Quests.OfType<QuestFinnoVictory>().FirstOrDefault();

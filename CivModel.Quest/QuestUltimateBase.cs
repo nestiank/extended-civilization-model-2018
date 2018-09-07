@@ -99,7 +99,7 @@ namespace CivModel.Quests
                     var hwanVictory = GetEnemyUltimateQuest();
                     if (!hwanVictory.GetCondition())
                     {
-                        Requestee.AchieveEnding(new FinnoUltimateVictory(Game));
+                        Requestee.AchieveEnding(GetVictoryEnding());
                         foreach (var player in Game.Players)
                         {
                             if (player != Requestee && !player.HasEnding)
@@ -129,13 +129,14 @@ namespace CivModel.Quests
         public void PostSubTurn(Player playerInTurn) { }
         public void AfterPostSubTurn(Player playerInTurn) { }
 
+        protected abstract Ending GetVictoryEnding();
         protected abstract QuestUltimateBase GetEnemyUltimateQuest();
 
         public virtual bool GetCondition()
         {
             foreach (var progress in Progresses)
             {
-                if (progress.Enabled && progress.Value == 0)
+                if (progress.Enabled && progress.Value == 0 && progress.Id != DelayProgress)
                     return false;
             }
             return true;
