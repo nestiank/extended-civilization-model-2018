@@ -35,7 +35,7 @@ module QuestAction =
                 Some (fun () ->
                     for i = 1 to require do
                         let p = product.Create context.Player
-                        context.Player.Production.AddLast p |> ignore
+                        context.Player.Production.AddFirst p |> ignore
                         context.QuestProduction.Add p |> ignore
                     if isDeployDue || finished then
                         quest.Status <- QuestStatus.Accepted
@@ -43,6 +43,62 @@ module QuestAction =
                         already |> Seq.iteri (fun idx x ->
                             context.QuestProduction.Remove x |> ignore
                             context.QuestDeploy.[x] <- deploy idx
+                        )
+                )
+            else None
+        else None
+
+    let questProduce2 (context: AIContext) (quest: Quest) (product1: IProductionFactory) count1 deploy1 (product2: IProductionFactory) count2 deploy2 =
+        if context.QuestComplete.Contains quest then
+            if quest.Status <> QuestStatus.Accepted then
+                context.QuestComplete.Remove quest |> ignore
+
+        if context.QuestComplete.Contains quest then
+            None
+        elif quest.Status = QuestStatus.Deployed || quest.Status = QuestStatus.Accepted then
+            let already1 =
+                Seq.concat [ context.Player.Production; context.Player.Deployment ]
+                |> Seq.filter (fun x -> x.Factory = product1)
+            let already2 =
+                Seq.concat [ context.Player.Production; context.Player.Deployment ]
+                |> Seq.filter (fun x -> x.Factory = product2)
+
+            already1 |> Seq.iter (fun x -> context.QuestProduction.Add x |> ignore)
+            already2 |> Seq.iter (fun x -> context.QuestProduction.Add x |> ignore)
+
+            let require1 = count1 - Seq.length already1
+            let require2 = count2 - Seq.length already2
+
+            let finished =
+                require1 = 0 && require2 = 0
+                && already1 |> Seq.forall (fun x -> x.IsCompleted)
+                && already2 |> Seq.forall (fun x -> x.IsCompleted)
+            let isDeployDue =
+                quest.Status = QuestStatus.Deployed && (quest.LeftTurn = 0 || quest.LeftTurn = 1)
+
+            if finished then
+                context.QuestComplete.Add quest
+
+            if require1 > 0 || require2 > 0 || finished || isDeployDue then
+                Some (fun () ->
+                    for i = 1 to require1 do
+                        let p = product1.Create context.Player
+                        context.Player.Production.AddFirst p |> ignore
+                        context.QuestProduction.Add p |> ignore
+                    for i = 1 to require2 do
+                        let p = product2.Create context.Player
+                        context.Player.Production.AddFirst p |> ignore
+                        context.QuestProduction.Add p |> ignore
+                    if isDeployDue || finished then
+                        quest.Status <- QuestStatus.Accepted
+                    if finished then
+                        already1 |> Seq.iteri (fun idx x ->
+                            context.QuestProduction.Remove x |> ignore
+                            context.QuestDeploy.[x] <- deploy1 idx
+                        )
+                        already2 |> Seq.iteri (fun idx x ->
+                            context.QuestProduction.Remove x |> ignore
+                            context.QuestDeploy.[x] <- deploy2 idx
                         )
                 )
             else None
@@ -64,12 +120,15 @@ module QuestAction =
             (fun _ _ pt -> pt.TileOwner = context.Game.GetPlayerEgypt ())
 
     let getActionWarAliance (context: AIContext) (quest: Quest) =
-        questProduce context quest CivModel.Finno.AutismBeamDroneFactory.Instance 3
-            (fun _ _ _ -> true)
+        questProduce context quest CivModel.Finno.AncientFinnoFIRFortressProductionFactory.Instance 3
+            (fun _ _ pt -> pt.TileOwner = context.Game.GetPlayerEmu ())
 
     let getActionAtlantis (context: AIContext) (quest: Quest) =
-        questProduce context quest CivModel.Finno.PreternaturalityProductionFactory.Instance 1
+        questProduce2 context quest
+            CivModel.Finno.AncientFinnoFineDustFactoryProductionFactory.Instance 1
             (fun _ _ pt -> pt.TileOwner = context.Game.GetPlayerAtlantis ())
+            CivModel.Finno.AncientSorcererProductionFactory.Instance 3
+            (fun _ _ _ -> true)
 
     let getActionGateOfRlyeh (context: AIContext) (quest: Quest) =
         questProduce context quest CivModel.Finno.PreternaturalityProductionFactory.Instance 1
