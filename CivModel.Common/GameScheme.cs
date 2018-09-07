@@ -52,7 +52,7 @@ namespace CivModel.Common
         public double ResearchHappinessCoefficient => 0.005;
 
         public double EconomicRequireCoefficient => 0.2;
-        public double EconomicRequireTaxRateConstant => 0.2;
+        public double EconomicRequireTaxRateConstant => 20;
 
         public double ResearchRequireCoefficient => 0.2;
 
