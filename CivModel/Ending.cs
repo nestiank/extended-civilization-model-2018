@@ -26,7 +26,7 @@ namespace CivModel
     }
 
     /// <summary>
-    /// 
+    /// Represents an ending of a game that <see cref="Player"/> can achieve.
     /// </summary>
     /// <seealso cref="IEquatable{Ending}" />
     public abstract class Ending : IEquatable<Ending>
