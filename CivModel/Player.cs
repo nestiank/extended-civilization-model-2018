@@ -55,7 +55,7 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="IGameConstantScheme.HappinessCoefficient"/>
         public double HappinessIncome =>
-            Game.Constants.HappinessCoefficient * ((EconomicInvestmentRatio - 1) * BasicEconomicRequire)
+            Game.Constants.HappinessCoefficient * (EconomicInvestmentRatio - 1)
             + TileBuildings.Sum(b => b.ProvidedHappiness);
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace CivModel
         /// </summary>
         /// <seealso cref="EconomicInvestmentRatio"/>
         public double BasicEconomicRequire => Game.Constants.EconomicRequireCoefficient * Population
-            * (Game.Constants.EconomicRequireTaxRateConstant + TaxRate);
+            * (Game.Constants.EconomicRequireTaxRateConstant + Pow2(TaxRate));
 
         /// <summary>
         /// The ratio of real amount to basic amount of economic investment. It must be in [<c>0</c>, <c>2</c>].
@@ -873,5 +873,7 @@ namespace CivModel
             }
             return (labor, gold);
         }
+
+        private static double Pow2(double x) => x * x;
     }
 }
