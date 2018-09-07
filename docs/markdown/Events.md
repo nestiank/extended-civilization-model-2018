@@ -124,10 +124,15 @@ Observer의 우선순위는 2가지가 있다.
 
      어떤 플레이어가 승리했을 때 발생한다.
 
-  - defeat
+  - Defeat
 
      어떤 플레이어가 패배했을 때 발생한다.
 
-  - draw
+  - Draw
 
-     어떤 플레이어가 무승부를 냈을 대 발생한다.
+     어떤 플레이어가 무승부를 냈을 때 발생한다.
+
+- Actor Event *(observable)*
+  - Skip Flag Changed
+
+     어떤 actor의 SkipFlag 혹은 SleepFlag가 변경되었을 때 발생한다.

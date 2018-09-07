@@ -221,7 +221,9 @@ namespace CivModel
             GoldInputed += gold;
 
             if (LaborInputed >= TotalLaborCost && GoldInputed >= TotalGoldCost)
+            {
                 IsCompleted = true;
+            }
 
             return (labor, gold);
         }

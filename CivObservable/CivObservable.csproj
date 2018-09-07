@@ -48,6 +48,7 @@
     <Compile Include="IFixedEventReceiver.cs" />
     <Compile Include="IObservable.cs" />
     <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="NotifyingLinkedList.cs" />
     <Compile Include="Observable.cs" />
     <Compile Include="ObservableEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

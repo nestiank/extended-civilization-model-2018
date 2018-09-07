@@ -298,13 +298,13 @@ namespace CivModel
         /// The list of the not-finished productions of this player.
         /// </summary>
         /// <seealso cref="Deployment"/>
-        public LinkedList<Production> Production { get; } = new LinkedList<Production>();
+        public NotifyingLinkedList<Production> Production { get; }
 
         /// <summary>
         /// The list of the ready-to-deploy productions of this player.
         /// </summary>
         /// <seealso cref="Production"/>
-        public LinkedList<Production> Deployment { get; } = new LinkedList<Production>();
+        public NotifyingLinkedList<Production> Deployment { get; }
 
         /// <summary>
         /// The set of available productions of this player.
@@ -467,6 +467,13 @@ namespace CivModel
             _game = game ?? throw new ArgumentNullException(nameof(game));
 
             Team = team;
+
+            Production = new NotifyingLinkedList<Production>(() => {
+                Game.ProductionEvent.RaiseObservable(obs => obs.OnProductionListChanged(this));
+            });
+            Deployment = new NotifyingLinkedList<Production>(() => {
+                Game.ProductionEvent.RaiseObservable(obs => obs.OnDeploymentListChanged(this));
+            });
 
             SpecialResource = new SpecialResourceDictionary(this);
         }
