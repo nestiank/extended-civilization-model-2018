@@ -141,6 +141,7 @@
     <xs:attribute name="id" use="required" type="nonEmptyString" />
     <xs:attribute name="description" use="required" type="xs:string" />
     <xs:attribute name="maxValue" use="required" type="xs:nonNegativeInteger" />
+    <xs:attribute name="enabled" use="optional" type="xs:boolean" default="true" />
   </xs:complexType>
 
   <xs:complexType name="Quest">

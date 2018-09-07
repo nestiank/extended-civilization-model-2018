@@ -578,6 +578,8 @@ namespace FakeView
                         //msg = cli2str(progress->Description);
                         msg = "[" + std::to_string(index++) + "]";
                         msg += " (" + std::to_string(progress->Value) + "/" + std::to_string(progress->MaxValue) + ")";
+                        if (!progress->Enabled)
+                            msg += " {{disabled}}";
                         m_screen->PrintString(2, y, color, msg);
                         ++y;
                     }
