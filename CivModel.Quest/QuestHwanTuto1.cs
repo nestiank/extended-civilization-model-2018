@@ -41,6 +41,13 @@ namespace CivModel.Quests
 
         protected override void OnComplete()
         {
+            if (Requestee.Cities.FirstOrDefault() is CityBase city)
+            {
+                var adj = city.PlacedPoint.Value.Adjacents().First(
+                    pt => pt.HasValue && pt.Value.TileOwner == Requestee && pt.Value.Unit == null).Value;
+                new Hwan.JediKnight(Requestee, adj).OnAfterProduce(null);
+            }
+
             var quest = Requestee.Quests.OfType<QuestHwanTuto2>().FirstOrDefault();
             if (quest != null)
             {

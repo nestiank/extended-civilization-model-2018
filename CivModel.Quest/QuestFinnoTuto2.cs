@@ -34,6 +34,18 @@ namespace CivModel.Quests
 
         protected override void OnComplete()
         {
+            var p1 = Requestee.Production.Reverse()
+                .Where(p => p.Factory is Finno.JediKnightProductionFactory)
+                .Take(Progresses[Product1].MaxValue);
+            var p2 = Requestee.Production.Reverse()
+                .Where(p => p.Factory is Finno.AncientFinnoGermaniumMineProductionFactory)
+                .Take(Progresses[Product2].MaxValue);
+            foreach (var production in p1.Concat(p2).ToArray())
+            {
+                Requestee.Production.Remove(production);
+                Requestee.Deployment.AddLast(production);
+            }
+
             var quest = Requestee.Quests.OfType<QuestFinnoTuto3>().FirstOrDefault();
             if (quest != null)
             {

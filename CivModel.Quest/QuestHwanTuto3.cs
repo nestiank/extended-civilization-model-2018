@@ -34,6 +34,8 @@ namespace CivModel.Quests
 
         protected override void OnComplete()
         {
+            Requestee.Gold += 3000;
+
             var quest = Requestee.Quests.OfType<QuestHwanTuto4>().FirstOrDefault();
             if (quest != null)
             {

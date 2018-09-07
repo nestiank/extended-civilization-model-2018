@@ -36,6 +36,11 @@ namespace CivModel.Quests
 
         protected override void OnComplete()
         {
+            for (int i = 0; i < 10; ++i)
+            {
+                Requestee.Deployment.AddLast(Finno.AncientFinnoLabortoryProductionFactory.Instance.Create(Requestee));
+            }
+
             var quest = Requestee.Quests.OfType<QuestFinnoTuto5>().FirstOrDefault();
             if (quest != null)
             {

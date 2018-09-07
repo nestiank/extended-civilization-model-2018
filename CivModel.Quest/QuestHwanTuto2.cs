@@ -20,7 +20,6 @@ namespace CivModel.Quests
 
         public override void OnQuestDeployTime()
         {
-            Deploy();Accept();
         }
 
         protected override void OnAccept()
@@ -35,6 +34,18 @@ namespace CivModel.Quests
 
         protected override void OnComplete()
         {
+            var p1 = Requestee.Production.Reverse()
+                .Where(p => p.Factory is Hwan.ProtoNinjaProductionFactory)
+                .Take(Progresses[Product1].MaxValue);
+            var p2 = Requestee.Production.Reverse()
+                .Where(p => p.Factory is Hwan.HwanEmpireKimchiFactoryProductionFactory)
+                .Take(Progresses[Product2].MaxValue);
+            foreach (var production in p1.Concat(p2).ToArray())
+            {
+                Requestee.Production.Remove(production);
+                Requestee.Deployment.AddLast(production);
+            }
+
             var quest = Requestee.Quests.OfType<QuestHwanTuto3>().FirstOrDefault();
             if (quest != null)
             {

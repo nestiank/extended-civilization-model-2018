@@ -31,16 +31,21 @@ namespace CivModel.Quests
 
         private void Cleanup()
         {
-            var quest = Requestee.Quests.OfType<QuestHwanTuto5>().FirstOrDefault();
-            if (quest != null)
-            {
-                quest.Deploy();
-            }
             Game.TurnObservable.RemoveObserver(this);
         }
 
         protected override void OnComplete()
         {
+            for (int i = 0; i < 10; ++i)
+            {
+                Requestee.Deployment.AddLast(Hwan.HwanEmpireCityCentralLabProductionFactory.Instance.Create(Requestee));
+            }
+
+            var quest = Requestee.Quests.OfType<QuestHwanTuto5>().FirstOrDefault();
+            if (quest != null)
+            {
+                quest.Deploy();
+            }
             Cleanup();
         }
 
