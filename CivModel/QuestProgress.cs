@@ -32,6 +32,11 @@ namespace CivModel
         public string Description { get; set; }
 
         /// <summary>
+        /// Whether this progress is enabled.
+        /// </summary>
+        public bool Enabled { get; set; }
+
+        /// <summary>
         /// The maximum value of this progress.
         /// </summary>
         /// <seealso cref="Value"/>
@@ -95,6 +100,7 @@ namespace CivModel
             Id = proto.Id;
             Description = proto.Description;
             MaxValue = proto.MaxValue;
+            Enabled = proto.Enabled;
         }
 
         /// <summary>

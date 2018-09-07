@@ -105,18 +105,18 @@ namespace CivModel
         /// The current total progress of this quest.
         /// This value is equal to sum of <see cref="QuestProgress.Value"/>.
         /// </summary>
-        public int TotalProgress => Progresses.Sum(p => p.Value);
+        public int TotalProgress => Progresses.Where(p => p.Enabled).Sum(p => p.Value);
 
         /// <summary>
         /// The maximum total progress of this quest.
         /// This value is equal to sum of <see cref="QuestProgress.MaxValue"/>.
         /// </summary>
-        public int MaxTotalProgress => Progresses.Sum(p => p.MaxValue);
+        public int MaxTotalProgress => Progresses.Where(p => p.Enabled).Sum(p => p.MaxValue);
 
         /// <summary>
         /// Whether the total progress is full.
         /// </summary>
-        public bool IsTotalProgressFull => Progresses.All(p => p.IsFull);
+        public bool IsTotalProgressFull => Progresses.Where(p => p.Enabled).All(p => p.IsFull);
 
         /// <summary>
         /// The left turn. <c>-1</c> if this value is invalid.
