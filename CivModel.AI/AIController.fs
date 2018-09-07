@@ -20,6 +20,15 @@ type AIController(player: Player) =
         context.Update ()
         actions |> List.tryPick ((|>) context)
 
+    let investAdjust (context: AIContext) =
+        let player = context.Player
+        let x = if player.Happiness <= 50.0 then 2.0 else 1.0
+        let N = context.Game.Constants.GoldCoefficient
+        let LM = context.Game.Constants.EconomicRequireCoefficient
+        let t = N * 2.0 * player.Population / LM
+        player.TaxRate <- t
+        player.EconomicInvestmentRatio <- x
+
     interface CivModel.IAIController with
         member this.DoAction() =
             async {
@@ -31,6 +40,7 @@ type AIController(player: Player) =
                         if count > 10000 then
                             Debug.WriteLine "AI infinite loop is detected"
                         else
+                            investAdjust context
                             let act = getAction ctx
                             match act with
                             | Some fn ->
