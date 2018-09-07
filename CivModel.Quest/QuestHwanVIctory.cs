@@ -9,136 +9,99 @@ using static CivModel.Hwan.HwanPlayerNumber;
 
 namespace CivModel.Quests
 {
-    public class QuestHwanVictory : Quest, ITurnObserver, IQuestObserver
+    public class QuestHwanVictory : QuestUltimateBase, ITileObjectObserver
     {
         private const string Autism = "autism";
         private const string Cthulhu = "cthulhu";
         private const string Alien = "alien";
-        private const string Delay = "delay";
+        private const string Airspace = "airspace";
+        private const string Moai = "moai";
+        private const string Wonder = "wonder";
+        private const string Kimchi = "kimchi";
+        private const string Unicorn = "unicorn";
+        private const string Jackie = "jackie";
+
+        protected override string DelayProgress => "delay";
+
+        protected override List<KeyValuePair<string, ISpecialResource>> RequiredResources { get; }
+            = new List<KeyValuePair<string, ISpecialResource>>();
 
         public QuestHwanVictory(Game game)
             : base(null, game.GetPlayerHwan(), typeof(QuestHwanVictory))
         {
+            RequiredResources.Add(new KeyValuePair<string, ISpecialResource>(Autism, SpecialResourceAutismBeamReflex.Instance));
+            RequiredResources.Add(new KeyValuePair<string, ISpecialResource>(Cthulhu, SpecialResourceCthulhuProjectInfo.Instance));
+            RequiredResources.Add(new KeyValuePair<string, ISpecialResource>(Alien, SpecialResourceAlienCommunication.Instance));
+
+            int r1 = game.Random.Next(4);
+            int r2 = game.Random.Next(r1 + 1, 5);
+            int r3 = game.Random.Next(r2 + 1, 6);
+            EnableRandom(r1);
+            EnableRandom(r2);
+            EnableRandom(r3);
         }
 
-        public override void OnQuestDeployTime()
+        private void EnableRandom(int index)
         {
-            if (!Requestee.HasEnding)
+            switch (index)
             {
-                Deploy();
-                Accept();
+                case 0:
+                    RequiredResources.Add(new KeyValuePair<string, ISpecialResource>(Airspace, SpecialResourceAirspaceDomination.Instance));
+                    Progresses[Airspace].Enabled = true;
+                    break;
+                case 1:
+                    RequiredResources.Add(new KeyValuePair<string, ISpecialResource>(Moai, SpecialResourceMoaiForceField.Instance));
+                    Progresses[Moai].Enabled = true;
+                    break;
+                case 2:
+                    Progresses[Wonder].Enabled = true;
+                    break;
+                case 3:
+                    Progresses[Kimchi].Enabled = true;
+                    break;
+                case 4:
+                    Progresses[Unicorn].Enabled = true;
+                    break;
+                case 5:
+                    Progresses[Jackie].Enabled = true;
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
+        }
+
+        protected override Ending GetVictoryEnding()
+        {
+            return new HwanUltimateVictory(Game);
+        }
+
+        protected override QuestUltimateBase GetEnemyUltimateQuest()
+        {
+            return Game.GetPlayerFinno().Quests.OfType<QuestFinnoVictory>().FirstOrDefault();
         }
 
         protected override void OnAccept()
         {
-            Game.TurnObservable.AddObserver(this, ObserverPriority.Model);
-            Game.QuestObservable.AddObserver(this, ObserverPriority.Model);
-            Progresses[Delay].Value = 0;
+            base.OnAccept();
+            Game.TileObjectObservable.AddObserver(this, ObserverPriority.Model);
         }
 
-        private void Cleanup()
+        protected override void Cleanup()
         {
-            Game.TurnObservable.RemoveObserver(this);
-            Game.QuestObservable.RemoveObserver(this);
+            base.Cleanup();
+            Game.TileObjectObservable.RemoveObserver(this);
         }
 
-        protected override void OnComplete()
+        public void TileObjectProduced(TileObject obj)
         {
-            Cleanup();
-        }
-
-        protected override void OnGiveup()
-        {
-            Cleanup();
-        }
-
-        public void QuestCompleted(Quest quest)
-        {
-            Progresses[Autism].Value = Math.Min(1, Requestee.SpecialResource[SpecialResourceAutismBeamReflex.Instance]);
-            Progresses[Cthulhu].Value = Math.Min(1, Requestee.SpecialResource[SpecialResourceCthulhuProjectInfo.Instance]);
-            Progresses[Alien].Value = Math.Min(1, Requestee.SpecialResource[SpecialResourceAlienCommunication.Instance]);
-        }
-        public void QuestAccepted(Quest quest) { }
-        public void QuestGivenup(Quest quest) { }
-
-        public void AfterPostTurn()
-        {
-            if (Requestee.HasEnding)
+            if (obj is Actor actor && actor.Owner == Requestee)
             {
-                Disable();
-                return;
-            }
-
-            if (GetCondition())
-            {
-                if (!Progresses[Delay].IsFull)
-                    Progresses[Delay].Value += 1;
-            }
-            else
-            {
-                Progresses[Delay].Value = 0;
+                Progresses[Wonder].SafeSetValue(Requestee.TileBuildings.OfType<Hwan.Preternaturality>().Count());
+                Progresses[Kimchi].SafeSetValue(Requestee.TileBuildings.OfType<Hwan.HwanEmpireKimchiFactory>().Count());
+                Progresses[Unicorn].SafeSetValue(Requestee.Units.OfType<Hwan.UnicornOrder>().Count());
+                Progresses[Jackie].SafeSetValue(Requestee.Units.OfType<Hwan.JackieChan>().Count());
             }
         }
-
-        public void AfterPreSubTurn(Player playerInTurn)
-        {
-            if (playerInTurn != Requestee)
-                return;
-
-            if (Requestee.HasEnding)
-            {
-                Disable();
-                return;
-            }
-
-            if (Progresses[Delay].IsFull)
-            {
-                if (!GetCondition())
-                {
-                    Progresses[Delay].Value = 0;
-                }
-                else
-                {
-                    var finnoVictory = Game.GetPlayerFinno().Quests.OfType<QuestFinnoVictory>().FirstOrDefault();
-                    if (!finnoVictory.GetCondition())
-                    {
-                        Requestee.AchieveEnding(new HwanUltimateVictory(Game));
-                        foreach (var player in Game.Players)
-                        {
-                            if (player != Requestee && !player.HasEnding)
-                            {
-                                player.AchieveEnding(new UltimateDefeat(Game));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (var player in Game.Players)
-                        {
-                            if (!player.HasEnding)
-                                player.AchieveEnding(new UltimateDraw(Game));
-                        }
-                    }
-                    Complete();
-                    finnoVictory.Complete();
-                }
-            }
-        }
-
-        public void PreTurn() { }
-        public void AfterPreTurn() { }
-        public void PostTurn() { }
-        public void PreSubTurn(Player playerInTurn) { }
-        public void PostSubTurn(Player playerInTurn) { }
-        public void AfterPostSubTurn(Player playerInTurn) { }
-
-        internal bool GetCondition()
-        {
-            var c1 = Progresses[Autism].Value > 0;
-            var c2 = Progresses[Cthulhu].Value > 0;
-            var c3 = Progresses[Alien].Value > 0;
-            return c1 && c2 && c3;
-        }
+        public void TileObjectPlaced(TileObject obj) { }
     }
 }

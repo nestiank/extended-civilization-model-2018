@@ -191,6 +191,12 @@
     <Progress id="autism" description="오티즘 빔 증폭 크리스탈 획득" maxValue="1" />
     <Progress id="necro" description="네크로노미콘 획득" maxValue="1" />
     <Progress id="rlyeh" description="Gate of Rlyeh 획득" maxValue="1" />
+    <Progress id="stellar" description="성간 에너지 추출기 획득" maxValue="1" enabled="false" />
+    <Progress id="uber" description="Ubermensch 획득" maxValue="1" enabled="false" />
+    <Progress id="wonder" description="불가사의 5개 보유" maxValue="5" enabled="false" />
+    <Progress id="dust" description="미세먼지 공장 20개 보유" maxValue="20" enabled="false" />
+    <Progress id="eleph" description="핀란드 코끼리 기사단 30개 보유" maxValue="30" enabled="false" />
+    <Progress id="khan" description="Genghis Khan 15개 보유" maxValue="15" enabled="false" />
     <Progress id="delay" description="적의 승리를 막으며 한 턴 버티기" maxValue="1" />
   </Quest>
 
@@ -208,6 +214,12 @@
     <Progress id="autism" description="오티즘 빔 반사 어레이 획득" maxValue="1" />
     <Progress id="cthulhu" description="크툴루 정보 획득" maxValue="1" />
     <Progress id="alien" description="외계 통신 기구 획득" maxValue="1" />
+    <Progress id="airspace" description="궤도 장악권 획득" maxValue="1" enabled="false" />
+    <Progress id="moai" description="모아이 포스 필드 획득" maxValue="1" enabled="false" />
+    <Progress id="wonder" description="불가사의 5개 보유" maxValue="5" enabled="false" />
+    <Progress id="kimchi" description="KIMCHI FACTORY 20개 보유" maxValue="20" enabled="false" />
+    <Progress id="unicorn" description="환 제국 유니콘 기사단 30개 보유" maxValue="30" enabled="false" />
+    <Progress id="jackie" description="Jackie Chan 15개 보유" maxValue="15" enabled="false" />
     <Progress id="delay" description="적의 승리를 막으며 한 턴 버티기" maxValue="1" />
   </Quest>
 

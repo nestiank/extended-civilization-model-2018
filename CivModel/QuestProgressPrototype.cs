@@ -24,11 +24,17 @@ namespace CivModel
         /// </summary>
         public int MaxValue { get; }
 
+        /// <summary>
+        /// Whether this progress is enabled.
+        /// </summary>
+        public bool Enabled { get; }
+
         internal QuestProgressPrototype(XElement node)
         {
             Id = node.Attribute("id").Value;
             Description = node.Attribute("description").Value;
             MaxValue = Convert.ToInt32(node.Attribute("maxValue").Value);
+            Enabled = Convert.ToBoolean(node.Attribute("enabled").Value);
         }
     }
 }
