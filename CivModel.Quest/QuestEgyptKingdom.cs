@@ -22,7 +22,7 @@ namespace CivModel.Quests
         {
             if (Requestee.SpecialResource[SpecialResourceCthulhuProjectInfo.Instance] > 0)
             {
-                if (Game.Random.Next(10) < 7)
+                if (Game.Random.Next(10) < 5)
                     Deploy();
             }
         }

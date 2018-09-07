@@ -141,7 +141,7 @@
     <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
     <TotalGoldCost>50</TotalGoldCost>
     <GoldCapacityPerTurn>10</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>25</MaxHP>
     <MaxHealPerTurn>20</MaxHealPerTurn>
     <AttackPower>9</AttackPower>
@@ -160,7 +160,7 @@
     <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
     <TotalGoldCost>30</TotalGoldCost>
     <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>25</MaxHP>
     <MaxHealPerTurn>20</MaxHealPerTurn>
     <AttackPower>3</AttackPower>
@@ -179,7 +179,7 @@
     <LaborCapacityPerTurn>8</LaborCapacityPerTurn>
     <TotalGoldCost>30</TotalGoldCost>
     <GoldCapacityPerTurn>15</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>50</MaxHP>
     <MaxHealPerTurn>20</MaxHealPerTurn>
     <AttackPower>5</AttackPower>
@@ -198,7 +198,7 @@
     <LaborCapacityPerTurn>15</LaborCapacityPerTurn>
     <TotalGoldCost>50</TotalGoldCost>
     <GoldCapacityPerTurn>20</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>25</MaxHP>
     <MaxHealPerTurn>30</MaxHealPerTurn>
     <AttackPower>8</AttackPower>
@@ -217,7 +217,7 @@
     <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
     <TotalGoldCost>75</TotalGoldCost>
     <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>15</MaxHP>
     <MaxHealPerTurn>30</MaxHealPerTurn>
     <AttackPower>13</AttackPower>
@@ -231,12 +231,12 @@
   <Unit
     name="CivModel.Zap.Pioneer" guid="6A5A25E9-1213-49B9-94F6-A8BB5B0C0A10">
 
-    <TextName>환 개척자</TextName>
+    <TextName>개척자</TextName>
     <TotalLaborCost>5</TotalLaborCost>
     <LaborCapacityPerTurn>2</LaborCapacityPerTurn>
     <TotalGoldCost>5</TotalGoldCost>
     <GoldCapacityPerTurn>2</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>0</MaxHP>
     <MaxHealPerTurn>0</MaxHealPerTurn>
     <AttackPower>0</AttackPower>
@@ -255,7 +255,7 @@
     <LaborCapacityPerTurn>20</LaborCapacityPerTurn>
     <TotalGoldCost>75</TotalGoldCost>
     <GoldCapacityPerTurn>11</GoldCapacityPerTurn>
-    <MaxAP>2</MaxAP>
+    <MaxAP>4</MaxAP>
     <MaxHP>18</MaxHP>
     <MaxHealPerTurn>30</MaxHealPerTurn>
     <AttackPower>10</AttackPower>
