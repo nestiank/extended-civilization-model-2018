@@ -6,14 +6,14 @@
   <TextName>퀘스트 확장 모듈</TextName>
 
   <GameConstants>
-    <GoldCoefficient>1</GoldCoefficient>
+    <GoldCoefficient>3</GoldCoefficient>
     <PopulationConstant>0.1</PopulationConstant>
     <PopulationHappinessCoefficient>0.01</PopulationHappinessCoefficient>
     <HappinessCoefficient>30</HappinessCoefficient>
     <LaborHappinessCoefficient>0.008</LaborHappinessCoefficient>
     <ResearchHappinessCoefficient>0.005</ResearchHappinessCoefficient>
-    <EconomicRequireCoefficient>0.2</EconomicRequireCoefficient>
-    <EconomicRequireTaxRateConstant>0.2</EconomicRequireTaxRateConstant>
+    <EconomicRequireCoefficient>6</EconomicRequireCoefficient>
+    <EconomicRequireTaxRateConstant>0.001</EconomicRequireTaxRateConstant>
     <ResearchRequireCoefficient>0.2</ResearchRequireCoefficient>
   </GameConstants>
 
@@ -141,10 +141,10 @@
     <PostingTurn>5</PostingTurn>
     <LimitTurn>10</LimitTurn>
     <QuestDescription>계속된 환국에 공세에 맞서기 위해선 우린 일반 병사들의 신체와 정신부터 강화하여 압도적인 전술적 이점을 확보할 필요가 있습니다. 이미 최전선에선 궁기병들이나 코끼리 기갑병들이 조금만 더 멀리, 조금만 더 빨랐다면 이겼을 전투 상황들이 수없이 많이 속출하고 있죠. 이것이 성공한다면 드디어 Hyperwar을 끝낼수 있을지도 모릅니다.</QuestDescription>
-    <GoalNotice>제한 기간내 기술력을 (퀘스트 수락 때 기술력)+7000 만큼 올리세요.</GoalNotice>
+    <GoalNotice>제한 기간내 기술력을 (퀘스트 수락 때 기술력)+3000 만큼 올리세요.</GoalNotice>
     <RewardNotice>[특수 자원 : Ubermensch] 획득</RewardNotice>
     <CompleteNotice>아셨나요? 오늘날 게르만족/아리아인 이라 불리는 사람들은 원래 핀란드 유전 실험의 결과였습니다. 핀란드의 심화된 유전자 연구는 대다수 재야사학자들에 의해 많이 연구가 되었으며 가장 잘 알려져있는, 남아있는 Hyperwar의 유산이기도 합니다. 전쟁 중기 환국의 Girl's Generation과 같은 계속된 정신적 공격에 전장에서 큰 피해를 입었던 핀란드 카가네이트는 이를 견더내기 위해 더 강인한 정신과 육체를 가진, 신 인류를 개발할 필요성을 느끼게 되었죠. 게르만족의 경우는 비록 실패작중 하나였지만, 그럼에도 Hyperwar이후 막강한 영향력을 휘두르게 됩니다.</CompleteNotice>
-    <Progress id="TecCount" description="기술력" maxValue="7000" />
+    <Progress id="TecCount" description="기술력" maxValue="3000" />
   </Quest>
 
   <Ending
@@ -205,10 +205,10 @@
     <Progress id="rlyeh" description="Gate of Rlyeh 획득" maxValue="1" />
     <Progress id="stellar" description="성간 에너지 추출기 획득" maxValue="1" enabled="false" />
     <Progress id="uber" description="Ubermensch 획득" maxValue="1" enabled="false" />
-    <Progress id="wonder" description="불가사의 5개 보유" maxValue="5" enabled="false" />
-    <Progress id="dust" description="미세먼지 공장 20개 보유" maxValue="20" enabled="false" />
-    <Progress id="eleph" description="핀란드 코끼리 기사단 30개 보유" maxValue="30" enabled="false" />
-    <Progress id="khan" description="Genghis Khan 15개 보유" maxValue="15" enabled="false" />
+    <Progress id="wonder" description="불가사의 3개 보유" maxValue="3" enabled="false" />
+    <Progress id="dust" description="미세먼지 공장 10개 보유" maxValue="10" enabled="false" />
+    <Progress id="eleph" description="핀란드 코끼리 기사단 15개 보유" maxValue="15" enabled="false" />
+    <Progress id="khan" description="Genghis Khan 5개 보유" maxValue="5" enabled="false" />
     <Progress id="delay" description="적의 승리를 막으며 한 턴 버티기" maxValue="1" />
   </Quest>
 
@@ -228,10 +228,10 @@
     <Progress id="alien" description="외계 통신 기구 획득" maxValue="1" />
     <Progress id="airspace" description="궤도 장악권 획득" maxValue="1" enabled="false" />
     <Progress id="moai" description="모아이 포스 필드 획득" maxValue="1" enabled="false" />
-    <Progress id="wonder" description="불가사의 5개 보유" maxValue="5" enabled="false" />
-    <Progress id="kimchi" description="KIMCHI FACTORY 20개 보유" maxValue="20" enabled="false" />
-    <Progress id="unicorn" description="환 제국 유니콘 기사단 30개 보유" maxValue="30" enabled="false" />
-    <Progress id="jackie" description="Jackie Chan 15개 보유" maxValue="15" enabled="false" />
+    <Progress id="wonder" description="불가사의 3개 보유" maxValue="3" enabled="false" />
+    <Progress id="kimchi" description="KIMCHI FACTORY 10개 보유" maxValue="10" enabled="false" />
+    <Progress id="unicorn" description="환 제국 유니콘 기사단 15개 보유" maxValue="15" enabled="false" />
+    <Progress id="jackie" description="Jackie Chan 5개 보유" maxValue="5" enabled="false" />
     <Progress id="delay" description="적의 승리를 막으며 한 턴 버티기" maxValue="1" />
   </Quest>
 
@@ -310,7 +310,7 @@
 턴당 기술력 증가량이 +1000 이상]]></GoalNotice>
     <RewardNotice>즉시 배치 가능한 [환 제국 도시 연구소] 10개.</RewardNotice>
     <CompleteNotice>잘하셨어요!  이제 퀘스트를 수락하고 진행하는 법에 대해 알아봅시다. "퀘스트" 화면으로가 [튜토리얼 - 위대한 얼을 찾아서(5)] 를 클릭해 "자세히"를 읽어보세요.</CompleteNotice>
-    <Progress id="happy" description="이전 턴의 행복도" maxValue="50" />
+    <Progress id="happy" description="이전 턴의 행복도" maxValue="30" />
     <Progress id="gold" description="이전 턴의 턴당 금 수입" maxValue="200" />
     <Progress id="research" description="이전 턴의 기술력" maxValue="1000" />
   </Quest>
@@ -389,7 +389,7 @@
 턴당 기술력 증가량이 +1000 이상]]></GoalNotice>
     <RewardNotice>즉시 배치 가능한 [핀란드 제국 도시 연구소] 10개.</RewardNotice>
     <CompleteNotice>잘하셨어요!  이제 퀘스트를 수락하고 진행하는 법에 대해 알아봅시다. "퀘스트" 화면으로 가 [튜토리얼 - 황금 호드를 위하여(5)] 를 클릭해 "자세히"를 읽어보세요.</CompleteNotice>
-    <Progress id="happy" description="이전 턴의 행복도" maxValue="50" />
+    <Progress id="happy" description="이전 턴의 행복도" maxValue="30" />
     <Progress id="gold" description="이전 턴의 턴당 금 수입" maxValue="200" />
     <Progress id="research" description="이전 턴의 기술력" maxValue="1000" />
   </Quest>
