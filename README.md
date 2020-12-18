@@ -6,7 +6,7 @@
 <br>
 [![group-catdog][catdog-image]][catdog-url] ![project-ndm][project-ndm]
 
-> [시드 마이어의 문명을 클론 코딩하고 확장한 프로젝트](https://github.com/nestiank/extended-civilization-revised) 중에서 모델 파트의 2018년 작업 결과물 원본입니다.
+> [시드 마이어의 문명을 클론 코딩하고 확장한 프로젝트](https://github.com/nestiank/extended-civilization-refactoring) 중에서 모델 파트의 2018년 작업 결과물 원본입니다.
 
 ### 저작자 정보
 
