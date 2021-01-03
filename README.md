@@ -1,10 +1,13 @@
 # 시드 마이어의 문명 클론 코딩 및 확장: 공동 작업 결과물 모델 원본
 
-![language-c#][language-c#] ![library-unity][library-unity] ![platform-pc][platform-pc]
+![language-c#][language-c#]
+![library-unity][library-unity]
+![platform-pc][platform-pc]
 <br>
 ![participants-team][participants-team]
 <br>
-[![group-catdog][catdog-image]][catdog-url] ![project-ndm][project-ndm]
+[![group-catdog][catdog-image]][catdog-url]
+![project-ndm][project-ndm]
 
 > [시드 마이어의 문명을 클론 코딩하고 확장한 프로젝트](https://github.com/nestiank/extended-civilization-refactoring) 중에서 모델 파트의 2018년 작업 결과물 원본입니다.
 
@@ -30,7 +33,7 @@
 <!-- Image definitions -->
 [catdog-image]: https://img.shields.io/badge/Group-CAT&DOG-red
 [catdog-url]: https://catdog.korea.ac.kr
-[project-ndm]: https://img.shields.io/badge/Project-Nexon%20Dream%20Makers-198c19
+[project-ndm]: https://img.shields.io/badge/Project-Nexon%20Dream%20Makers-00355f
 [language-c#]: https://img.shields.io/badge/Language-C%23-orange
 [library-unity]: https://img.shields.io/badge/Library-Unity-green
 [platform-pc]: https://img.shields.io/badge/Platform-PC-yellowgreen
